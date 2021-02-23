@@ -5,7 +5,8 @@ from continuous_time_rnn import *
 
 class EpisodeRunner:
 
-    def __init__(self, number_neurons, v_mask_param, w_mask_param, t_mask_param, delta_t, clipping_range_min, clipping_range_max, env_name, number_of_rounds):
+    def __init__(self, number_neurons, v_mask_param, w_mask_param, t_mask_param, delta_t, clipping_range_min,
+                 clipping_range_max, env_name, number_of_rounds):
 
         self.env_name = env_name
         env = gym.make(env_name)
@@ -17,6 +18,7 @@ class EpisodeRunner:
         self.delta_t = delta_t
         self.clipping_range_min = clipping_range_min
         self.clipping_range_max = clipping_range_max
+        self.env_seed = 0
 
         self.v_mask, self.w_mask, self.t_mask = ContinuousTimeRNN.generate_masks(number_inputs=number_inputs,
                                                                                  number_neurons=number_neurons,
@@ -29,7 +31,6 @@ class EpisodeRunner:
         np.save('w_mask.npy', self.w_mask)
         np.save('t_mask.npy', self.t_mask)
 
-
     def set_env_seed(self, seed):
         self.env_seed = seed
 
@@ -37,8 +38,6 @@ class EpisodeRunner:
         return ContinuousTimeRNN.get_individual_size(v_mask=self.v_mask, w_mask=self.w_mask, t_mask=self.t_mask)
 
     def eval_fitness(self, individual):
-
-
 
         brain = ContinuousTimeRNN(individual=individual,
                                   delta_t=self.delta_t,
