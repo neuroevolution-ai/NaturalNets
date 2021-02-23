@@ -3,6 +3,7 @@ import time
 from episode_runner import *
 import multiprocessing
 import numpy as np
+import random
 
 pool = multiprocessing.Pool()
 
@@ -59,6 +60,9 @@ for gen in range(number_generations):
     genomes = []
     for _ in range(offspring_population_size):
         genomes.append(policy + step_size * np.random.randn(individual_size).astype(np.float32))
+
+    # Set environment seed
+    ep_runner.set_env_seed(random.randint(0, 10000))
 
     # Evaluate candidates
     rewards = pool.map(ep_runner.eval_fitness, genomes)
