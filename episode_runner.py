@@ -25,6 +25,11 @@ class EpisodeRunner:
                                                                                  w_mask_param=w_mask_param,
                                                                                  t_mask_param=t_mask_param)
 
+        np.save('v_mask.npy', self.v_mask)
+        np.save('w_mask.npy', self.w_mask)
+        np.save('t_mask.npy', self.t_mask)
+
+
     def set_env_seed(self, seed):
         self.env_seed = seed
 

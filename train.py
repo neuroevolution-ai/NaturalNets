@@ -76,6 +76,9 @@ for gen in range(number_generations):
         j = sorted_rewards[i]
         policy += step_size * w[i] * genomes[j]
 
+    # Save policy
+    np.save('policy.npy', policy)
+
     print("Generation: {}   Min: {:4.2f}   Mean: {:4.2f}   Max: {:4.2f}   Elapsed time:  {:4.2f}s ".format(gen,
                                                                                                        np.min(rewards),
                                                                                                        np.mean(rewards),
