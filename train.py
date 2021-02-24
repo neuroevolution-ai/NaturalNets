@@ -8,7 +8,7 @@ import random
 pool = multiprocessing.Pool()
 
 # Optimize parameters
-number_generations = 500
+number_generations = 1500
 
 # Offspring population size (lambda)
 offspring_population_size = 798
@@ -19,8 +19,8 @@ parent_population_size = 50
 # Mutation step size (sigma)
 step_size = 0.05
 
-number_of_validation_runs = 50
-number_of_rounds = 5
+number_validation_runs = 50
+number_rounds = 5
 
 
 def get_reward_weights(population_size):
@@ -60,7 +60,7 @@ for gen in range(number_generations):
     t_start = time.time()
 
     # Environment seed for this generation (excludes validation env seeds)
-    env_seed = random.randint(number_of_validation_runs, 100000)
+    env_seed = random.randint(number_validation_runs, 100000)
 
     # Initialize genomes
     evaluations = []
@@ -68,25 +68,33 @@ for gen in range(number_generations):
     for _ in range(offspring_population_size):
         genome = policy + step_size * np.random.randn(individual_size).astype(np.float32)
         genomes.append(genome)
-        evaluations.append([genome, env_seed, number_of_rounds])
+        evaluations.append([genome, env_seed, number_rounds])
 
     # Evaluate candidates
-    rewards = pool.map(ep_runner.eval_fitness, evaluations)
+    rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
     # reward = ep_runner.eval_fitness(genomes[0])
 
     # Sort rewards in descending order
-    sorted_rewards = np.flip(np.argsort(rewards)).flatten()
+    sorted_rewards = np.flip(np.argsort(rewards_training)).flatten()
 
     # Update policy
     for i in range(parent_population_size):
         j = sorted_rewards[i]
         policy += step_size * w[i] * genomes[j]
 
+    # Validation runs for updated policy
+    evaluations = []
+    for i in range(number_validation_runs):
+        evaluations.append([policy, i, 1])
+
+    rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
+
     # Save policy
     np.save('policy.npy', policy)
 
-    print("Generation: {}   Min: {:4.2f}   Mean: {:4.2f}   Max: {:4.2f}   Elapsed time:  {:4.2f}s ".format(gen,
-                                                                                                       np.min(rewards),
-                                                                                                       np.mean(rewards),
-                                                                                                       np.max(rewards),
-                                                                                                       time.time() - t_start))
+    print("Generation: {}   Min: {:4.2f}   Mean: {:4.2f}   Max: {:4.2f}   Validation: {:4.2f}   Elapsed time:  {:4.2f}s ".format(gen,
+                                                                                                           np.min(rewards_training),
+                                                                                                           np.mean(rewards_training),
+                                                                                                           np.max(rewards_training),
+                                                                                                           np.mean(rewards_validation),
+                                                                                                           time.time() - t_start))
