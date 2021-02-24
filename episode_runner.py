@@ -6,19 +6,17 @@ from continuous_time_rnn import *
 class EpisodeRunner:
 
     def __init__(self, number_neurons, v_mask_param, w_mask_param, t_mask_param, delta_t, clipping_range_min,
-                 clipping_range_max, env_name, number_of_rounds):
+                 clipping_range_max, env_name):
 
         self.env_name = env_name
         env = gym.make(env_name)
         number_inputs = flatdim(env.observation_space)
         number_outputs = flatdim(env.action_space)
 
-        self.number_of_rounds = number_of_rounds
         self.number_neurons = number_neurons
         self.delta_t = delta_t
         self.clipping_range_min = clipping_range_min
         self.clipping_range_max = clipping_range_max
-        self.env_seed = 0
 
         self.v_mask, self.w_mask, self.t_mask = ContinuousTimeRNN.generate_masks(number_inputs=number_inputs,
                                                                                  number_neurons=number_neurons,
@@ -31,13 +29,17 @@ class EpisodeRunner:
         np.save('w_mask.npy', self.w_mask)
         np.save('t_mask.npy', self.t_mask)
 
-    def set_env_seed(self, seed):
-        self.env_seed = seed
-
     def get_individual_size(self):
         return ContinuousTimeRNN.get_individual_size(v_mask=self.v_mask, w_mask=self.w_mask, t_mask=self.t_mask)
 
-    def eval_fitness(self, individual):
+    def eval_fitness(self, evaluation):
+
+        # Extract parameters, this list of lists is necessary since pool.map only accepts a single argument
+        # See here: http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
+        individual = evaluation[0]
+        env_seed = evaluation[1]
+        number_of_rounds = evaluation[2]
+
 
         brain = ContinuousTimeRNN(individual=individual,
                                   delta_t=self.delta_t,
@@ -50,9 +52,9 @@ class EpisodeRunner:
 
         fitness_total = 0
 
-        for i in range(self.number_of_rounds):
+        for i in range(number_of_rounds):
 
-            env = gym.make(self.env_name, num_levels=1, start_level=self.env_seed+i, distribution_mode="memory")
+            env = gym.make(self.env_name, num_levels=1, start_level=env_seed+i, distribution_mode="memory")
             ob = env.reset()
             brain.reset()
 
@@ -66,4 +68,4 @@ class EpisodeRunner:
 
             fitness_total += fitness_current
 
-        return fitness_total / self.number_of_rounds
+        return fitness_total / number_of_rounds

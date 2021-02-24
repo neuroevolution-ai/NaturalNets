@@ -19,6 +19,10 @@ parent_population_size = 50
 # Mutation step size (sigma)
 step_size = 0.05
 
+number_of_validation_runs = 50
+number_of_rounds = 5
+
+
 def get_reward_weights(population_size):
 
     mu = population_size
@@ -42,8 +46,7 @@ ep_runner = EpisodeRunner(env_name='procgen:procgen-heist-v0',
                           t_mask_param=0.1,
                           delta_t=0.05,
                           clipping_range_min=-1,
-                          clipping_range_max=1,
-                          number_of_rounds=5)
+                          clipping_range_max=1)
 
 individual_size = ep_runner.get_individual_size()
 
@@ -56,19 +59,22 @@ for gen in range(number_generations):
 
     t_start = time.time()
 
+    # Environment seed for this generation (excludes validation env seeds)
+    env_seed = random.randint(number_of_validation_runs, 100000)
+
     # Initialize genomes
+    evaluations = []
     genomes = []
     for _ in range(offspring_population_size):
-        genomes.append(policy + step_size * np.random.randn(individual_size).astype(np.float32))
-
-    # Set environment seed
-    ep_runner.set_env_seed(random.randint(0, 10000))
+        genome = policy + step_size * np.random.randn(individual_size).astype(np.float32)
+        genomes.append(genome)
+        evaluations.append([genome, env_seed, number_of_rounds])
 
     # Evaluate candidates
-    rewards = pool.map(ep_runner.eval_fitness, genomes)
+    rewards = pool.map(ep_runner.eval_fitness, evaluations)
     # reward = ep_runner.eval_fitness(genomes[0])
 
-    # Sort rewards in descendend order
+    # Sort rewards in descending order
     sorted_rewards = np.flip(np.argsort(rewards)).flatten()
 
     # Update policy
