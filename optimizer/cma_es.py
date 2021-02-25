@@ -30,7 +30,8 @@ class OptimizerCmaEs:
         return genomes
 
     def tell(self, rewards):
-        # Update the strategy with the evaluated individuals
-        self.toolbox.update(self.population)
         for ind, fit in zip(self.population, rewards):
             ind.fitness.values = (fit,)
+
+        # Update the strategy with the evaluated individuals
+        self.toolbox.update(self.population)
