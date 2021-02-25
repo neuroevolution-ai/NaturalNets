@@ -1,6 +1,6 @@
 import gym
 from gym.spaces import flatdim
-from continuous_time_rnn import *
+from brains.continuous_time_rnn import *
 
 
 class EpisodeRunner:
@@ -39,7 +39,6 @@ class EpisodeRunner:
         individual = evaluation[0]
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
-
 
         brain = ContinuousTimeRNN(individual=individual,
                                   delta_t=self.delta_t,

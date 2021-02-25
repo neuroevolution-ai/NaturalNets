@@ -1,9 +1,9 @@
-import math
 import time
 from episode_runner import *
 import multiprocessing
-import numpy as np
 import random
+from optimizer.cma_es import *
+from optimizer.canonical_es import *
 
 pool = multiprocessing.Pool()
 
@@ -11,7 +11,7 @@ pool = multiprocessing.Pool()
 number_generations = 1500
 
 # Offspring population size (lambda)
-offspring_population_size = 798
+offspring_population_size = 112
 
 # Parent population size (mu)
 parent_population_size = 50
@@ -19,82 +19,81 @@ parent_population_size = 50
 # Mutation step size (sigma)
 step_size = 0.05
 
-number_validation_runs = 50
+number_validation_runs = 100
 number_rounds = 5
+maximum_env_seed = 100000
 
-
-def get_reward_weights(population_size):
-
-    mu = population_size
-
-    w_denominator = 0
-    for j in range(mu):
-        w_denominator += math.log(mu + 0.5) - math.log(j + 1)
-
-    w = np.asarray([(math.log(mu + 0.5) - math.log(i + 1)) / w_denominator for i in range(mu)])
-
-    return w
-
-
-w = get_reward_weights(parent_population_size)
+optimizer = "CMA-ES"
 
 # Initialize episode runner
 ep_runner = EpisodeRunner(env_name='procgen:procgen-heist-v0',
                           number_neurons=200,
-                          v_mask_param=0.001,
+                          v_mask_param=0.0005,
                           w_mask_param=0.05,
                           t_mask_param=0.1,
                           delta_t=0.05,
                           clipping_range_min=-1,
                           clipping_range_max=1)
 
+best_genome_overall = None
+best_reward_overall = -math.inf
+
 individual_size = ep_runner.get_individual_size()
 
 print("Individual size: {}".format(individual_size))
 
-# Initial genome
-policy = np.zeros(individual_size)
+if optimizer == "CMA-ES":
+    opt = OptimizerCmaEs(individual_size, offspring_population_size)
+elif optimizer == "Canonical-ES":
+    opt = OptimizerCanonicalEs(individual_size, offspring_population_size, parent_population_size, step_size)
+else:
+    raise RuntimeError("No valid optimizer")
 
 for gen in range(number_generations):
 
     t_start = time.time()
 
     # Environment seed for this generation (excludes validation env seeds)
-    env_seed = random.randint(number_validation_runs, 100000)
+    env_seed = random.randint(number_validation_runs, maximum_env_seed)
 
-    # Initialize genomes
+    # Ask optimizer for new population
+    genomes = opt.ask()
+
+    # Training runs for candidates
     evaluations = []
-    genomes = []
-    for _ in range(offspring_population_size):
-        genome = policy + step_size * np.random.randn(individual_size).astype(np.float32)
-        genomes.append(genome)
+    for genome in genomes:
         evaluations.append([genome, env_seed, number_rounds])
 
-    # Evaluate candidates
     rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
-    # reward = ep_runner.eval_fitness(genomes[0])
 
-    # Sort rewards in descending order
-    sorted_rewards = np.flip(np.argsort(rewards_training)).flatten()
+    # Tell optimizer new rewards
+    opt.tell(rewards_training)
 
-    # Update policy
-    for i in range(parent_population_size):
-        j = sorted_rewards[i]
-        policy += step_size * w[i] * genomes[j]
+    best_genome_current_generation = genomes[np.argmax(rewards_training)]
 
-    # Validation runs for updated policy
+    # Validation runs for best individual
     evaluations = []
     for i in range(number_validation_runs):
-        evaluations.append([policy, i, 1])
+        evaluations.append([best_genome_current_generation, i, 1])
 
     rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
 
-    # Save policy
-    np.save('policy.npy', policy)
+    best_reward_current_generation = np.mean(rewards_validation)
+    if best_reward_current_generation > best_reward_overall:
+        best_genome_overall = best_genome_current_generation
+        best_reward_overall = best_reward_current_generation
 
-    print("Generation: {}   Min: {:4.2f}   Mean: {:4.2f}   Max: {:4.2f}   Validation: {:4.2f}   Elapsed time:  {:4.2f}s ".format(gen,
-                                                                                                           np.min(rewards_training),
-                                                                                                           np.mean(rewards_training),
-                                                                                                           np.max(rewards_training),
-                                                                                                           np.mean(rewards_validation),
-                                                                                                           time.time() - t_start))
+        # Save best genome
+        np.save('Best_Genome.npy', best_genome_overall)
+
+    print("Generation: {}   "
+          "Min: {:4.2f}   "
+          "Mean: {:4.2f}   "
+          "Max: {:4.2f}   "
+          "Best: {:4.2f}   "
+          "Elapsed time:  {:4.2f}s ".format(gen,
+                                            np.min(rewards_training),
+                                            np.mean(rewards_training),
+                                            np.max(rewards_training),
+                                            best_reward_overall,
+                                            time.time() - t_start))
