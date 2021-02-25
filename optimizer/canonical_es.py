@@ -1,8 +1,9 @@
+from optimizer.i_optimizer import IOptimizer
 import numpy as np
 import math
 
 
-class OptimizerCanonicalEs:
+class OptimizerCanonicalEs(IOptimizer):
 
     def __init__(self, individual_size: int, offspring_population_size: int, parent_population_size: int, step_size):
         self.policy = np.zeros(individual_size)
