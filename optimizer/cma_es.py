@@ -1,10 +1,12 @@
+from optimizer.i_optimizer import IOptimizer
+
 from deap import base
 from deap import creator
 from deap import cma
 import numpy as np
 
 
-class OptimizerCmaEs:
+class OptimizerCmaEs(IOptimizer):
 
     def __init__(self, individual_size: int, population_size):
         self.individual_size = individual_size
