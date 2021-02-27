@@ -18,19 +18,18 @@ class EpisodeRunner:
         self.clipping_range_min = clipping_range_min
         self.clipping_range_max = clipping_range_max
 
-        self.v_mask, self.w_mask, self.t_mask = ContinuousTimeRNN.generate_masks(number_inputs=number_inputs,
-                                                                                 number_neurons=number_neurons,
-                                                                                 number_outputs=number_outputs,
-                                                                                 v_mask_param=v_mask_param,
-                                                                                 w_mask_param=w_mask_param,
-                                                                                 t_mask_param=t_mask_param)
-
-        np.save('v_mask.npy', self.v_mask)
-        np.save('w_mask.npy', self.w_mask)
-        np.save('t_mask.npy', self.t_mask)
+        self.brain_state = ContinuousTimeRNN.generate_brain_state(number_inputs=number_inputs,
+                                                                  number_neurons=number_neurons,
+                                                                  number_outputs=number_outputs,
+                                                                  v_mask_param=v_mask_param,
+                                                                  w_mask_param=w_mask_param,
+                                                                  t_mask_param=t_mask_param)
 
     def get_individual_size(self):
-        return ContinuousTimeRNN.get_individual_size(v_mask=self.v_mask, w_mask=self.w_mask, t_mask=self.t_mask)
+        return ContinuousTimeRNN.get_individual_size(self.brain_state)
+
+    def save_brain_state(self, path):
+        ContinuousTimeRNN.save_brain_state(path, self.brain_state)
 
     def eval_fitness(self, evaluation):
 
@@ -43,9 +42,7 @@ class EpisodeRunner:
         brain = ContinuousTimeRNN(individual=individual,
                                   delta_t=self.delta_t,
                                   number_neurons=self.number_neurons,
-                                  v_mask=self.v_mask,
-                                  w_mask=self.w_mask,
-                                  t_mask=self.t_mask,
+                                  brain_state=self.brain_state,
                                   clipping_range_min=self.clipping_range_min,
                                   clipping_range_max=self.clipping_range_max)
 

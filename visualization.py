@@ -1,20 +1,19 @@
 import gym
 import time
 import cv2
+import os
 from brains.continuous_time_rnn import *
 
-v_mask = np.load('v_mask.npy')
-w_mask = np.load('w_mask.npy')
-t_mask = np.load('t_mask.npy')
+directory = os.path.join('Simulation_Results', '2021-02-27_04-50-02')
 
-individual = np.load('Best_Genome.npy')
+brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
+
+individual = np.load('Best_Genome.npy', allow_pickle=True)
 
 brain = ContinuousTimeRNN(individual=individual,
                           delta_t=0.05,
                           number_neurons=200,
-                          v_mask=v_mask,
-                          w_mask=w_mask,
-                          t_mask=t_mask,
+                          brain_state=brain_state,
                           clipping_range_min=-1.0,
                           clipping_range_max=1.0)
 
@@ -39,10 +38,10 @@ for env_seed in range(number_validation_runs):
         #action = env.action_space.sample()
         ob, rew, done, info = env.step(np.argmax(action))
 
-        cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
-        cv2.waitKey(1)
+        #cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
+        #cv2.waitKey(1)
 
-        time.sleep(0.01)
+        #time.sleep(0.01)
 
         reward += rew
 
