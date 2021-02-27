@@ -5,25 +5,16 @@ from brains.continuous_time_rnn import *
 
 class EpisodeRunner:
 
-    def __init__(self, number_neurons, v_mask_param, w_mask_param, t_mask_param, delta_t, clipping_range_min,
-                 clipping_range_max, env_name):
+    def __init__(self, env_name: str, brain_configuration: dict):
 
         self.env_name = env_name
         env = gym.make(env_name)
-        number_inputs = flatdim(env.observation_space)
-        number_outputs = flatdim(env.action_space)
 
-        self.number_neurons = number_neurons
-        self.delta_t = delta_t
-        self.clipping_range_min = clipping_range_min
-        self.clipping_range_max = clipping_range_max
+        self.brain_configuration = brain_configuration
 
-        self.brain_state = ContinuousTimeRNN.generate_brain_state(number_inputs=number_inputs,
-                                                                  number_neurons=number_neurons,
-                                                                  number_outputs=number_outputs,
-                                                                  v_mask_param=v_mask_param,
-                                                                  w_mask_param=w_mask_param,
-                                                                  t_mask_param=t_mask_param)
+        self.brain_state = ContinuousTimeRNN.generate_brain_state(number_inputs=flatdim(env.observation_space),
+                                                                  number_outputs=flatdim(env.action_space),
+                                                                  configuration=brain_configuration)
 
     def get_individual_size(self):
         return ContinuousTimeRNN.get_individual_size(self.brain_state)
@@ -39,12 +30,8 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = ContinuousTimeRNN(individual=individual,
-                                  delta_t=self.delta_t,
-                                  number_neurons=self.number_neurons,
-                                  brain_state=self.brain_state,
-                                  clipping_range_min=self.clipping_range_min,
-                                  clipping_range_max=self.clipping_range_max)
+        brain = ContinuousTimeRNN(individual=individual, configuration=self.brain_configuration,
+                                  brain_state=self.brain_state)
 
         fitness_total = 0
 

@@ -1,16 +1,25 @@
+import attr
 import numpy as np
 from scipy import sparse
 
 
+@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class ContinuousTimeRNNCfg:
+    type: str
+    delta_t: float
+    number_neurons: int
+    v_mask_param: float = 1.0
+    w_mask_param: float = 1.0
+    t_mask_param: float = 1.0
+    clipping_range_min: float = 1.0
+    clipping_range_max: float = -1.0
+
+
 class ContinuousTimeRNN:
 
-    def __init__(self, individual, delta_t, number_neurons, brain_state, clipping_range_min,
-                 clipping_range_max):
+    def __init__(self, individual, configuration, brain_state):
 
-        self.delta_t = delta_t
-        self.number_neurons = number_neurons
-        self.clipping_range_min = clipping_range_min
-        self.clipping_range_max = clipping_range_max
+        self.config = ContinuousTimeRNNCfg(**configuration)
 
         v_mask, w_mask, t_mask = self.get_masks_from_brain_state(brain_state)
 
@@ -29,7 +38,7 @@ class ContinuousTimeRNN:
         self.T.data[:] = [element for element in individual[v_size + w_size:v_size + w_size + t_size]]
 
         # Set x0
-        self.x = np.zeros(self.number_neurons)
+        self.x = np.zeros(self.config.number_neurons)
 
     def step(self, u):
 
@@ -39,10 +48,10 @@ class ContinuousTimeRNN:
         dx_dt = self.W.dot(np.tanh(self.x)) + self.V.dot(u)
 
         # Euler forward discretization
-        self.x = self.x + self.delta_t * dx_dt
+        self.x = self.x + self.config.delta_t * dx_dt
 
         # Clip y to state boundaries
-        self.x = np.clip(self.x, self.clipping_range_min, self.clipping_range_max)
+        self.x = np.clip(self.x, self.config.clipping_range_min, self.config.clipping_range_max)
 
         # Calculate outputs
         y = np.tanh(self.T.dot(self.x))
@@ -52,15 +61,16 @@ class ContinuousTimeRNN:
         return y
 
     def reset(self):
-        self.x = np.zeros(self.number_neurons)
+        self.x = np.zeros(self.config.number_neurons)
 
     @classmethod
-    def generate_brain_state(cls, number_inputs, number_neurons, number_outputs, v_mask_param, w_mask_param,
-                             t_mask_param):
+    def generate_brain_state(cls, number_inputs: int, number_outputs: int, configuration: dict):
 
-        v_mask = cls._generate_mask(number_neurons, number_inputs, v_mask_param)
-        w_mask = cls._generate_mask(number_neurons, number_neurons, w_mask_param)
-        t_mask = cls._generate_mask(number_outputs, number_neurons, t_mask_param)
+        config = ContinuousTimeRNNCfg(**configuration)
+
+        v_mask = cls._generate_mask(config.number_neurons, number_inputs, config.v_mask_param)
+        w_mask = cls._generate_mask(config.number_neurons, config.number_neurons, config.w_mask_param)
+        t_mask = cls._generate_mask(number_outputs, config.number_neurons, config.t_mask_param)
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 

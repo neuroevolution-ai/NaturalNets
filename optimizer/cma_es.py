@@ -4,17 +4,27 @@ from deap import base
 from deap import creator
 from deap import cma
 import numpy as np
+import attr
+
+
+@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class OptimizerCmaEsCfg:
+    type: str
+    population_size: int
+    sigma: float = 1.0
 
 
 class OptimizerCmaEs(IOptimizer):
 
-    def __init__(self, individual_size: int, population_size):
+    def __init__(self, individual_size: int, configuration: dict):
+
         self.individual_size = individual_size
+        config = OptimizerCmaEsCfg(**configuration)
 
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, typecode='b', fitness=creator.FitnessMax)
 
-        strategy = cma.Strategy(centroid=[0.0] * individual_size, sigma=1.0, lambda_=population_size)
+        strategy = cma.Strategy(centroid=[0.0] * individual_size, sigma=config.sigma, lambda_=config.population_size)
 
         self.toolbox = base.Toolbox()
         self.toolbox.register("generate", strategy.generate, creator.Individual)
