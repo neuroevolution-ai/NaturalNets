@@ -1,13 +1,35 @@
 
 
-def write_results_to_textfile(path, log, individual_size, elapsed_time):
+def write_results_to_textfile(path, configuration, log, input_size, output_size, individual_size,
+                              free_parameter_usage, elapsed_time):
+
+    def walk_dict(node, callback_node, depth=0):
+        for key, item in node.items():
+            if isinstance(item, dict):
+                callback_node(key, item, depth, False)
+                walk_dict(item, callback_node, depth + 1)
+            else:
+                callback_node(key, item, depth, True)
 
     with open(path, 'w') as write_file:
 
-        write_file.write('\n')
-        write_file.write('Genome Size: {:d}\n'.format(individual_size))
-        # write_file.write('Inputs: {:d}\n'.format(input_size))
-        # write_file.write('Outputs: {:d}\n'.format(output_size))
+        def write(key, value, depth, is_leaf):
+            pad = ""
+            for x in range(depth):
+                pad = pad + "\t"
+            if is_leaf:
+                write_file.write(pad + key + ": " + str(value))
+            else:
+                write_file.write(pad + key)
+            write_file.write('\n')
+
+        walk_dict(configuration, write)
+
+        write_file.write("\n")
+        write_file.write("Genome Size: {:d}\n".format(individual_size))
+        write_file.write("Free Parameters: " + str(free_parameter_usage) + "\n")
+        write_file.write("Inputs: {:s}\n".format(str(input_size)))
+        write_file.write("Outputs: {:s}\n".format(str(output_size)))
         write_file.write('\n')
         dash = '-' * 80
         write_file.write(dash + '\n')

@@ -1,26 +1,37 @@
 import gym
+import numpy as np
 from gym.spaces import flatdim
-from brains.continuous_time_rnn import *
-
 
 class EpisodeRunner:
 
-    def __init__(self, env_name: str, brain_configuration: dict):
+    def __init__(self, env_name: str, brain_class, brain_configuration: dict):
 
         self.env_name = env_name
         env = gym.make(env_name)
+        self.input_size = flatdim(env.observation_space)
+        self.output_size = flatdim(env.action_space)
 
+        self.brain_class = brain_class
         self.brain_configuration = brain_configuration
 
-        self.brain_state = ContinuousTimeRNN.generate_brain_state(number_inputs=flatdim(env.observation_space),
-                                                                  number_outputs=flatdim(env.action_space),
-                                                                  configuration=brain_configuration)
+        self.brain_state = brain_class.generate_brain_state(number_inputs=self.input_size,
+                                                            number_outputs=self.output_size,
+                                                            configuration=brain_configuration)
 
     def get_individual_size(self):
-        return ContinuousTimeRNN.get_individual_size(self.brain_state)
+        return self.brain_class.get_individual_size(self.brain_state)
+
+    def get_input_size(self):
+        return self.input_size
+
+    def get_output_size(self):
+        return self.output_size
 
     def save_brain_state(self, path):
-        ContinuousTimeRNN.save_brain_state(path, self.brain_state)
+        self.brain_class.save_brain_state(path, self.brain_state)
+
+    def get_free_parameter_usage(self):
+        return self.brain_class.get_free_parameter_usage(self.brain_state)
 
     def eval_fitness(self, evaluation):
 
@@ -30,7 +41,7 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = ContinuousTimeRNN(individual=individual, configuration=self.brain_configuration,
+        brain = self.brain_class(individual=individual, configuration=self.brain_configuration,
                                   brain_state=self.brain_state)
 
         fitness_total = 0
@@ -45,6 +56,9 @@ class EpisodeRunner:
             done = False
 
             while not done:
+
+                #obs = cv2.resize(ob, (16, 16), interpolation=cv2.INTER_AREA)
+
                 action = brain.step(ob.flatten()/255.0)
                 ob, rew, done, info = env.step(np.argmax(action))
                 fitness_current += rew

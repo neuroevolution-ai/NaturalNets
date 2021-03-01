@@ -8,18 +8,18 @@ import attr
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerCmaEsCfg:
+class OptimizerCmaEsDeapCfg:
     type: str
     population_size: int
     sigma: float = 1.0
 
 
-class OptimizerCmaEs(IOptimizer):
+class OptimizerCmaEsDeap(IOptimizer):
 
     def __init__(self, individual_size: int, configuration: dict):
 
         self.individual_size = individual_size
-        config = OptimizerCmaEsCfg(**configuration)
+        config = OptimizerCmaEsDeapCfg(**configuration)
 
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, typecode='b', fitness=creator.FitnessMax)

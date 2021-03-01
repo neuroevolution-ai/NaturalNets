@@ -8,9 +8,12 @@ class ContinuousTimeRNNCfg:
     type: str
     delta_t: float
     number_neurons: int
-    v_mask_param: float = 1.0
-    w_mask_param: float = 1.0
-    t_mask_param: float = 1.0
+    v_mask: str = 'dense'
+    v_mask_density: float = 1.0
+    w_mask: str = 'dense'
+    w_mask_density: float = 1.0
+    t_mask: str = 'dense'
+    t_mask_density: float = 1.0
     clipping_range_min: float = 1.0
     clipping_range_max: float = -1.0
 
@@ -68,15 +71,15 @@ class ContinuousTimeRNN:
 
         config = ContinuousTimeRNNCfg(**configuration)
 
-        v_mask = cls._generate_mask(config.number_neurons, number_inputs, config.v_mask_param)
-        w_mask = cls._generate_mask(config.number_neurons, config.number_neurons, config.w_mask_param)
-        t_mask = cls._generate_mask(number_outputs, config.number_neurons, config.t_mask_param)
+        v_mask = cls._generate_mask(config.number_neurons, number_inputs, config.v_mask_density)
+        w_mask = cls._generate_mask(config.number_neurons, config.number_neurons, config.w_mask_density)
+        t_mask = cls._generate_mask(number_outputs, config.number_neurons, config.t_mask_density)
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 
     @staticmethod
-    def _generate_mask(n, m, mask_param):
-        return np.random.rand(n, m) < mask_param
+    def _generate_mask(n, m, mask_density):
+        return np.random.rand(n, m) < mask_density
 
     @classmethod
     def save_brain_state(cls, path, brain_state):
@@ -111,12 +114,21 @@ class ContinuousTimeRNN:
     @classmethod
     def get_individual_size(cls, brain_state):
 
+        individual_size = 0
+        free_parameter_usage = cls.get_free_parameter_usage(brain_state)
+
+        for free_parameters in free_parameter_usage.values():
+            individual_size += free_parameters
+
+        return individual_size
+
+    @classmethod
+    def get_free_parameter_usage(cls, brain_state):
+
         v_mask, w_mask, t_mask = cls.get_masks_from_brain_state(brain_state)
 
         free_parameters_v = np.count_nonzero(v_mask)
         free_parameters_w = np.count_nonzero(w_mask)
         free_parameters_t = np.count_nonzero(t_mask)
 
-        print("Free parameters: V: {}, W: {}, T: {}".format(free_parameters_v, free_parameters_w, free_parameters_t))
-
-        return free_parameters_v + free_parameters_w + free_parameters_t
+        return {'V': free_parameters_v, 'W': free_parameters_w, 'T': + free_parameters_t}

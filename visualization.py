@@ -1,21 +1,22 @@
 import gym
+import json
 import time
 import cv2
 import os
 from brains.continuous_time_rnn import *
 
-directory = os.path.join('Simulation_Results', '2021-02-27_04-50-02')
+directory = os.path.join('Simulation_Results', '2021-03-01_16-06-55')
+
+# Load configuration file
+with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
+    configuration = json.load(read_file)
 
 brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
 
 individual = np.load('Best_Genome.npy', allow_pickle=True)
 
-brain = ContinuousTimeRNN(individual=individual,
-                          delta_t=0.05,
-                          number_neurons=200,
-                          brain_state=brain_state,
-                          clipping_range_min=-1.0,
-                          clipping_range_max=1.0)
+brain = ContinuousTimeRNN(individual=individual, configuration=configuration['brain'],
+                                  brain_state=brain_state)
 
 
 reward_sum = 0
@@ -35,13 +36,16 @@ for env_seed in range(number_validation_runs):
 
     while not done:
         action = brain.step(ob.flatten() / 255.0)
-        #action = env.action_space.sample()
-        ob, rew, done, info = env.step(np.argmax(action))
+        #ob, rew, done, info = env.step(np.argmax(action))
 
-        #cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
-        #cv2.waitKey(1)
+        ob, rew, done, info = env.step(env.action_space.sample())
 
-        #time.sleep(0.01)
+        obs = cv2.resize(ob, (20, 20), interpolation=cv2.INTER_AREA)
+
+        cv2.imshow("ProcGen Agent", cv2.resize(obs, (500, 500)))
+        cv2.waitKey(1)
+
+        time.sleep(0.01)
 
         reward += rew
 
