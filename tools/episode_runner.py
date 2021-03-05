@@ -7,6 +7,7 @@ from environments.collect_points import *
 
 class EpisodeRunner:
 
+<<<<<<< HEAD
     def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
 
         self.input_size = 22
