@@ -7,8 +7,11 @@ from environments.collect_points import *
 
 class EpisodeRunner:
 
-<<<<<<< HEAD
     def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
+
+        env = CollectPointsEnv(0)
+        self.input_size = env.get_number_inputs()
+        self.output_size = env.get_number_outputs()
 
         self.input_size = 22
         self.output_size = 2
