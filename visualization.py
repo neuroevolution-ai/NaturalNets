@@ -5,7 +5,7 @@ import cv2
 import os
 from brains.continuous_time_rnn import *
 
-directory = os.path.join('Simulation_Results', '2021-03-01_16-06-55')
+directory = os.path.join('Simulation_Results', '2021-03-06_07-11-49')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -13,7 +13,7 @@ with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
 
 brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
 
-individual = np.load('Best_Genome.npy', allow_pickle=True)
+individual = np.load(os.path.join(directory, 'Best_Genome.npy'), allow_pickle=True)
 
 brain = ContinuousTimeRNN(individual=individual, configuration=configuration['brain'],
                                   brain_state=brain_state)
@@ -40,9 +40,9 @@ for env_seed in range(number_validation_runs):
 
         ob, rew, done, info = env.step(env.action_space.sample())
 
-        obs = cv2.resize(ob, (20, 20), interpolation=cv2.INTER_AREA)
+        #obs = cv2.resize(ob, (20, 20), interpolation=cv2.INTER_AREA)
 
-        cv2.imshow("ProcGen Agent", cv2.resize(obs, (500, 500)))
+        cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
         cv2.waitKey(1)
 
         time.sleep(0.01)
@@ -50,6 +50,7 @@ for env_seed in range(number_validation_runs):
         reward += rew
 
     reward_sum += reward
+    print(reward)
 
     if reward > 0:
         num_levels_solved += 1
