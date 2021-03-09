@@ -48,7 +48,7 @@ class EpisodeRunner:
 
         for i in range(number_of_rounds):
 
-            env = gym.make(self.env_name, num_levels=1, start_level=env_seed+i, distribution_mode="memory")
+            env = gym.make(self.env_name, num_levels=1, start_level=env_seed+i, distribution_mode="hard")
             ob = env.reset()
             brain.reset()
 
