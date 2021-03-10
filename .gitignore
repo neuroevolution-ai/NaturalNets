@@ -3,6 +3,7 @@ __pycache__/
 .idea/
 .pytest_cache/
 .mypy_cache/
+venv/
 
 configurations/default.json
 configurations/temp.json
