@@ -5,6 +5,7 @@ from tools.episode_runner import *
 import multiprocessing
 import random
 from optimizer.cma_es_deap import *
+from optimizer.cma_es_pycma import *
 from optimizer.canonical_es import *
 from brains.continuous_time_rnn import *
 from tools.write_results import write_results_to_textfile
@@ -23,13 +24,13 @@ class TrainingCfg:
 
 
 # TODO: Do this registration via class decorators
-registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'Canonical-ES': OptimizerCanonicalEs}
+registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
 registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
 
 pool = multiprocessing.Pool()
 
 # Load configuration file
-with open("configurations/CMA_ES_Deap_CTRNN_Sparse.json", "r") as read_file:
+with open("configurations/CMA_ES_Pycma_CTRNN_Sparse.json", "r") as read_file:
     configuration = json.load(read_file)
 
 config = TrainingCfg(**configuration)
