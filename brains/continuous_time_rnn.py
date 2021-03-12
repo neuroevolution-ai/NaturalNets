@@ -1,3 +1,5 @@
+from brains.i_brain import IBrain
+
 import attr
 import numpy as np
 from scipy import sparse
@@ -18,7 +20,7 @@ class ContinuousTimeRNNCfg:
     clipping_range_max: float = -1.0
 
 
-class ContinuousTimeRNN:
+class ContinuousTimeRNN(IBrain):
 
     def __init__(self, individual, configuration, brain_state):
 

@@ -23,6 +23,8 @@ class TrainingCfg:
     optimizer: dict
 
 
+configuration_file = "CMA_ES_Pycma_CTRNN_Sparse.json"
+
 # TODO: Do this registration via class decorators
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
 registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
@@ -30,7 +32,7 @@ registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
 pool = multiprocessing.Pool()
 
 # Load configuration file
-with open("configurations/CMA_ES_Pycma_CTRNN_Sparse.json", "r") as read_file:
+with open(os.path.join('configurations', configuration_file), "r") as read_file:
     configuration = json.load(read_file)
 
 config = TrainingCfg(**configuration)
