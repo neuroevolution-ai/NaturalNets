@@ -9,19 +9,19 @@
         "ffnn_config": {
           "type": "FeedForward",
           "use_bias": true,
-          "hidden_layers": [16, 32, 16, 8],
+          "hidden_layers": [64, 128, 32],
           "neuron_activation": "tanh",
           "neuron_activation_output": "linear"
         },
         "ctrnn_config": {
           "type": "CTRNN",
           "delta_t": 0.05,
-          "number_neurons": 200,
+          "number_neurons": 500,
           "v_mask": "random",
-          "v_mask_density": 0.0005,
+          "v_mask_density": 0.001,
           "w_mask": "dense",
           "t_mask": "random",
-          "t_mask_density": 0.1,
+          "t_mask_density": 0.05,
           "clipping_range_max": 1.0,
           "clipping_range_min": -1.0
         }
