@@ -24,7 +24,7 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_FFNN_Sparse.json"
+configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
 
 # TODO: Do this registration via class decorators
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
