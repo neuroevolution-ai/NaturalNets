@@ -94,7 +94,7 @@ class FeedForwardNN(IBrain):
         return x
 
     @classmethod
-    def generate_brain_state(cls, number_inputs: int, number_outputs: int, configuration: dict):
+    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
         return None
 
     @classmethod
