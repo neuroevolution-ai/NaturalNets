@@ -9,6 +9,7 @@ from optimizer.cma_es_pycma import *
 from optimizer.canonical_es import *
 from brains.feed_forward_nn import *
 from brains.continuous_time_rnn import *
+from brains.indirect_encoded_ctrnn import *
 from tools.write_results import write_results_to_textfile
 from datetime import datetime
 
@@ -24,11 +25,11 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
+configuration_file = "CMA_ES_Deap_Indirect_CTRNN.json"
 
 # TODO: Do this registration via class decorators
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
-registered_brain_classes = {'FFNN': FeedForwardNN, 'CTRNN': ContinuousTimeRNN}
+registered_brain_classes = {'FFNN': FeedForwardNN, 'CTRNN': ContinuousTimeRNN, 'Indirect-CTRNN': IndirectEncodedCtrnn}
 
 pool = multiprocessing.Pool()
 
