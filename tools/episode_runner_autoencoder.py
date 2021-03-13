@@ -37,8 +37,8 @@ class EpisodeRunnerAutoEncoder:
         self.brain_class = brain_class
         self.brain_configuration = brain_configuration
 
-        self.brain_state = brain_class.generate_brain_state(number_inputs=self.input_size,
-                                                            number_outputs=self.output_size,
+        self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
+                                                            output_size=self.output_size,
                                                             configuration=brain_configuration)
 
     def preprocess_ob(self, ob):
