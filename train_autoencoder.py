@@ -2,14 +2,12 @@ import time
 import os
 import json
 from tools.episode_runner import *
+from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
 import multiprocessing
 import random
 from optimizer.cma_es_deap import *
-from optimizer.cma_es_pycma import *
 from optimizer.canonical_es import *
-from brains.feed_forward_nn import *
 from brains.continuous_time_rnn import *
-from brains.indirect_encoded_ctrnn import *
 from tools.write_results import write_results_to_textfile
 from datetime import datetime
 
@@ -25,16 +23,14 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_Indirect_CTRNN.json"
-
 # TODO: Do this registration via class decorators
-registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
-registered_brain_classes = {'FFNN': FeedForwardNN, 'CTRNN': ContinuousTimeRNN, 'Indirect-CTRNN': IndirectEncodedCtrnn}
+registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'Canonical-ES': OptimizerCanonicalEs}
+registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
 
-pool = multiprocessing.Pool()
+pool = multiprocessing.Pool(processes=8)
 
 # Load configuration file
-with open(os.path.join('configurations', configuration_file), "r") as read_file:
+with open("configurations/CMA_ES_Deap_CTRNN_Sparse.json", "r") as read_file:
     configuration = json.load(read_file)
 
 config = TrainingCfg(**configuration)
@@ -46,7 +42,8 @@ else:
     raise RuntimeError("No valid brain")
 
 # Initialize episode runner
-ep_runner = EpisodeRunner(env_name=config.environment, brain_class=brain_class, brain_configuration=config.brain)
+ep_runner = EpisodeRunnerAutoEncoder(env_name=config.environment, brain_class=brain_class,
+                                     brain_configuration=config.brain, use_gpu=False)
 
 individual_size = ep_runner.get_individual_size()
 
@@ -84,8 +81,9 @@ for generation in range(config.number_generations):
     for genome in genomes:
         evaluations.append([genome, env_seed, config.number_rounds])
 
-    rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
-
+    # rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
+    # rewards_training = map(ep_runner.eval_fitness, evaluations)
+    rewards_training = ep_runner.eval_fitness(evaluations)
     # Tell optimizer new rewards
     opt.tell(rewards_training)
 

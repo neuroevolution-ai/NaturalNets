@@ -1,3 +1,5 @@
+from brains.i_brain import IBrain
+
 import attr
 import numpy as np
 from scipy import sparse
@@ -18,9 +20,10 @@ class ContinuousTimeRNNCfg:
     clipping_range_max: float = -1.0
 
 
-class ContinuousTimeRNN:
+class ContinuousTimeRNN(IBrain):
 
-    def __init__(self, individual, configuration, brain_state):
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
 
         self.config = ContinuousTimeRNNCfg(**configuration)
 
@@ -67,13 +70,13 @@ class ContinuousTimeRNN:
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod
-    def generate_brain_state(cls, number_inputs: int, number_outputs: int, configuration: dict):
+    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
 
         config = ContinuousTimeRNNCfg(**configuration)
 
-        v_mask = cls._generate_mask(config.v_mask, config.number_neurons, number_inputs, config.v_mask_density)
+        v_mask = cls._generate_mask(config.v_mask, config.number_neurons, input_size, config.v_mask_density)
         w_mask = cls._generate_mask(config.w_mask, config.number_neurons, config.number_neurons, config.w_mask_density, True)
-        t_mask = cls._generate_mask(config.t_mask, number_outputs, config.number_neurons, config.t_mask_density)
+        t_mask = cls._generate_mask(config.t_mask, output_size, config.number_neurons, config.t_mask_density)
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 
@@ -125,18 +128,7 @@ class ContinuousTimeRNN:
         return {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
     @classmethod
-    def get_individual_size(cls, brain_state):
-
-        individual_size = 0
-        free_parameter_usage = cls.get_free_parameter_usage(brain_state)
-
-        for free_parameters in free_parameter_usage.values():
-            individual_size += free_parameters
-
-        return individual_size
-
-    @classmethod
-    def get_free_parameter_usage(cls, brain_state):
+    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
 
         v_mask, w_mask, t_mask = cls.get_masks_from_brain_state(brain_state)
 
@@ -145,3 +137,14 @@ class ContinuousTimeRNN:
         free_parameters_t = np.count_nonzero(t_mask)
 
         return {'V': free_parameters_v, 'W': free_parameters_w, 'T': + free_parameters_t}
+
+    @classmethod
+    def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+
+        individual_size = 0
+        free_parameter_usage = cls.get_free_parameter_usage(input_size, output_size, configuration, brain_state)
+
+        for free_parameters in free_parameter_usage.values():
+            individual_size += free_parameters
+
+        return individual_size

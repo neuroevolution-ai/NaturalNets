@@ -2,6 +2,7 @@ import gym
 import numpy as np
 from gym.spaces import flatdim
 
+
 class EpisodeRunner:
 
     def __init__(self, env_name: str, brain_class, brain_configuration: dict):
@@ -14,12 +15,13 @@ class EpisodeRunner:
         self.brain_class = brain_class
         self.brain_configuration = brain_configuration
 
-        self.brain_state = brain_class.generate_brain_state(number_inputs=self.input_size,
-                                                            number_outputs=self.output_size,
+        self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
+                                                            output_size=self.output_size,
                                                             configuration=brain_configuration)
 
     def get_individual_size(self):
-        return self.brain_class.get_individual_size(self.brain_state)
+        return self.brain_class.get_individual_size(self.input_size, self.output_size, self.brain_configuration,
+                                                    self.brain_state)
 
     def get_input_size(self):
         return self.input_size
@@ -31,7 +33,8 @@ class EpisodeRunner:
         self.brain_class.save_brain_state(path, self.brain_state)
 
     def get_free_parameter_usage(self):
-        return self.brain_class.get_free_parameter_usage(self.brain_state)
+        return self.brain_class.get_free_parameter_usage(self.input_size, self.output_size, self.brain_configuration,
+                                                    self.brain_state)
 
     def eval_fitness(self, evaluation):
 
@@ -41,8 +44,11 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = self.brain_class(individual=individual, configuration=self.brain_configuration,
-                                  brain_state=self.brain_state)
+        brain = self.brain_class(input_size=self.input_size,
+                                 output_size=self.output_size,
+                                 individual=individual,
+                                 configuration=self.brain_configuration,
+                                 brain_state=self.brain_state)
 
         fitness_total = 0
 

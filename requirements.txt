@@ -1,0 +1,6 @@
+attrs
+deap
+numpy
+gym
+scipy
+torch
