@@ -5,7 +5,7 @@ import cv2
 import os
 from brains.continuous_time_rnn import *
 
-directory = os.path.join('Simulation_Results', '2021-03-06_07-11-49')
+directory = os.path.join('Simulation_Results', '2021-03-07_05-12-15')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -26,7 +26,7 @@ num_levels_solved = 0
 
 for env_seed in range(number_validation_runs):
 
-    env = gym.make('procgen:procgen-heist-v0', num_levels=1, start_level=env_seed, distribution_mode="memory")
+    env = gym.make(configuration['environment'], num_levels=1, start_level=env_seed, distribution_mode="easy")
     ob = env.reset()
 
     reward = 0
@@ -36,21 +36,18 @@ for env_seed in range(number_validation_runs):
 
     while not done:
         action = brain.step(ob.flatten() / 255.0)
-        #ob, rew, done, info = env.step(np.argmax(action))
-
-        ob, rew, done, info = env.step(env.action_space.sample())
+        ob, rew, done, info = env.step(np.argmax(action))
 
         #obs = cv2.resize(ob, (20, 20), interpolation=cv2.INTER_AREA)
 
-        cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
-        cv2.waitKey(1)
+        #cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
+        #cv2.waitKey(1)
 
-        time.sleep(0.01)
+        #time.sleep(0.01)
 
         reward += rew
 
     reward_sum += reward
-    print(reward)
 
     if reward > 0:
         num_levels_solved += 1
