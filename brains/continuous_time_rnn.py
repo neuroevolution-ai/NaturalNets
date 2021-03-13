@@ -70,13 +70,13 @@ class ContinuousTimeRNN(IBrain):
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod
-    def generate_brain_state(cls, number_inputs: int, number_outputs: int, configuration: dict):
+    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
 
         config = ContinuousTimeRNNCfg(**configuration)
 
-        v_mask = cls._generate_mask(config.v_mask, config.number_neurons, number_inputs, config.v_mask_density)
+        v_mask = cls._generate_mask(config.v_mask, config.number_neurons, input_size, config.v_mask_density)
         w_mask = cls._generate_mask(config.w_mask, config.number_neurons, config.number_neurons, config.w_mask_density, True)
-        t_mask = cls._generate_mask(config.t_mask, number_outputs, config.number_neurons, config.t_mask_density)
+        t_mask = cls._generate_mask(config.t_mask, output_size, config.number_neurons, config.t_mask_density)
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 
