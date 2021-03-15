@@ -31,17 +31,19 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
         write_file.write("Inputs: {:s}\n".format(str(input_size)))
         write_file.write("Outputs: {:s}\n".format(str(output_size)))
         write_file.write('\n')
-        dash = '-' * 80
+        dash = '-' * 90
         write_file.write(dash + '\n')
         write_file.write(
-            '{:<8s}{:<16s}{:<16s}{:<16s}{:<16s}\n'.format('gen', 'min', 'mean', 'max', 'elapsed time (s)'))
+            '{:<8s}{:<14s}{:<14s}{:<14s}{:<14s}{:<14s}\n'.format('gen', 'min',
+                                                                 'mean', 'max', 'best', 'elapsed time (s)'))
         write_file.write(dash + '\n')
 
         # Write data for each episode
         for line in log:
             write_file.write(
-                '{:<8d}{:<16.2f}{:<16.2f}{:<16.2f}{:<16.2f}\n'.format(line['gen'], line['min'], line['mean'],
-                                                                      line['max'], line['elapsed_time']))
+                '{:<8d}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}\n'.format(line['gen'], line['min'], line['mean'],
+                                                                               line['max'], line['best'],
+                                                                               line['elapsed_time']))
 
         # Write elapsed time
         write_file.write("\nElapsed time for training: %.2f seconds" % elapsed_time)

@@ -16,20 +16,24 @@ from datetime import datetime
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class TrainingCfg:
-    environment: str
     number_generations: int
     number_validation_runs: int
     number_rounds: int
     maximum_env_seed: int
+    environment: dict
     brain: dict
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_Indirect_CTRNN.json"
+configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
 
 # TODO: Do this registration via class decorators
-registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'CMA-ES-Pycma': OptimizerCmaEsPycma, 'Canonical-ES': OptimizerCanonicalEs}
-registered_brain_classes = {'FFNN': FeedForwardNN, 'CTRNN': ContinuousTimeRNN, 'Indirect-CTRNN': IndirectEncodedCtrnn}
+registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
+                                'CMA-ES-Pycma': OptimizerCmaEsPycma,
+                                'Canonical-ES': OptimizerCanonicalEs}
+registered_brain_classes = {'FFNN': FeedForwardNN,
+                            'CTRNN': ContinuousTimeRNN,
+                            'Indirect-CTRNN': IndirectEncodedCtrnn}
 
 pool = multiprocessing.Pool()
 
@@ -46,7 +50,9 @@ else:
     raise RuntimeError("No valid brain")
 
 # Initialize episode runner
-ep_runner = EpisodeRunner(env_name=config.environment, brain_class=brain_class, brain_configuration=config.brain)
+ep_runner = EpisodeRunner(env_configuration=config.environment,
+                          brain_class=brain_class,
+                          brain_configuration=config.brain)
 
 individual_size = ep_runner.get_individual_size()
 
@@ -124,6 +130,7 @@ for generation in range(config.number_generations):
     log_line['min'] = np.min(rewards_training)
     log_line['mean'] = np.mean(rewards_training)
     log_line['max'] = np.max(rewards_training)
+    log_line['best'] = best_reward_overall
     log_line['elapsed_time'] = elapsed_time_current_generation
     log.append(log_line)
 
