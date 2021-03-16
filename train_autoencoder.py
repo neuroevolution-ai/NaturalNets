@@ -43,7 +43,7 @@ else:
 
 # Initialize episode runner
 ep_runner = EpisodeRunnerAutoEncoder(environment=config.environment, brain_class=brain_class,
-                                     brain_configuration=config.brain, use_gpu=False)
+                                     brain_configuration=config.brain, use_gpu=True)
 
 individual_size = ep_runner.get_individual_size()
 

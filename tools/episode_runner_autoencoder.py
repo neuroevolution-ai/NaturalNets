@@ -1,11 +1,11 @@
-import gym
-from procgen import ProcgenGym3Env
-import gym3
-import time
-import numpy as np
-from gym.spaces import flatdim
-import torch
 import multiprocessing as mp
+import time
+
+import gym
+import numpy as np
+import torch
+from gym.spaces import flatdim
+from procgen import ProcgenGym3Env
 
 from autoencoder.conv_unpool import ConvUnpoolAutoencoder
 
@@ -17,12 +17,14 @@ from autoencoder.conv_unpool import ConvUnpoolAutoencoder
 
 class EpisodeRunnerAutoEncoder:
 
-    def __init__(self, environment: dict, brain_class, brain_configuration: dict, use_gpu: bool = False):
+    def __init__(self, environment: dict, brain_class, brain_configuration: dict, use_gpu: bool = True):
 
-        if use_gpu:
+        if use_gpu and torch.cuda.is_available():
             self.device = torch.device('cuda')
             self.map_location = "cuda:0"
         else:
+            if use_gpu:
+                print("Warning: use_gpu set to True but CUDA device not found, continuing with CPU")
             self.device = torch.device('cpu')
             self.map_location = self.device
 
@@ -57,7 +59,7 @@ class EpisodeRunnerAutoEncoder:
             obs = self.preprocess_ob(ob)
             obs = obs.to(self.device)
             obs = self.autoencoder.encode(obs)
-            return obs
+            return obs.numpy()
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(input_size=self.input_size, output_size=self.output_size,
@@ -104,9 +106,10 @@ class EpisodeRunnerAutoEncoder:
         fitness_total = 0
         times_episodes = []
         for i in range(number_of_rounds):
+            # num_threads=8 can be set here, don't know how it effects performance yet
             env = ProcgenGym3Env(num=len(evaluations), env_name="heist", use_backgrounds=False,
                                  distribution_mode=self.distribution_mode, num_levels=1, start_level=env_seed + i)
-                                 #num_threads=None)
+
             rew, ob, first = env.observe()
             ob = self.transform_ob(ob["rgb"])
 
