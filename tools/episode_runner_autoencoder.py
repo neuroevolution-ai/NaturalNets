@@ -60,7 +60,8 @@ class EpisodeRunnerAutoEncoder:
             obs = self.preprocess_ob(ob)
             obs = obs.to(self.device)
             obs = self.autoencoder.encode(obs)
-            return obs.numpy()
+            # Move back to memory first, this is required when converting Tensor that is on CUDA device
+            return obs.cpu().numpy()
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(input_size=self.input_size, output_size=self.output_size,
