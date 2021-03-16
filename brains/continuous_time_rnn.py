@@ -142,7 +142,7 @@ class ContinuousTimeRNN(IBrain):
     def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
 
         individual_size = 0
-        free_parameter_usage = cls.get_free_parameter_usage(brain_state)
+        free_parameter_usage = cls.get_free_parameter_usage(input_size, output_size, configuration, brain_state)
 
         for free_parameters in free_parameter_usage.values():
             individual_size += free_parameters
