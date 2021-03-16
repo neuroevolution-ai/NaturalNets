@@ -1,3 +1,4 @@
+import copy
 import multiprocessing as mp
 import os
 import time
@@ -48,20 +49,15 @@ class EpisodeRunnerAutoEncoder:
                                                             configuration=brain_configuration)
 
     def preprocess_ob(self, ob):
-        with torch.no_grad():
-            obs = torch.from_numpy(ob)
-            obs = obs.permute(0, 3, 1, 2).to(torch.float32)
-            obs = obs / 255.0
-
-            return obs
+        return np.transpose(ob, (0, 3, 1, 2)) / 255.0
 
     def transform_ob(self, ob):
         with torch.no_grad():
-            obs = self.preprocess_ob(ob)
-            obs = obs.to(self.device)
-            obs = self.autoencoder.encode(obs)
+            ob = self.preprocess_ob(ob)
+            ob = ob.to(self.device)
+            ob = self.autoencoder.encode(ob)
             # Move back to memory first, this is required when converting Tensor that is on CUDA device
-            return obs.cpu().numpy()
+            return ob
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(input_size=self.input_size, output_size=self.output_size,
@@ -113,9 +109,10 @@ class EpisodeRunnerAutoEncoder:
                                  distribution_mode=self.distribution_mode, num_levels=1, start_level=env_seed + i)
 
             rew, ob, first = env.observe()
-            ob = self.transform_ob(ob["rgb"])
+            observations = copy.deepcopy(ob["rgb"])
+            ob = self.transform_ob(observations)
 
-            pool = mp.Pool(processes=os.cpu_count())
+            pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
 
             fitness_current = [0] * len(evaluations)
 
