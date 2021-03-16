@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import os
 import time
 
 import gym
@@ -113,7 +114,7 @@ class EpisodeRunnerAutoEncoder:
             rew, ob, first = env.observe()
             ob = self.transform_ob(ob["rgb"])
 
-            pool = mp.Pool(processes=8)
+            pool = mp.Pool(processes=os.cpu_count())
 
             fitness_current = [0] * len(evaluations)
 
