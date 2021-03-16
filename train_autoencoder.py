@@ -1,20 +1,22 @@
-import time
-import os
 import json
-from tools.episode_runner import *
-from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
-import multiprocessing
+import os
 import random
-from optimizer.cma_es_deap import *
-from optimizer.canonical_es import *
-from brains.continuous_time_rnn import *
-from tools.write_results import write_results_to_textfile
+import time
 from datetime import datetime
+import attr
+import numpy as np
+import math
+
+from brains.continuous_time_rnn import ContinuousTimeRNN
+from optimizer.canonical_es import OptimizerCanonicalEs
+from optimizer.cma_es_deap import OptimizerCmaEsDeap
+from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
+from tools.write_results import write_results_to_textfile
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class TrainingCfg:
-    environment: str
+    environment: dict
     number_generations: int
     number_validation_runs: int
     number_rounds: int
@@ -27,10 +29,8 @@ class TrainingCfg:
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'Canonical-ES': OptimizerCanonicalEs}
 registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
 
-pool = multiprocessing.Pool(processes=8)
-
 # Load configuration file
-with open("configurations/CMA_ES_Deap_CTRNN_Sparse.json", "r") as read_file:
+with open("configurations/CMA_ES_Deap_CTRNN_Sparse_AutoEncoder.json", "r") as read_file:
     configuration = json.load(read_file)
 
 config = TrainingCfg(**configuration)
@@ -42,7 +42,7 @@ else:
     raise RuntimeError("No valid brain")
 
 # Initialize episode runner
-ep_runner = EpisodeRunnerAutoEncoder(env_name=config.environment, brain_class=brain_class,
+ep_runner = EpisodeRunnerAutoEncoder(environment=config.environment, brain_class=brain_class,
                                      brain_configuration=config.brain, use_gpu=False)
 
 individual_size = ep_runner.get_individual_size()
@@ -65,6 +65,8 @@ start_date_training = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 log = []
 
+print("Starting main thread on PID: {}".format(os.getpid()))
+
 # Run evolutionary training for given number of generations
 for generation in range(config.number_generations):
 
@@ -83,7 +85,12 @@ for generation in range(config.number_generations):
 
     # rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
     # rewards_training = map(ep_runner.eval_fitness, evaluations)
-    rewards_training = ep_runner.eval_fitness(evaluations)
+    episode_steps: int = config.environment["episode_steps"]
+    break_all_episodes: bool = config.environment["break_all_episodes"]
+
+    rewards_training, times_episodes = ep_runner.eval_fitness(evaluations, episode_steps=episode_steps,
+                                                              break_all_episodes=break_all_episodes)
+
     # Tell optimizer new rewards
     opt.tell(rewards_training)
 
@@ -94,7 +101,8 @@ for generation in range(config.number_generations):
     for i in range(config.number_validation_runs):
         evaluations.append([best_genome_current_generation, i, 1])
 
-    rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
+    rewards_validation, _ = ep_runner.eval_fitness(evaluations, episode_steps=episode_steps,
+                                                   break_all_episodes=break_all_episodes)
 
     best_reward_current_generation = np.mean(rewards_validation)
     if best_reward_current_generation > best_reward_overall:
@@ -109,12 +117,14 @@ for generation in range(config.number_generations):
           "Mean: {:4.2f}   "
           "Max: {:4.2f}   "
           "Best: {:4.2f}   "
-          "Elapsed time:  {:4.2f}s ".format(generation,
-                                            np.min(rewards_training),
-                                            np.mean(rewards_training),
-                                            np.max(rewards_training),
-                                            best_reward_overall,
-                                            elapsed_time_current_generation))
+          "Elapsed time:  {:4.2f}s "
+          "Mean time per episode: {:4.2f}s".format(generation,
+                                                   np.min(rewards_training),
+                                                   np.mean(rewards_training),
+                                                   np.max(rewards_training),
+                                                   best_reward_overall,
+                                                   elapsed_time_current_generation,
+                                                   np.mean(times_episodes)))
 
     # Write current generation to log
     log_line = dict()
