@@ -51,13 +51,16 @@ class EpisodeRunnerAutoEncoder:
     def preprocess_ob(self, ob):
         return np.transpose(ob, (0, 3, 1, 2)) / 255.0
 
-    def transform_ob(self, ob):
+    def transform_ob(self, ob: np.ndarray) -> np.ndarray:
+        ob = self.preprocess_ob(ob)
         with torch.no_grad():
-            ob = self.preprocess_ob(ob)
-            ob = ob.to(self.device)
+            ob = torch.from_numpy(ob).float().to(self.device)
             ob = self.autoencoder.encode(ob)
             # Move back to memory first, this is required when converting Tensor that is on CUDA device
-            return ob
+            ob_cpu = ob.cpu().numpy()
+            del ob
+            torch.cuda.empty_cache()
+            return ob_cpu
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(input_size=self.input_size, output_size=self.output_size,
@@ -109,7 +112,7 @@ class EpisodeRunnerAutoEncoder:
                                  distribution_mode=self.distribution_mode, num_levels=1, start_level=env_seed + i)
 
             rew, ob, first = env.observe()
-            observations = copy.deepcopy(ob["rgb"])
+            observations = ob["rgb"]
             ob = self.transform_ob(observations)
 
             pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
@@ -129,7 +132,8 @@ class EpisodeRunnerAutoEncoder:
                     print("break_episodes: One or more environments are done, stopping all episodes")
                     break
 
-                ob = self.transform_ob(ob["rgb"])
+                observations = ob["rgb"]
+                ob = self.transform_ob(observations)
                 fitness_current += rew
 
             times_episodes.append(time.time() - time_s)
