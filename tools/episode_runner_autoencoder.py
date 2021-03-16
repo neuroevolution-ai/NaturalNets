@@ -1,12 +1,14 @@
 import gym
 from procgen import ProcgenGym3Env
 import gym3
+import time
 import numpy as np
 from gym.spaces import flatdim
 import torch
 import multiprocessing as mp
 
 from autoencoder.conv_unpool import ConvUnpoolAutoencoder
+
 
 # print("Setting number of Torch threads and interop threads to 1.")
 # torch.set_num_threads(1)
@@ -15,7 +17,7 @@ from autoencoder.conv_unpool import ConvUnpoolAutoencoder
 
 class EpisodeRunnerAutoEncoder:
 
-    def __init__(self, env_name: str, brain_class, brain_configuration: dict, use_gpu=False):
+    def __init__(self, environment: dict, brain_class, brain_configuration: dict, use_gpu: bool = False):
 
         if use_gpu:
             self.device = torch.device('cuda')
@@ -29,8 +31,9 @@ class EpisodeRunnerAutoEncoder:
         self.autoencoder.to(self.device)
         self.autoencoder.eval()
 
-        self.env_name = env_name
-        env = gym.make(env_name)
+        self.env_name = environment["name"]
+        self.distribution_mode = environment["distribution_mode"]
+        env = gym.make(self.env_name, distribution_mode=self.distribution_mode)
         self.input_size = 32 * 6 * 6
         self.output_size = flatdim(env.action_space)
 
@@ -57,7 +60,9 @@ class EpisodeRunnerAutoEncoder:
             return obs
 
     def get_individual_size(self):
-        return self.brain_class.get_individual_size(self.brain_state)
+        return self.brain_class.get_individual_size(input_size=self.input_size, output_size=self.output_size,
+                                                    configuration=self.brain_configuration,
+                                                    brain_state=self.brain_state)
 
     def get_input_size(self):
         return self.input_size
@@ -69,37 +74,48 @@ class EpisodeRunnerAutoEncoder:
         self.brain_class.save_brain_state(path, self.brain_state)
 
     def get_free_parameter_usage(self):
-        return self.brain_class.get_free_parameter_usage(self.brain_state)
+        return self.brain_class.get_free_parameter_usage(input_size=self.input_size, output_size=self.output_size,
+                                                         configuration=self.brain_configuration,
+                                                         brain_state=self.brain_state)
 
     def get_actions(self, brain, ob):
         return brain.step(ob.flatten())
 
-    def eval_fitness(self, evaluation):
+    def eval_fitness(self, evaluations, episode_steps: int = 500, break_all_episodes: bool = False):
+        """
 
+        :param evaluations: List of 3-tuples (individual, env_seed, number_of_rounds)
+        :param episode_steps: Number of steps per episode
+        :param break_all_episodes: When one episode is done, break all episodes
+        :return:
+        """
         # Extract parameters, this list of lists is necessary since pool.map only accepts a single argument
         # See here: http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
-        # individual = evaluation[0]
-        env_seed = evaluation[0][1]
-        number_of_rounds = evaluation[0][2]
+        # individual = evaluations[0]
+        env_seed = evaluations[0][1]
+        number_of_rounds = evaluations[0][2]
 
         brains = []
-        for single_evaluation in evaluation:
-            brains.append(self.brain_class(individual=single_evaluation[0], configuration=self.brain_configuration,
+        for single_evaluation in evaluations:
+            brains.append(self.brain_class(input_size=self.input_size, output_size=self.output_size,
+                                           individual=single_evaluation[0], configuration=self.brain_configuration,
                                            brain_state=self.brain_state))
 
         fitness_total = 0
-
+        times_episodes = []
         for i in range(number_of_rounds):
-            env = ProcgenGym3Env(num=len(evaluation), env_name="heist", use_backgrounds=False,
-                                 distribution_mode="memory", num_levels=1, start_level=env_seed + i, num_threads=10)
+            env = ProcgenGym3Env(num=len(evaluations), env_name="heist", use_backgrounds=False,
+                                 distribution_mode=self.distribution_mode, num_levels=1, start_level=env_seed + i)
+                                 #num_threads=None)
             rew, ob, first = env.observe()
             ob = self.transform_ob(ob["rgb"])
 
             pool = mp.Pool(processes=8)
 
-            fitness_current = [0] * len(evaluation)
+            fitness_current = [0] * len(evaluations)
 
-            for i in range(1000):
+            time_s = time.time()
+            for i in range(episode_steps):
 
                 actions = pool.starmap(self.get_actions, zip(brains, ob))
                 actions = np.argmax(actions, axis=1)
@@ -107,12 +123,15 @@ class EpisodeRunnerAutoEncoder:
                 env.act(actions)
                 rew, ob, first = env.observe()
 
-                if any(first):
-                    print("One or more environments is done, this will silently do a new episode")
+                if any(first) and break_all_episodes:
+                    print("break_episodes: One or more environments are done, stopping all episodes")
+                    break
 
                 ob = self.transform_ob(ob["rgb"])
                 fitness_current += rew
 
+            times_episodes.append(time.time() - time_s)
+
             fitness_total += fitness_current
 
-        return fitness_total / number_of_rounds
+        return fitness_total / number_of_rounds, times_episodes
