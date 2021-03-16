@@ -4,3 +4,4 @@ numpy
 gym
 scipy
 torch
+procgen
