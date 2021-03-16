@@ -52,9 +52,7 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = self.brain_class(input_size=self.input_size,
-                                 output_size=self.output_size,
-                                 individual=individual,
+        brain = self.brain_class(individual=individual,
                                  configuration=self.brain_configuration,
                                  brain_state=self.brain_state)
 

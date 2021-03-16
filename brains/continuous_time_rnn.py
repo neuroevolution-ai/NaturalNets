@@ -22,8 +22,7 @@ class ContinuousTimeRNNCfg:
 
 class ContinuousTimeRNN(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
-                 brain_state: dict):
+    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict):
 
         self.config = ContinuousTimeRNNCfg(**configuration)
 
@@ -128,7 +127,7 @@ class ContinuousTimeRNN(IBrain):
         return {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
     @classmethod
-    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+    def get_free_parameter_usage(cls, brain_state: dict):
 
         v_mask, w_mask, t_mask = cls.get_masks_from_brain_state(brain_state)
 

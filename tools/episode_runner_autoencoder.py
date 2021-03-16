@@ -47,11 +47,6 @@ class EpisodeRunnerAutoEncoder:
             obs = obs.permute(0, 3, 1, 2).to(torch.float32)
             obs = obs / 255.0
 
-            # obs = np.transpose(ob, (2, 0, 1))
-            # obs = obs.astype(np.float32)
-            # obs = obs / 255
-            # obs = torch.from_numpy(obs)
-            # obs = obs.unsqueeze(0)
             return obs
 
     def transform_ob(self, ob):
@@ -59,7 +54,6 @@ class EpisodeRunnerAutoEncoder:
             obs = self.preprocess_ob(ob)
             obs = obs.to(self.device)
             obs = self.autoencoder.encode(obs)
-            # obs = obs[0].detach().numpy()
             return obs
 
     def get_individual_size(self):
@@ -82,9 +76,6 @@ class EpisodeRunnerAutoEncoder:
 
     def eval_fitness(self, evaluation):
 
-        # print("Torch Threads: {}".format(torch.get_num_threads()))
-        # print("Torch Interop Threads: {}".format(torch.get_num_interop_threads()))
-
         # Extract parameters, this list of lists is necessary since pool.map only accepts a single argument
         # See here: http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
         # individual = evaluation[0]
@@ -99,44 +90,28 @@ class EpisodeRunnerAutoEncoder:
         fitness_total = 0
 
         for i in range(number_of_rounds):
-            # env = gym.make(self.env_name) # , num_levels=1, start_level=env_seed+i, distribution_mode="hard")
-            # env = gym.make(self.env_name, use_backgrounds=False, distribution_mode="memory")
             env = ProcgenGym3Env(num=len(evaluation), env_name="heist", use_backgrounds=False,
-                                 distribution_mode="memory", num_levels=1, start_level=env_seed + i, num_threads=8)
+                                 distribution_mode="memory", num_levels=1, start_level=env_seed + i, num_threads=10)
             rew, ob, first = env.observe()
             ob = self.transform_ob(ob["rgb"])
 
             pool = mp.Pool(processes=8)
 
-            # rewards = np.zeros(population_size)
-            # for _ in range(number_env_steps):
-            #     env.act(gym3.types_np.sample(env.ac_space, bshape=(env.num,)))
-            #     rew, obs, first = env.observe()
-            #
-            #     rewards += rew
-            # return rewards
-
-            # ob = env.reset()
-            # # brain.reset()
-            #
             fitness_current = [0] * len(evaluation)
-            # done = False
 
-            for _ in range(1000):
+            for i in range(1000):
 
-                # actions = pool.starmap(self.get_actions, zip(brains, ob))
-                # actions = np.argmax(actions, axis=1)
-                # env.act(actions)
-                env.act(gym3.types_np.sample(env.ac_space, bshape=(env.num,)))
+                actions = pool.starmap(self.get_actions, zip(brains, ob))
+                actions = np.argmax(actions, axis=1)
+
+                env.act(actions)
                 rew, ob, first = env.observe()
+
+                if any(first):
+                    print("One or more environments is done, this will silently do a new episode")
 
                 ob = self.transform_ob(ob["rgb"])
                 fitness_current += rew
-
-                # action = brain.step(ob.flatten())
-                # ob, rew, done, info = env.step(np.argmax(action))
-                # ob = self.transform_ob(ob)
-                # fitness_current += rew
 
             fitness_total += fitness_current
 
