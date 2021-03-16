@@ -57,7 +57,7 @@ class EpisodeRunnerAutoEncoder:
             ob = torch.from_numpy(ob).float().to(self.device)
             ob = self.autoencoder.encode(ob)
             # Move back to memory first, this is required when converting Tensor that is on CUDA device
-            ob_cpu = ob.cpu().numpy()
+            ob_cpu = ob.cpu().clone().numpy()
             del ob
             torch.cuda.empty_cache()
             return ob_cpu
@@ -115,6 +115,9 @@ class EpisodeRunnerAutoEncoder:
             observations = ob["rgb"]
             ob = self.transform_ob(observations)
 
+            print(torch.cuda.memory_summary(device=self.device))
+            print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
+
             pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
 
             fitness_current = [0] * len(evaluations)
@@ -134,10 +137,16 @@ class EpisodeRunnerAutoEncoder:
 
                 observations = ob["rgb"]
                 ob = self.transform_ob(observations)
+                print(torch.cuda.memory_summary(device=self.device))
+                print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
+
+                if i > 10:
+                    break
+
                 fitness_current += rew
 
             times_episodes.append(time.time() - time_s)
-
+            break
             fitness_total += fitness_current
 
         return fitness_total / number_of_rounds, times_episodes
