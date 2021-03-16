@@ -52,7 +52,9 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = self.brain_class(individual=individual,
+        brain = self.brain_class(input_size=self.input_size,
+                                 output_size=self.output_size,
+                                 individual=individual,
                                  configuration=self.brain_configuration,
                                  brain_state=self.brain_state)
 
@@ -62,7 +64,7 @@ class EpisodeRunner:
 
             env = gym.make(self.env_config.name,
                            num_levels=1,
-                           start_level=env_seed+i,
+                           start_level=env_seed + i,
                            distribution_mode=self.env_config.distribution_mode)
             ob = env.reset()
             brain.reset()
@@ -71,10 +73,9 @@ class EpisodeRunner:
             done = False
 
             while not done:
-
                 # obs = cv2.resize(ob, (16, 16), interpolation=cv2.INTER_AREA)
 
-                action = brain.step(ob.flatten()/255.0)
+                action = brain.step(ob.flatten() / 255.0)
                 ob, rew, done, info = env.step(np.argmax(action))
                 fitness_current += rew
 
