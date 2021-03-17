@@ -14,7 +14,7 @@ class CollectPointsEnv:
 
     def __init__(self, env_seed):
 
-        self.number_of_time_steps = 300
+        self.number_of_time_steps = 1000
 
         self.screen_width = 800
         self.screen_height = 800
@@ -23,16 +23,14 @@ class CollectPointsEnv:
         self.agent_radius = 10
         self.point_radius = 8
 
+        self.rs = np.random.RandomState(env_seed)
+
         # Agent coordinates
-        self.agent_position_x = 400
-        self.agent_position_y = 400
+        self.agent_position_x = self.rs.randint(self.screen_width)
+        self.agent_position_y = self.rs.randint(self.screen_height)
 
-        self.sensor_range = 100
-
-        self.seed = env_seed
-
-        self.point_x = self.generate_random_number(self.screen_width)
-        self.point_y = self.generate_random_number(self.screen_height)
+        self.point_x = self.rs.randint(self.screen_width)
+        self.point_y = self.rs.randint(self.screen_height)
 
         self.t = 0
 
@@ -56,13 +54,12 @@ class CollectPointsEnv:
         self.agent_position_y = max(self.agent_position_y, self.agent_radius)
 
         # Collect point in reach
-
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
         if distance > self.point_radius + self.agent_radius:
             rew = -distance / self.screen_width
         else:
-            self.point_x = self.generate_random_number(self.screen_width)
-            self.point_y = self.generate_random_number(self.screen_height)
+            self.point_x = self.rs.randint(self.screen_width)
+            self.point_y = self.rs.randint(self.screen_height)
             rew = 500.0
 
         self.t += 1
@@ -92,17 +89,6 @@ class CollectPointsEnv:
 
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
-
-    # https://stackoverflow.com/questions/39714326/random-number-generation-using-python
-    # Generates a random number between 0.0 and 1.0
-    def generate_random_number(self, range: int):
-
-        m = 2 ** 32
-        a = 1664525
-        c = 1013904223
-
-        self.seed = (a * self.seed + c) % m
-        return int((self.seed / (2 ** 32 - 1)) * range)
 
     def get_observation(self):
 
