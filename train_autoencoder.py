@@ -91,7 +91,7 @@ for generation in range(config.number_generations):
     rewards_training, times_episodes = ep_runner.eval_fitness(evaluations, episode_steps=episode_steps,
                                                               break_all_episodes=break_all_episodes)
 
-    break
+    # break
 
     # Tell optimizer new rewards
     opt.tell(rewards_training)

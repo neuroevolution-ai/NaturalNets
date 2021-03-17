@@ -84,6 +84,10 @@ class EpisodeRunnerAutoEncoder:
     def get_actions(self, brain, ob):
         return brain.step(ob.flatten())
 
+    def calculate_actions_trivial(self, brains, obs):
+        actions = [brain.step(ob.flatten()) for (brain, ob) in zip(brains, obs)]
+        return actions
+
     def eval_fitness(self, evaluations, episode_steps: int = 500, break_all_episodes: bool = False):
         """
 
@@ -115,17 +119,21 @@ class EpisodeRunnerAutoEncoder:
             observations = ob["rgb"]
             ob = self.transform_ob(observations)
 
-            print(torch.cuda.memory_summary(device=self.device))
-            print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
+            # print(torch.cuda.memory_summary(device=self.device))
+            # print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
 
-            pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
+            # pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
 
             fitness_current = [0] * len(evaluations)
+            times_actions = []
 
             time_s = time.time()
             for i in range(episode_steps):
 
-                actions = pool.starmap(self.get_actions, zip(brains, ob))
+                # actions = pool.starmap(self.get_actions, zip(brains, ob))
+                # time_actions_s = time.time()
+                actions = self.calculate_actions_trivial(brains, ob)
+                # times_actions.append(time.time() - time_actions_s)
                 actions = np.argmax(actions, axis=1)
 
                 env.act(actions)
@@ -137,16 +145,20 @@ class EpisodeRunnerAutoEncoder:
 
                 observations = ob["rgb"]
                 ob = self.transform_ob(observations)
-                print(torch.cuda.memory_summary(device=self.device))
-                print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
+                # print(torch.cuda.memory_summary(device=self.device))
+                # print("Memory: {}".format(torch.cuda.memory_allocated(device=self.device)))
 
-                if i > 10:
-                    break
+                # if i > 10:
+                #     break
 
                 fitness_current += rew
-
+            print("Episodes with VecEnv finished")
+            # print("Times actions Mean {}".format(np.mean(times_actions)))
+            # print("Times actions Std {}".format(np.std(times_actions)))
+            # print("Times actions Max {}".format(np.max(times_actions)))
+            # print("Times actions Min {}".format(np.min(times_actions)))
             times_episodes.append(time.time() - time_s)
-            break
+            # break
             fitness_total += fitness_current
 
         return fitness_total / number_of_rounds, times_episodes
