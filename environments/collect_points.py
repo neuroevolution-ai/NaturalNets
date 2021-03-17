@@ -23,8 +23,6 @@ class CollectPointsEnv:
         self.agent_radius = 10
         self.point_radius = 8
 
-        self.number_points_to_collect = 3
-
         # Agent coordinates
         self.agent_position_x = 400
         self.agent_position_y = 400
@@ -33,10 +31,8 @@ class CollectPointsEnv:
 
         self.seed = env_seed
 
-        self.points = [(self.generate_random_number(self.screen_width), self.generate_random_number(self.screen_height)) for _ in
-                       range(self.number_points_to_collect)]
-
-        self.remaining_points = [1.0 for _ in range(self.number_points_to_collect)]
+        self.point_x = self.generate_random_number(self.screen_width)
+        self.point_y = self.generate_random_number(self.screen_height)
 
         self.t = 0
 
@@ -59,16 +55,15 @@ class CollectPointsEnv:
         self.agent_position_y = min(self.agent_position_y, self.screen_width - self.agent_radius)
         self.agent_position_y = max(self.agent_position_y, self.agent_radius)
 
-        # Collect points in reach
-        rew = 0.0
-        for i in range(self.number_points_to_collect):
-            if self.remaining_points[i] == 1.0:
-                distance = math.sqrt((self.points[i][0] - self.agent_position_x) ** 2 +
-                                     (self.points[i][1] - self.agent_position_y) ** 2)
-                if distance > self.point_radius + self.agent_radius:
-                    rew -= distance / self.screen_width
-                else:
-                    self.remaining_points[i] = 0.0
+        # Collect point in reach
+        distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
+        if distance > self.point_radius + self.agent_radius:
+            # rew = distance / self.screen_width
+            rew = 0.0
+        else:
+            self.point_x = self.generate_random_number(self.screen_width)
+            self.point_y = self.generate_random_number(self.screen_height)
+            rew = 1.0
 
         self.t += 1
 
@@ -86,17 +81,14 @@ class CollectPointsEnv:
 
         color_red = (0, 0, 255)
         color_blue = (0, 255, 0)
-        color_yellow = (255, 255, 0)
 
         image = 255 * np.ones(shape=[self.screen_width, self.screen_height, 3], dtype=np.uint8)
 
         # Draw agent
         image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.agent_radius, color_red, -1)
 
-        # Draw points
-        for i in range(self.number_points_to_collect):
-            if self.remaining_points[i] == 1.0:
-                image = cv2.circle(image, self.points[i], self.point_radius, color_blue, -1)
+        # Draw point
+        image = cv2.circle(image, (self.point_x, self.point_y), self.point_radius, color_blue, -1)
 
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
@@ -117,10 +109,7 @@ class CollectPointsEnv:
         ob_list = list()
         ob_list.append(self.agent_position_x / self.screen_width)
         ob_list.append(self.agent_position_y / self.screen_height)
-
-        for i in range(self.number_points_to_collect):
-            ob_list.append(self.points[i][0] / self.screen_width)
-            ob_list.append(self.points[i][1] / self.screen_height)
-            ob_list.append(self.remaining_points[i])
+        ob_list.append(self.point_x / self.screen_width)
+        ob_list.append(self.point_y / self.screen_height)
 
         return np.asarray(ob_list)

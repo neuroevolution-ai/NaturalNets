@@ -4,7 +4,7 @@ import os
 from brains.continuous_time_rnn import *
 from environments.collect_points import *
 
-directory = os.path.join('Simulation_Results', '2021-03-16_16-57-28')
+directory = os.path.join('Simulation_Results', '2021-03-17_06-43-37')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -38,6 +38,9 @@ for env_seed in range(number_validation_runs):
 
         env.render()
         time.sleep(0.005)
+
+        print(ob)
+        print(rew)
 
     fitness_total += fitness_current
 
