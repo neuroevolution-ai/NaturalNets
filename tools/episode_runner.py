@@ -1,7 +1,4 @@
 import attr
-import gym
-import numpy as np
-from gym.spaces import flatdim
 from environments.collect_points import *
 
 
@@ -9,12 +6,10 @@ class EpisodeRunner:
 
     def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
 
-        env = CollectPointsEnv(0)
+        env = CollectPointsEnv(env_seed=0)
         self.input_size = env.get_number_inputs()
         self.output_size = env.get_number_outputs()
 
-        self.input_size = 22
-        self.output_size = 2
         self.brain_class = brain_class
         self.brain_configuration = brain_configuration
 
@@ -47,14 +42,17 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = self.brain_class(individual=individual, configuration=self.brain_configuration,
+        brain = self.brain_class(input_size=self.input_size,
+                                 output_size=self.output_size,
+                                 individual=individual,
+                                 configuration=self.brain_configuration,
                                  brain_state=self.brain_state)
 
         fitness_total = 0
 
         for i in range(number_of_rounds):
 
-            env = CollectPointsEnv(env_seed)
+            env = CollectPointsEnv(env_seed=env_seed)
             ob = env.reset()
             brain.reset()
 

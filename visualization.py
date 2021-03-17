@@ -4,7 +4,7 @@ import os
 from brains.continuous_time_rnn import *
 from environments.collect_points import *
 
-directory = os.path.join('Simulation_Results', '2021-03-06_05-44-57')
+directory = os.path.join('Simulation_Results', '2021-03-16_16-57-28')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -14,7 +14,7 @@ brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_
 
 individual = np.load(os.path.join(directory, 'Best_Genome.npy'), allow_pickle=True)
 
-brain = ContinuousTimeRNN(individual=individual, configuration=configuration['brain'],
+brain = ContinuousTimeRNN(input_size=0, output_size=0, individual=individual, configuration=configuration['brain'],
                           brain_state=brain_state)
 
 number_validation_runs = configuration['number_validation_runs']
@@ -36,11 +36,8 @@ for env_seed in range(number_validation_runs):
         ob, rew, done, info = env.step(action)
         fitness_current += rew
 
-        #sensor_signal = info['sensor-signal']
-        #print(sensor_signal)
-
         env.render()
-        time.sleep(0.01)
+        time.sleep(0.005)
 
     fitness_total += fitness_current
 

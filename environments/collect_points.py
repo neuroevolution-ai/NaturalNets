@@ -36,29 +36,18 @@ class CollectPointsEnv:
         self.points = [(self.generate_random_number(self.screen_width), self.generate_random_number(self.screen_height)) for _ in
                        range(self.number_points_to_collect)]
 
-        #ob = np.array(
-        #    [self.agent_position_x / self.screen_width, self.agent_position_y / self.screen_height, 0.0, 0.0])
-
-        ob_list = list()
-        ob_list.append(self.agent_position_x / self.screen_width)
-        ob_list.append(self.agent_position_y / self.screen_height)
-        ob_list.append(0.0)
-        for point in self.points:
-            ob_list.append(point[0] / self.screen_width)
-            ob_list.append(point[1] / self.screen_height)
-
-        self.ob = np.asarray(ob_list)
+        self.remaining_points = [1.0 for _ in range(self.number_points_to_collect)]
 
         self.t = 0
 
     def get_number_inputs(self):
-        return len(self.ob)
+        return len(self.get_observation())
 
     def get_number_outputs(self):
         return 2
 
     def reset(self):
-        return np.asarray(self.ob)
+        return self.get_observation()
 
     def step(self, action: np.ndarray):
 
@@ -72,17 +61,14 @@ class CollectPointsEnv:
 
         # Collect points in reach
         rew = 0.0
-        self.ob[2] = 0.0
-        points_new = []
-        for point in self.points:
-            distance = math.sqrt((point[0] - self.agent_position_x) ** 2 + (point[1] - self.agent_position_y) ** 2)
-            if distance > self.point_radius + self.agent_radius:
-                rew -= distance / self.screen_width
-                points_new.append(point)
-            else:
-                self.ob[2] = 1.0
-
-        self.points = points_new
+        for i in range(self.number_points_to_collect):
+            if self.remaining_points[i] == 1.0:
+                distance = math.sqrt((self.points[i][0] - self.agent_position_x) ** 2 +
+                                     (self.points[i][1] - self.agent_position_y) ** 2)
+                if distance > self.point_radius + self.agent_radius:
+                    rew -= distance / self.screen_width
+                else:
+                    self.remaining_points[i] = 0.0
 
         self.t += 1
 
@@ -91,12 +77,10 @@ class CollectPointsEnv:
         else:
             done = True
 
-        self.ob[0] = self.agent_position_x / self.screen_width
-        self.ob[1] = self.agent_position_y / self.screen_height
-
+        ob = self.get_observation()
         info = []
 
-        return self.ob, rew, done, info
+        return ob, rew, done, info
 
     def render(self):
 
@@ -106,15 +90,13 @@ class CollectPointsEnv:
 
         image = 255 * np.ones(shape=[self.screen_width, self.screen_height, 3], dtype=np.uint8)
 
-        # Draw sensor range
-        #image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.sensor_range, color_yellow, -1)
-
         # Draw agent
         image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.agent_radius, color_red, -1)
 
         # Draw points
-        for point in self.points:
-            image = cv2.circle(image, point, self.point_radius, color_blue, -1)
+        for i in range(self.number_points_to_collect):
+            if self.remaining_points[i] == 1.0:
+                image = cv2.circle(image, self.points[i], self.point_radius, color_blue, -1)
 
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
@@ -129,3 +111,16 @@ class CollectPointsEnv:
 
         self.seed = (a * self.seed + c) % m
         return int((self.seed / (2 ** 32 - 1)) * range)
+
+    def get_observation(self):
+
+        ob_list = list()
+        ob_list.append(self.agent_position_x / self.screen_width)
+        ob_list.append(self.agent_position_y / self.screen_height)
+
+        for i in range(self.number_points_to_collect):
+            ob_list.append(self.points[i][0] / self.screen_width)
+            ob_list.append(self.points[i][1] / self.screen_height)
+            ob_list.append(self.remaining_points[i])
+
+        return np.asarray(ob_list)
