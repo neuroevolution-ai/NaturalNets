@@ -56,14 +56,14 @@ class CollectPointsEnv:
         self.agent_position_y = max(self.agent_position_y, self.agent_radius)
 
         # Collect point in reach
+
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
         if distance > self.point_radius + self.agent_radius:
-            # rew = distance / self.screen_width
-            rew = 0.0
+            rew = -distance / self.screen_width
         else:
             self.point_x = self.generate_random_number(self.screen_width)
             self.point_y = self.generate_random_number(self.screen_height)
-            rew = 1.0
+            rew = 500.0
 
         self.t += 1
 
