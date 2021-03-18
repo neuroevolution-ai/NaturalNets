@@ -125,7 +125,7 @@ class EpisodeRunnerAutoEncoder:
             # pool = mp.get_context("spawn").Pool(processes=os.cpu_count())
 
             fitness_current = [0] * len(evaluations)
-            times_actions = []
+            # times_actions = []
 
             time_s = time.time()
             for i in range(episode_steps):
