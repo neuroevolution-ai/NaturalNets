@@ -5,3 +5,4 @@ gym
 scipy
 torch
 procgen
+opencv-python
