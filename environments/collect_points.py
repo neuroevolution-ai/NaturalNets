@@ -24,11 +24,10 @@ class CollectPointsEnv:
         self.rs = np.random.RandomState(env_seed)
 
         # Agent coordinates
-        self.agent_position_x = self.rs.randint(self.screen_width)
-        self.agent_position_y = self.rs.randint(self.screen_height)
+        self.agent_position_x, self.agent_position_y = self.place_randomly_in_maze(self.agent_radius)
 
-        self.point_x = self.rs.randint(self.screen_width)
-        self.point_y = self.rs.randint(self.screen_height)
+        # Point coordinates
+        self.point_x, self.point_y = self.place_randomly_in_maze(self.point_radius)
 
         # Create Maze
         self.maze = Maze(self.nx, self.ny, self.rs)
@@ -78,8 +77,7 @@ class CollectPointsEnv:
         if distance > self.point_radius + self.agent_radius:
             rew = -distance / self.screen_width
         else:
-            self.point_x = self.rs.randint(self.screen_width)
-            self.point_y = self.rs.randint(self.screen_height)
+            self.point_x, self.point_y = self.place_randomly_in_maze(self.point_radius)
             rew = 500.0
 
         self.t += 1
@@ -150,3 +148,10 @@ class CollectPointsEnv:
         ob_list.append(self.point_y / self.screen_height)
 
         return np.asarray(ob_list)
+
+    def place_randomly_in_maze(self, radius):
+
+        x = self.rs.randint(radius, self.maze_cell_size - radius) + self.rs.randint(self.nx) * self.maze_cell_size
+        y = self.rs.randint(radius, self.maze_cell_size - radius) + self.rs.randint(self.ny) * self.maze_cell_size
+
+        return x, y
