@@ -103,8 +103,8 @@ for generation in range(config.number_generations):
     for i in range(config.number_validation_runs):
         evaluations.append([best_genome_current_generation, i, 1])
 
-    rewards_validation, _ = ep_runner.eval_fitness(evaluations, episode_steps=episode_steps,
-                                                   break_all_episodes=break_all_episodes)
+    rewards_validation, _ = ep_runner.validate_fitness(evaluations, episode_steps=episode_steps,
+                                                       break_all_episodes=break_all_episodes)
 
     best_reward_current_generation = np.mean(rewards_validation)
     if best_reward_current_generation > best_reward_overall:
@@ -134,6 +134,7 @@ for generation in range(config.number_generations):
     log_line['min'] = np.min(rewards_training)
     log_line['mean'] = np.mean(rewards_training)
     log_line['max'] = np.max(rewards_training)
+    log_line['best'] = best_reward_overall
     log_line['elapsed_time'] = elapsed_time_current_generation
     log.append(log_line)
 
