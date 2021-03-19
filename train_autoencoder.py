@@ -134,6 +134,7 @@ for generation in range(config.number_generations):
     log_line['min'] = np.min(rewards_training)
     log_line['mean'] = np.mean(rewards_training)
     log_line['max'] = np.max(rewards_training)
+    log_line['best'] = best_reward_overall
     log_line['elapsed_time'] = elapsed_time_current_generation
     log.append(log_line)
 
