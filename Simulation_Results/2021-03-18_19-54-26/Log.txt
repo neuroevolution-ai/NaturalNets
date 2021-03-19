@@ -32,3 +32,1905 @@ Outputs: 15
 ------------------------------------------------------------------------------------------
 gen     min           mean          max           best          elapsed time (s)
 ------------------------------------------------------------------------------------------
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2229   Min: 12.00   Mean: 101.89   Max: 150.00   Best: 10.00   Elapsed time:  38.87s Mean time per episode: 6.30s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2230   Min: 0.00   Mean: 6.27   Max: 34.00   Best: 10.00   Elapsed time:  36.89s Mean time per episode: 5.93s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2231   Min: 0.00   Mean: 0.89   Max: 8.00   Best: 10.00   Elapsed time:  36.80s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2232   Min: 0.00   Mean: 5.21   Max: 18.00   Best: 10.00   Elapsed time:  36.72s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2233   Min: 0.00   Mean: 4.04   Max: 24.00   Best: 10.00   Elapsed time:  36.84s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2234   Min: 0.00   Mean: 0.59   Max: 4.00   Best: 10.00   Elapsed time:  37.10s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2235   Min: 0.00   Mean: 0.12   Max: 4.00   Best: 10.00   Elapsed time:  37.53s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2236   Min: 0.00   Mean: 4.95   Max: 80.00   Best: 10.00   Elapsed time:  38.83s Mean time per episode: 6.24s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2237   Min: 0.00   Mean: 167.38   Max: 336.00   Best: 10.00   Elapsed time:  40.35s Mean time per episode: 6.61s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2238   Min: 0.00   Mean: 3.80   Max: 22.00   Best: 10.00   Elapsed time:  38.31s Mean time per episode: 6.17s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2239   Min: 0.00   Mean: 21.84   Max: 54.00   Best: 10.00   Elapsed time:  37.90s Mean time per episode: 6.11s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2240   Min: 0.00   Mean: 4.09   Max: 42.00   Best: 10.00   Elapsed time:  38.21s Mean time per episode: 6.18s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2241   Min: 0.00   Mean: 13.70   Max: 40.00   Best: 10.00   Elapsed time:  38.14s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2242   Min: 0.00   Mean: 0.77   Max: 8.00   Best: 10.00   Elapsed time:  37.86s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2243   Min: 0.00   Mean: 4.14   Max: 16.00   Best: 10.00   Elapsed time:  38.18s Mean time per episode: 6.18s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2244   Min: 0.00   Mean: 4.62   Max: 22.00   Best: 10.00   Elapsed time:  36.63s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2245   Min: 0.00   Mean: 24.32   Max: 98.00   Best: 10.00   Elapsed time:  37.79s Mean time per episode: 6.08s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2246   Min: 2.00   Mean: 27.80   Max: 96.00   Best: 10.00   Elapsed time:  38.35s Mean time per episode: 6.21s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2247   Min: 0.00   Mean: 9.30   Max: 30.00   Best: 10.00   Elapsed time:  36.55s Mean time per episode: 5.86s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2248   Min: 26.00   Mean: 95.12   Max: 142.00   Best: 10.00   Elapsed time:  37.11s Mean time per episode: 5.96s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2249   Min: 0.00   Mean: 0.09   Max: 2.00   Best: 10.00   Elapsed time:  36.43s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2250   Min: 0.00   Mean: 3.09   Max: 12.00   Best: 10.00   Elapsed time:  36.66s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2251   Min: 0.00   Mean: 2.27   Max: 10.00   Best: 10.00   Elapsed time:  36.85s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2252   Min: 0.00   Mean: 1.77   Max: 14.00   Best: 10.00   Elapsed time:  37.07s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2253   Min: 0.00   Mean: 3.21   Max: 10.00   Best: 10.00   Elapsed time:  36.63s Mean time per episode: 5.88s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2254   Min: 14.00   Mean: 308.57   Max: 1000.00   Best: 10.00   Elapsed time:  36.64s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2255   Min: 0.00   Mean: 8.77   Max: 36.00   Best: 10.00   Elapsed time:  37.46s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2256   Min: 0.00   Mean: 18.88   Max: 60.00   Best: 10.00   Elapsed time:  37.47s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2257   Min: 0.00   Mean: 18.71   Max: 66.00   Best: 10.00   Elapsed time:  40.63s Mean time per episode: 6.59s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2258   Min: 4.00   Mean: 37.02   Max: 82.00   Best: 10.00   Elapsed time:  37.83s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2259   Min: 6.00   Mean: 110.62   Max: 168.00   Best: 10.00   Elapsed time:  38.77s Mean time per episode: 6.30s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2260   Min: 0.00   Mean: 17.25   Max: 38.00   Best: 10.00   Elapsed time:  38.38s Mean time per episode: 6.20s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2261   Min: 0.00   Mean: 1.05   Max: 8.00   Best: 10.00   Elapsed time:  37.80s Mean time per episode: 6.15s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2262   Min: 2.00   Mean: 42.32   Max: 130.00   Best: 10.00   Elapsed time:  36.60s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2263   Min: 0.00   Mean: 3.96   Max: 20.00   Best: 10.00   Elapsed time:  36.57s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2264   Min: 0.00   Mean: 1.71   Max: 12.00   Best: 10.00   Elapsed time:  36.19s Mean time per episode: 5.80s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2265   Min: 0.00   Mean: 6.88   Max: 20.00   Best: 10.00   Elapsed time:  39.40s Mean time per episode: 6.41s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2266   Min: 0.00   Mean: 0.61   Max: 6.00   Best: 10.00   Elapsed time:  36.90s Mean time per episode: 5.88s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2267   Min: 0.00   Mean: 0.05   Max: 2.00   Best: 10.00   Elapsed time:  36.82s Mean time per episode: 5.93s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2268   Min: 0.00   Mean: 1.34   Max: 6.00   Best: 10.00   Elapsed time:  36.38s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2269   Min: 0.00   Mean: 7.46   Max: 38.00   Best: 10.00   Elapsed time:  36.36s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2270   Min: 4.00   Mean: 21.02   Max: 52.00   Best: 10.00   Elapsed time:  36.99s Mean time per episode: 5.96s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2271   Min: 0.00   Mean: 0.00   Max: 0.00   Best: 10.00   Elapsed time:  36.66s Mean time per episode: 5.88s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2272   Min: 0.00   Mean: 1.68   Max: 12.00   Best: 10.00   Elapsed time:  36.62s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2273   Min: 0.00   Mean: 0.93   Max: 6.00   Best: 10.00   Elapsed time:  37.03s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2274   Min: 0.00   Mean: 5.43   Max: 16.00   Best: 10.00   Elapsed time:  36.87s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2275   Min: 0.00   Mean: 43.38   Max: 88.00   Best: 10.00   Elapsed time:  36.69s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2276   Min: 0.00   Mean: 0.41   Max: 2.00   Best: 10.00   Elapsed time:  36.57s Mean time per episode: 5.87s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2277   Min: 0.00   Mean: 0.23   Max: 2.00   Best: 10.00   Elapsed time:  36.49s Mean time per episode: 5.86s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2278   Min: 0.00   Mean: 2.09   Max: 8.00   Best: 10.00   Elapsed time:  36.76s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2279   Min: 0.00   Mean: 5.45   Max: 14.00   Best: 10.00   Elapsed time:  37.29s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2280   Min: 0.00   Mean: 2.54   Max: 18.00   Best: 10.00   Elapsed time:  36.63s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2281   Min: 0.00   Mean: 91.25   Max: 166.00   Best: 10.00   Elapsed time:  36.53s Mean time per episode: 5.88s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2282   Min: 0.00   Mean: 2.00   Max: 14.00   Best: 10.00   Elapsed time:  36.08s Mean time per episode: 5.78s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2283   Min: 0.00   Mean: 0.00   Max: 0.00   Best: 10.00   Elapsed time:  36.29s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2284   Min: 0.00   Mean: 2.54   Max: 14.00   Best: 10.00   Elapsed time:  36.31s Mean time per episode: 5.82s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2285   Min: 0.00   Mean: 14.39   Max: 70.00   Best: 10.00   Elapsed time:  36.39s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2286   Min: 0.00   Mean: 5.88   Max: 18.00   Best: 10.00   Elapsed time:  36.05s Mean time per episode: 5.80s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2287   Min: 0.00   Mean: 10.45   Max: 38.00   Best: 10.00   Elapsed time:  36.21s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2288   Min: 2.00   Mean: 44.32   Max: 116.00   Best: 10.00   Elapsed time:  36.28s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2289   Min: 0.00   Mean: 3.25   Max: 14.00   Best: 10.00   Elapsed time:  36.05s Mean time per episode: 5.77s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2290   Min: 0.00   Mean: 43.79   Max: 82.00   Best: 10.00   Elapsed time:  36.63s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2291   Min: 0.00   Mean: 0.11   Max: 2.00   Best: 10.00   Elapsed time:  36.19s Mean time per episode: 5.80s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2292   Min: 2.00   Mean: 28.29   Max: 76.00   Best: 10.00   Elapsed time:  36.31s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2293   Min: 0.00   Mean: 0.41   Max: 4.00   Best: 10.00   Elapsed time:  36.11s Mean time per episode: 5.75s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2294   Min: 0.00   Mean: 3.12   Max: 10.00   Best: 10.00   Elapsed time:  36.18s Mean time per episode: 5.80s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2295   Min: 0.00   Mean: 2.54   Max: 8.00   Best: 10.00   Elapsed time:  36.18s Mean time per episode: 5.78s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2296   Min: 0.00   Mean: 0.84   Max: 6.00   Best: 10.00   Elapsed time:  36.34s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2297   Min: 0.00   Mean: 2.14   Max: 12.00   Best: 10.00   Elapsed time:  36.15s Mean time per episode: 5.78s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2298   Min: 290.00   Mean: 329.54   Max: 338.00   Best: 10.00   Elapsed time:  37.96s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2299   Min: 0.00   Mean: 5.41   Max: 28.00   Best: 10.00   Elapsed time:  36.47s Mean time per episode: 5.87s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2300   Min: 0.00   Mean: 12.11   Max: 28.00   Best: 10.00   Elapsed time:  36.35s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2301   Min: 0.00   Mean: 1.27   Max: 6.00   Best: 10.00   Elapsed time:  36.33s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2302   Min: 0.00   Mean: 24.29   Max: 60.00   Best: 10.00   Elapsed time:  36.22s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2303   Min: 0.00   Mean: 6.18   Max: 34.00   Best: 10.00   Elapsed time:  36.34s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2304   Min: 22.00   Mean: 52.39   Max: 84.00   Best: 10.00   Elapsed time:  36.58s Mean time per episode: 5.87s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2305   Min: 26.00   Mean: 273.84   Max: 656.00   Best: 10.00   Elapsed time:  36.74s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2306   Min: 0.00   Mean: 0.57   Max: 6.00   Best: 10.00   Elapsed time:  37.31s Mean time per episode: 6.01s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2307   Min: 0.00   Mean: 38.09   Max: 92.00   Best: 10.00   Elapsed time:  37.10s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2308   Min: 2.00   Mean: 24.14   Max: 76.00   Best: 10.00   Elapsed time:  36.48s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2309   Min: 0.00   Mean: 1.46   Max: 14.00   Best: 10.00   Elapsed time:  35.97s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2310   Min: 0.00   Mean: 0.48   Max: 6.00   Best: 10.00   Elapsed time:  37.15s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2311   Min: 0.00   Mean: 0.14   Max: 4.00   Best: 10.00   Elapsed time:  36.17s Mean time per episode: 5.82s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2312   Min: 12.00   Mean: 135.23   Max: 336.00   Best: 10.00   Elapsed time:  36.97s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2313   Min: 0.00   Mean: 8.04   Max: 18.00   Best: 10.00   Elapsed time:  36.70s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2314   Min: 0.00   Mean: 3.23   Max: 16.00   Best: 10.00   Elapsed time:  36.83s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2315   Min: 0.00   Mean: 18.41   Max: 46.00   Best: 10.00   Elapsed time:  36.35s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2316   Min: 0.00   Mean: 4.45   Max: 22.00   Best: 10.00   Elapsed time:  36.53s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2317   Min: 0.00   Mean: 1.77   Max: 12.00   Best: 10.00   Elapsed time:  36.46s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2318   Min: 0.00   Mean: 23.21   Max: 192.00   Best: 10.00   Elapsed time:  36.56s Mean time per episode: 5.86s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2319   Min: 4.00   Mean: 261.75   Max: 358.00   Best: 10.00   Elapsed time:  36.71s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2320   Min: 0.00   Mean: 3.41   Max: 22.00   Best: 10.00   Elapsed time:  36.24s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2321   Min: 0.00   Mean: 6.62   Max: 22.00   Best: 10.00   Elapsed time:  36.44s Mean time per episode: 5.86s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2322   Min: 0.00   Mean: 1.36   Max: 8.00   Best: 10.00   Elapsed time:  36.45s Mean time per episode: 5.80s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2323   Min: 0.00   Mean: 3.16   Max: 14.00   Best: 10.00   Elapsed time:  37.18s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2324   Min: 0.00   Mean: 1.36   Max: 6.00   Best: 10.00   Elapsed time:  38.23s Mean time per episode: 6.19s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2325   Min: 0.00   Mean: 0.29   Max: 2.00   Best: 10.00   Elapsed time:  37.46s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2326   Min: 4.00   Mean: 40.07   Max: 126.00   Best: 10.00   Elapsed time:  37.40s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2327   Min: 10.00   Mean: 30.50   Max: 68.00   Best: 10.00   Elapsed time:  36.43s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2328   Min: 0.00   Mean: 18.93   Max: 104.00   Best: 10.00   Elapsed time:  38.23s Mean time per episode: 6.20s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2329   Min: 0.00   Mean: 29.82   Max: 82.00   Best: 10.00   Elapsed time:  39.25s Mean time per episode: 6.28s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2330   Min: 0.00   Mean: 38.23   Max: 194.00   Best: 10.00   Elapsed time:  37.72s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2331   Min: 0.00   Mean: 0.77   Max: 12.00   Best: 10.00   Elapsed time:  37.47s Mean time per episode: 6.03s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2332   Min: 0.00   Mean: 10.27   Max: 24.00   Best: 10.00   Elapsed time:  37.42s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2333   Min: 0.00   Mean: 7.77   Max: 22.00   Best: 10.00   Elapsed time:  37.57s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2334   Min: 14.00   Mean: 38.02   Max: 98.00   Best: 10.00   Elapsed time:  36.97s Mean time per episode: 5.89s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2335   Min: 0.00   Mean: 1.05   Max: 8.00   Best: 10.00   Elapsed time:  37.70s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2336   Min: 0.00   Mean: 1.23   Max: 8.00   Best: 10.00   Elapsed time:  37.75s Mean time per episode: 6.10s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2337   Min: 0.00   Mean: 7.18   Max: 18.00   Best: 10.00   Elapsed time:  37.01s Mean time per episode: 5.92s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2338   Min: 0.00   Mean: 55.00   Max: 200.00   Best: 10.00   Elapsed time:  36.94s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2339   Min: 0.00   Mean: 6.38   Max: 30.00   Best: 10.00   Elapsed time:  36.94s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2340   Min: 0.00   Mean: 15.62   Max: 30.00   Best: 10.00   Elapsed time:  37.13s Mean time per episode: 5.96s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2341   Min: 0.00   Mean: 6.62   Max: 20.00   Best: 10.00   Elapsed time:  37.26s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2342   Min: 0.00   Mean: 1.04   Max: 6.00   Best: 10.00   Elapsed time:  36.84s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2343   Min: 0.00   Mean: 6.12   Max: 14.00   Best: 10.00   Elapsed time:  37.01s Mean time per episode: 5.96s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2344   Min: 0.00   Mean: 0.93   Max: 6.00   Best: 10.00   Elapsed time:  37.12s Mean time per episode: 5.97s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2345   Min: 0.00   Mean: 1.57   Max: 8.00   Best: 10.00   Elapsed time:  36.96s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2346   Min: 0.00   Mean: 35.93   Max: 82.00   Best: 10.00   Elapsed time:  37.87s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2347   Min: 0.00   Mean: 7.62   Max: 50.00   Best: 10.00   Elapsed time:  37.68s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2348   Min: 0.00   Mean: 38.64   Max: 124.00   Best: 10.00   Elapsed time:  37.26s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2349   Min: 0.00   Mean: 3.46   Max: 18.00   Best: 10.00   Elapsed time:  37.06s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2350   Min: 0.00   Mean: 0.34   Max: 4.00   Best: 10.00   Elapsed time:  36.91s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2351   Min: 16.00   Mean: 67.79   Max: 98.00   Best: 10.00   Elapsed time:  37.52s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2352   Min: 0.00   Mean: 1.36   Max: 16.00   Best: 10.00   Elapsed time:  37.00s Mean time per episode: 5.97s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2353   Min: 0.00   Mean: 2.36   Max: 10.00   Best: 10.00   Elapsed time:  37.18s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2354   Min: 0.00   Mean: 9.04   Max: 28.00   Best: 10.00   Elapsed time:  37.05s Mean time per episode: 5.92s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2355   Min: 0.00   Mean: 1.36   Max: 8.00   Best: 10.00   Elapsed time:  37.21s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2356   Min: 0.00   Mean: 0.18   Max: 2.00   Best: 10.00   Elapsed time:  36.82s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2357   Min: 0.00   Mean: 0.14   Max: 2.00   Best: 10.00   Elapsed time:  37.35s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2358   Min: 0.00   Mean: 0.84   Max: 6.00   Best: 10.00   Elapsed time:  37.82s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2359   Min: 0.00   Mean: 0.75   Max: 6.00   Best: 10.00   Elapsed time:  37.68s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2360   Min: 0.00   Mean: 8.68   Max: 28.00   Best: 10.00   Elapsed time:  37.22s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2361   Min: 0.00   Mean: 0.18   Max: 4.00   Best: 10.00   Elapsed time:  37.27s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2362   Min: 0.00   Mean: 4.80   Max: 38.00   Best: 10.00   Elapsed time:  38.64s Mean time per episode: 6.14s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2363   Min: 0.00   Mean: 7.14   Max: 24.00   Best: 10.00   Elapsed time:  37.65s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2364   Min: 0.00   Mean: 43.23   Max: 134.00   Best: 10.00   Elapsed time:  37.71s Mean time per episode: 6.08s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2365   Min: 0.00   Mean: 11.48   Max: 28.00   Best: 10.00   Elapsed time:  38.60s Mean time per episode: 6.24s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2366   Min: 0.00   Mean: 3.04   Max: 10.00   Best: 10.00   Elapsed time:  38.02s Mean time per episode: 6.10s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2367   Min: 0.00   Mean: 1.79   Max: 6.00   Best: 10.00   Elapsed time:  37.69s Mean time per episode: 6.08s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2368   Min: 0.00   Mean: 15.84   Max: 46.00   Best: 10.00   Elapsed time:  37.22s Mean time per episode: 5.97s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2369   Min: 0.00   Mean: 2.61   Max: 12.00   Best: 10.00   Elapsed time:  37.05s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2370   Min: 2.00   Mean: 13.29   Max: 28.00   Best: 10.00   Elapsed time:  37.07s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2371   Min: 0.00   Mean: 11.93   Max: 32.00   Best: 10.00   Elapsed time:  37.29s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2372   Min: 0.00   Mean: 11.27   Max: 58.00   Best: 10.00   Elapsed time:  38.07s Mean time per episode: 6.16s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2373   Min: 8.00   Mean: 22.38   Max: 124.00   Best: 10.00   Elapsed time:  37.27s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2374   Min: 0.00   Mean: 1.32   Max: 18.00   Best: 10.00   Elapsed time:  37.26s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2375   Min: 0.00   Mean: 1.59   Max: 10.00   Best: 10.00   Elapsed time:  37.27s Mean time per episode: 5.99s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2376   Min: 0.00   Mean: 5.54   Max: 24.00   Best: 10.00   Elapsed time:  37.58s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2377   Min: 0.00   Mean: 5.61   Max: 68.00   Best: 10.00   Elapsed time:  37.65s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2378   Min: 0.00   Mean: 19.86   Max: 54.00   Best: 10.00   Elapsed time:  37.68s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2379   Min: 0.00   Mean: 2.61   Max: 18.00   Best: 10.00   Elapsed time:  38.21s Mean time per episode: 6.14s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2380   Min: 0.00   Mean: 5.70   Max: 20.00   Best: 10.00   Elapsed time:  37.59s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2381   Min: 0.00   Mean: 4.07   Max: 18.00   Best: 10.00   Elapsed time:  37.76s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2382   Min: 0.00   Mean: 0.64   Max: 6.00   Best: 10.00   Elapsed time:  37.57s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2383   Min: 0.00   Mean: 0.02   Max: 2.00   Best: 10.00   Elapsed time:  37.26s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2384   Min: 0.00   Mean: 2.75   Max: 10.00   Best: 10.00   Elapsed time:  37.58s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2385   Min: 0.00   Mean: 2.79   Max: 12.00   Best: 10.00   Elapsed time:  37.44s Mean time per episode: 6.01s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2386   Min: 0.00   Mean: 6.57   Max: 20.00   Best: 10.00   Elapsed time:  37.29s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2387   Min: 0.00   Mean: 19.86   Max: 42.00   Best: 10.00   Elapsed time:  37.37s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2388   Min: 0.00   Mean: 5.12   Max: 20.00   Best: 10.00   Elapsed time:  37.42s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2389   Min: 0.00   Mean: 1.91   Max: 16.00   Best: 10.00   Elapsed time:  36.57s Mean time per episode: 5.87s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2390   Min: 0.00   Mean: 1.82   Max: 6.00   Best: 10.00   Elapsed time:  36.32s Mean time per episode: 5.85s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2391   Min: 0.00   Mean: 2.79   Max: 12.00   Best: 10.00   Elapsed time:  36.37s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2392   Min: 0.00   Mean: 1.84   Max: 8.00   Best: 10.00   Elapsed time:  36.99s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2393   Min: 6.00   Mean: 21.14   Max: 46.00   Best: 10.00   Elapsed time:  36.81s Mean time per episode: 5.90s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2394   Min: 0.00   Mean: 1.77   Max: 8.00   Best: 10.00   Elapsed time:  37.92s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2395   Min: 4.00   Mean: 60.20   Max: 204.00   Best: 10.00   Elapsed time:  36.96s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2396   Min: 0.00   Mean: 5.62   Max: 30.00   Best: 10.00   Elapsed time:  37.07s Mean time per episode: 5.92s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2397   Min: 0.00   Mean: 0.43   Max: 4.00   Best: 10.00   Elapsed time:  37.84s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2398   Min: 0.00   Mean: 3.82   Max: 24.00   Best: 10.00   Elapsed time:  37.40s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2399   Min: 18.00   Mean: 103.91   Max: 350.00   Best: 10.00   Elapsed time:  37.61s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2400   Min: 0.00   Mean: 2.12   Max: 10.00   Best: 10.00   Elapsed time:  38.35s Mean time per episode: 6.20s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2401   Min: 0.00   Mean: 6.18   Max: 18.00   Best: 10.00   Elapsed time:  37.70s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2402   Min: 0.00   Mean: 22.66   Max: 60.00   Best: 10.00   Elapsed time:  38.22s Mean time per episode: 6.17s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2403   Min: 0.00   Mean: 5.96   Max: 16.00   Best: 10.00   Elapsed time:  38.02s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2404   Min: 0.00   Mean: 4.54   Max: 14.00   Best: 10.00   Elapsed time:  38.12s Mean time per episode: 6.14s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2405   Min: 0.00   Mean: 1.95   Max: 12.00   Best: 10.00   Elapsed time:  37.68s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2406   Min: 0.00   Mean: 14.59   Max: 32.00   Best: 10.00   Elapsed time:  37.90s Mean time per episode: 6.15s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2407   Min: 0.00   Mean: 24.07   Max: 110.00   Best: 10.00   Elapsed time:  37.44s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2408   Min: 0.00   Mean: 1.75   Max: 12.00   Best: 10.00   Elapsed time:  37.24s Mean time per episode: 6.01s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2409   Min: 0.00   Mean: 14.88   Max: 66.00   Best: 10.00   Elapsed time:  37.49s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2410   Min: 0.00   Mean: 7.11   Max: 16.00   Best: 10.00   Elapsed time:  38.01s Mean time per episode: 6.16s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2411   Min: 0.00   Mean: 9.34   Max: 26.00   Best: 10.00   Elapsed time:  37.84s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2412   Min: 0.00   Mean: 0.93   Max: 8.00   Best: 10.00   Elapsed time:  37.83s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2413   Min: 0.00   Mean: 2.34   Max: 18.00   Best: 10.00   Elapsed time:  38.68s Mean time per episode: 6.26s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2414   Min: 0.00   Mean: 5.02   Max: 32.00   Best: 10.00   Elapsed time:  38.71s Mean time per episode: 6.18s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2415   Min: 0.00   Mean: 1.12   Max: 6.00   Best: 10.00   Elapsed time:  40.06s Mean time per episode: 6.49s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2416   Min: 0.00   Mean: 3.12   Max: 24.00   Best: 10.00   Elapsed time:  38.29s Mean time per episode: 6.23s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2417   Min: 0.00   Mean: 32.86   Max: 118.00   Best: 10.00   Elapsed time:  37.55s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2418   Min: 0.00   Mean: 55.09   Max: 190.00   Best: 10.00   Elapsed time:  39.47s Mean time per episode: 6.38s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2419   Min: 0.00   Mean: 7.55   Max: 28.00   Best: 10.00   Elapsed time:  39.50s Mean time per episode: 6.33s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2420   Min: 0.00   Mean: 1.80   Max: 8.00   Best: 10.00   Elapsed time:  39.20s Mean time per episode: 6.33s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2421   Min: 8.00   Mean: 38.66   Max: 86.00   Best: 10.00   Elapsed time:  38.60s Mean time per episode: 6.26s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2422   Min: 0.00   Mean: 2.25   Max: 8.00   Best: 10.00   Elapsed time:  37.84s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2423   Min: 0.00   Mean: 2.29   Max: 8.00   Best: 10.00   Elapsed time:  37.81s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2424   Min: 4.00   Mean: 67.04   Max: 214.00   Best: 10.00   Elapsed time:  37.94s Mean time per episode: 6.10s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2425   Min: 0.00   Mean: 26.11   Max: 78.00   Best: 10.00   Elapsed time:  38.16s Mean time per episode: 6.17s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2426   Min: 0.00   Mean: 0.66   Max: 4.00   Best: 10.00   Elapsed time:  37.76s Mean time per episode: 6.10s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2427   Min: 0.00   Mean: 55.43   Max: 136.00   Best: 10.00   Elapsed time:  37.86s Mean time per episode: 6.14s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2428   Min: 2.00   Mean: 28.30   Max: 58.00   Best: 10.00   Elapsed time:  38.12s Mean time per episode: 6.20s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2429   Min: 0.00   Mean: 4.80   Max: 22.00   Best: 10.00   Elapsed time:  37.80s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2430   Min: 0.00   Mean: 3.36   Max: 12.00   Best: 10.00   Elapsed time:  37.86s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2431   Min: 30.00   Mean: 56.14   Max: 82.00   Best: 10.00   Elapsed time:  38.19s Mean time per episode: 6.17s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2432   Min: 0.00   Mean: 5.14   Max: 20.00   Best: 10.00   Elapsed time:  38.39s Mean time per episode: 6.22s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2433   Min: 0.00   Mean: 89.82   Max: 264.00   Best: 10.00   Elapsed time:  37.92s Mean time per episode: 6.11s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2434   Min: 0.00   Mean: 29.32   Max: 94.00   Best: 10.00   Elapsed time:  37.81s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2435   Min: 2.00   Mean: 16.25   Max: 54.00   Best: 10.00   Elapsed time:  37.94s Mean time per episode: 6.15s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2436   Min: 0.00   Mean: 4.48   Max: 34.00   Best: 10.00   Elapsed time:  37.77s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2437   Min: 262.00   Mean: 807.54   Max: 1014.00   Best: 10.00   Elapsed time:  38.28s Mean time per episode: 6.17s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2438   Min: 0.00   Mean: 1.00   Max: 6.00   Best: 10.00   Elapsed time:  37.49s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2439   Min: 0.00   Mean: 4.95   Max: 18.00   Best: 10.00   Elapsed time:  37.81s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2440   Min: 0.00   Mean: 5.52   Max: 14.00   Best: 10.00   Elapsed time:  37.53s Mean time per episode: 6.01s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2441   Min: 2.00   Mean: 13.30   Max: 28.00   Best: 10.00   Elapsed time:  37.51s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2442   Min: 0.00   Mean: 1.02   Max: 10.00   Best: 10.00   Elapsed time:  38.76s Mean time per episode: 6.21s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2443   Min: 4.00   Mean: 15.55   Max: 34.00   Best: 10.00   Elapsed time:  36.92s Mean time per episode: 5.95s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2444   Min: 0.00   Mean: 6.59   Max: 28.00   Best: 10.00   Elapsed time:  37.71s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2445   Min: 0.00   Mean: 7.48   Max: 22.00   Best: 10.00   Elapsed time:  36.82s Mean time per episode: 5.94s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2446   Min: 0.00   Mean: 6.52   Max: 62.00   Best: 10.00   Elapsed time:  38.01s Mean time per episode: 6.15s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2447   Min: 0.00   Mean: 2.07   Max: 8.00   Best: 10.00   Elapsed time:  37.63s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2448   Min: 0.00   Mean: 10.18   Max: 40.00   Best: 10.00   Elapsed time:  38.50s Mean time per episode: 6.24s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2449   Min: 2.00   Mean: 11.62   Max: 22.00   Best: 10.00   Elapsed time:  37.56s Mean time per episode: 6.03s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2450   Min: 0.00   Mean: 6.23   Max: 18.00   Best: 10.00   Elapsed time:  37.34s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2451   Min: 0.00   Mean: 62.18   Max: 146.00   Best: 10.00   Elapsed time:  38.64s Mean time per episode: 6.25s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2452   Min: 40.00   Mean: 172.16   Max: 260.00   Best: 10.00   Elapsed time:  37.99s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2453   Min: 0.00   Mean: 0.55   Max: 8.00   Best: 10.00   Elapsed time:  37.42s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2454   Min: 0.00   Mean: 5.23   Max: 18.00   Best: 10.00   Elapsed time:  37.32s Mean time per episode: 5.96s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2455   Min: 2.00   Mean: 99.14   Max: 158.00   Best: 10.00   Elapsed time:  38.74s Mean time per episode: 6.31s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2456   Min: 0.00   Mean: 68.30   Max: 150.00   Best: 10.00   Elapsed time:  38.10s Mean time per episode: 6.19s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2457   Min: 4.00   Mean: 60.34   Max: 128.00   Best: 10.00   Elapsed time:  37.98s Mean time per episode: 6.12s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2458   Min: 0.00   Mean: 16.96   Max: 80.00   Best: 10.00   Elapsed time:  37.81s Mean time per episode: 6.14s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2459   Min: 0.00   Mean: 6.95   Max: 24.00   Best: 10.00   Elapsed time:  37.62s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2460   Min: 40.00   Mean: 204.27   Max: 344.00   Best: 10.00   Elapsed time:  41.46s Mean time per episode: 6.82s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2461   Min: 0.00   Mean: 17.43   Max: 40.00   Best: 10.00   Elapsed time:  37.55s Mean time per episode: 6.06s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2462   Min: 4.00   Mean: 103.20   Max: 228.00   Best: 10.00   Elapsed time:  37.60s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2463   Min: 0.00   Mean: 4.61   Max: 16.00   Best: 10.00   Elapsed time:  37.45s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2464   Min: 0.00   Mean: 11.21   Max: 42.00   Best: 10.00   Elapsed time:  37.47s Mean time per episode: 6.03s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2465   Min: 0.00   Mean: 2.82   Max: 10.00   Best: 10.00   Elapsed time:  37.73s Mean time per episode: 6.05s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2466   Min: 0.00   Mean: 9.30   Max: 22.00   Best: 10.00   Elapsed time:  37.24s Mean time per episode: 5.97s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2467   Min: 0.00   Mean: 0.68   Max: 4.00   Best: 10.00   Elapsed time:  37.94s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2468   Min: 0.00   Mean: 14.73   Max: 82.00   Best: 10.00   Elapsed time:  36.96s Mean time per episode: 5.93s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2469   Min: 0.00   Mean: 31.46   Max: 220.00   Best: 10.00   Elapsed time:  37.25s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2470   Min: 0.00   Mean: 0.52   Max: 4.00   Best: 10.00   Elapsed time:  37.25s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2471   Min: 0.00   Mean: 2.32   Max: 10.00   Best: 10.00   Elapsed time:  36.67s Mean time per episode: 5.91s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2472   Min: 2.00   Mean: 66.93   Max: 102.00   Best: 10.00   Elapsed time:  36.43s Mean time per episode: 5.84s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2473   Min: 46.00   Mean: 97.41   Max: 130.00   Best: 10.00   Elapsed time:  37.41s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2474   Min: 0.00   Mean: 5.48   Max: 20.00   Best: 10.00   Elapsed time:  37.29s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2475   Min: 0.00   Mean: 0.50   Max: 4.00   Best: 10.00   Elapsed time:  37.38s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2476   Min: 0.00   Mean: 29.62   Max: 74.00   Best: 10.00   Elapsed time:  37.08s Mean time per episode: 5.98s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2477   Min: 0.00   Mean: 8.45   Max: 44.00   Best: 10.00   Elapsed time:  38.10s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2478   Min: 0.00   Mean: 2.75   Max: 18.00   Best: 10.00   Elapsed time:  38.53s Mean time per episode: 6.25s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2479   Min: 0.00   Mean: 4.66   Max: 20.00   Best: 10.00   Elapsed time:  37.41s Mean time per episode: 6.03s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2480   Min: 0.00   Mean: 1.75   Max: 8.00   Best: 10.00   Elapsed time:  37.43s Mean time per episode: 6.02s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2481   Min: 0.00   Mean: 7.00   Max: 28.00   Best: 10.00   Elapsed time:  37.20s Mean time per episode: 5.97s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2482   Min: 0.00   Mean: 9.98   Max: 30.00   Best: 10.00   Elapsed time:  37.70s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2483   Min: 0.00   Mean: 1.75   Max: 10.00   Best: 10.00   Elapsed time:  37.95s Mean time per episode: 6.08s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2484   Min: 0.00   Mean: 0.04   Max: 2.00   Best: 10.00   Elapsed time:  38.48s Mean time per episode: 6.25s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2485   Min: 0.00   Mean: 9.18   Max: 30.00   Best: 10.00   Elapsed time:  38.48s Mean time per episode: 6.24s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2486   Min: 0.00   Mean: 1.05   Max: 6.00   Best: 10.00   Elapsed time:  38.07s Mean time per episode: 6.13s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2487   Min: 12.00   Mean: 58.62   Max: 154.00   Best: 10.00   Elapsed time:  37.67s Mean time per episode: 6.07s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2488   Min: 0.00   Mean: 0.59   Max: 6.00   Best: 20.00   Elapsed time:  37.85s Mean time per episode: 6.08s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2489   Min: 0.00   Mean: 0.54   Max: 4.00   Best: 20.00   Elapsed time:  38.01s Mean time per episode: 6.10s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2490   Min: 4.00   Mean: 20.66   Max: 42.00   Best: 20.00   Elapsed time:  38.08s Mean time per episode: 6.19s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2491   Min: 0.00   Mean: 2.80   Max: 14.00   Best: 20.00   Elapsed time:  37.24s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2492   Min: 0.00   Mean: 17.27   Max: 84.00   Best: 20.00   Elapsed time:  37.37s Mean time per episode: 6.03s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2493   Min: 4.00   Mean: 51.95   Max: 214.00   Best: 20.00   Elapsed time:  37.96s Mean time per episode: 6.09s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2494   Min: 0.00   Mean: 2.32   Max: 10.00   Best: 20.00   Elapsed time:  37.39s Mean time per episode: 6.00s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2495   Min: 0.00   Mean: 4.59   Max: 20.00   Best: 20.00   Elapsed time:  36.14s Mean time per episode: 5.81s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2496   Min: 0.00   Mean: 0.75   Max: 4.00   Best: 20.00   Elapsed time:  36.27s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2497   Min: 0.00   Mean: 4.88   Max: 32.00   Best: 20.00   Elapsed time:  36.45s Mean time per episode: 5.83s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2498   Min: 0.00   Mean: 0.32   Max: 2.00   Best: 20.00   Elapsed time:  37.44s Mean time per episode: 6.04s
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Episodes with VecEnv finished
+Generation: 2499   Min: 0.00   Mean: 13.95   Max: 126.00   Best: 20.00   Elapsed time:  38.02s Mean time per episode: 6.17s
+Elapsed time for training: 94103.69 seconds
+Output directory: Simulation_Results/2021-03-18_19-54-26
+Traceback (most recent call last):
+  File "train_autoencoder.py", line 158, in <module>
+    write_results_to_textfile(path=os.path.join(results_directory, 'Log.txt'),
+  File "/home/pdeubel/Repositories/Canonical_ES/tools/write_results.py", line 45, in write_results_to_textfile
+    line['max'], line['best'],
+KeyError: 'best'
+
