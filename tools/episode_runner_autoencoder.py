@@ -162,3 +162,60 @@ class EpisodeRunnerAutoEncoder:
             fitness_total += fitness_current
 
         return fitness_total / number_of_rounds, times_episodes
+
+    def validate_fitness(self, evaluations, episode_steps: int = 500, break_all_episodes: bool = False):
+        """
+
+        :param evaluations: List of 3-tuples (individual, env_seed, number_of_rounds)
+        :param episode_steps: Number of steps per episode
+        :param break_all_episodes: When one episode is done, break all episodes
+        :return:
+        """
+        # Extract parameters, this list of lists is necessary since pool.map only accepts a single argument
+        # See here: http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
+        # individual = evaluations[0]
+
+        validation_fitnesses = []
+        validation_episode_times = []
+
+        for validation_triple in evaluations:
+            validation_genome = validation_triple[0]
+            validation_seed = validation_triple[1]
+
+            brain = self.brain_class(input_size=self.input_size, output_size=self.output_size,
+                                     individual=validation_genome, configuration=self.brain_configuration,
+                                     brain_state=self.brain_state)
+
+            # num_threads=8 can be set here, don't know how it effects performance yet
+            env = ProcgenGym3Env(num=1, env_name="heist", use_backgrounds=False,
+                                 distribution_mode=self.distribution_mode, num_levels=1, start_level=validation_seed)
+
+            rew, ob, first = env.observe()
+            observation = ob["rgb"]
+            ob = self.transform_ob(observation)
+
+            fitness = 0
+
+            time_s = time.time()
+            for i in range(episode_steps):
+
+                action = brain.step(ob.flatten())
+                # Needs to be converted to ndarray since env expects that as action
+                action = np.array([np.argmax(action)])
+
+                env.act(action)
+                rew, ob, first = env.observe()
+
+                if any(first) and break_all_episodes:
+                    print("break_episodes: One or more environments are done, stopping all episodes")
+                    break
+
+                observation = ob["rgb"]
+                ob = self.transform_ob(observation)
+
+                fitness += rew
+
+            validation_episode_times.append(time.time() - time_s)
+            validation_fitnesses.append(fitness)
+
+        return validation_fitnesses, validation_episode_times
