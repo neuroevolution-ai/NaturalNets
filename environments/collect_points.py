@@ -1,43 +1,50 @@
 import numpy as np
+import attr
 from environments.df_maze import Maze
 import cv2
 import math
 
 
+@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class EnvironmentCfg:
+    name: str
+    maze_columns: int
+    maze_rows: int
+    maze_cell_size: int
+    agent_radius: int
+    point_radius: int
+    agent_movement_range: float
+    reward_per_collected_point: float
+    number_time_steps: int
+
+
 class CollectPointsEnv:
 
-    def __init__(self, env_seed):
+    def __init__(self, env_seed: int, configuration: dict):
 
-        self.number_of_time_steps = 1000
+        self.config = EnvironmentCfg(**configuration)
 
-        # Maze dimensions (ncols, nrows)
-        self.nx, self.ny = 10, 10
-        self.maze_cell_size = 80
-
-        self.screen_width = self.maze_cell_size * self.nx
-        self.screen_height = self.maze_cell_size * self.ny
-
-        # Radius of agent
-        self.agent_radius = 12
-        self.point_radius = 8
+        self.screen_width = self.config.maze_cell_size * self.config.maze_columns
+        self.screen_height = self.config.maze_cell_size * self.config.maze_rows
 
         self.rs = np.random.RandomState(env_seed)
 
         # Agent coordinates
-        self.agent_position_x, self.agent_position_y = self.place_randomly_in_maze(self.agent_radius)
+        self.agent_position_x, self.agent_position_y = self.place_randomly_in_maze(self.config.agent_radius)
 
         # Point coordinates
-        self.point_x, self.point_y = self.place_randomly_in_maze(self.point_radius)
+        self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
 
         # Create Maze
-        self.maze = Maze(self.nx, self.ny, self.rs)
+        self.maze = Maze(self.config.maze_columns, self.config.maze_rows, self.rs)
 
         self.t = 0
 
     def get_number_inputs(self):
         return len(self.get_observation())
 
-    def get_number_outputs(self):
+    @staticmethod
+    def get_number_outputs():
         return 2
 
     def reset(self):
@@ -45,44 +52,47 @@ class CollectPointsEnv:
 
     def step(self, action: np.ndarray):
 
+        # Movement range for agent
+        mr = self.config.agent_movement_range
+
         # Move agent
-        self.agent_position_x += math.floor(action[0] * 10)
-        self.agent_position_y += math.floor(action[1] * 10)
+        self.agent_position_x += int(np.clip(math.floor(action[0] * mr), -mr, mr))
+        self.agent_position_y += int(np.clip(math.floor(action[1] * mr), -mr, mr))
 
         # Check agent collisions with outer walls
-        self.agent_position_y = max(self.agent_position_y, self.agent_radius)  # Upper border
-        self.agent_position_y = min(self.agent_position_y, self.screen_height - self.agent_radius)  # Lower border
-        self.agent_position_x = min(self.agent_position_x, self.screen_width - self.agent_radius)  # Right border
-        self.agent_position_x = max(self.agent_position_x, self.agent_radius)  # Left border
+        self.agent_position_y = max(self.agent_position_y, self.config.agent_radius)  # Upper border
+        self.agent_position_y = min(self.agent_position_y, self.screen_height - self.config.agent_radius)  # Lower bord.
+        self.agent_position_x = min(self.agent_position_x, self.screen_width - self.config.agent_radius)  # Right border
+        self.agent_position_x = max(self.agent_position_x, self.config.agent_radius)  # Left border
 
         # Check agent collisions with maze walls
-        cell_x = math.floor(self.agent_position_x / self.maze_cell_size)
-        cell_y = math.floor(self.agent_position_y / self.maze_cell_size)
+        cell_x = math.floor(self.agent_position_x / self.config.maze_cell_size)
+        cell_y = math.floor(self.agent_position_y / self.config.maze_cell_size)
 
         x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
 
         cell = self.maze.cell_at(cell_x, cell_y)
 
         if cell.walls['N']:
-            self.agent_position_y = max(self.agent_position_y, y_top + self.agent_radius)
+            self.agent_position_y = max(self.agent_position_y, y_top + self.config.agent_radius)
         if cell.walls['S']:
-            self.agent_position_y = min(self.agent_position_y, y_bottom - self.agent_radius)
+            self.agent_position_y = min(self.agent_position_y, y_bottom - self.config.agent_radius)
         if cell.walls['E']:
-            self.agent_position_x = min(self.agent_position_x, x_right - self.agent_radius)
+            self.agent_position_x = min(self.agent_position_x, x_right - self.config.agent_radius)
         if cell.walls['W']:
-            self.agent_position_x = max(self.agent_position_x, x_left + self.agent_radius)
+            self.agent_position_x = max(self.agent_position_x, x_left + self.config.agent_radius)
 
         # Collect point in reach
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
-        if distance > self.point_radius + self.agent_radius:
+        if distance > self.config.point_radius + self.config.agent_radius:
             rew = -distance / self.screen_width
         else:
-            self.point_x, self.point_y = self.place_randomly_in_maze(self.point_radius)
-            rew = 500.0
+            self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
+            rew = self.config.reward_per_collected_point
 
         self.t += 1
 
-        if self.t < self.number_of_time_steps:
+        if self.t < self.config.number_time_steps:
             done = False
         else:
             done = True
@@ -94,48 +104,49 @@ class CollectPointsEnv:
 
     def render(self):
 
-        color_red = (0, 0, 255)
-        color_blue = (0, 255, 0)
-        color_black = (0, 0, 0)
+        red = (0, 0, 255)
+        blue = (0, 255, 0)
+        black = (0, 0, 0)
 
+        # Initialize image with white background
         image = 255 * np.ones(shape=[self.screen_width, self.screen_height, 3], dtype=np.uint8)
 
         # Draw agent
-        image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.agent_radius, color_red, -1)
+        image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.config.agent_radius, red, -1)
 
         # Draw point
-        image = cv2.circle(image, (self.point_x, self.point_y), self.point_radius, color_blue, -1)
+        image = cv2.circle(image, (self.point_x, self.point_y), self.config.point_radius, blue, -1)
 
-        # Render maze
-        for cell_x in range(self.nx):
-            for cell_y in range(self.ny):
+        # Draw maze
+        for cell_x in range(self.config.maze_columns):
+            for cell_y in range(self.config.maze_rows):
 
                 x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
 
                 cell = self.maze.maze_map[cell_x][cell_y]
 
-                # Render walls
+                # Draw walls
                 if cell.walls['N']:
-                    image = cv2.line(image, (x_left, y_top), (x_right, y_top), color_black, 2)
+                    image = cv2.line(image, (x_left, y_top), (x_right, y_top), black, 2)
                 if cell.walls['S']:
-                    image = cv2.line(image, (x_left, y_bottom), (x_right, y_bottom), color_black, 2)
+                    image = cv2.line(image, (x_left, y_bottom), (x_right, y_bottom), black, 2)
                 if cell.walls['E']:
-                    image = cv2.line(image, (x_right, y_top), (x_right, y_bottom), color_black, 2)
+                    image = cv2.line(image, (x_right, y_top), (x_right, y_bottom), black, 2)
                 if cell.walls['W']:
-                    image = cv2.line(image, (x_left, y_top), (x_left, y_bottom), color_black, 2)
+                    image = cv2.line(image, (x_left, y_top), (x_left, y_bottom), black, 2)
 
         # Draw outer border
-        image = cv2.rectangle(image, (0, 0), (self.screen_width-1, self.screen_height-1), color_black, 3)
+        image = cv2.rectangle(image, (0, 0), (self.screen_width-1, self.screen_height-1), black, 3)
 
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
 
     def get_coordinates_maze_cell(self, cell_x, cell_y):
 
-        x_left = self.maze_cell_size * cell_x
-        x_right = self.maze_cell_size * (cell_x + 1)
-        y_top = self.maze_cell_size * cell_y
-        y_bottom = self.maze_cell_size * (cell_y + 1)
+        x_left = self.config.maze_cell_size * cell_x
+        x_right = self.config.maze_cell_size * (cell_x + 1)
+        y_top = self.config.maze_cell_size * cell_y
+        y_bottom = self.config.maze_cell_size * (cell_y + 1)
 
         return x_left, x_right, y_top, y_bottom
 
@@ -151,7 +162,10 @@ class CollectPointsEnv:
 
     def place_randomly_in_maze(self, radius):
 
-        x = self.rs.randint(radius, self.maze_cell_size - radius) + self.rs.randint(self.nx) * self.maze_cell_size
-        y = self.rs.randint(radius, self.maze_cell_size - radius) + self.rs.randint(self.ny) * self.maze_cell_size
+        x = self.rs.randint(radius, self.config.maze_cell_size - radius) + self.rs.randint(
+            self.config.maze_columns) * self.config.maze_cell_size
+
+        y = self.rs.randint(radius, self.config.maze_cell_size - radius) + self.rs.randint(
+            self.config.maze_rows) * self.config.maze_cell_size
 
         return x, y

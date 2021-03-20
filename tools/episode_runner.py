@@ -6,7 +6,8 @@ class EpisodeRunner:
 
     def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
 
-        env = CollectPointsEnv(env_seed=0)
+        self.env_configuration = env_configuration
+        env = CollectPointsEnv(env_seed=0, configuration=self.env_configuration)
         self.input_size = env.get_number_inputs()
         self.output_size = env.get_number_outputs()
 
@@ -15,7 +16,7 @@ class EpisodeRunner:
 
         self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
                                                             output_size=self.output_size,
-                                                            configuration=brain_configuration)
+                                                            configuration=self.brain_configuration)
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(self.input_size, self.output_size, self.brain_configuration,
@@ -52,7 +53,7 @@ class EpisodeRunner:
 
         for i in range(number_of_rounds):
 
-            env = CollectPointsEnv(env_seed=env_seed)
+            env = CollectPointsEnv(env_seed=env_seed, configuration=self.env_configuration)
             ob = env.reset()
             brain.reset()
 

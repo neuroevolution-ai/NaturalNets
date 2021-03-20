@@ -4,7 +4,7 @@ import os
 from brains.continuous_time_rnn import *
 from environments.collect_points import *
 
-directory = os.path.join('Simulation_Results', '2021-03-18_12-46-06')
+directory = os.path.join('Simulation_Results', '2021-03-20_11-07-09')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -23,7 +23,7 @@ fitness_total = 0
 
 for env_seed in range(number_validation_runs):
 
-    env = CollectPointsEnv(env_seed)
+    env = CollectPointsEnv(env_seed=env_seed, configuration=configuration['environment'])
 
     ob = env.reset()
     brain.reset()
