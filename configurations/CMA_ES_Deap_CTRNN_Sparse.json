@@ -12,6 +12,7 @@
         "point_radius": 8,
         "agent_movement_range": 10.0,
         "reward_per_collected_point": 500.0,
+        "reward_per_collected_negative_point": -700.0,
         "number_time_steps": 1000
     },
     "brain": {

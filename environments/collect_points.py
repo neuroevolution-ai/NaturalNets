@@ -15,6 +15,7 @@ class EnvironmentCfg:
     point_radius: int
     agent_movement_range: float
     reward_per_collected_point: float
+    reward_per_collected_negative_point: float
     number_time_steps: int
 
 
@@ -32,8 +33,11 @@ class CollectPointsEnv:
         # Agent coordinates
         self.agent_position_x, self.agent_position_y = self.place_randomly_in_maze(self.config.agent_radius)
 
-        # Point coordinates
+        # Point coordinates for positive point
         self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
+
+        # Point coordinates for negative point
+        self.negative_point_x, self.negative_point_y = self.place_randomly_in_maze(self.config.point_radius)
 
         # Create Maze
         self.maze = Maze(self.config.maze_columns, self.config.maze_rows, self.rs)
@@ -106,13 +110,19 @@ class CollectPointsEnv:
             self.agent_position_x = x_left + self.config.agent_radius
             self.agent_position_y = y_bottom - self.config.agent_radius
 
-        # Collect point in reach
+        # Collect positive point in reach
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
         if distance > self.config.point_radius + self.config.agent_radius:
             rew = -distance / self.screen_width
         else:
             self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
             rew = self.config.reward_per_collected_point
+
+        # Collect negative point in reach
+        distance = math.sqrt((self.negative_point_x - self.agent_position_x) ** 2 + (self.negative_point_y - self.agent_position_y) ** 2)
+        if distance <= self.config.point_radius + self.config.agent_radius:
+            self.negative_point_x, self.negative_point_y = self.place_randomly_in_maze(self.config.point_radius)
+            rew = self.config.reward_per_collected_negative_point
 
         self.t += 1
 
@@ -129,17 +139,21 @@ class CollectPointsEnv:
     def render(self):
 
         red = (0, 0, 255)
-        blue = (0, 255, 0)
+        green = (0, 255, 0)
         black = (0, 0, 0)
+        blue = (255, 0, 0)
 
         # Initialize image with white background
         image = 255 * np.ones(shape=[self.screen_width, self.screen_height, 3], dtype=np.uint8)
 
         # Draw agent
-        image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.config.agent_radius, red, -1)
+        image = cv2.circle(image, (self.agent_position_x, self.agent_position_y), self.config.agent_radius, green, -1)
 
-        # Draw point
+        # Draw positive point
         image = cv2.circle(image, (self.point_x, self.point_y), self.config.point_radius, blue, -1)
+
+        # Draw negative point
+        image = cv2.circle(image, (self.negative_point_x, self.negative_point_y), self.config.point_radius, red, -1)
 
         # Draw maze
         for cell_x in range(self.config.maze_columns):
@@ -181,6 +195,8 @@ class CollectPointsEnv:
         ob_list.append(self.agent_position_y / self.screen_height)
         ob_list.append(self.point_x / self.screen_width)
         ob_list.append(self.point_y / self.screen_height)
+        ob_list.append(self.negative_point_x / self.screen_width)
+        ob_list.append(self.negative_point_y / self.screen_height)
 
         return np.asarray(ob_list)
 
