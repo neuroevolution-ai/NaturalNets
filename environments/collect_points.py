@@ -82,6 +82,30 @@ class CollectPointsEnv:
         if cell.walls['W']:
             self.agent_position_x = max(self.agent_position_x, x_left + self.config.agent_radius)
 
+        # Check agent collision with top-left edge (prevents sneaking through the edge)
+        if self.agent_position_x - x_left < self.config.agent_radius \
+                and self.agent_position_y - y_top < self.config.agent_radius:
+            self.agent_position_x = x_left + self.config.agent_radius
+            self.agent_position_y = y_top + self.config.agent_radius
+
+        # Check agent collision with top-right edge (prevents sneaking through the edge)
+        if x_right - self.agent_position_x < self.config.agent_radius \
+                and self.agent_position_y - y_top < self.config.agent_radius:
+            self.agent_position_x = x_right - self.config.agent_radius
+            self.agent_position_y = y_top + self.config.agent_radius
+
+        # Check agent collision with bottom-right edge (prevents sneaking through the edge)
+        if x_right - self.agent_position_x < self.config.agent_radius \
+                and y_bottom - self.agent_position_y < self.config.agent_radius:
+            self.agent_position_x = x_right - self.config.agent_radius
+            self.agent_position_y = y_bottom - self.config.agent_radius
+
+        # Check agent collision with bottom-left edge (prevents sneaking through the edge)
+        if self.agent_position_x - x_left < self.config.agent_radius \
+                and y_bottom - self.agent_position_y < self.config.agent_radius:
+            self.agent_position_x = x_left + self.config.agent_radius
+            self.agent_position_y = y_bottom - self.config.agent_radius
+
         # Collect point in reach
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
         if distance > self.config.point_radius + self.config.agent_radius:
