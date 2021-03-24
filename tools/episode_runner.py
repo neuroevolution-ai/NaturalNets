@@ -1,13 +1,12 @@
-import attr
-from environments.collect_points import *
 
 
 class EpisodeRunner:
 
-    def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
+    def __init__(self, env_class, env_configuration: dict, brain_class, brain_configuration: dict):
 
+        self.env_class = env_class
         self.env_configuration = env_configuration
-        env = CollectPointsEnv(env_seed=0, configuration=self.env_configuration)
+        env = self.env_class(env_seed=0, configuration=self.env_configuration)
         self.input_size = env.get_number_inputs()
         self.output_size = env.get_number_outputs()
 
@@ -53,7 +52,7 @@ class EpisodeRunner:
 
         for i in range(number_of_rounds):
 
-            env = CollectPointsEnv(env_seed=env_seed, configuration=self.env_configuration)
+            env = self.env_class(env_seed=env_seed, configuration=self.env_configuration)
             ob = env.reset()
             brain.reset()
 

@@ -4,6 +4,7 @@ import json
 from tools.episode_runner import *
 import multiprocessing
 import random
+from environments.collect_points import *
 from optimizer.cma_es_deap import *
 from optimizer.cma_es_pycma import *
 from optimizer.canonical_es import *
@@ -28,6 +29,7 @@ class TrainingCfg:
 configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
 
 # TODO: Do this registration via class decorators
+registered_environment_classes = {'CollectPoints': CollectPoints}
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
                                 'CMA-ES-Pycma': OptimizerCmaEsPycma,
                                 'Canonical-ES': OptimizerCanonicalEs}
@@ -43,6 +45,12 @@ with open(os.path.join('configurations', configuration_file), "r") as read_file:
 
 config = TrainingCfg(**configuration)
 
+# Get environment class from configuration
+if config.environment['type'] in registered_environment_classes:
+    environment_class = registered_environment_classes[config.environment['type']]
+else:
+    raise RuntimeError("No valid brain")
+
 # Get brain class from configuration
 if config.brain['type'] in registered_brain_classes:
     brain_class = registered_brain_classes[config.brain['type']]
@@ -50,7 +58,8 @@ else:
     raise RuntimeError("No valid brain")
 
 # Initialize episode runner
-ep_runner = EpisodeRunner(env_configuration=config.environment,
+ep_runner = EpisodeRunner(env_class=environment_class,
+                          env_configuration=config.environment,
                           brain_class=brain_class,
                           brain_configuration=config.brain)
 

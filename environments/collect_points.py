@@ -7,7 +7,7 @@ import math
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class EnvironmentCfg:
-    name: str
+    type: str
     maze_columns: int
     maze_rows: int
     maze_cell_size: int
@@ -19,7 +19,7 @@ class EnvironmentCfg:
     number_time_steps: int
 
 
-class CollectPointsEnv:
+class CollectPoints:
 
     def __init__(self, env_seed: int, configuration: dict):
 
