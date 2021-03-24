@@ -50,6 +50,10 @@ class OptimizerOpenAIES(IOptimizer):
         return individuals
 
     def tell(self, rewards):
+        # TODO add option to use ranks instead of the reward to shape the noises
+        # TODO add Adam optimizer
+
+        # TODO maybe improve the calculation using numpy function
         weighted_noise = np.sum([n * r for (n, r) in zip(self.noise, rewards)], axis=0, dtype=np.float32)
         update = (self.learning_rate / (self.population_size * self.sigma)) * weighted_noise
         self.current_individual = self.current_individual + update
