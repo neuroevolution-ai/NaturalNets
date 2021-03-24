@@ -1,18 +1,24 @@
-import time
-import os
 import json
-from tools.episode_runner import *
+import math
 import multiprocessing
+import os
 import random
-from environments.collect_points import *
-from optimizer.cma_es_deap import *
-from optimizer.cma_es_pycma import *
-from optimizer.canonical_es import *
-from brains.feed_forward_nn import *
-from brains.continuous_time_rnn import *
-from brains.indirect_encoded_ctrnn import *
-from tools.write_results import write_results_to_textfile
+import time
 from datetime import datetime
+
+import attr
+import numpy as np
+
+from brains.continuous_time_rnn import ContinuousTimeRNN
+from brains.feed_forward_nn import FeedForwardNN
+from brains.indirect_encoded_ctrnn import IndirectEncodedCtrnn
+from environments.collect_points import CollectPoints
+from optimizer.canonical_es import OptimizerCanonicalEs
+from optimizer.cma_es_deap import OptimizerCmaEsDeap
+from optimizer.cma_es_pycma import OptimizerCmaEsPycma
+from optimizer.openai_es import OptimizerOpenAIES
+from tools.episode_runner import EpisodeRunner
+from tools.write_results import write_results_to_textfile
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -32,7 +38,8 @@ configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
 registered_environment_classes = {'CollectPoints': CollectPoints}
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
                                 'CMA-ES-Pycma': OptimizerCmaEsPycma,
-                                'Canonical-ES': OptimizerCanonicalEs}
+                                'Canonical-ES': OptimizerCanonicalEs,
+                                'OpenAI-ES': OptimizerOpenAIES}
 registered_brain_classes = {'FFNN': FeedForwardNN,
                             'CTRNN': ContinuousTimeRNN,
                             'Indirect-CTRNN': IndirectEncodedCtrnn}

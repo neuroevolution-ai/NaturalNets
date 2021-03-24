@@ -6,3 +6,4 @@ scipy
 torch
 procgen
 opencv-python
+cma
