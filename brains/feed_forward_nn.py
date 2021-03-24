@@ -98,6 +98,10 @@ class FeedForwardNN(IBrain):
         return None
 
     @classmethod
+    def save_brain_state(cls, path, brain_state):
+        pass
+
+    @classmethod
     def load_brain_state(cls, path):
         pass
 
