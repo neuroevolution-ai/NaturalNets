@@ -1,31 +1,21 @@
-import attr
-import gym
-import numpy as np
-from gym.spaces import flatdim
-
-
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class EnvironmentCfg:
-    name: str
-    distribution_mode: str
 
 
 class EpisodeRunner:
 
-    def __init__(self, env_configuration: dict, brain_class, brain_configuration: dict):
+    def __init__(self, env_class, env_configuration: dict, brain_class, brain_configuration: dict):
 
-        self.env_config = EnvironmentCfg(**env_configuration)
-
-        env = gym.make(self.env_config.name, distribution_mode=self.env_config.distribution_mode)
-        self.input_size = flatdim(env.observation_space)
-        self.output_size = flatdim(env.action_space)
+        self.env_class = env_class
+        self.env_configuration = env_configuration
+        env = self.env_class(env_seed=0, configuration=self.env_configuration)
+        self.input_size = env.get_number_inputs()
+        self.output_size = env.get_number_outputs()
 
         self.brain_class = brain_class
         self.brain_configuration = brain_configuration
 
         self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
                                                             output_size=self.output_size,
-                                                            configuration=brain_configuration)
+                                                            configuration=self.brain_configuration)
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(self.input_size, self.output_size, self.brain_configuration,
@@ -62,10 +52,7 @@ class EpisodeRunner:
 
         for i in range(number_of_rounds):
 
-            env = gym.make(self.env_config.name,
-                           num_levels=1,
-                           start_level=env_seed + i,
-                           distribution_mode=self.env_config.distribution_mode)
+            env = self.env_class(env_seed=env_seed, configuration=self.env_configuration)
             ob = env.reset()
             brain.reset()
 
@@ -73,10 +60,8 @@ class EpisodeRunner:
             done = False
 
             while not done:
-                # obs = cv2.resize(ob, (16, 16), interpolation=cv2.INTER_AREA)
-
-                action = brain.step(ob.flatten() / 255.0)
-                ob, rew, done, info = env.step(np.argmax(action))
+                action = brain.step(ob)
+                ob, rew, done, info = env.step(action)
                 fitness_current += rew
 
             fitness_total += fitness_current

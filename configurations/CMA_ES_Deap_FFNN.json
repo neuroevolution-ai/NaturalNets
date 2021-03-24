@@ -16,17 +16,11 @@
         "number_time_steps": 1000
     },
     "brain": {
-        "type": "CTRNN",
-        "delta_t": 0.05,
-        "number_neurons": 200,
-        "v_mask": "random",
-        "v_mask_density": 0.5,
-        "w_mask": "random",
-        "w_mask_density": 0.05,
-        "t_mask": "random",
-        "t_mask_density": 0.3,
-        "clipping_range_min": -1.0,
-        "clipping_range_max": 1.0
+        "type": "FFNN",
+        "hidden_layers": [32, 32, 16],
+        "neuron_activation": "tanh",
+        "neuron_activation_output": "tanh",
+        "use_bias": true
     },
     "optimizer": {
         "type": "CMA-ES-Deap",

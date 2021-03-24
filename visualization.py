@@ -1,11 +1,10 @@
-import gym
 import json
 import time
-import cv2
 import os
 from brains.continuous_time_rnn import *
+from environments.collect_points import *
 
-directory = os.path.join('Simulation_Results', '2021-03-07_05-12-15')
+directory = os.path.join('Simulation_Results', '2021-03-20_11-07-09')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
@@ -15,46 +14,34 @@ brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_
 
 individual = np.load(os.path.join(directory, 'Best_Genome.npy'), allow_pickle=True)
 
-brain = ContinuousTimeRNN(individual=individual, configuration=configuration['brain'],
-                                  brain_state=brain_state)
+brain = ContinuousTimeRNN(input_size=0, output_size=0, individual=individual, configuration=configuration['brain'],
+                          brain_state=brain_state)
 
+number_validation_runs = configuration['number_validation_runs']
 
-reward_sum = 0
-number_validation_runs = 100
-
-num_levels_solved = 0
+fitness_total = 0
 
 for env_seed in range(number_validation_runs):
 
-    env = gym.make(configuration['environment'], num_levels=1, start_level=env_seed, distribution_mode="easy")
+    env = CollectPointsEnv(env_seed=env_seed, configuration=configuration['environment'])
+
     ob = env.reset()
-
-    reward = 0
-    done = False
-
     brain.reset()
 
+    fitness_current = 0
+    done = False
+
     while not done:
-        action = brain.step(ob.flatten() / 255.0)
-        ob, rew, done, info = env.step(np.argmax(action))
+        action = brain.step(ob)
+        ob, rew, done, info = env.step(action)
+        fitness_current += rew
 
-        #obs = cv2.resize(ob, (20, 20), interpolation=cv2.INTER_AREA)
+        env.render()
+        time.sleep(0.005)
 
-        #cv2.imshow("ProcGen Agent", cv2.resize(ob, (500, 500)))
-        #cv2.waitKey(1)
+    fitness_total += fitness_current
 
-        #time.sleep(0.01)
+    print("Seed: {}   Reward:  {:4.2f}".format(env_seed, fitness_current))
 
-        reward += rew
-
-    reward_sum += reward
-
-    if reward > 0:
-        num_levels_solved += 1
-
-    print("Seed: {}   Reward:  {:4.2f}".format(env_seed, reward))
-
-print("Reward mean: {:4.2f}".format(reward_sum/number_validation_runs))
+print("Reward mean: {:4.2f}".format(fitness_total / number_validation_runs))
 print("Finished")
-print(num_levels_solved)
-
