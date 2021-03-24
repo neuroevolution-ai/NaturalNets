@@ -6,7 +6,7 @@ import math
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class EnvironmentCfg:
+class CollectPointsCfg:
     type: str
     maze_columns: int
     maze_rows: int
@@ -14,7 +14,7 @@ class EnvironmentCfg:
     agent_radius: int
     point_radius: int
     agent_movement_range: float
-    reward_per_collected_point: float
+    reward_per_collected_positive_point: float
     reward_per_collected_negative_point: float
     number_time_steps: int
 
@@ -23,7 +23,7 @@ class CollectPoints:
 
     def __init__(self, env_seed: int, configuration: dict):
 
-        self.config = EnvironmentCfg(**configuration)
+        self.config = CollectPointsCfg(**configuration)
 
         self.screen_width = self.config.maze_cell_size * self.config.maze_columns
         self.screen_height = self.config.maze_cell_size * self.config.maze_rows
@@ -116,7 +116,7 @@ class CollectPoints:
             rew = -distance / self.screen_width
         else:
             self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
-            rew = self.config.reward_per_collected_point
+            rew = self.config.reward_per_collected_positive_point
 
         # Collect negative point in reach
         distance = math.sqrt((self.negative_point_x - self.agent_position_x) ** 2 + (self.negative_point_y - self.agent_position_y) ** 2)
