@@ -1,6 +1,5 @@
 import numpy as np
 import attr
-from gym import Space
 from brains.i_layer_based_brain import ILayerBasedBrain, ILayerBasedBrainCfg
 
 
