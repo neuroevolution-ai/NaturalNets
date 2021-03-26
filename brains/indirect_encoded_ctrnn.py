@@ -1,10 +1,9 @@
-from brains.i_brain import IBrain, IBrainCfg
-
 import attr
 import numpy as np
+from typing import Union
+from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 from brains.feed_forward_nn import FeedForwardNN
 from brains.continuous_time_rnn import ContinuousTimeRNN
-from typing import Union
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -285,3 +284,7 @@ class IndirectEncodedCtrnn(IBrain):
             individual_size += free_parameters
 
         return individual_size
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['Indirect-CTRNN'] = IndirectEncodedCtrnn

@@ -1,0 +1,1 @@
+from environments.collect_points import CollectPoints

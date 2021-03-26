@@ -1,15 +1,13 @@
 import abc
 
-from optimizer.canonical_es import OptimizerCanonicalEs
-from optimizer.cma_es_deap import OptimizerCmaEsDeap
-from optimizer.cma_es_pycma import OptimizerCmaEsPycma
-from optimizer.openai_es import OptimizerOpenAIES
+registered_optimizer_classes = {}
 
-# TODO: Do this registration via class decorators
-registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
-                                'CMA-ES-Pycma': OptimizerCmaEsPycma,
-                                'Canonical-ES': OptimizerCanonicalEs,
-                                'OpenAI-ES': OptimizerOpenAIES}
+
+def get_optimizer_class(optimizer_class_name: str):
+    if optimizer_class_name in registered_optimizer_classes:
+        return registered_optimizer_classes[optimizer_class_name]
+    else:
+        raise RuntimeError("No valid optimizer")
 
 
 class IOptimizer(abc.ABC):
