@@ -95,7 +95,7 @@ class ContinuousTimeRNN(IBrain):
             for i in range(n):
                 mask[i, i] = True
 
-        return np.random.rand(n, m) < mask_density
+        return mask
 
     @classmethod
     def save_brain_state(cls, path, brain_state):

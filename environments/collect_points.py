@@ -110,11 +110,11 @@ class CollectPoints:
             self.agent_position_x = x_left + self.config.agent_radius
             self.agent_position_y = y_bottom - self.config.agent_radius
 
+        rew = 0.0
+
         # Collect positive point in reach
         distance = math.sqrt((self.point_x - self.agent_position_x) ** 2 + (self.point_y - self.agent_position_y) ** 2)
-        if distance > self.config.point_radius + self.config.agent_radius:
-            rew = -distance / self.screen_width
-        else:
+        if distance <= self.config.point_radius + self.config.agent_radius:
             self.point_x, self.point_y = self.place_randomly_in_maze(self.config.point_radius)
             rew = self.config.reward_per_collected_positive_point
 

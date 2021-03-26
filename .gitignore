@@ -16,6 +16,7 @@ results
 videos
 
 temp*.py
+test.py
 nohup.out
 checkpoint*.pkl
 
