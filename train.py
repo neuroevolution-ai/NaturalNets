@@ -1,8 +1,10 @@
 import json
-import math
 import multiprocessing
 import os
 import random
+from environments.gym_mujoco import *
+from environments.reacher_memory import *
+from environments.collect_points import *
 import time
 from datetime import datetime
 
@@ -32,10 +34,12 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_CTRNN_Sparse.json"
+configuration_file = "Gym_Mujoco_CMA_ES_Deap_CTRNN.json"
 
 # TODO: Do this registration via class decorators
-registered_environment_classes = {'CollectPoints': CollectPoints}
+registered_environment_classes = {'CollectPoints': CollectPoints,
+                                  'GymMujoco': GymMujoco,
+                                  'ReacherMemory': ReacherMemory}
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
                                 'CMA-ES-Pycma': OptimizerCmaEsPycma,
                                 'Canonical-ES': OptimizerCanonicalEs,
