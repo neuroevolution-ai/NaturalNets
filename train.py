@@ -2,18 +2,11 @@ import json
 import multiprocessing
 import os
 import random
-
-from brains.elman import ElmanNN
-from brains.gru import GruNN
-from brains.lstm import LstmNN
-from environments.gym_mujoco import *
-from environments.reacher_memory import *
-from environments.collect_points import *
 import time
 import attr
+import math
 import numpy as np
 from datetime import datetime
-
 from tools.episode_runner import EpisodeRunner
 from tools.write_results import write_results_to_textfile
 from brains.i_brain import get_brain_class
