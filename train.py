@@ -2,6 +2,10 @@ import json
 import multiprocessing
 import os
 import random
+
+from brains.elman import ElmanNN
+from brains.gru import GruNN
+from brains.lstm import LstmNN
 from environments.gym_mujoco import *
 from environments.reacher_memory import *
 from environments.collect_points import *
@@ -34,7 +38,7 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "Gym_Mujoco_CMA_ES_Deap_CTRNN.json"
+configuration_file = "Reacher_Memory_CMA_ES_Deap_ELMAN.json"
 
 # TODO: Do this registration via class decorators
 registered_environment_classes = {'CollectPoints': CollectPoints,
@@ -46,7 +50,10 @@ registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
                                 'OpenAI-ES': OptimizerOpenAIES}
 registered_brain_classes = {'FFNN': FeedForwardNN,
                             'CTRNN': ContinuousTimeRNN,
-                            'Indirect-CTRNN': IndirectEncodedCtrnn}
+                            'Indirect-CTRNN': IndirectEncodedCtrnn,
+                            "ELMANNN": ElmanNN,
+                            "GRUNN": GruNN,
+                            "LSTMNN": LstmNN}
 
 pool = multiprocessing.Pool()
 

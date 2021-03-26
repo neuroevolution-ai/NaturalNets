@@ -1,4 +1,4 @@
-from brains.i_brain import IBrain
+from brains.i_brain import IBrain, IBrainCfg
 
 import attr
 import numpy as np
@@ -8,8 +8,7 @@ from typing import Union
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class IndirectEncodedCTRNNCfg:
-    type: str
+class IndirectEncodedCTRNNCfg(IBrainCfg):
     ffnn_config: dict
     ctrnn_config: dict
     red_z: float = 1.3

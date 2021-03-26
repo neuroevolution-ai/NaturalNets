@@ -1,4 +1,4 @@
-from brains.i_brain import IBrain
+from brains.i_brain import IBrain, IBrainCfg
 
 import attr
 import itertools
@@ -7,8 +7,7 @@ from typing import List
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class FeedForwardCfg:
-    type: str
+class FeedForwardCfg(IBrainCfg):
     hidden_layers: List[int]
     neuron_activation: str
     neuron_activation_output: str
@@ -123,14 +122,3 @@ class FeedForwardNN(IBrain):
             individual_size += sum(config.hidden_layers) + output_size
 
         return {'individual_size': individual_size}
-
-    @classmethod
-    def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
-
-        individual_size = 0
-        free_parameter_usage = cls.get_free_parameter_usage(input_size, output_size, configuration, brain_state)
-
-        for free_parameters in free_parameter_usage.values():
-            individual_size += free_parameters
-
-        return individual_size
