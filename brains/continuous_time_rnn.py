@@ -1,4 +1,4 @@
-from brains.i_brain import IBrain
+from brains.i_brain import IBrain, IBrainCfg
 
 import attr
 import numpy as np
@@ -6,8 +6,7 @@ from scipy import sparse
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class ContinuousTimeRNNCfg:
-    type: str
+class ContinuousTimeRNNCfg(IBrainCfg):
     delta_t: float
     number_neurons: int
     v_mask: str = 'dense'
@@ -138,13 +137,3 @@ class ContinuousTimeRNN(IBrain):
 
         return {'V': free_parameters_v, 'W': free_parameters_w, 'T': + free_parameters_t}
 
-    @classmethod
-    def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
-
-        individual_size = 0
-        free_parameter_usage = cls.get_free_parameter_usage(input_size, output_size, configuration, brain_state)
-
-        for free_parameters in free_parameter_usage.values():
-            individual_size += free_parameters
-
-        return individual_size
