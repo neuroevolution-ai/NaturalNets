@@ -38,7 +38,7 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "Reacher_Memory_CMA_ES_Deap_ELMAN.json"
+configuration_file = "Configuration.json"
 
 # TODO: Do this registration via class decorators
 registered_environment_classes = {'CollectPoints': CollectPoints,
