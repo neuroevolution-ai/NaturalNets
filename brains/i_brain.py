@@ -34,6 +34,11 @@ class IBrain(abc.ABC):
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
         pass
 
+    @classmethod
+    @abc.abstractmethod
+    def save_brain_state(cls, path, brain_state):
+        pass
+
     @staticmethod
     def read_matrix_from_genome(individual: np.ndarray, index: int, matrix_rows: int, matrix_columns: int):
         matrix_size = matrix_columns * matrix_rows
