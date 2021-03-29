@@ -1,10 +1,9 @@
-from optimizer.i_optimizer import IOptimizer
-
 from deap import base
 from deap import creator
 from deap import cma
 import numpy as np
 import attr
+from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -47,3 +46,7 @@ class OptimizerCmaEsDeap(IOptimizer):
 
         # Update the strategy with the evaluated individuals
         self.toolbox.update(self.population)
+
+
+# TODO: Do this registration via class decorator
+registered_optimizer_classes['CMA-ES-Deap'] = OptimizerCmaEsDeap

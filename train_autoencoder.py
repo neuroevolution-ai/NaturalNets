@@ -8,8 +8,8 @@ import numpy as np
 import math
 
 from brains.continuous_time_rnn import ContinuousTimeRNN
-from optimizer.canonical_es import OptimizerCanonicalEs
-from optimizer.cma_es_deap import OptimizerCmaEsDeap
+from optimizers.canonical_es import OptimizerCanonicalEs
+from optimizers.cma_es_deap import OptimizerCmaEsDeap
 from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
 from tools.write_results import write_results_to_textfile
 
@@ -50,12 +50,12 @@ individual_size = ep_runner.get_individual_size()
 print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
 print("Individual size: {}".format(individual_size))
 
-# Get optimizer from configuration
+# Get optimizers from configuration
 if config.optimizer['type'] in registered_optimizer_classes:
     optimizer_class = registered_optimizer_classes[config.optimizer['type']]
     opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
 else:
-    raise RuntimeError("No valid optimizer")
+    raise RuntimeError("No valid optimizers")
 
 best_genome_overall = None
 best_reward_overall = -math.inf
@@ -75,7 +75,7 @@ for generation in range(config.number_generations):
     # Environment seed for this generation (excludes validation environment seeds)
     env_seed = random.randint(config.number_validation_runs, config.maximum_env_seed)
 
-    # Ask optimizer for new population
+    # Ask optimizers for new population
     genomes = opt.ask()
 
     # Training runs for candidates
@@ -93,7 +93,7 @@ for generation in range(config.number_generations):
 
     # break
 
-    # Tell optimizer new rewards
+    # Tell optimizers new rewards
     opt.tell(rewards_training)
 
     best_genome_current_generation = genomes[np.argmax(rewards_training)]

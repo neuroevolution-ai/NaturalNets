@@ -1,9 +1,8 @@
-from brains.i_brain import IBrain, IBrainCfg
-
 import attr
 import itertools
 import numpy as np
 from typing import List
+from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -122,3 +121,7 @@ class FeedForwardNN(IBrain):
             individual_size += sum(config.hidden_layers) + output_size
 
         return {'individual_size': individual_size}
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['FFNN'] = FeedForwardNN

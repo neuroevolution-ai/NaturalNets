@@ -1,7 +1,7 @@
-from optimizer.i_optimizer import IOptimizer
 import numpy as np
 import math
 import attr
+from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -51,3 +51,7 @@ class OptimizerCanonicalEs(IOptimizer):
         w = np.asarray([(math.log(mu + 0.5) - math.log(i + 1)) / w_denominator for i in range(mu)])
 
         return w
+
+
+# TODO: Do this registration via class decorator
+registered_optimizer_classes['Canonical-ES'] = OptimizerCanonicalEs

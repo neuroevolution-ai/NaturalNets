@@ -1,7 +1,7 @@
 import attr
 import numpy as np
-
 from brains.i_layer_based_brain import ILayerBasedBrain, ILayerBasedBrainCfg
+from brains.i_brain import registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)
@@ -40,3 +40,7 @@ class LstmNN(ILayerBasedBrain):
         cell_state = np.multiply(f_t, hidden[1]) + np.multiply(i_t, g_t)
         hid = np.multiply(o_t, np.tanh(cell_state))
         return [[hid, cell_state], hid]
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['LSTMNN'] = LstmNN

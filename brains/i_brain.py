@@ -1,8 +1,16 @@
 import abc
 import attr
 import numpy as np
-
 from typing import Callable
+
+registered_brain_classes = {}
+
+
+def get_brain_class(brain_class_name: str):
+    if brain_class_name in registered_brain_classes:
+        return registered_brain_classes[brain_class_name]
+    else:
+        raise RuntimeError("No valid brain")
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)

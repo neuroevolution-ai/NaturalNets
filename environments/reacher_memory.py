@@ -1,6 +1,7 @@
 import numpy as np
 import attr
 import gym
+from environments.i_environment import IEnvironment, registered_environment_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -11,7 +12,7 @@ class ReacherMemoryCfg:
     frames_action_phase: int
 
 
-class ReacherMemory:
+class ReacherMemory(IEnvironment):
 
     def __init__(self, env_seed: int, configuration: dict):
 
@@ -56,3 +57,7 @@ class ReacherMemory:
 
     def render(self):
         self.env.render()
+
+
+# TODO: Do this registration via class decorator
+registered_environment_classes['ReacherMemory'] = ReacherMemory

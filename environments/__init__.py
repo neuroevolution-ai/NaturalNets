@@ -1,0 +1,3 @@
+from environments.collect_points import CollectPoints
+from environments.gym_mujoco import GymMujoco
+from environments.reacher_memory import ReacherMemory
