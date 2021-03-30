@@ -17,6 +17,7 @@
     },
     "brain": {
         "type": "Indirect-CTRNN",
+        "number_dimensions": 3,
         "ffnn_config": {
           "type": "FeedForward",
           "use_bias": true,
