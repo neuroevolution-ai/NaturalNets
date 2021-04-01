@@ -1,6 +1,6 @@
-from optimizer.i_optimizer import IOptimizer
 import attr
 import numpy as np
+from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -25,7 +25,7 @@ class OptimizerOpenAIES(IOptimizer):
 
     def initialize_individual(self, std=1.0):
         """
-        This initializes the individual when first starting the optimizer. OpenAI used this in their implementation
+        This initializes the individual when first starting the optimizers. OpenAI used this in their implementation
         and Experiments showed that this could be a factor for the performance of the algorithm.
 
         Source: https://github.com/openai/evolution-strategies-starter
@@ -51,7 +51,7 @@ class OptimizerOpenAIES(IOptimizer):
 
     def tell(self, rewards):
         # TODO add option to use ranks instead of the reward to shape the noises
-        # TODO add Adam optimizer
+        # TODO add Adam optimizers
 
         # TODO maybe improve the calculation using numpy function
         weighted_noise = np.sum([n * r for (n, r) in zip(self.noise, rewards)], axis=0, dtype=np.float32)
@@ -59,3 +59,7 @@ class OptimizerOpenAIES(IOptimizer):
         self.current_individual = self.current_individual + update
 
         self.noise = []
+
+
+# TODO: Do this registration via class decorator
+registered_optimizer_classes['OpenAI-ES'] = OptimizerOpenAIES

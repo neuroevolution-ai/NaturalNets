@@ -1,6 +1,7 @@
 import numpy as np
 import attr
 from brains.i_layer_based_brain import ILayerBasedBrain, ILayerBasedBrainCfg
+from brains.i_brain import registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)
@@ -25,3 +26,7 @@ class ElmanNN(ILayerBasedBrain):
             np.dot(weight_hh[0], hidden[0]) +
             bias_h[0])
         return [[result], result]
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['ELMANNN'] = ElmanNN

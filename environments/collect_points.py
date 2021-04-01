@@ -3,6 +3,7 @@ import attr
 from environments.df_maze import Maze
 import cv2
 import math
+from environments.i_environment import IEnvironment, registered_environment_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -19,7 +20,7 @@ class CollectPointsCfg:
     number_time_steps: int
 
 
-class CollectPoints:
+class CollectPoints(IEnvironment):
 
     def __init__(self, env_seed: int, configuration: dict):
 
@@ -47,8 +48,7 @@ class CollectPoints:
     def get_number_inputs(self):
         return len(self.get_observation())
 
-    @staticmethod
-    def get_number_outputs():
+    def get_number_outputs(self):
         return 2
 
     def reset(self):
@@ -209,3 +209,7 @@ class CollectPoints:
             self.config.maze_rows) * self.config.maze_cell_size
 
         return x, y
+
+
+# TODO: Do this registration via class decorator
+registered_environment_classes['CollectPoints'] = CollectPoints
