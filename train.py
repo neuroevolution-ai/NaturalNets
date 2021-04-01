@@ -2,29 +2,16 @@ import json
 import multiprocessing
 import os
 import random
-
-from brains.elman import ElmanNN
-from brains.gru import GruNN
-from brains.lstm import LstmNN
-from environments.gym_mujoco import *
-from environments.reacher_memory import *
-from environments.collect_points import *
 import time
-from datetime import datetime
-
 import attr
+import math
 import numpy as np
-
-from brains.continuous_time_rnn import ContinuousTimeRNN
-from brains.feed_forward_nn import FeedForwardNN
-from brains.indirect_encoded_ctrnn import IndirectEncodedCtrnn
-from environments.collect_points import CollectPoints
-from optimizer.canonical_es import OptimizerCanonicalEs
-from optimizer.cma_es_deap import OptimizerCmaEsDeap
-from optimizer.cma_es_pycma import OptimizerCmaEsPycma
-from optimizer.openai_es import OptimizerOpenAIES
+from datetime import datetime
 from tools.episode_runner import EpisodeRunner
 from tools.write_results import write_results_to_textfile
+from brains.i_brain import get_brain_class
+from environments.i_environment import get_environment_class
+from optimizers.i_optimizer import get_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -40,21 +27,6 @@ class TrainingCfg:
 
 configuration_file = "Configuration.json"
 
-# TODO: Do this registration via class decorators
-registered_environment_classes = {'CollectPoints': CollectPoints,
-                                  'GymMujoco': GymMujoco,
-                                  'ReacherMemory': ReacherMemory}
-registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap,
-                                'CMA-ES-Pycma': OptimizerCmaEsPycma,
-                                'Canonical-ES': OptimizerCanonicalEs,
-                                'OpenAI-ES': OptimizerOpenAIES}
-registered_brain_classes = {'FFNN': FeedForwardNN,
-                            'CTRNN': ContinuousTimeRNN,
-                            'Indirect-CTRNN': IndirectEncodedCtrnn,
-                            "ELMANNN": ElmanNN,
-                            "GRUNN": GruNN,
-                            "LSTMNN": LstmNN}
-
 pool = multiprocessing.Pool()
 
 # Load configuration file
@@ -64,16 +36,10 @@ with open(os.path.join('configurations', configuration_file), "r") as read_file:
 config = TrainingCfg(**configuration)
 
 # Get environment class from configuration
-if config.environment['type'] in registered_environment_classes:
-    environment_class = registered_environment_classes[config.environment['type']]
-else:
-    raise RuntimeError("No valid brain")
+environment_class = get_environment_class(config.environment['type'])
 
 # Get brain class from configuration
-if config.brain['type'] in registered_brain_classes:
-    brain_class = registered_brain_classes[config.brain['type']]
-else:
-    raise RuntimeError("No valid brain")
+brain_class = get_brain_class(config.brain['type'])
 
 # Initialize episode runner
 ep_runner = EpisodeRunner(env_class=environment_class,
@@ -86,12 +52,10 @@ individual_size = ep_runner.get_individual_size()
 print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
 print("Individual size: {}".format(individual_size))
 
-# Get optimizer from configuration
-if config.optimizer['type'] in registered_optimizer_classes:
-    optimizer_class = registered_optimizer_classes[config.optimizer['type']]
-    opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
-else:
-    raise RuntimeError("No valid optimizer")
+# Get optimizer class from configuration
+optimizer_class = get_optimizer_class(config.optimizer['type'])
+
+opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
 
 best_genome_overall = None
 best_reward_overall = -math.inf
@@ -109,7 +73,7 @@ for generation in range(config.number_generations):
     # Environment seed for this generation (excludes validation environment seeds)
     env_seed = random.randint(config.number_validation_runs, config.maximum_env_seed)
 
-    # Ask optimizer for new population
+    # Ask optimizers for new population
     genomes = opt.ask()
 
     # Training runs for candidates
@@ -119,7 +83,7 @@ for generation in range(config.number_generations):
 
     rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
 
-    # Tell optimizer new rewards
+    # Tell optimizers new rewards
     opt.tell(rewards_training)
 
     best_genome_current_generation = genomes[np.argmax(rewards_training)]

@@ -1,8 +1,7 @@
-from brains.i_brain import IBrain, IBrainCfg
-
 import attr
 import numpy as np
 from scipy import sparse
+from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -137,3 +136,6 @@ class ContinuousTimeRNN(IBrain):
 
         return {'V': free_parameters_v, 'W': free_parameters_w, 'T': + free_parameters_t}
 
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['CTRNN'] = ContinuousTimeRNN

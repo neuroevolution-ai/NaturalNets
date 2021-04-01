@@ -1,11 +1,13 @@
 import numpy as np
 import attr
 from brains.i_layer_based_brain import ILayerBasedBrain, ILayerBasedBrainCfg
+from brains.i_brain import registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)
 class GruCfg(ILayerBasedBrainCfg):
     pass
+
 
 class GruNN(ILayerBasedBrain):
 
@@ -36,3 +38,7 @@ class GruNN(ILayerBasedBrain):
     @staticmethod
     def get_number_gates():
         return 3
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['GRUNN'] = GruNN
