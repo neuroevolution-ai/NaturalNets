@@ -25,7 +25,7 @@ class TrainingCfg:
     optimizer: dict
 
 
-configuration_file = "CMA_ES_Deap_FFNN.json"
+configuration_file = "Configuration.json"
 
 pool = multiprocessing.Pool()
 
