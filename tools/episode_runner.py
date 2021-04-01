@@ -52,7 +52,7 @@ class EpisodeRunner:
 
         for i in range(number_of_rounds):
 
-            env = self.env_class(env_seed=env_seed, configuration=self.env_configuration)
+            env = self.env_class(env_seed=env_seed+i, configuration=self.env_configuration)
             ob = env.reset()
             brain.reset()
 
