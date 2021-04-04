@@ -38,12 +38,23 @@ class IndirectEncodedCtrnn(IBrain):
         v_mask = brain_state['v_mask']
         w_mask = brain_state['w_mask']
         t_mask = brain_state['t_mask']
-        cppn_inputs_w = brain_state['cppn_inputs_w']
 
         index = 0
         individual_v, index = self.read_matrix_from_genome(individual, index, np.count_nonzero(v_mask), 1)
         individual_w, index = self.read_matrix_from_genome(individual, index, cppn_size, 1)
         individual_t, index = self.read_matrix_from_genome(individual, index, np.count_nonzero(t_mask), 1)
+        neuron_positions, index = self.read_matrix_from_genome(individual, index, self.config.ctrnn_config['number_neurons'], self.config.number_dimensions)
+
+        cppn_inputs_w = np.zeros((len(neuron_positions) * len(neuron_positions), 2 * self.config.number_dimensions))
+
+        # Decode W using cppn
+        index_w = 0
+        for i in range(len(neuron_positions)):
+            for j in range(len(neuron_positions)):
+                cppn_inputs_w[index_w] = np.concatenate((neuron_positions[j], neuron_positions[i]))
+                index_w += 1
+
+        cppn_inputs_w = cppn_inputs_w.reshape(-1, 2 * self.config.number_dimensions, 1)
 
         self.cppn = FeedForwardNN(input_size=2*self.config.number_dimensions,
                                   output_size=1,
@@ -273,7 +284,10 @@ class IndirectEncodedCtrnn(IBrain):
         free_parameters_v = np.count_nonzero(v_mask)
         free_parameters_t = np.count_nonzero(t_mask)
 
-        return {'V': free_parameters_v, 'CPPN': free_parameters_cppn, 'T': free_parameters_t}
+        free_parameters_neuron_positions = config.ctrnn_config['number_neurons'] * config.number_dimensions
+
+        return {'V': free_parameters_v, 'CPPN': free_parameters_cppn, 'T': free_parameters_t,
+                'Neuron Positions': free_parameters_neuron_positions}
 
     @classmethod
     def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
