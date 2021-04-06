@@ -24,6 +24,9 @@ class GeneralGymEnvironment(IEnvironment):
     def step(self, action: np.ndarray):
         return self.env.step(action)
 
+    def render(self):
+        self.env.render()
+
 
 # TODO: Do this registration via class decorator
 registered_environment_classes["GeneralGymEnv"] = GeneralGymEnvironment
