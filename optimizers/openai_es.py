@@ -17,6 +17,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 """
 
 import attr
+from collections import deque
 import numpy as np
 from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
@@ -70,6 +71,9 @@ class OptimizerOpenAIES(IOptimizer):
         self.learning_rate = self.configuration.learning_rate
         self.adam = Adam(num_params=self.individual_size, stepsize=self.learning_rate)
 
+        self.reward_history = deque(maxlen=10)
+        self.last_mean_reward = 0
+
     def initialize_individual(self, std=1.0):
         """
         This initializes the individual when first starting the optimizers. OpenAI used this in their implementation
@@ -101,6 +105,20 @@ class OptimizerOpenAIES(IOptimizer):
         y -= .5
         return y
 
+    def adjust_learning_rate(self):
+        if self.last_mean_reward is None:
+            self.last_mean_reward = np.mean(self.reward_history)
+            return
+
+        difference = np.abs(self.last_mean_reward - np.mean(self.reward_history))
+
+        if difference < 5.0:
+            self.learning_rate = self.learning_rate + self.learning_rate * 0.25
+            print("Increased learning rate - Difference: {}".format(difference))
+        elif difference > 50:
+            self.learning_rate = self.learning_rate - self.learning_rate * 0.25
+            print("Decreased learning rate - Difference: {}".format(difference))
+
     def ask(self):
         individuals = []
         for i in range(self.population_size):
@@ -113,6 +131,11 @@ class OptimizerOpenAIES(IOptimizer):
         return individuals
 
     def tell(self, rewards):
+        # self.reward_history.append(np.mean(rewards))
+
+        # if self.adam.t % 5 == 0:
+            # self.adjust_learning_rate()
+
         if self.configuration.use_centered_ranks:
             rewards = self.compute_centered_ranks(np.array(rewards, dtype=np.float32))
 
