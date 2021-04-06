@@ -28,6 +28,7 @@ class OptimizerOpenAIESCfg:
     learning_rate: np.float32
     l2coeff: np.float32
     noise_stdev: np.float32
+    use_centered_ranks: bool = True
 
 
 class Adam:
@@ -112,21 +113,16 @@ class OptimizerOpenAIES(IOptimizer):
         return individuals
 
     def tell(self, rewards):
-        # TODO add option to use ranks instead of the reward to shape the noises
-        # TODO add Adam optimizers
+        if self.configuration.use_centered_ranks:
+            rewards = self.compute_centered_ranks(np.array(rewards, dtype=np.float32))
 
         # TODO maybe improve the calculation using numpy function
-
-        rewards = self.compute_centered_ranks(np.array(rewards, dtype=np.float32))
         weighted_noise = np.sum([n * r for (n, r) in zip(self.noise, rewards)], axis=0, dtype=np.float32)
 
         weighted_noise /= len(weighted_noise)
 
         gradient = -weighted_noise + self.configuration.l2coeff * self.current_individual
         self.current_individual = self.adam.update(self.current_individual, gradient=gradient)
-
-        # update = (self.learning_rate / (self.population_size * self.sigma)) * weighted_noise
-        # self.current_individual = self.current_individual + update
 
         self.noise = []
 
