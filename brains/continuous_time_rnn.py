@@ -8,6 +8,7 @@ from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 class ContinuousTimeRNNCfg(IBrainCfg):
     delta_t: float
     number_neurons: int
+    differential_equation: str
     v_mask: str = 'dense'
     v_mask_density: float = 1.0
     w_mask: str = 'dense'
@@ -16,6 +17,7 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     t_mask_density: float = 1.0
     clipping_range_min: float = 1.0
     clipping_range_max: float = -1.0
+    alpha: float = 0.0
 
 
 class ContinuousTimeRNN(IBrain):
@@ -49,7 +51,12 @@ class ContinuousTimeRNN(IBrain):
         assert u.ndim == 1
 
         # Differential equation
-        dx_dt = self.W.dot(np.tanh(self.x)) + self.V.dot(u)
+        if self.config.differential_equation == 'separated':
+            dx_dt = -self.config.alpha*self.x + self.W.dot(np.tanh(self.x)) + self.V.dot(u)
+        elif self.config.differential_equation == 'original':
+            dx_dt = -self.config.alpha*self.x + self.W.dot(np.tanh(self.x + self.V.dot(u)))
+        else:
+            raise RuntimeError("No valid differential equation")
 
         # Euler forward discretization
         self.x = self.x + self.config.delta_t * dx_dt
