@@ -15,7 +15,7 @@ class OptimizerMuLambdaCfg:
     mu: int
     lambda_: int
     initial_gene_range: int
-    mutpb: float
+    mutpb: float  # Probability that an offspring is produced by mutation; (1-mutpb) probability that crossover is used
 
 
 class FitnessMax(base.Fitness):
@@ -23,7 +23,8 @@ class FitnessMax(base.Fitness):
 
 
 class Individual(list):
-
+    # TODO maybe change from float to np.float32 as increased precision is not necessary I think and would reduce
+    #      computation time
     def __init__(self, *args):
         super().__init__(*args)
         self.fitness = FitnessMax()
@@ -36,6 +37,10 @@ class OptimizerMuLambda(IOptimizer):
         self.individual_size = individual_size
         self.configuration = OptimizerMuLambdaCfg(**configuration)
 
+        # Add two genes for the strategy parameters used in mutate
+        # TODO This is copied from CTRNN_new repo, don't know exactly if this adds a benefit
+        individual_size += 2
+
         self.indices = partial(np.random.uniform, -self.configuration.initial_gene_range,
                                self.configuration.initial_gene_range, individual_size)
         self.individual = partial(tools.initIterate, Individual, self.indices)
@@ -43,8 +48,8 @@ class OptimizerMuLambda(IOptimizer):
         self.offspring = None
 
         mate_list = [
-            tools.cxOnePoint,
-            tools.cxTwoPoint,
+            tools.cxOnePoint,  # Executes a one point crossover
+            tools.cxTwoPoint,  # Executes a two point crossover
         ]
 
         def mate(ind1, ind2):
@@ -58,12 +63,14 @@ class OptimizerMuLambda(IOptimizer):
             ind1[-2] = np.clip(ind1[-2], -5, 3)
             sigma = 2 ** ind1[-1]
             indpb = 2 ** (ind1[-2] - 3)
+
+            # mu here means 'mean' like in a gaussian distribution, sigma therefore standard deviation
             return tools.mutGaussian(individual=ind1, mu=0, sigma=sigma, indpb=indpb)
 
         self.toolbox = base.Toolbox()
         self.toolbox.register("mate", mate)
         self.toolbox.register("mutate", fct_mutation_learned)
-        self.toolbox.register("select", tools.selBest)
+        self.select = tools.selBest
 
     def ask(self):
         self.offspring = varOr(self.population, self.toolbox, self.configuration.lambda_, 1 - self.configuration.mutpb,
@@ -72,10 +79,10 @@ class OptimizerMuLambda(IOptimizer):
 
     def tell(self, rewards):
         for individual, individual_reward in zip(self.offspring, rewards):
-            individual.fitness = individual_reward
+            individual.fitness.values = tuple([individual_reward])
 
-        self.population = self.toolbox.select(self.offspring, self.configuration.mu)
+        self.population = self.select(self.offspring, self.configuration.mu)
 
 
 # TODO: Do this registration via class decorator
-registered_optimizer_classes["Mu+Lambda-Deap"] = OptimizerMuLambda
+registered_optimizer_classes["Mu+Lambda-DEAP"] = OptimizerMuLambda
