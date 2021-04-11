@@ -1,5 +1,3 @@
-
-
 class EpisodeRunner:
 
     def __init__(self, env_class, env_configuration: dict, brain_class, brain_configuration: dict):
