@@ -172,6 +172,10 @@ print("Output directory: " + str(results_directory))
 with open(os.path.join(results_directory, 'Configuration.json'), 'w') as outfile:
     json.dump(configuration, outfile, ensure_ascii=False, indent=4)
 
+# Save Log
+with open(os.path.join(results_directory, 'Log.json'), 'w') as outfile:
+    json.dump(log, outfile, ensure_ascii=False, indent=4)
+
 # Save best genome
 np.save(os.path.join(results_directory, 'Best_Genome'), best_genome_overall)
 

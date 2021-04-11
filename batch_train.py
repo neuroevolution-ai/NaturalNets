@@ -1,7 +1,6 @@
 import subprocess
 import json
 import random
-import sys
 
 optimization_configuration_keys = ["environment",
                                    "neural_network_type",
