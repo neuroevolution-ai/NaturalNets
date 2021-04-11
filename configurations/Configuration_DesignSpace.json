@@ -10,10 +10,14 @@
         "frames_action_phase": 50
     },
     "brain": {
-        "type": "LSTMNN",
-        "hidden_layer_structure": [[10]],
-        "diagonal_hidden_to_hidden":  true,
-        "use_bias": false
+        "type": "CTRNN",
+	"delta_t": 0.05,
+	"number_neurons": 10,
+	"v_mask": "dense",
+	"w_mask": "dense",
+	"t_mask": "dense",
+	"clipping_range_min": -1.0,
+	"clipping_range_max": 1.0
     },
     "optimizer": {
         "type": "CMA-ES-Deap",
