@@ -37,12 +37,11 @@ class ILayerBasedBrain(IBrain, abc.ABC):
         # How many hidden values are used in one cell
         pass
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: ILayerBasedBrainCfg,
                  brain_state: dict):
-        super().__init__(input_size, output_size, individual, configuration, brain_state)
-        configuration = ILayerBasedBrainCfg(**configuration)
+        if not type(configuration) is ILayerBasedBrainCfg:
+            configuration = ILayerBasedBrainCfg(**configuration)
         hidden_layer_structure: List[int] = configuration.hidden_layer_structure
-
 
         # initialize weights out of individual
 

@@ -1,7 +1,5 @@
-import abc
-
 import torch
-from attr import attr
+import attr
 from gym.spaces import flatdim
 from torch import nn
 import numpy as np
@@ -35,8 +33,6 @@ class LSTMPyTorch(nn.Module, IBrain):
     def __init__(self, input_size, output_size, individual: np.ndarray, config: LstmTorchCfg, brain_state):
         nn.Module.__init__(self)
         self.config = config
-        self.output_size = flatdim(self.output_space)
-        input_size = flatdim(self.input_space)
         assert len(individual) == self.get_individual_size(input_size, output_size, config, {})
 
         if config.num_layers <= 0:
@@ -87,9 +83,9 @@ class LSTMPyTorch(nn.Module, IBrain):
                         individual[current_index: current_index + bias_hh_li_size]).float()
                     current_index += bias_hh_li_size
             self.weight_ho = np.array(
-                individual[current_index: current_index + self.output_size * config.hidden_size]).reshape(
-                (self.output_size, config.hidden_size))
-            current_index += self.output_size * config.hidden_size
+                individual[current_index: current_index + output_size * config.hidden_size]).reshape(
+                (output_size, config.hidden_size))
+            current_index += output_size * config.hidden_size
             assert current_index == len(individual)
 
             self.hidden = (

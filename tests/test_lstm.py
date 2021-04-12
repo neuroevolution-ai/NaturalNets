@@ -4,6 +4,7 @@ import torch
 import time
 
 from brains.lstm import LstmLayeredCfg, LstmNN
+from brains.i_layer_based_brain import ILayerBasedBrainCfg
 from tests.pytorch_lstm import LSTMPyTorch, LstmTorchCfg
 
 
@@ -15,14 +16,14 @@ def lstm_torch_config() -> LstmTorchCfg:
 
 
 @pytest.fixture
-def lstm_layered_config() -> LstmLayeredCfg:
-    return LstmLayeredCfg(type="LSTMLayered", hidden_layer_structure=[8, 8, 8], diagonal_hidden_to_hidden=False,
-                          use_bias=False)
+def lstm_layered_config() -> ILayerBasedBrainCfg:
+    return ILayerBasedBrainCfg(type="LSTMLayered", hidden_layer_structure=[8, 8, 8], diagonal_hidden_to_hidden=False,
+                               use_bias=False)
+
 
 class TestLSTM:
 
-    def test_lstm_output(self, lstm_layered_config: LstmLayeredCfg):
-
+    def test_lstm_output(self, lstm_layered_config: ILayerBasedBrainCfg, lstm_torch_config: LstmTorchCfg):
         input_size = 28
         output_size = 8
 
@@ -35,7 +36,7 @@ class TestLSTM:
         individual_numpy = np.copy(individual_pytorch)
 
         with torch.no_grad():
-            lstm_pytorch = LSTMPyTorch(input_size, output_size, individual_pytorch, lstm_torch_config)
+            lstm_pytorch = LSTMPyTorch(input_size, output_size, individual_pytorch, lstm_torch_config, {})
 
         lstm_numpy = LstmNN(input_size, output_size, individual_numpy, lstm_layered_config, {})
 
@@ -48,7 +49,8 @@ class TestLSTM:
 
         lstm_pytorch.hidden = (torch.from_numpy(hidden_pytorch), torch.from_numpy(cell_pytorch))
 
-        lstm_numpy.hidden = [[np.copy(hidden_numpy)[i], np.copy(cell_numpy)[i]]for i in range(len(np.copy(hidden_numpy)))]
+        lstm_numpy.hidden = [[np.copy(hidden_numpy)[i], np.copy(cell_numpy)[i]] for i in
+                             range(len(np.copy(hidden_numpy)))]
 
         with torch.no_grad():
             for i in range(len(lstm_layered_config.hidden_layer_structure)):
@@ -71,7 +73,6 @@ class TestLSTM:
                 assert np.array_equal(lstm_pytorch.hidden[1][i].view(-1).detach().numpy(), lstm_numpy.hidden[i][1])
 
         inputs = np.random.randn(number_of_inputs, 28).astype(np.float32)
-
         lstm_pytorch_outputs = []
         lstm_numpy_outputs = []
 
@@ -119,4 +120,4 @@ class TestLSTM:
 
         print(
             "Equal predictions between PyTorch and NumPy",
-            "Implementation of LSTM: {}% of {} predictions".format(close_percentage*100, number_of_inputs))
+            "Implementation of LSTM: {}% of {} predictions".format(close_percentage * 100, number_of_inputs))
