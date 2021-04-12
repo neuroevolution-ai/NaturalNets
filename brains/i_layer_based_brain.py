@@ -179,3 +179,7 @@ class ILayerBasedBrain(IBrain, abc.ABC):
     @classmethod
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
         pass
+
+    @classmethod
+    def save_brain_state(cls, path, brain_state):
+        pass

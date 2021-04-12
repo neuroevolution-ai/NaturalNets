@@ -1,29 +1,40 @@
 import json
 import time
 import os
-from brains.continuous_time_rnn import *
-from environments.collect_points import *
+import numpy as np
 
-directory = os.path.join('Simulation_Results', '2021-03-20_11-07-09')
+from brains.i_brain import get_brain_class
+from environments.i_environment import get_environment_class
+
+directory = os.path.join('Simulation_Results', '2021-03-25_11-18-39')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
     configuration = json.load(read_file)
 
-brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
-
 individual = np.load(os.path.join(directory, 'Best_Genome.npy'), allow_pickle=True)
 
-brain = ContinuousTimeRNN(input_size=0, output_size=0, individual=individual, configuration=configuration['brain'],
-                          brain_state=brain_state)
+environment_class = get_environment_class(configuration['environment']['type'])
+env = environment_class(env_seed=0, configuration=configuration['environment'])
+
+brain_class = get_brain_class(configuration['brain']['type'])
+brain_state = brain_class.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
+
+brain = brain_class(input_size=env.get_number_inputs(),
+                    output_size=env.get_number_outputs(),
+                    individual=individual,
+                    configuration=configuration['brain'],
+                    brain_state=brain_state)
 
 number_validation_runs = configuration['number_validation_runs']
 
 fitness_total = 0
 
+# W_np = brain.W.toarray()
+
 for env_seed in range(number_validation_runs):
 
-    env = CollectPointsEnv(env_seed=env_seed, configuration=configuration['environment'])
+    env = environment_class(env_seed=env_seed, configuration=configuration['environment'])
 
     ob = env.reset()
     brain.reset()

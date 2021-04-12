@@ -1,16 +1,16 @@
-from brains.i_brain import IBrain, IBrainCfg
-
 import attr
 import numpy as np
+from typing import Union
+from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 from brains.feed_forward_nn import FeedForwardNN
 from brains.continuous_time_rnn import ContinuousTimeRNN
-from typing import Union
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class IndirectEncodedCTRNNCfg(IBrainCfg):
     ffnn_config: dict
     ctrnn_config: dict
+    number_dimensions: int
     red_z: float = 1.3
     green_z: float = 1.6
     blue_z: float = 1.9
@@ -30,7 +30,7 @@ class IndirectEncodedCtrnn(IBrain):
         self.input_size: int = input_size
         self.output_size: int = output_size
 
-        cppn_size = FeedForwardNN.get_individual_size(input_size=6,
+        cppn_size = FeedForwardNN.get_individual_size(input_size=2*self.config.number_dimensions,
                                                       output_size=1,
                                                       configuration=self.config.ffnn_config,
                                                       brain_state={})
@@ -45,7 +45,7 @@ class IndirectEncodedCtrnn(IBrain):
         individual_w, index = self.read_matrix_from_genome(individual, index, cppn_size, 1)
         individual_t, index = self.read_matrix_from_genome(individual, index, np.count_nonzero(t_mask), 1)
 
-        self.cppn = FeedForwardNN(input_size=6,
+        self.cppn = FeedForwardNN(input_size=2*self.config.number_dimensions,
                                   output_size=1,
                                   individual=individual_w,
                                   configuration=self.config.ffnn_config,
@@ -95,7 +95,7 @@ class IndirectEncodedCtrnn(IBrain):
         outputs_z = config.outputs_z
 
         input_positions = cls.get_rgb_positions(input_image_width, input_image_height, red_z, green_z, blue_z)
-        neuron_positions = np.random.random((config.ctrnn_config['number_neurons'], 3))
+        neuron_positions = np.random.random((config.ctrnn_config['number_neurons'], config.number_dimensions))
         output_positions = cls.get_circle_positions(output_size, outputs_radius, outputs_z)
 
         brain_state_ctrnn = ContinuousTimeRNN.generate_brain_state(input_size, output_size, config.ctrnn_config)
@@ -106,9 +106,9 @@ class IndirectEncodedCtrnn(IBrain):
         # assert individual_size_ctrnn == len(input_positions) * len(neuron_positions) + len(
         #     neuron_positions) * len(neuron_positions) + len(neuron_positions) * len(output_positions)
 
-        cppn_inputs_v = np.zeros((len(input_positions) * len(neuron_positions), 6))
-        cppn_inputs_w = np.zeros((len(neuron_positions) * len(neuron_positions), 6))
-        cppn_inputs_t = np.zeros((len(output_positions) * len(neuron_positions), 6))
+        cppn_inputs_v = np.zeros((len(input_positions) * len(neuron_positions), 3+config.number_dimensions))
+        cppn_inputs_w = np.zeros((len(neuron_positions) * len(neuron_positions), 2*config.number_dimensions))
+        cppn_inputs_t = np.zeros((len(output_positions) * len(neuron_positions), 3+config.number_dimensions))
 
         # Decode V using cppn
         index_v = 0
@@ -133,9 +133,9 @@ class IndirectEncodedCtrnn(IBrain):
 
         # assert index_v + index_w + index_t == individual_size_ctrnn
 
-        cppn_inputs_v = cppn_inputs_v.reshape(-1, 6, 1)
-        cppn_inputs_w = cppn_inputs_w.reshape(-1, 6, 1)
-        cppn_inputs_t = cppn_inputs_t.reshape(-1, 6, 1)
+        cppn_inputs_v = cppn_inputs_v.reshape(-1, 3+config.number_dimensions, 1)
+        cppn_inputs_w = cppn_inputs_w.reshape(-1, 2*config.number_dimensions, 1)
+        cppn_inputs_t = cppn_inputs_t.reshape(-1, 3+config.number_dimensions, 1)
 
         v_mask = brain_state_ctrnn['v_mask']
         w_mask = brain_state_ctrnn['w_mask']
@@ -262,7 +262,7 @@ class IndirectEncodedCtrnn(IBrain):
 
         config = IndirectEncodedCTRNNCfg(**configuration)
 
-        free_parameters_cppn = FeedForwardNN.get_individual_size(input_size=6,
+        free_parameters_cppn = FeedForwardNN.get_individual_size(input_size=2*config.number_dimensions,
                                                                  output_size=1,
                                                                  configuration=config.ffnn_config,
                                                                  brain_state={})
@@ -285,3 +285,7 @@ class IndirectEncodedCtrnn(IBrain):
             individual_size += free_parameters
 
         return individual_size
+
+
+# TODO: Do this registration via class decorator
+registered_brain_classes['Indirect-CTRNN'] = IndirectEncodedCtrnn

@@ -1,8 +1,16 @@
 import abc
 import attr
 import numpy as np
-
 from typing import Callable
+
+registered_brain_classes = {}
+
+
+def get_brain_class(brain_class_name: str):
+    if brain_class_name in registered_brain_classes:
+        return registered_brain_classes[brain_class_name]
+    else:
+        raise RuntimeError("No valid brain")
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)
@@ -32,6 +40,16 @@ class IBrain(abc.ABC):
     @classmethod
     @abc.abstractmethod
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def save_brain_state(cls, path, brain_state):
+        pass
+
+    @classmethod
+    def load_brain_state(cls, path):
+        # For Visualization usage
         pass
 
     @staticmethod
