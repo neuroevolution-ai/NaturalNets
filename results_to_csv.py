@@ -45,6 +45,38 @@ def read_simulations(base_directory):
     return simulation_runs
 
 
+def read_log_from_txt_file(log_txt):
+    delimiter_counter = 0
+    starting_index = -1
+    for i, log_entry in enumerate(log_txt):
+        if log_entry == "------------------------------------------------------------------------------------------\n":
+            delimiter_counter += 1
+
+            if delimiter_counter == 2:
+                starting_index = i + 1
+                break
+
+    if starting_index == -1 or starting_index >= len(log_txt):
+        return None
+
+    # Remove "preamble", and the last two lines which is a line break and the elapsed time of the experiment
+    log_txt = log_txt[starting_index:-2]
+
+    for i, log_entry in enumerate(log_txt):
+        # Log entries are printed in strings, splitting and casting to float creates a list of numerical values
+        splitted_log_entry = log_entry.split()
+
+        if len(splitted_log_entry) != 6:
+            # Sometimes minimum values are so low that they "touch" the next column, which results in split()
+            # merging the minimum and mean value as they are next to each other in the log. Simple solution is to
+            # don't include this log
+            return None
+
+        log_txt[i] = [float(sub_entry) for sub_entry in splitted_log_entry]
+
+    return log_txt
+
+
 def gather_info_for_csv(simulation):
     log = simulation["log"]
     conf = simulation["conf"]
@@ -61,35 +93,13 @@ def gather_info_for_csv(simulation):
     elapsed_time = [0]
 
     if log:
-        delimiter_counter = 0
-        starting_index = -1
-        for i, log_entry in enumerate(log):
-            if log_entry == "------------------------------------------------------------------------------------------\n":
-                delimiter_counter += 1
 
-                if delimiter_counter == 2:
-                    starting_index = i + 1
-                    break
+        # TODO Replace this or make if/else when log is saved as JSON again
+        log = read_log_from_txt_file(log)
 
-        if starting_index == -1 or starting_index >= len(log):
+        if log is None:
             logging.warning("log could not be parsed")
             return
-
-        # Remove "preamble", and the last two lines which is a line break and the elapsed time of the experiment
-        log = log[starting_index:-2]
-
-        for i, log_entry in enumerate(log):
-            # Log entries are printed in strings, splitting and casting to float creates a list of numerical values
-            splitted_log_entry = log_entry.split()
-
-            if len(splitted_log_entry) != 6:
-                # Sometimes minimum values are so low that they "touch" the next column, which results in split()
-                # merging the minimum and mean value as they are next to each other in the log. Simple solution is to
-                # don't include this log
-                logging.warning("log could not be parsed")
-                return
-
-            log[i] = [float(sub_entry) for sub_entry in splitted_log_entry]
 
         generations = [i for i in range(len(log))]
 
