@@ -1,9 +1,7 @@
-import argparse
 import csv
 import json
 import logging
 import os
-import pickle
 
 logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
 
@@ -47,21 +45,6 @@ def read_simulations(base_directory):
     return simulation_runs
 
 
-def get_attribute_or_none(d, attr):
-    if attr in d:
-        return d[attr]
-    return None
-
-
-def walk_dict(node, callback_node, depth=0):
-    for key, item in node.items():
-        if isinstance(item, dict):
-            callback_node(key, item, depth, False)
-            walk_dict(item, callback_node, depth + 1)
-        else:
-            callback_node(key, item, depth, True)
-
-
 def gather_info_for_csv(simulation):
     log = simulation["log"]
     conf = simulation["conf"]
@@ -97,10 +80,16 @@ def gather_info_for_csv(simulation):
 
         for i, log_entry in enumerate(log):
             # Log entries are printed in strings, splitting and casting to float creates a list of numerical values
-            try:
-                log[i] = [float(sub_entry) for sub_entry in log_entry.split()]
-            except ValueError:
-                print("Wtf")
+            splitted_log_entry = log_entry.split()
+
+            if len(splitted_log_entry) != 6:
+                # Sometimes minimum values are so low that they "touch" the next column, which results in split()
+                # merging the minimum and mean value as they are next to each other in the log. Simple solution is to
+                # don't include this log
+                logging.warning("log could not be parsed")
+                return
+
+            log[i] = [float(sub_entry) for sub_entry in splitted_log_entry]
 
         generations = [i for i in range(len(log))]
 
@@ -111,38 +100,21 @@ def gather_info_for_csv(simulation):
         mean = [log_entry[2] for log_entry in log]
         maximum = [log_entry[3] for log_entry in log]
         best = [log_entry[4] for log_entry in log]
-        try:
-            elapsed_time = [log_entry[5] for log_entry in log]
-        except IndexError:
-            print("wtf")
-
-
-        # if hasattr(log, "chapters"):
-        #     min, avg, std, maximum = log.chapters["fitness"].select("min", "avg", "std", "max")
-        # else:
-        #     try:
-        #         avg = [generation["avg"] for generation in log]
-        #         maximum = [generation["max"] for generation in log]
-        #     except:
-        #         generations = [-1]
-        #         avg = [0]
-        #         maximum = [0]
-        #         logging.warning("couldn't read avg and max from log")
-    # else:
-    #     logging.warning("no log found in simulation on path: " + str(simulation["dir"]))
-    #     generations = [-1]
-    #     avg = [0]
-    #     maximum = [0]
+        elapsed_time = [log_entry[5] for log_entry in log]
 
     try:
         brain = conf["brain"]
         optimizer = conf["optimizer"]
+        environment = conf["environment"]
+        # Delete them from config because leaving them in config would print the values twice
         del conf["brain"]
         del conf["optimizer"]
+        del conf["environment"]
     except:
         logging.warning("could not locate brain, optimizer or ep_runner in conf.")
         brain = {}
         optimizer = {}
+        environment = {}
 
     return {"gen": str(max(generations)),
             "mavg": str(max(mean)),
@@ -150,18 +122,13 @@ def gather_info_for_csv(simulation):
             "best": str(max(best)),
             "directory": simulation["dir"],
             "plot": simulation["plot"],
-            **conf, **brain, **optimizer}
+            **conf, **brain, **optimizer, **environment}
 
 
 logging.basicConfig()
-# parser = argparse.ArgumentParser(description="Visualize experiment results")
-# parser.add_argument('--dir', metavar='dir', type=str, help='base directory for input',
-#                     default='data')
-# parser.add_argument('--csv', metavar='type', type=str, help='location of output csv file', default=None)
-# args = parser.parse_args()
 
 simulations_directory = "Simulation_Results"
-output_file = "output.csv"
+output_file_name = "output.csv"
 
 data = []
 keys = []
@@ -174,8 +141,8 @@ for simulation in read_simulations(simulations_directory):
 # make keys unique while preserving order
 keys = [x for i, x in enumerate(keys) if i == keys.index(x)]
 
-with open(args.csv, 'w') as output_file:
+with open(output_file_name, "w") as output_file:
     dict_writer = csv.DictWriter(output_file, keys)
     dict_writer.writeheader()
     dict_writer.writerows(data)
-    logging.info("log written to " + str(args.csv))
+    logging.info("log written to " + str(output_file_name))
