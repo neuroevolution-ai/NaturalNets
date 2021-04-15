@@ -37,10 +37,6 @@ class OptimizerMuLambda(IOptimizer):
         self.individual_size = individual_size
         self.configuration = OptimizerMuLambdaCfg(**configuration)
 
-        # Add two genes for the strategy parameters used in mutate
-        # TODO This is copied from CTRNN_new repo, don't know exactly if this adds a benefit
-        individual_size += 2
-
         self.indices = partial(np.random.uniform, -self.configuration.initial_gene_range,
                                self.configuration.initial_gene_range, individual_size)
         self.individual = partial(tools.initIterate, Individual, self.indices)
