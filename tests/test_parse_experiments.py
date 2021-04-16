@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 
 import numpy as np
 
@@ -56,7 +57,9 @@ def test_parse_log():
     assert np.array_equal(parsed_log["maximum"], reference_maximum)
     assert np.array_equal(parsed_log["best"], reference_best)
 
-    
+    # Remove the created test file and directory structure
+    shutil.rmtree(test_base_directory)
+
 
 if __name__ == "__main__":
     test_parse_log()
