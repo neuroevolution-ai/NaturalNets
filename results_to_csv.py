@@ -20,7 +20,7 @@ def read_simulations(base_directory):
             with open(os.path.join(simulation_folder, "Configuration.json"), "r") as read_file:
                 conf = json.load(read_file)
         except FileNotFoundError:
-            logging.error("Could not read configuration for {}".format(simulation_folder), exc_info=True)
+            logging.error("Could not read configuration for {}".format(simulation_folder))
 
         log = None
         log_kind = None
@@ -34,13 +34,12 @@ def read_simulations(base_directory):
 
         if log is None:
             # If log could not be parsed as JSON try a txt file which works but is certainly more error prone
-            # noinspection PyBroadException
             try:
                 with open(os.path.join(simulation_folder, "Log.txt"), "r") as log_file:
                     log = log_file.readlines()
                     log_kind = LOG_KIND_TXT
             except FileNotFoundError:
-                logging.error("Could not read log for {}".format(simulation_folder), exc_info=True)
+                logging.error("Could not read log for {}".format(simulation_folder))
 
         plot_path = os.path.join(simulation_folder, "plot.png")
         if os.path.isfile(plot_path):
@@ -170,7 +169,7 @@ for found_simulation in read_simulations(simulations_directory):
         data.append(d)
         keys += d.keys()
 
-# make keys unique while preserving order
+# Make keys unique while preserving order
 keys = [x for i, x in enumerate(keys) if i == keys.index(x)]
 
 with open(output_file_name, "w") as output_file:
