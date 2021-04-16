@@ -40,7 +40,7 @@ def read_simulations(base_directory):
             except FileNotFoundError:
                 logging.error("Could not read log for {}".format(simulation_folder))
 
-        plot_path = os.path.join(simulation_folder, "plot.png")
+        plot_path = os.path.join(simulation_folder, "plot.svg")
         if os.path.isfile(plot_path):
             plot_path = "=HYPERLINK(\"" + plot_path + "\")"
         else:
