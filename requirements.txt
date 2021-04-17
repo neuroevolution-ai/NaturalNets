@@ -7,3 +7,4 @@ torch
 procgen
 opencv-python
 cma
+matplotlib

@@ -30,5 +30,8 @@ dask-worker-space/
 /configurations/exp_design_space.json
 mprofile_*.dat
 
+# Simulation Plots
+Simulation_Results/*/*.svg
+
 # Whitelist files with 'test' in their name but only in tests/ folder
 !tests/test*.py
