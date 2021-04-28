@@ -12,7 +12,7 @@ class ILayerBasedBrainCfg(IBrainCfg):
     # The layers are in the given order
     hidden_layer_structure: List[int]
     # Whether a neuron can only use its own state form the last timestep
-    diagonal_hidden_to_hidden: bool = True
+    diagonal_hidden_to_hidden: bool = False
     use_bias: bool = False
 
 
