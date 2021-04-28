@@ -15,6 +15,7 @@ class CollectPointsCfg:
     agent_radius: int
     point_radius: int
     agent_movement_range: float
+    use_sensors: bool
     reward_per_collected_positive_point: float
     reward_per_collected_negative_point: float
     number_time_steps: int
@@ -43,6 +44,12 @@ class CollectPoints(IEnvironment):
         # Create Maze
         self.maze = Maze(self.config.maze_columns, self.config.maze_rows, self.rs)
 
+        if self.config.use_sensors:
+            self.sensor_top = 0.0
+            self.sensor_bottom = 0.0
+            self.sensor_left = 0.0
+            self.sensor_right = 0.0
+
         self.t = 0
 
     def get_number_inputs(self):
@@ -69,14 +76,17 @@ class CollectPoints(IEnvironment):
         self.agent_position_x = min(self.agent_position_x, self.screen_width - self.config.agent_radius)  # Right border
         self.agent_position_x = max(self.agent_position_x, self.config.agent_radius)  # Left border
 
-        # Check agent collisions with maze walls
+        # Get cell indizes of agents current position
         cell_x = math.floor(self.agent_position_x / self.config.maze_cell_size)
         cell_y = math.floor(self.agent_position_y / self.config.maze_cell_size)
 
-        x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
-
+        # Get current cell
         cell = self.maze.cell_at(cell_x, cell_y)
 
+        # Get coordinates of current cell
+        x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
+
+        # Check agent collisions with maze walls
         if cell.walls['N']:
             self.agent_position_y = max(self.agent_position_y, y_top + self.config.agent_radius)
         if cell.walls['S']:
@@ -110,6 +120,13 @@ class CollectPoints(IEnvironment):
             self.agent_position_x = x_left + self.config.agent_radius
             self.agent_position_y = y_bottom - self.config.agent_radius
 
+        # Get sensor signals
+        if self.config.use_sensors:
+            self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
+            self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
+            self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
+            self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
+
         rew = 0.0
 
         # Collect positive point in reach
@@ -132,9 +149,71 @@ class CollectPoints(IEnvironment):
             done = True
 
         ob = self.get_observation()
-        info = []
+        info = dict()
+
+        if self.config.use_sensors:
+            info['sensor_top'] = self.sensor_top
+            info['sensor_bottom'] = self.sensor_bottom
+            info['sensor_right'] = self.sensor_right
+            info['sensor_left'] = self.sensor_left
 
         return ob, rew, done, info
+
+    def get_sensor_distance(self, direction: str, cell_x: int, cell_y: int) -> float:
+
+        # Get current cell
+        cell = self.maze.cell_at(cell_x, cell_y)
+
+        # Get coordinates of current cell
+        x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
+
+        if direction == 'top':
+            sensor_distance = self.agent_position_y - y_top - self.config.agent_radius
+            wall_to_check = 'N'
+            i_step = 0
+            j_step = -1
+        elif direction == 'bottom':
+            sensor_distance = y_bottom - self.agent_position_y - self.config.agent_radius
+            wall_to_check = 'S'
+            i_step = 0
+            j_step = 1
+        elif direction == 'left':
+            sensor_distance = self.agent_position_x - x_left - self.config.agent_radius
+            wall_to_check = 'W'
+            i_step = -1
+            j_step = 0
+        elif direction == 'right':
+            sensor_distance = x_right - self.agent_position_x - self.config.agent_radius
+            wall_to_check = 'E'
+            i_step = 1
+            j_step = 0
+        else:
+            raise RuntimeError("Invalid sensor direction: " + str(direction))
+
+        i = 0
+        j = 0
+
+        while True:
+            if self.is_valid_maze_cell(cell_x+i, cell_y+j):
+                cell = self.maze.cell_at(cell_x+i, cell_y+j)
+            else:
+                break
+
+            if cell.walls[wall_to_check]:
+                break
+            else:
+                sensor_distance += self.config.maze_cell_size
+                i += i_step
+                j += j_step
+
+        return sensor_distance
+
+    def is_valid_maze_cell(self, cell_x: int, cell_y: int) -> bool:
+
+        if 0 <= cell_x < self.config.maze_columns and 0 <= cell_y < self.config.maze_rows:
+            return True
+        else:
+            return False
 
     def render(self):
 
@@ -142,6 +221,7 @@ class CollectPoints(IEnvironment):
         green = (0, 255, 0)
         black = (0, 0, 0)
         blue = (255, 0, 0)
+        orange = (0, 88, 255)
 
         # Initialize image with white background
         image = 255 * np.ones(shape=[self.screen_width, self.screen_height, 3], dtype=np.uint8)
@@ -176,6 +256,37 @@ class CollectPoints(IEnvironment):
         # Draw outer border
         image = cv2.rectangle(image, (0, 0), (self.screen_width-1, self.screen_height-1), black, 3)
 
+        # Render sensors lines
+        if self.config.use_sensors:
+
+            # Render sensor line top
+            image = cv2.line(image,
+                             (self.agent_position_x, self.agent_position_y - self.config.agent_radius),
+                             (self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
+                             orange,
+                             1)
+
+            # Render sensor line bottom
+            image = cv2.line(image,
+                             (self.agent_position_x, self.agent_position_y + self.config.agent_radius),
+                             (self.agent_position_x, self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
+                             orange,
+                             1)
+
+            # Render sensor line left
+            image = cv2.line(image,
+                             (self.agent_position_x - self.config.agent_radius, self.agent_position_y),
+                             (self.agent_position_x - self.config.agent_radius - self.sensor_left, self.agent_position_y),
+                             orange,
+                             1)
+
+            # Render sensor line left
+            image = cv2.line(image,
+                             (self.agent_position_x + self.config.agent_radius, self.agent_position_y),
+                             (self.agent_position_x + self.config.agent_radius + self.sensor_right, self.agent_position_y),
+                             orange,
+                             1)
+
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
 
@@ -193,6 +304,13 @@ class CollectPoints(IEnvironment):
         ob_list = list()
         ob_list.append(self.agent_position_x / self.screen_width)
         ob_list.append(self.agent_position_y / self.screen_height)
+
+        if self.config.use_sensors:
+            ob_list.append(self.sensor_top / self.screen_height)
+            ob_list.append(self.sensor_bottom / self.screen_height)
+            ob_list.append(self.sensor_left / self.screen_width)
+            ob_list.append(self.sensor_right / self.screen_width)
+
         ob_list.append(self.point_x / self.screen_width)
         ob_list.append(self.point_y / self.screen_height)
         ob_list.append(self.negative_point_x / self.screen_width)

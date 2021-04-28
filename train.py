@@ -162,6 +162,10 @@ def main():
                               free_parameter_usage=ep_runner.get_free_parameter_usage(),
                               elapsed_time=time.time() - start_time_training)
 
+    # Write log additionally to JSON for better parsing
+    with open(os.path.join(results_directory, "Log.json"), "w") as outfile:
+        json.dump(log, outfile)
+
     # Error messages inside subprocesses could be shown once they are joined
     pool.close()
     pool.join()
