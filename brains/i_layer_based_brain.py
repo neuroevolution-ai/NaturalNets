@@ -12,7 +12,7 @@ class ILayerBasedBrainCfg(IBrainCfg):
     # The layers are in the given order
     hidden_layer_structure: List[int]
     # Whether a neuron can only use its own state form the last timestep
-    diagonal_hidden_to_hidden: bool = True
+    diagonal_hidden_to_hidden: bool = False
     use_bias: bool = False
 
 
@@ -37,12 +37,11 @@ class ILayerBasedBrain(IBrain, abc.ABC):
         # How many hidden values are used in one cell
         pass
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: ILayerBasedBrainCfg,
                  brain_state: dict):
-        super().__init__(input_size, output_size, individual, configuration, brain_state)
-        configuration = ILayerBasedBrainCfg(**configuration)
+        if not type(configuration) is ILayerBasedBrainCfg:
+            configuration = ILayerBasedBrainCfg(**configuration)
         hidden_layer_structure: List[int] = configuration.hidden_layer_structure
-
 
         # initialize weights out of individual
 
@@ -60,22 +59,14 @@ class ILayerBasedBrain(IBrain, abc.ABC):
         for layer in range(len(hidden_layer_structure)):
 
             # Matrices for weighted input values in calculations
-            if layer == 0:
-                number_elements = number_gates * hidden_layer_structure[0] * input_size
-                self.weight_ih.append(
-                    np.array(
-                        individual[individual_index: individual_index + number_elements]
-                    ).reshape((number_gates, hidden_layer_structure[0], input_size))
-                )
-                individual_index += number_elements
-            else:
-                number_elements = number_gates * hidden_layer_structure[layer] * hidden_layer_structure[layer - 1]
-                self.weight_ih.append(
-                    np.array(
-                        individual[individual_index: individual_index + number_elements]
-                    ).reshape((number_gates, hidden_layer_structure[layer], hidden_layer_structure[layer - 1]))
-                )
-                individual_index += number_elements
+            layer_input_size = input_size if layer == 0 else hidden_layer_structure[layer - 1]
+            number_elements = number_gates * hidden_layer_structure[layer] * layer_input_size
+            self.weight_ih.append(
+                np.array(
+                    individual[individual_index: individual_index + number_elements]
+                ).reshape((number_gates, hidden_layer_structure[layer], layer_input_size))
+            )
+            individual_index += number_elements
 
             # Matrices for weighted state values in calculations
             if configuration.diagonal_hidden_to_hidden:  # Whether each neuron can only access its own state

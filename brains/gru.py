@@ -1,13 +1,6 @@
 import numpy as np
-import attr
-from brains.i_layer_based_brain import ILayerBasedBrain, ILayerBasedBrainCfg
+from brains.i_layer_based_brain import ILayerBasedBrain
 from brains.i_brain import registered_brain_classes
-
-
-@attr.s(slots=True, auto_attribs=True, frozen=True)
-class GruCfg(ILayerBasedBrainCfg):
-    pass
-
 
 class GruNN(ILayerBasedBrain):
 
@@ -18,19 +11,22 @@ class GruNN(ILayerBasedBrain):
     @staticmethod
     def layer_step(layer_input, weight_ih, weight_hh, bias_h, hidden):
         # Reset Gate
-        r_t = ILayerBasedBrain.sigmoid(np.dot(weight_ih[0], layer_input)
-                                       + np.dot(weight_hh[0], hidden[0])
-                                       + bias_h[0])
+        r_t = ILayerBasedBrain.sigmoid(
+            np.dot(weight_ih[0], layer_input)
+            + np.dot(weight_hh[0], hidden[0])
+            + bias_h[0])
 
         # Update Gate
-        z_t = ILayerBasedBrain.sigmoid(np.dot(weight_ih[1], layer_input)
-                                       + np.dot(weight_hh[1], hidden[0])
-                                       + bias_h[1])
+        z_t = ILayerBasedBrain.sigmoid(
+            np.dot(weight_ih[1], layer_input)
+            + np.dot(weight_hh[1], hidden[0])
+            + bias_h[1])
 
         # New Gate
-        n_t = np.tanh(np.dot(weight_ih[2], layer_input)
-                      + np.dot(r_t, np.dot(weight_hh[2], hidden[0]))
-                      + bias_h[2])
+        n_t = np.tanh(
+            np.dot(weight_ih[2], layer_input)
+            + np.multiply(r_t, np.dot(weight_hh[2], hidden[0]))
+            + bias_h[2])
 
         result = np.multiply(1 - z_t, n_t) + np.multiply(z_t, hidden[0])
         return [[result], result]
