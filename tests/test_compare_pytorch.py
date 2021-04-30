@@ -53,8 +53,8 @@ class TestPyTorch:
                 # Check hidden states
                 assert np.array_equal(gru_pytorch.hidden[i].view(-1).detach().numpy(), gru_numpy.hidden[i][0])
 
-                # Check output matrix
-                assert np.array_equal(gru_pytorch.weight_ho, gru_numpy.weight_ho)
+            # Check output matrix
+            assert np.array_equal(gru_pytorch.weight_ho, gru_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=gru_pytorch,
                              numpy_network=gru_numpy)
@@ -104,8 +104,8 @@ class TestPyTorch:
                 # Check hidden states
                 assert np.array_equal(elman_pytorch.hidden[i].view(-1).detach().numpy(), elman_numpy.hidden[i][0])
 
-                # Check output matrix
-                assert np.array_equal(elman_pytorch.weight_ho, elman_numpy.weight_ho)
+            # Check output matrix
+            assert np.array_equal(elman_pytorch.weight_ho, elman_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=elman_pytorch,
                              numpy_network=elman_numpy)
@@ -159,8 +159,8 @@ class TestPyTorch:
                 assert np.array_equal(lstm_pytorch.hidden[0][i].view(-1).detach().numpy(), lstm_numpy.hidden[i][0])
                 assert np.array_equal(lstm_pytorch.hidden[1][i].view(-1).detach().numpy(), lstm_numpy.hidden[i][1])
 
-                # Check output matrix
-                assert np.array_equal(lstm_pytorch.weight_ho, lstm_numpy.weight_ho)
+            # Check output matrix
+            assert np.array_equal(lstm_pytorch.weight_ho, lstm_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=lstm_pytorch,
                              numpy_network=lstm_numpy)
