@@ -1,27 +1,10 @@
 import numpy as np
-import pytest
 import torch
 import time
 
 from brains import LstmNN, GruNN, ElmanNN
 from brains.i_layer_based_brain import ILayerBasedBrainCfg
 from tests.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
-
-
-@pytest.fixture
-def torch_config() -> IPytorchBrainCfg:
-    return IPytorchBrainCfg(type="GRU_PyTorch", num_layers=3,
-                            hidden_size=8,
-                            use_bias=False)
-
-
-@pytest.fixture
-def numpy_config() -> ILayerBasedBrainCfg:
-    return ILayerBasedBrainCfg(type="GRULayered", hidden_layer_structure=[8, 8, 8], diagonal_hidden_to_hidden=False,
-                               use_bias=False)
-
-
-
 
 class TestPyTorch:
 
@@ -67,8 +50,11 @@ class TestPyTorch:
                 assert np.array_equal(weight_ih_li_pytorch, weight_ih_li_numpy)
                 assert np.array_equal(weight_hh_li_pytorch, weight_hh_li_numpy)
 
-                # Check hidden and cell states
+                # Check hidden states
                 assert np.array_equal(gru_pytorch.hidden[i].view(-1).detach().numpy(), gru_numpy.hidden[i][0])
+
+                # Check output matrix
+                assert np.array_equal(gru_pytorch.weight_ho, gru_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=gru_pytorch,
                              numpy_network=gru_numpy)
@@ -115,8 +101,11 @@ class TestPyTorch:
                 assert np.array_equal(weight_ih_li_pytorch, weight_ih_li_numpy)
                 assert np.array_equal(weight_hh_li_pytorch, weight_hh_li_numpy)
 
-                # Check hidden and cell states
+                # Check hidden states
                 assert np.array_equal(elman_pytorch.hidden[i].view(-1).detach().numpy(), elman_numpy.hidden[i][0])
+
+                # Check output matrix
+                assert np.array_equal(elman_pytorch.weight_ho, elman_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=elman_pytorch,
                              numpy_network=elman_numpy)
@@ -169,6 +158,9 @@ class TestPyTorch:
                 # Check hidden and cell states
                 assert np.array_equal(lstm_pytorch.hidden[0][i].view(-1).detach().numpy(), lstm_numpy.hidden[i][0])
                 assert np.array_equal(lstm_pytorch.hidden[1][i].view(-1).detach().numpy(), lstm_numpy.hidden[i][1])
+
+                # Check output matrix
+                assert np.array_equal(lstm_pytorch.weight_ho, lstm_numpy.weight_ho)
 
         self.compare_outputs(number_of_inputs=number_of_inputs, input_size=input_size, pytorch_network=lstm_pytorch,
                              numpy_network=lstm_numpy)
