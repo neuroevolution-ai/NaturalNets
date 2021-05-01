@@ -145,6 +145,10 @@ def main():
     # Save best genome
     np.save(os.path.join(results_directory, 'Best_Genome'), best_genome_overall)
 
+    # Save Log
+    with open(os.path.join(results_directory, 'Log.json'), 'w') as outfile:
+        json.dump(log, outfile, ensure_ascii=False, indent=4)
+
     # Save brain state (i.e. masks)
     ep_runner.save_brain_state(os.path.join(results_directory, 'Brain_State'))
 
