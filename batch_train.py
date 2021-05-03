@@ -30,7 +30,7 @@ print("Optimization started")
 
 while not stop_optimization:
 
-    with open("configurations/Configuration_DesignSpace.json", "r") as readfile:
+    with open("configurations/DS_CMA_ES_Deap_CTRNN_Dense.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
@@ -55,7 +55,7 @@ while not stop_optimization:
     configuration_out = sample_from_design_space(configuration)
 
     with open('configurations/Configuration.json', 'w') as outfile:
-        json.dump(configuration_out, outfile)
+        json.dump(configuration_out, outfile, indent=4)
 
     with open("Stop_Optimization.json", "r") as readfile:
         d = json.load(readfile)
