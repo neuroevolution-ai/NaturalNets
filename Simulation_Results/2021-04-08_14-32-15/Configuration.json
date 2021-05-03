@@ -17,7 +17,8 @@
         "w_mask": "dense",
         "t_mask": "dense",
         "clipping_range_min": -1.0,
-        "clipping_range_max": 1.0
+        "clipping_range_max": 1.0,
+        "differential_equation": "separated"
     },
     "optimizer": {
         "type": "CMA-ES-Deap",
