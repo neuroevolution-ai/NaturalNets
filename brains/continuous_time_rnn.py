@@ -17,6 +17,7 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     t_mask_density: float = 1.0
     clipping_range_min: float = 1.0
     clipping_range_max: float = -1.0
+    set_principle_diagonal_elements_of_W_negative: bool = False
     alpha: float = 0.0
 
 
@@ -35,13 +36,19 @@ class ContinuousTimeRNN(IBrain):
         w_size: int = np.count_nonzero(w_mask)
         t_size: int = np.count_nonzero(t_mask)
 
-        self.V = sparse.csr_matrix(v_mask, dtype=float)
-        self.W = sparse.csr_matrix(w_mask, dtype=float)
-        self.T = sparse.csr_matrix(t_mask, dtype=float)
+        # Get weight matrizes of current individual
+        self.V = np.array([[element] for element in individual[0:v_size]])
+        self.W = np.array([[element] for element in individual[v_size:v_size + w_size]])
+        self.T = np.array([[element] for element in individual[v_size + w_size:v_size + w_size + t_size]])
 
-        self.V.data[:] = [element for element in individual[0:v_size]]
-        self.W.data[:] = [element for element in individual[v_size:v_size + w_size]]
-        self.T.data[:] = [element for element in individual[v_size + w_size:v_size + w_size + t_size]]
+        self.V = self.V.reshape([self.config.number_neurons, input_size])
+        self.W = self.W.reshape([self.config.number_neurons, self.config.number_neurons])
+        self.T = self.T.reshape([output_size, self.config.number_neurons])
+
+        # Set elements of main diagonal to less than 0
+        if self.config.set_principle_diagonal_elements_of_W_negative:
+            for j in range(self.config.number_neurons):
+                self.W[j][j] = -abs(self.W[j][j])
 
         # Set x0
         self.x = np.zeros(self.config.number_neurons)
