@@ -32,9 +32,9 @@ def gather_info_for_csv(simulation):
         maximum = parsed_log["maximum"]
         best = parsed_log["best"]
     try:
-        brain = conf["brain"]
-        optimizer = conf["optimizer"]
-        environment = conf["environment"]
+        brain = {"brain." + k: v for k, v in conf["brain"].items()}
+        optimizer = {"optimizer." + k: v for k, v in conf["optimizer"].items()}
+        environment = {"environment." + k: v for k, v in conf["environment"].items()}
         # Delete them from config because leaving them in config would print the values twice
         del conf["brain"]
         del conf["optimizer"]
@@ -44,6 +44,8 @@ def gather_info_for_csv(simulation):
         brain = {}
         optimizer = {}
         environment = {}
+
+    conf = {"conf." + k: v for k, v in conf.items()}
 
     return {"gen": str(max(generations)),
             "mavg": str(max(mean)),
