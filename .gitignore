@@ -39,3 +39,4 @@ Simulation_Results/*/*.svg
 # CSV for displaying results
 *.csv
 .~lock*.csv#
+spreadsheets/
