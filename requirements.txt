@@ -8,3 +8,4 @@ procgen
 opencv-python
 cma
 matplotlib
+pandas
