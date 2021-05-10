@@ -2,6 +2,7 @@ import logging
 import os
 from typing import List, Tuple, Union
 
+import numpy as np
 import pandas as pd
 
 from tools.parse_experiments import read_simulations, parse_log
@@ -147,7 +148,7 @@ pivot_table_clipping = create_pivot_table(dir_path,
 merged_pivots = pd.concat([pivot_table_number_neurons, pivot_table_diff_eq, pivot_table_clipping],
                           keys=["Number neurons", "Differential equation", "Clipping"])
 
-merged_pivots.to_csv(os.path.join(dir_path, "pivot_tables.csv"))
+
 
 # TODO total_row needs to be appended somehow
 total_row = merged_pivots.groupby(level=0).agg(
@@ -156,12 +157,26 @@ total_row = merged_pivots.groupby(level=0).agg(
     max=("max", "mean"),
     best=("best", "mean")).reset_index().mean()
 
-total_row.to_csv(os.path.join(dir_path, "total_row.csv"))
+total_row = pd.DataFrame(np.expand_dims(total_row.to_numpy(), axis=0), columns=merged_pivots.columns)
+
+# Use round + casting to integer because only casting does no proper rounding and without casting the values
+# have .0 as a decimal place
+merged_pivots = merged_pivots.round().astype(int)
+
+cleaner_column_names = {"mavg": "Mean Reward",
+                        "max": "Max Reward",
+                        "best": "Best Reward"}
+merged_pivots = merged_pivots.rename(columns=cleaner_column_names)
+
+merged_pivots.to_csv(os.path.join(dir_path, "pivot_tables.csv"))
 
 # Pandas has a nice feature to generate LaTeX tables from a DataFrame
-# TODO rounding of floats
-# TODO better column names
-with open(os.path.join(dir_path, "pivot_table.tex"), "w") as file:
-    file.writelines(merged_pivots.to_latex())
+merged_pivots.to_latex(os.path.join(dir_path, "pivot_table.tex"))
+
+total_row = total_row.round().astype(int)
+total_row = total_row.rename(columns=cleaner_column_names)
+
+total_row.to_csv(os.path.join(dir_path, "total_row.csv"))
+total_row.to_latex(os.path.join(dir_path, "total_row.tex"))
 
 logging.info("Log and pivot tables written to the following folder {}".format(dir_path))
