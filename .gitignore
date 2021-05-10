@@ -35,3 +35,8 @@ Simulation_Results/*/*.svg
 
 # Whitelist files with 'test' in their name but only in tests/ folder
 !tests/test*.py
+
+# CSV for displaying results
+*.csv
+.~lock*.csv#
+spreadsheets/

@@ -65,7 +65,7 @@ class OptimizerOpenAIES(IOptimizer):
         self.random_state = np.random.RandomState(seed=0)
         self.individual_size = individual_size
         self.configuration = OptimizerOpenAIESCfg(**configuration)
-        self.current_individual = self.initialize_individual(std=0.01)
+        self.current_individual = np.random.randn(self.individual_size).astype(np.float32)
 
         self.population_size = self.configuration.population_size
         self.learning_rate = self.configuration.learning_rate
@@ -89,7 +89,8 @@ class OptimizerOpenAIES(IOptimizer):
 
         return out
 
-    def compute_ranks(self, x):
+    @staticmethod
+    def compute_ranks(x):
         """
         Returns ranks in [0, len(x))
         Note: This is different from scipy.stats.rankdata, which returns ranks in [1, len(x)].
@@ -122,6 +123,7 @@ class OptimizerOpenAIES(IOptimizer):
     def ask(self):
         individuals = []
         for i in range(self.population_size):
+            # noinspection PyArgumentList
             noise_for_individual = self.random_state.randn(self.individual_size)
             noisy_individual = self.current_individual + noise_for_individual
 
@@ -134,7 +136,7 @@ class OptimizerOpenAIES(IOptimizer):
         # self.reward_history.append(np.mean(rewards))
 
         # if self.adam.t % 5 == 0:
-            # self.adjust_learning_rate()
+        #     self.adjust_learning_rate()
 
         if self.configuration.use_centered_ranks:
             rewards = self.compute_centered_ranks(np.array(rewards, dtype=np.float32))
@@ -152,5 +154,3 @@ class OptimizerOpenAIES(IOptimizer):
 
 # TODO: Do this registration via class decorator
 registered_optimizer_classes["OpenAI-ES"] = OptimizerOpenAIES
-
-

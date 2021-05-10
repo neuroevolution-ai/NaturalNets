@@ -13,8 +13,8 @@
             64,
             32
         ],
-        "neuron_activation": "relu",
-        "neuron_activation_output": "relu",
+        "neuron_activation": "tanh",
+        "neuron_activation_output": "tanh",
         "use_bias": true
     },
     "optimizer": {

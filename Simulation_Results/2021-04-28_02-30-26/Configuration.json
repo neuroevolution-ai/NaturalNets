@@ -14,6 +14,7 @@
         "hidden_layer_structure": [
             10
         ],
+        "diagonal_hidden_to_hidden": true,
         "use_bias": true
     },
     "optimizer": {
