@@ -120,19 +120,23 @@ def create_pivot_table(table: pd.DataFrame, group_by_column: Union[List[str], st
     else:
         grouped_data = filtered_data.groupby(group_by_column)
 
-    output_mean = grouped_data.mean()
-    output_mean.insert(0, "Count", grouped_data.size())
+    output_mean = grouped_data.mean().rename(columns={columns[0]: columns[0] + "_mean"})
+    output_max = grouped_data.max().rename(columns={columns[0]: columns[0] + "_max"})
+    output_count = pd.DataFrame(grouped_data.size()).rename(columns={0: "Count"})
+
+    # First column: Count, second mean over best rewards, third max over best rewards
+    output = pd.concat([output_count, output_mean, output_max], axis=1)
 
     # file_name = "".join([str(value) + "-" for _, value in filters]) + "---" + str(group_by_column) + ".csv"
     # output_mean.to_csv(os.path.join(dir_path, file_name))
 
-    return output_mean
+    return output
 
 
 def generate_ctrnn_pivot_table(_dir_path, experiment_data: pd.DataFrame):
     filters = [("brain.type", "CTRNN"), ("environment.type", "CollectPoints"), ("environment.use_sensors", True)]
     filters = generate_filter(experiment_data, filters, bitwise_and=True)
-    base_columns = ["mavg", "max", "best"]
+    base_columns = ["best"]
 
     pivot_table_number_neurons = create_pivot_table(experiment_data,
                                                     group_by_column="brain.number_neurons",
@@ -156,9 +160,8 @@ def generate_ctrnn_pivot_table(_dir_path, experiment_data: pd.DataFrame):
     # TODO total_row needs to be appended somehow
     total_row = merged_pivots.groupby(level=0).agg(
         count=("Count", "sum"),
-        mavg=("mavg", "mean"),
-        max=("max", "mean"),
-        best=("best", "mean")).reset_index().mean()
+        best_mean=("best_mean", "mean"),
+        best_max=("best_max", "max")).reset_index().mean()
 
     total_row = pd.DataFrame(np.expand_dims(total_row.to_numpy(), axis=0), columns=merged_pivots.columns)
 
@@ -166,9 +169,8 @@ def generate_ctrnn_pivot_table(_dir_path, experiment_data: pd.DataFrame):
     # have .0 as a decimal place
     merged_pivots = merged_pivots.round().astype(int)
 
-    cleaner_column_names = {"mavg": "Mean Reward",
-                            "max": "Max Reward",
-                            "best": "Best Reward"}
+    cleaner_column_names = {"best_mean": "Mean Best Reward",
+                            "best_max": "Max Best Reward"}
     merged_pivots = merged_pivots.rename(columns=cleaner_column_names)
 
     merged_pivots.to_csv(os.path.join(dir_path, "ctrnn_pivot_table.csv"))
@@ -193,7 +195,7 @@ def generate_network_comparison_pivot_table(_dir_path, experiment_data: pd.DataF
     filters_general = [("environment.type", "CollectPoints"), ("environment.use_sensors", True)]
     filters = generate_filter(experiment_data, filters=filters_general, bitwise_and=True, existing_filters=filters)
 
-    base_columns = ["mavg", "max", "best"]
+    base_columns = ["best"]
 
     # Merge the columns for the number of neurons for CTRNNs and Elman/LSTM/GRU, also unpack as for the last mentioned
     # networks the number of neurons is saved as a list but we want floats, i.e. this will sum up the entries of
@@ -222,9 +224,8 @@ def generate_network_comparison_pivot_table(_dir_path, experiment_data: pd.DataF
         "LSTMNN": "LSTM"
     }
 
-    cleaner_column_names = {"mavg": "Mean Reward",
-                            "max": "Max Reward",
-                            "best": "Best Reward"}
+    cleaner_column_names = {"best_mean": "Mean Best Reward",
+                            "best_max": "Max Best Reward"}
 
     pivot_table_architecture_comparison = pivot_table_architecture_comparison.rename(index=rename_architectures,
                                                                                      columns=cleaner_column_names)
