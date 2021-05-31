@@ -256,7 +256,8 @@ keys = [x for i, x in enumerate(keys) if i == keys.index(x)]
 experiments_dataframe = pd.DataFrame(data, columns=keys)
 experiments_dataframe.to_csv(output_file_name)
 
-generate_ctrnn_pivot_table(dir_path, experiment_data=experiments_dataframe)
-generate_network_comparison_pivot_table(dir_path, experiment_data=experiments_dataframe)
+logging.warning("Use other repo to create pivot tables if you need them")
+# generate_ctrnn_pivot_table(dir_path, experiment_data=experiments_dataframe)
+# generate_network_comparison_pivot_table(dir_path, experiment_data=experiments_dataframe)
 
 logging.info("Log and pivot tables written to the following folder {}".format(dir_path))
