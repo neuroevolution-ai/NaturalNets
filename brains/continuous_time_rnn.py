@@ -1,6 +1,6 @@
 import attr
 import numpy as np
-from scipy import sparse
+
 from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 
 
@@ -15,8 +15,7 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     w_mask_density: float = 1.0
     t_mask: str = 'dense'
     t_mask_density: float = 1.0
-    clipping_range_min: float = 1.0
-    clipping_range_max: float = -1.0
+    clipping_range: float = 1.0
     set_principle_diagonal_elements_of_W_negative: bool = False
     alpha: float = 0.0
 
@@ -59,9 +58,9 @@ class ContinuousTimeRNN(IBrain):
 
         # Differential equation
         if self.config.differential_equation == 'separated':
-            dx_dt = -self.config.alpha*self.x + self.W.dot(np.tanh(self.x)) + self.V.dot(u)
+            dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x)) + self.V.dot(u)
         elif self.config.differential_equation == 'original':
-            dx_dt = -self.config.alpha*self.x + self.W.dot(np.tanh(self.x + self.V.dot(u)))
+            dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x + self.V.dot(u)))
         else:
             raise RuntimeError("No valid differential equation")
 
@@ -69,7 +68,7 @@ class ContinuousTimeRNN(IBrain):
         self.x = self.x + self.config.delta_t * dx_dt
 
         # Clip y to state boundaries
-        self.x = np.clip(self.x, self.config.clipping_range_min, self.config.clipping_range_max)
+        self.x = np.clip(self.x, -self.config.clipping_range, +self.config.clipping_range)
 
         # Calculate outputs
         y = np.tanh(self.T.dot(self.x))
@@ -87,7 +86,8 @@ class ContinuousTimeRNN(IBrain):
         config = ContinuousTimeRNNCfg(**configuration)
 
         v_mask = cls._generate_mask(config.v_mask, config.number_neurons, input_size, config.v_mask_density)
-        w_mask = cls._generate_mask(config.w_mask, config.number_neurons, config.number_neurons, config.w_mask_density, True)
+        w_mask = cls._generate_mask(config.w_mask, config.number_neurons, config.number_neurons, config.w_mask_density,
+                                    True)
         t_mask = cls._generate_mask(config.t_mask, output_size, config.number_neurons, config.t_mask_density)
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
