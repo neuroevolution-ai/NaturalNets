@@ -3,15 +3,15 @@ import pandas as pd
 
 
 def apply_robotics_filters(data: pd.DataFrame) -> pd.DataFrame:
-    filtered_data = data[data["experiment_id"] == 1]
+    filtered_data = data[data["conf.experiment_id"] == 1]
     filtered_data = filtered_data[filtered_data["brain.type"] == "CTRNN"]
-    filtered_data = filtered_data[filtered_data["brain.type"] == "GymMujoco"]
+    filtered_data = filtered_data[filtered_data["environment.type"] == "GymMujoco"]
 
     return filtered_data
 
 
 def apply_global_filters(data: pd.DataFrame) -> pd.DataFrame:
-    filtered_data = data[data["experiment_id"] == 1]
+    filtered_data = data[data["conf.experiment_id"] == 1]
     filtered_data = filtered_data[filtered_data["brain.type"] == "CTRNN"]
 
     return filtered_data
@@ -40,11 +40,11 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
     per_env_pivot_tables = []
 
     for env in environments:
-        locally_filtered_data = data[data["environment.type"] == env]
+        locally_filtered_data = data[data["environment.name"] == env]
         env_pivot_table = pd.pivot_table(locally_filtered_data,
-                                         values=["best", "elapsed_time"],
+                                         values=["best", "conf.elapsed_time"],
                                          index=[row_property],
-                                         aggfunc={"best": [np.mean, np.max, len], "elapsed_time": np.mean})
+                                         aggfunc={"best": [np.mean, np.max, len], "conf.elapsed_time": np.mean})
 
         # This simply flattens the column names because the pivot table functions returns them in a hierarchy
         env_pivot_table.columns = env_pivot_table.columns.to_series().str.join("_")
@@ -54,7 +54,7 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
             columns=order_of_columns)
 
         # Convert elapsed time from seconds to hours
-        env_pivot_table["elapsed_time_mean"] = env_pivot_table["elapsed_time_mean"] / 3600.0
+        env_pivot_table["conf.elapsed_time_mean"] = env_pivot_table["conf.elapsed_time_mean"] / 3600.0
 
         per_env_pivot_tables.append(env_pivot_table)
 
@@ -93,7 +93,7 @@ def main():
     environments = ["Hopper-v2", "HalfCheetah-v2", "Walker2d-v2"]
     row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range",
                       "brain.set_principle_diagonal_elements_of_W_negative", "optimizer.sigma"]
-    column_order = ["best_mean", "best_amax", "best_len", "elapsed_time_mean"]
+    column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
     # This has to match column_order, as these functions will be used on the columns to calculate the total row values
     total_row_functions = [np.mean, np.max, len, np.mean]
 
