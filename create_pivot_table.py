@@ -2,8 +2,17 @@ import numpy as np
 import pandas as pd
 
 
+def apply_robotics_filters(data: pd.DataFrame) -> pd.DataFrame:
+    filtered_data = data[data["experiment_id"] == 1]
+    filtered_data = filtered_data[filtered_data["brain.type"] == "CTRNN"]
+    filtered_data = filtered_data[filtered_data["brain.type"] == "GymMujoco"]
+
+    return filtered_data
+
+
 def apply_global_filters(data: pd.DataFrame) -> pd.DataFrame:
-    filtered_data = data[data["neural_network_type"] == "CTRNN"]
+    filtered_data = data[data["experiment_id"] == 1]
+    filtered_data = filtered_data[filtered_data["brain.type"] == "CTRNN"]
 
     return filtered_data
 
@@ -12,9 +21,9 @@ def round_pivot_table(pivot_table: pd.DataFrame, environments: list):
     # Integers look better in the paper therefore we first round and then cast to remove trailing zeros (except for
     # the average time)
     for env in environments:
-        pivot_table[env] = pivot_table[env].round({"maximum_average_mean": 0,
-                                                   "maximum_average_amax": 0,
-                                                   "maximum_average_len": 0,
+        pivot_table[env] = pivot_table[env].round({"best_mean": 0,
+                                                   "best_amax": 0,
+                                                   "best_len": 0,
                                                    "elapsed_time_mean": 1})
 
         # TODO this will for some reason not work
@@ -31,11 +40,11 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
     per_env_pivot_tables = []
 
     for env in environments:
-        locally_filtered_data = data[data["environment"] == env]
+        locally_filtered_data = data[data["environment.type"] == env]
         env_pivot_table = pd.pivot_table(locally_filtered_data,
-                                         values=["maximum_average", "elapsed_time"],
+                                         values=["best", "elapsed_time"],
                                          index=[row_property],
-                                         aggfunc={"maximum_average": [np.mean, np.max, len], "elapsed_time": np.mean})
+                                         aggfunc={"best": [np.mean, np.max, len], "elapsed_time": np.mean})
 
         # This simply flattens the column names because the pivot table functions returns them in a hierarchy
         env_pivot_table.columns = env_pivot_table.columns.to_series().str.join("_")
@@ -44,7 +53,8 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
         env_pivot_table = env_pivot_table.reindex(
             columns=order_of_columns)
 
-        env_pivot_table["elapsed_time_mean"] = env_pivot_table["elapsed_time_mean"] / 3600
+        # Convert elapsed time from seconds to hours
+        env_pivot_table["elapsed_time_mean"] = env_pivot_table["elapsed_time_mean"] / 3600.0
 
         per_env_pivot_tables.append(env_pivot_table)
 
@@ -78,11 +88,12 @@ def main():
     experiments_data = pd.read_csv("spreadsheets/output.csv")
 
     # Filters used for each part of the pivot table (e.g. neural network used is CTRNN, ...)
-    globally_filtered_data = apply_global_filters(experiments_data)
+    globally_filtered_data = apply_robotics_filters(experiments_data)
+
     environments = ["Hopper-v2", "HalfCheetah-v2", "Walker2d-v2"]
-    row_properties = ["population_size", "number_neurons", "clipping_range", "optimize_y0",
-                      "set_principle_diagonal_elements_of_W_negative", "sigma"]
-    column_order = ["maximum_average_mean", "maximum_average_amax", "maximum_average_len", "elapsed_time_mean"]
+    row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range",
+                      "brain.set_principle_diagonal_elements_of_W_negative", "optimizer.sigma"]
+    column_order = ["best_mean", "best_amax", "best_len", "elapsed_time_mean"]
     # This has to match column_order, as these functions will be used on the columns to calculate the total row values
     total_row_functions = [np.mean, np.max, len, np.mean]
 
