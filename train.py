@@ -25,6 +25,7 @@ class TrainingCfg:
     environment: dict
     brain: dict
     optimizer: dict
+    experiment_id: int = -1
 
 
 def main():
@@ -131,7 +132,10 @@ def main():
         log_line['elapsed_time'] = elapsed_time_current_generation
         log.append(log_line)
 
-    print("Elapsed time for training: %.2f seconds" % (time.time() - start_time_training))
+    elapsed_time = time.time() - start_time_training
+    configuration["elapsed_time"] = elapsed_time
+
+    print("Elapsed time for training: %.2f seconds" % elapsed_time)
 
     # Create new directory to store data of current training run
     results_directory = os.path.join('Simulation_Results', start_date_training)
