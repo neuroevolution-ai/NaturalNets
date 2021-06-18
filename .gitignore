@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 venv/
+.ipynb_checkpoints/
 
 configurations/default.json
 configurations/temp.json
@@ -27,6 +28,7 @@ dask-worker-space/
 /MUJOCO_LOG.TXT
 
 *.latex
+*.tex
 /configurations/exp_design_space.json
 mprofile_*.dat
 
