@@ -84,7 +84,42 @@ def add_total_row(pivot_table: pd.DataFrame, environments: list, order_of_column
     return pivot_table
 
 
-def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names):
+def replace_column_names(latex: str, environments: list) -> str:
+    index_start = latex.find("\\toprule") + len("\\toprule")
+    index_end = latex.rfind("\\midrule")
+
+    inner_slice = latex[latex.find("\\toprule") + len("\\toprule"):latex.rfind("\\midrule")]
+
+    index_inner_start = inner_slice.find("\\\\\n{}") + len("\\\\\n{}")
+    index_inner_end = inner_slice.rfind("\\\\\n")
+
+    # test_slice_shorter = inner_slice[inner_slice.find("\\\\\n{}") + len("\\\\\n{}"):inner_slice.rfind("\\\\\n")]
+
+    col_names_upper_row = """& Reward & Reward &       & Avg"""
+    col_names_lower_row = """& Mean   & Max    & Count & Time"""
+
+    reformatted_output = ""
+
+    for i in range(len(environments)):
+        reformatted_output += col_names_upper_row
+
+    reformatted_output += "\\\ \n"
+
+    for i in range(len(environments)):
+        reformatted_output += col_names_lower_row
+
+    output_first_part = latex[:index_start]
+    output_second_part = latex[index_start:index_start + index_inner_start]
+    output_third_part = reformatted_output
+    output_forth_part = latex[index_start + index_inner_end:index_end]
+    output_fifth_part = latex[index_end:]
+
+    output_latex = output_first_part + output_second_part + output_third_part + output_forth_part + output_fifth_part
+
+    return output_latex
+
+
+def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environments):
     # TODO column_format is not agnostic to how many environments are compared
     latex = latex_formatted_pivot_table.to_latex(escape=False, column_format="|r||c|c|c|c||c|c|c|c||c|c|c|c|")
 
@@ -94,7 +129,32 @@ def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names):
     # Also draw a row line for the total row
     latex = latex.replace("\\\n\\textbf{Total:}", "\\ \hline \n\\textbf{Total:}")
 
+    latex = replace_column_names(latex, environments)
+
+    # This fixes the lines. Without that the lines would not be drawed through
+    latex = latex.replace("\\toprule", "\\hline")
+    latex = latex.replace("\\midrule", "\\hline")
+    latex = latex.replace("\\bottomrule", "\\hline")
+
     return latex
+
+
+# def rename_columns(pivot_table: pd.DataFrame) -> pd.DataFrame:
+#     def rename_func(x):
+#         if x == "best_mean":
+#             return "Reward Mean"
+#         elif x == "best_amax":
+#             return "Reward Max"
+#         elif x == "best_len":
+#             return "Count"
+#         elif x == "conf.elapsed_time_mean":
+#             return "Avg Time"
+#         else:
+#             return x
+#
+#     renamed_pivot_table = pivot_table.rename(rename_func, axis=1)
+#
+#     return renamed_pivot_table
 
 
 def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names):
@@ -104,8 +164,10 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names):
     #       Die Namen abspeichern, braucht man später für die hlines
     #  3. Dann die anderen Rows umbennen -> nur noch die Zahl z.B. oder True/False soll dastehen
     #  4. Dann die \hlines einfügen
+    #  5. \toprule, \midrule und \bottomrule ersetzen mit \hline
 
     modified_pivot_table = add_empty_rows(pivot_table, row_properties=row_properties, row_names=row_names)
+    # modified_pivot_table = rename_columns(modified_pivot_table)
 
     return modified_pivot_table
 
@@ -228,13 +290,14 @@ def main():
 
     pivot_table = add_total_row(pivot_table, environments, column_order, total_row_functions)
 
-    pivot_table = round_pivot_table(pivot_table, environments)
+    # TODO improve rounding
+    # pivot_table = round_pivot_table(pivot_table, environments)
 
     pivot_table.to_csv("spreadsheets/pivot_table.csv")
 
     # pivot_table.to_latex("spreadsheets/pivot_table.tex")
     latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names)
-    latex = format_latex(latex_formatted_pivot_table, row_names)
+    latex = format_latex(latex_formatted_pivot_table, row_names, environments)
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
         latex_file.write(latex)
