@@ -17,22 +17,10 @@ def apply_global_filters(data: pd.DataFrame) -> pd.DataFrame:
     return filtered_data
 
 
-def round_pivot_table(pivot_table: pd.DataFrame, environments: list):
-    # Integers look better in the paper therefore we first round and then cast to remove trailing zeros (except for
-    # the average time)
-    for env in environments:
-        pivot_table[env] = pivot_table[env].round({"best_mean": 0,
-                                                   "best_amax": 0,
-                                                   "best_len": 0,
-                                                   "elapsed_time_mean": 1})
+def round_pivot_table(pivot_table: pd.DataFrame, round_mapper: dict, type_mapper: dict):
+    rounded_pivot_table = pivot_table.round(round_mapper).astype(type_mapper)
 
-        # TODO this will for some reason not work
-        # pivot_table[env] = pivot_table[env].astype({"maximum_average_mean": np.int32,
-        #                                             "maximum_average_amax": np.int32,
-        #                                             "maximum_average_len": np.int32,
-        #                                             "elapsed_time_mean": np.float32})
-
-    return pivot_table
+    return rounded_pivot_table
 
 
 def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: list,
@@ -110,6 +98,10 @@ def replace_column_names(latex: str, environments: list) -> str:
 
     output_first_part = latex[:index_start]
     output_second_part = latex[index_start:index_start + index_inner_start]
+
+    # TODO need to replace the column format in the multicolumns so that the environment is centered
+    # output_second_part2 = output_second_part.replace("}{l}")
+
     output_third_part = reformatted_output
     output_forth_part = latex[index_start + index_inner_end:index_end]
     output_fifth_part = latex[index_end:]
@@ -139,25 +131,13 @@ def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environme
     return latex
 
 
-# def rename_columns(pivot_table: pd.DataFrame) -> pd.DataFrame:
-#     def rename_func(x):
-#         if x == "best_mean":
-#             return "Reward Mean"
-#         elif x == "best_amax":
-#             return "Reward Max"
-#         elif x == "best_len":
-#             return "Count"
-#         elif x == "conf.elapsed_time_mean":
-#             return "Avg Time"
-#         else:
-#             return x
-#
-#     renamed_pivot_table = pivot_table.rename(rename_func, axis=1)
-#
-#     return renamed_pivot_table
+def rename_environment_columns(pivot_table: pd.DataFrame, new_environment_column_names: dict) -> pd.DataFrame:
+    renamed_pivot_table = pivot_table.rename(columns=new_environment_column_names)
+
+    return renamed_pivot_table
 
 
-def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names):
+def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names):
     # TODO
     #  1. Row Index flatten und Empty Rows einfügen
     #  2. Empty Rows umbennen -> jeweils in die Config Property so wie sie in der LaTeX Tabelle stehen soll
@@ -167,7 +147,7 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names):
     #  5. \toprule, \midrule und \bottomrule ersetzen mit \hline
 
     modified_pivot_table = add_empty_rows(pivot_table, row_properties=row_properties, row_names=row_names)
-    # modified_pivot_table = rename_columns(modified_pivot_table)
+    modified_pivot_table = rename_environment_columns(modified_pivot_table, new_environment_column_names)
 
     return modified_pivot_table
 
@@ -273,9 +253,25 @@ def main():
         "$\sigma$ (Initial Deviation):"
     ]
 
+    new_environment_column_names = {
+        "Hopper-v2": "\textbf{Hopper-v2} ($\Delta t = 0.008\,s$)",
+        "HalfCheetah-v2": "\textbf{HalfCheetah-v2} ($\Delta t = 0.05\,s$)",
+        "Walker2d-v2": "\textbf{Walker2d-v2} ($\Delta t = 0.008\,s$)"
+    }
+
     column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
     # This has to match column_order, as these functions will be used on the columns to calculate the total row values
     total_row_functions = [np.mean, np.max, len, np.mean]
+
+    round_mapper = {}
+    type_mapper = {}
+    for env in environments:
+        for col in column_order:
+            if not col == "conf.elapsed_time_mean":
+                round_mapper[(env, col)] = 0
+                type_mapper[(env, col)] = int
+            else:
+                round_mapper[(env, col)] = 2
 
     rows = []
 
@@ -290,13 +286,13 @@ def main():
 
     pivot_table = add_total_row(pivot_table, environments, column_order, total_row_functions)
 
-    # TODO improve rounding
-    # pivot_table = round_pivot_table(pivot_table, environments)
+    pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
     pivot_table.to_csv("spreadsheets/pivot_table.csv")
 
     # pivot_table.to_latex("spreadsheets/pivot_table.tex")
-    latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names)
+    latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names,
+                                                   new_environment_column_names=new_environment_column_names)
     latex = format_latex(latex_formatted_pivot_table, row_names, environments)
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
