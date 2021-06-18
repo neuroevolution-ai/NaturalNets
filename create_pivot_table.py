@@ -91,6 +91,9 @@ def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names):
     for concrete_row_name in row_names[1:]:
         latex = latex.replace("\\\n{}".format(concrete_row_name), "\\ \hline \n{}".format(concrete_row_name))
 
+    # Also draw a row line for the total row
+    latex = latex.replace("\\\n\\textbf{Total:}", "\\ \hline \n\\textbf{Total:}")
+
     return latex
 
 
@@ -117,6 +120,9 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
 
     modified_pivot_table.index = modified_pivot_table.index.to_flat_index()
 
+    # This is used to check later if the reindexing worked properly
+    original_index_size = len(modified_pivot_table.index)
+
     # Could fail but then again why would you format an empty pivot table
     empty_row = pivot_table.iloc[0].astype(str)
 
@@ -133,41 +139,53 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
     reordered_index = [None] * len(modified_pivot_table.index)
 
     current_prop = None
-    padding_index = 0
-    for i, index_entry in enumerate(modified_pivot_table.index):
-        # index_entry is a tuple (current_prop, value), for example (optimizer.population_size, 100)
+    i = 0  # Index for iterating through the current index as it is in the pivot table
+    j = -1  # Index for the new index list
+
+    # Basically iterates through the modified index (the empty rows are at the back). As the empty rows are named like
+    # the properties that are listed first in the tuple (e.g. (optimizer.population_size, 100)), we can use this to
+    # sort of break there, insert the empty row and then use j to insert the actual rows with data. This way i will
+    # increase until it reached the original index size (as it looks only on the original rows) and j increases to
+    # the size of the new index, as it is used to insert the rows into this new index.
+    while i < len(modified_pivot_table.index):
+        index_entry = modified_pivot_table.index[i]
         if current_prop is None or current_prop != index_entry[0]:
-            # This is basically where the empty row for this property is located, therefore at this position insert
-            # only the first item in the tuple which is equal to the name we gave the respecitve empty row earlier in
-            # this method
             current_prop = index_entry[0]
-            reordered_index[i + padding_index] = current_prop
+            j += 1
+            reordered_index[j] = current_prop
 
-            # Also account for the current property
-            # TODO need break statement here when exceeding the limit
-            padding_index += 1
-            reordered_index[i + padding_index] = index_entry
-        else:
-            reordered_index[i + padding_index] = index_entry
+        i += 1
+        j += 1
 
-    assert len(reordered_index) == len(modified_pivot_table.index)
+        if j >= len(reordered_index):
+            break
+
+        reordered_index[j] = index_entry
+
+    # Check if the running variables have been successfully increased to its desired size
+    assert j == len(reordered_index) and i == original_index_size
 
     modified_pivot_table = modified_pivot_table.reindex(reordered_index)
 
     rename_mapping_index = {}
 
-    # Now rename the rows with a pretty name
+    # Now rename the rows with a pretty name, use j to index row_names
+    j = 0
     for i, index_entry in enumerate(modified_pivot_table.index):
         if not isinstance(index_entry, tuple):
-            rename_mapping_index[index_entry] = row_names[i]
-        else:
-            if index_entry[0] == "Total":
+            if index_entry == "Total":
                 # Handle the Total row separately which has no value in the second item of the tuple
-                rename_mapping_index[index_entry] = index_entry[0]
+                rename_mapping_index[index_entry] = "\textbf{Total:}"
             else:
-                # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
-                # (optimizer.population_size, 100)
-                rename_mapping_index[index_entry] = index_entry[1]
+                rename_mapping_index[index_entry] = row_names[j]
+                j += 1
+        else:
+            # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
+            # (optimizer.population_size, 100)
+            rename_mapping_index[index_entry] = index_entry[1]
+
+    # Asserts that all row_names have been applied
+    assert j == len(row_names)
 
     modified_pivot_table = modified_pivot_table.rename(index=rename_mapping_index)
 
