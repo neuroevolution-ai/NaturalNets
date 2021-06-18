@@ -30,7 +30,7 @@ print("Optimization started")
 
 while not stop_optimization:
 
-    with open("configurations/DS_CMA_ES_Deap_CTRNN_Dense.json", "r") as readfile:
+    with open("configurations/Mujoco_CMA-ES_CTRNN_Design_Space.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
