@@ -52,18 +52,20 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
     return pivot_table_row
 
 
-def add_total_row(pivot_table: pd.DataFrame, environments: list, order_of_columns: list,
-                  total_row_functions: list) -> pd.DataFrame:
+def add_total_row(pivot_table: pd.DataFrame, environments: list, row_properties: list,
+                  aggregate_functions_per_index: dict, aggregate_functions_for_all_indices: dict) -> pd.DataFrame:
     # This simply says apply this function to that column, i.e. apply max to the column where we list max values
     # because we want the maximum reward over all the rows in the pivot table
-    aggregate_functions = {col: col_fun for (col, col_fun) in zip(order_of_columns, total_row_functions)}
-
     total_row = []
 
     for env in environments:
         per_env_data = pivot_table[env]
 
-        total_row.append(per_env_data.agg(aggregate_functions))
+        per_env_results = []
+        for row_prop in row_properties:
+            per_env_results.append(per_env_data.loc[row_prop].agg(aggregate_functions_per_index))
+
+        total_row.append(pd.DataFrame(per_env_results).agg(aggregate_functions_for_all_indices))
 
     total_row_values = pd.concat(total_row).values
 
@@ -194,7 +196,13 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
         if current_prop is None or current_prop != index_entry[0]:
             current_prop = index_entry[0]
             j += 1
-            reordered_index[j] = current_prop
+
+            if current_prop == "Total":
+                # The total row has a tuple ("Total", "") and this whole tuple needs to be set so that the reindexing
+                # finds this row later
+                reordered_index[j] = index_entry
+            else:
+                reordered_index[j] = current_prop
 
         i += 1
         j += 1
@@ -215,16 +223,16 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
     j = 0
     for i, index_entry in enumerate(modified_pivot_table.index):
         if not isinstance(index_entry, tuple):
-            if index_entry == "Total":
+            rename_mapping_index[index_entry] = row_names[j]
+            j += 1
+        else:
+            if index_entry == ("Total", ""):
                 # Handle the Total row separately which has no value in the second item of the tuple
                 rename_mapping_index[index_entry] = "\textbf{Total:}"
             else:
-                rename_mapping_index[index_entry] = row_names[j]
-                j += 1
-        else:
-            # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
-            # (optimizer.population_size, 100)
-            rename_mapping_index[index_entry] = index_entry[1]
+                # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
+                # (optimizer.population_size, 100)
+                rename_mapping_index[index_entry] = index_entry[1]
 
     # Asserts that all row_names have been applied
     assert j == len(row_names)
@@ -261,7 +269,22 @@ def main():
 
     column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
     # This has to match column_order, as these functions will be used on the columns to calculate the total row values
-    total_row_functions = [np.mean, np.max, len, np.mean]
+    total_row_functions = [np.mean, np.max, np.sum, np.mean]
+
+    aggregate_functions_per_index = {
+        "best_mean": np.mean,
+        "best_amax": np.max,
+        "best_len": np.sum,
+        "conf.elapsed_time_mean": np.mean
+    }
+
+    aggregate_functions_for_all_indices = {
+        "best_mean": np.mean,
+        "best_amax": np.max,
+        "best_len": np.mean,
+        "conf.elapsed_time_mean": np.mean
+    }
+
 
     round_mapper = {}
     type_mapper = {}
@@ -284,7 +307,9 @@ def main():
     # Create the overall pivot table
     pivot_table = pd.concat(rows, keys=row_properties, axis=0)
 
-    pivot_table = add_total_row(pivot_table, environments, column_order, total_row_functions)
+    pivot_table = add_total_row(pivot_table, environments=environments, row_properties=row_properties,
+                                aggregate_functions_per_index=aggregate_functions_per_index,
+                                aggregate_functions_for_all_indices=aggregate_functions_for_all_indices)
 
     pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
