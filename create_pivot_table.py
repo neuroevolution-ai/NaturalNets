@@ -139,6 +139,13 @@ def rename_environment_columns(pivot_table: pd.DataFrame, new_environment_column
     return renamed_pivot_table
 
 
+def make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
+    modified_pivot_table = pivot_table.copy()
+    modified_pivot_table.loc[("Total", "")] = "\textbf{" + modified_pivot_table.loc[("Total", "")].astype(str) + "}"
+
+    return modified_pivot_table
+
+
 def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names):
     # TODO
     #  1. Row Index flatten und Empty Rows einfügen
@@ -148,7 +155,8 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_e
     #  4. Dann die \hlines einfügen
     #  5. \toprule, \midrule und \bottomrule ersetzen mit \hline
 
-    modified_pivot_table = add_empty_rows(pivot_table, row_properties=row_properties, row_names=row_names)
+    modified_pivot_table = make_total_row_bold(pivot_table)
+    modified_pivot_table = add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names)
     modified_pivot_table = rename_environment_columns(modified_pivot_table, new_environment_column_names)
 
     return modified_pivot_table
