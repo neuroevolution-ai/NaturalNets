@@ -139,6 +139,15 @@ def rename_environment_columns(pivot_table: pd.DataFrame, new_environment_column
     return renamed_pivot_table
 
 
+def format_elapsed_time_column(pivot_table: pd.DataFrame, environments: list) -> pd.DataFrame:
+    modified_pivot_table = pivot_table.copy()
+
+    for env in environments:
+        modified_pivot_table.loc[:, (env, "conf.elapsed_time_mean")] = pivot_table.loc[:, (env, "conf.elapsed_time_mean")].astype(str) + " h"
+
+    return modified_pivot_table
+
+
 def make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
     modified_pivot_table = pivot_table.copy()
     modified_pivot_table.loc[("Total", "")] = "\textbf{" + modified_pivot_table.loc[("Total", "")].astype(str) + "}"
@@ -146,7 +155,7 @@ def make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
     return modified_pivot_table
 
 
-def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names):
+def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names, environments):
     # TODO
     #  1. Row Index flatten und Empty Rows einfügen
     #  2. Empty Rows umbennen -> jeweils in die Config Property so wie sie in der LaTeX Tabelle stehen soll
@@ -155,7 +164,8 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_e
     #  4. Dann die \hlines einfügen
     #  5. \toprule, \midrule und \bottomrule ersetzen mit \hline
 
-    modified_pivot_table = make_total_row_bold(pivot_table)
+    modified_pivot_table = format_elapsed_time_column(pivot_table, environments)
+    modified_pivot_table = make_total_row_bold(modified_pivot_table)
     modified_pivot_table = add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names)
     modified_pivot_table = rename_environment_columns(modified_pivot_table, new_environment_column_names)
 
@@ -302,7 +312,8 @@ def main():
                 round_mapper[(env, col)] = 0
                 type_mapper[(env, col)] = int
             else:
-                round_mapper[(env, col)] = 2
+                # 1 means the rounding precision here, i.e. for the elapsed time we want for example 1,2 hours
+                round_mapper[(env, col)] = 1
 
     rows = []
 
@@ -325,7 +336,8 @@ def main():
 
     # pivot_table.to_latex("spreadsheets/pivot_table.tex")
     latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names,
-                                                   new_environment_column_names=new_environment_column_names)
+                                                   new_environment_column_names=new_environment_column_names,
+                                                   environments=environments)
     latex = format_latex(latex_formatted_pivot_table, row_names, environments)
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
