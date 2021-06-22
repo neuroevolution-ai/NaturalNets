@@ -52,18 +52,20 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
     return pivot_table_row
 
 
-def add_total_row(pivot_table: pd.DataFrame, environments: list, order_of_columns: list,
-                  total_row_functions: list) -> pd.DataFrame:
+def add_total_row(pivot_table: pd.DataFrame, environments: list, row_properties: list,
+                  aggregate_functions_per_index: dict, aggregate_functions_for_all_indices: dict) -> pd.DataFrame:
     # This simply says apply this function to that column, i.e. apply max to the column where we list max values
     # because we want the maximum reward over all the rows in the pivot table
-    aggregate_functions = {col: col_fun for (col, col_fun) in zip(order_of_columns, total_row_functions)}
-
     total_row = []
 
     for env in environments:
         per_env_data = pivot_table[env]
 
-        total_row.append(per_env_data.agg(aggregate_functions))
+        per_env_results = []
+        for row_prop in row_properties:
+            per_env_results.append(per_env_data.loc[row_prop].agg(aggregate_functions_per_index))
+
+        total_row.append(pd.DataFrame(per_env_results).agg(aggregate_functions_for_all_indices))
 
     total_row_values = pd.concat(total_row).values
 
@@ -111,7 +113,38 @@ def replace_column_names(latex: str, environments: list) -> str:
     return output_latex
 
 
-def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environments):
+def insert_parameter_column_name(latex: str):
+    # Later there is actually a '{}' after the Parameter but since LaTeX treats this as sort of an empty block I guess,
+    # it doesn't matter
+    modified_latex = latex.replace("\\toprule\n", "\\toprule\n \\textbf{Parameter}")
+
+    return modified_latex
+
+
+def format_environment_columns(latex: str, environments: list, column_order: list):
+    modified_latex = latex
+
+    i = 0
+    while i < len(environments):
+
+        find_str = "\\multicolumn{" + str(len(column_order)) + "}{l}{\\textbf{" + str(environments[i]) + "}"
+
+        if i == len(environments) - 1:
+            # Last environment (i.e. the last column) only has 'c|' as the format (only one '|')
+            replace_str = "\\multicolumn{" + str(len(column_order)) + "}{c|}{\\textbf{" + str(environments[i]) + "}"
+        else:
+            replace_str = "\\multicolumn{" + str(len(column_order)) + "}{c||}{\\textbf{" + str(environments[i]) + "}"
+
+        modified_latex = modified_latex.replace(find_str, replace_str)
+
+        i += 1
+
+    assert i == len(environments)
+
+    return modified_latex
+
+
+def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environments, column_order):
     # TODO column_format is not agnostic to how many environments are compared
     latex = latex_formatted_pivot_table.to_latex(escape=False, column_format="|r||c|c|c|c||c|c|c|c||c|c|c|c|")
 
@@ -122,6 +155,8 @@ def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environme
     latex = latex.replace("\\\n\\textbf{Total:}", "\\ \hline \n\\textbf{Total:}")
 
     latex = replace_column_names(latex, environments)
+    latex = insert_parameter_column_name(latex)
+    latex = format_environment_columns(latex, environments=environments, column_order=column_order)
 
     # This fixes the lines. Without that the lines would not be drawed through
     latex = latex.replace("\\toprule", "\\hline")
@@ -137,7 +172,23 @@ def rename_environment_columns(pivot_table: pd.DataFrame, new_environment_column
     return renamed_pivot_table
 
 
-def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names):
+def format_elapsed_time_column(pivot_table: pd.DataFrame, environments: list) -> pd.DataFrame:
+    modified_pivot_table = pivot_table.copy()
+
+    for env in environments:
+        modified_pivot_table.loc[:, (env, "conf.elapsed_time_mean")] = pivot_table.loc[:, (env, "conf.elapsed_time_mean")].astype(str) + " h"
+
+    return modified_pivot_table
+
+
+def make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
+    modified_pivot_table = pivot_table.copy()
+    modified_pivot_table.loc[("Total", "")] = "\textbf{" + modified_pivot_table.loc[("Total", "")].astype(str) + "}"
+
+    return modified_pivot_table
+
+
+def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names, environments):
     # TODO
     #  1. Row Index flatten und Empty Rows einfügen
     #  2. Empty Rows umbennen -> jeweils in die Config Property so wie sie in der LaTeX Tabelle stehen soll
@@ -146,7 +197,9 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_e
     #  4. Dann die \hlines einfügen
     #  5. \toprule, \midrule und \bottomrule ersetzen mit \hline
 
-    modified_pivot_table = add_empty_rows(pivot_table, row_properties=row_properties, row_names=row_names)
+    modified_pivot_table = format_elapsed_time_column(pivot_table, environments)
+    modified_pivot_table = make_total_row_bold(modified_pivot_table)
+    modified_pivot_table = add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names)
     modified_pivot_table = rename_environment_columns(modified_pivot_table, new_environment_column_names)
 
     return modified_pivot_table
@@ -194,7 +247,13 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
         if current_prop is None or current_prop != index_entry[0]:
             current_prop = index_entry[0]
             j += 1
-            reordered_index[j] = current_prop
+
+            if current_prop == "Total":
+                # The total row has a tuple ("Total", "") and this whole tuple needs to be set so that the reindexing
+                # finds this row later
+                reordered_index[j] = index_entry
+            else:
+                reordered_index[j] = current_prop
 
         i += 1
         j += 1
@@ -215,16 +274,16 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
     j = 0
     for i, index_entry in enumerate(modified_pivot_table.index):
         if not isinstance(index_entry, tuple):
-            if index_entry == "Total":
+            rename_mapping_index[index_entry] = row_names[j]
+            j += 1
+        else:
+            if index_entry == ("Total", ""):
                 # Handle the Total row separately which has no value in the second item of the tuple
                 rename_mapping_index[index_entry] = "\textbf{Total:}"
             else:
-                rename_mapping_index[index_entry] = row_names[j]
-                j += 1
-        else:
-            # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
-            # (optimizer.population_size, 100)
-            rename_mapping_index[index_entry] = index_entry[1]
+                # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
+                # (optimizer.population_size, 100)
+                rename_mapping_index[index_entry] = index_entry[1]
 
     # Asserts that all row_names have been applied
     assert j == len(row_names)
@@ -260,8 +319,20 @@ def main():
     }
 
     column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
-    # This has to match column_order, as these functions will be used on the columns to calculate the total row values
-    total_row_functions = [np.mean, np.max, len, np.mean]
+
+    aggregate_functions_per_index = {
+        "best_mean": np.mean,
+        "best_amax": np.max,
+        "best_len": np.sum,
+        "conf.elapsed_time_mean": np.mean
+    }
+
+    aggregate_functions_for_all_indices = {
+        "best_mean": np.mean,
+        "best_amax": np.max,
+        "best_len": np.mean,
+        "conf.elapsed_time_mean": np.mean
+    }
 
     round_mapper = {}
     type_mapper = {}
@@ -271,7 +342,8 @@ def main():
                 round_mapper[(env, col)] = 0
                 type_mapper[(env, col)] = int
             else:
-                round_mapper[(env, col)] = 2
+                # 1 means the rounding precision here, i.e. for the elapsed time we want for example 1,2 hours
+                round_mapper[(env, col)] = 1
 
     rows = []
 
@@ -284,7 +356,9 @@ def main():
     # Create the overall pivot table
     pivot_table = pd.concat(rows, keys=row_properties, axis=0)
 
-    pivot_table = add_total_row(pivot_table, environments, column_order, total_row_functions)
+    pivot_table = add_total_row(pivot_table, environments=environments, row_properties=row_properties,
+                                aggregate_functions_per_index=aggregate_functions_per_index,
+                                aggregate_functions_for_all_indices=aggregate_functions_for_all_indices)
 
     pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
@@ -292,8 +366,10 @@ def main():
 
     # pivot_table.to_latex("spreadsheets/pivot_table.tex")
     latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names,
-                                                   new_environment_column_names=new_environment_column_names)
-    latex = format_latex(latex_formatted_pivot_table, row_names, environments)
+                                                   new_environment_column_names=new_environment_column_names,
+                                                   environments=environments)
+    latex = format_latex(latex_formatted_pivot_table, row_names=row_names, environments=environments,
+                         column_order=column_order)
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
         latex_file.write(latex)
