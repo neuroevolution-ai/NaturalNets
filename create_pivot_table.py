@@ -188,7 +188,8 @@ def make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
     return modified_pivot_table
 
 
-def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names, environments):
+def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names, environments,
+                     rename_mapper: dict):
     # TODO
     #  1. Row Index flatten und Empty Rows einfügen
     #  2. Empty Rows umbennen -> jeweils in die Config Property so wie sie in der LaTeX Tabelle stehen soll
@@ -199,13 +200,14 @@ def format_for_latex(pivot_table: pd.DataFrame, row_properties, row_names, new_e
 
     modified_pivot_table = format_elapsed_time_column(pivot_table, environments)
     modified_pivot_table = make_total_row_bold(modified_pivot_table)
-    modified_pivot_table = add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names)
+    modified_pivot_table = add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names,
+                                          rename_mapper=rename_mapper)
     modified_pivot_table = rename_environment_columns(modified_pivot_table, new_environment_column_names)
 
     return modified_pivot_table
 
 
-def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
+def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names, rename_mapper: dict):
     # Für jeden key in row_properties brauchen wir eine empty row
     # 1. neue empty row erstellen
     # 2. name ändern -> So steht es später in der Tabelle
@@ -283,7 +285,13 @@ def add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names):
             else:
                 # Take the second item from the tuple which is equal to the value set for the property, e.g. 100 in
                 # (optimizer.population_size, 100)
-                rename_mapping_index[index_entry] = index_entry[1]
+                # Optionally also rename the value here, for example
+                # ('brain.set_principle_diagonal_elements_of_W_negative', 1.0) always converts True to 1.0 but in the
+                # table we want to have 'True', so we rename it here
+                try:
+                    rename_mapping_index[index_entry] = rename_mapper[index_entry]
+                except KeyError:
+                    rename_mapping_index[index_entry] = index_entry[1]
 
     # Asserts that all row_names have been applied
     assert j == len(row_names)
@@ -362,12 +370,16 @@ def main():
 
     pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
+    rename_mapper = {
+        ('brain.set_principle_diagonal_elements_of_W_negative', 1.0): "True"
+    }
+
     pivot_table.to_csv("spreadsheets/pivot_table.csv")
 
     # pivot_table.to_latex("spreadsheets/pivot_table.tex")
     latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names,
                                                    new_environment_column_names=new_environment_column_names,
-                                                   environments=environments)
+                                                   environments=environments, rename_mapper=rename_mapper)
     latex = format_latex(latex_formatted_pivot_table, row_names=row_names, environments=environments,
                          column_order=column_order)
 
