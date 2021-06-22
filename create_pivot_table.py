@@ -113,7 +113,38 @@ def replace_column_names(latex: str, environments: list) -> str:
     return output_latex
 
 
-def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environments):
+def insert_parameter_column_name(latex: str):
+    # Later there is actually a '{}' after the Parameter but since LaTeX treats this as sort of an empty block I guess,
+    # it doesn't matter
+    modified_latex = latex.replace("\\toprule\n", "\\toprule\n \\textbf{Parameter}")
+
+    return modified_latex
+
+
+def format_environment_columns(latex: str, environments: list, column_order: list):
+    modified_latex = latex
+
+    i = 0
+    while i < len(environments):
+
+        find_str = "\\multicolumn{" + str(len(column_order)) + "}{l}{\\textbf{" + str(environments[i]) + "}"
+
+        if i == len(environments) - 1:
+            # Last environment (i.e. the last column) only has 'c|' as the format (only one '|')
+            replace_str = "\\multicolumn{" + str(len(column_order)) + "}{c|}{\\textbf{" + str(environments[i]) + "}"
+        else:
+            replace_str = "\\multicolumn{" + str(len(column_order)) + "}{c||}{\\textbf{" + str(environments[i]) + "}"
+
+        modified_latex = modified_latex.replace(find_str, replace_str)
+
+        i += 1
+
+    assert i == len(environments)
+
+    return modified_latex
+
+
+def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environments, column_order):
     # TODO column_format is not agnostic to how many environments are compared
     latex = latex_formatted_pivot_table.to_latex(escape=False, column_format="|r||c|c|c|c||c|c|c|c||c|c|c|c|")
 
@@ -124,6 +155,8 @@ def format_latex(latex_formatted_pivot_table: pd.DataFrame, row_names, environme
     latex = latex.replace("\\\n\\textbf{Total:}", "\\ \hline \n\\textbf{Total:}")
 
     latex = replace_column_names(latex, environments)
+    latex = insert_parameter_column_name(latex)
+    latex = format_environment_columns(latex, environments=environments, column_order=column_order)
 
     # This fixes the lines. Without that the lines would not be drawed through
     latex = latex.replace("\\toprule", "\\hline")
@@ -286,8 +319,6 @@ def main():
     }
 
     column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
-    # This has to match column_order, as these functions will be used on the columns to calculate the total row values
-    total_row_functions = [np.mean, np.max, np.sum, np.mean]
 
     aggregate_functions_per_index = {
         "best_mean": np.mean,
@@ -302,7 +333,6 @@ def main():
         "best_len": np.mean,
         "conf.elapsed_time_mean": np.mean
     }
-
 
     round_mapper = {}
     type_mapper = {}
@@ -338,7 +368,8 @@ def main():
     latex_formatted_pivot_table = format_for_latex(pivot_table, row_properties=row_properties, row_names=row_names,
                                                    new_environment_column_names=new_environment_column_names,
                                                    environments=environments)
-    latex = format_latex(latex_formatted_pivot_table, row_names, environments)
+    latex = format_latex(latex_formatted_pivot_table, row_names=row_names, environments=environments,
+                         column_order=column_order)
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
         latex_file.write(latex)
