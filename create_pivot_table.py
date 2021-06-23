@@ -24,7 +24,7 @@ def round_pivot_table(pivot_table: pd.DataFrame, round_mapper: dict, type_mapper
 
 
 def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: list,
-                           order_of_columns: list) -> pd.DataFrame:
+                           order_of_columns: list, row_property_type=None) -> pd.DataFrame:
     per_env_pivot_tables = []
 
     for env in environments:
@@ -43,6 +43,9 @@ def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: 
 
         # Convert elapsed time from seconds to hours
         env_pivot_table["conf.elapsed_time_mean"] = env_pivot_table["conf.elapsed_time_mean"] / 3600.0
+
+        if row_property_type is not None:
+            env_pivot_table.index = env_pivot_table.index.astype(row_property_type)
 
         per_env_pivot_tables.append(env_pivot_table)
 
@@ -311,6 +314,10 @@ def main():
     row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range",
                       "brain.set_principle_diagonal_elements_of_W_negative", "optimizer.sigma"]
 
+    row_property_types = {
+        "brain.number_neurons": int
+    }
+
     # Pretty names which is used later when creating the LaTeX table
     row_names = [
         "$\lambda$ (Population Size):",
@@ -356,10 +363,15 @@ def main():
     rows = []
 
     for row_prop in row_properties:
+        try:
+            row_prop_type = row_property_types[row_prop]
+        except KeyError:
+            row_prop_type = None
         rows.append(create_pivot_table_row(globally_filtered_data,
                                            row_property=row_prop,
                                            environments=environments,
-                                           order_of_columns=column_order))
+                                           order_of_columns=column_order,
+                                           row_property_type=row_prop_type))
 
     # Create the overall pivot table
     pivot_table = pd.concat(rows, keys=row_properties, axis=0)
