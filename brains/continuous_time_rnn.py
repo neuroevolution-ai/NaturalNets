@@ -18,12 +18,15 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     clipping_range: float = 1.0
     set_principle_diagonal_elements_of_W_negative: bool = False
     alpha: float = 0.0
+    optimize_x0: bool = False
 
 
 class ContinuousTimeRNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
                  brain_state: dict):
+
+        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
 
         self.config = ContinuousTimeRNNCfg(**configuration)
 
@@ -49,8 +52,16 @@ class ContinuousTimeRNN(IBrain):
             for j in range(self.config.number_neurons):
                 self.W[j][j] = -abs(self.W[j][j])
 
-        # Set x0
-        self.x = np.zeros(self.config.number_neurons)
+        index = v_size + w_size + t_size
+
+        # Initial state values x0
+        if self.config.optimize_x0:
+            self.x0 = np.array([element for element in individual[index:index + self.config.number_neurons]])
+            index += self.config.number_neurons
+        else:
+            self.x0 = np.zeros(self.config.number_neurons)
+
+        self.x = self.x0
 
     def step(self, u):
 
@@ -148,7 +159,16 @@ class ContinuousTimeRNN(IBrain):
         free_parameters_w = np.count_nonzero(w_mask)
         free_parameters_t = np.count_nonzero(t_mask)
 
-        return {'V': free_parameters_v, 'W': free_parameters_w, 'T': + free_parameters_t}
+        free_parameters = {
+            'V': free_parameters_v,
+            'W': free_parameters_w,
+            'T': free_parameters_t
+        }
+
+        if configuration["optimize_x0"]:
+            free_parameters["x_0"] = configuration["number_neurons"]
+
+        return free_parameters
 
 
 # TODO: Do this registration via class decorator
