@@ -16,7 +16,8 @@
         "w_mask": "dense",
         "t_mask": "dense",
         "clipping_range": 1.0,
-        "set_principle_diagonal_elements_of_W_negative": true
+        "set_principle_diagonal_elements_of_W_negative": true,
+        "optimize_x0": false
     },
     "optimizer": {
         "type": "CMA-ES-Deap",
