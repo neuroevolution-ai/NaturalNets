@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from .generate_pivot_table import generate_pivot_table
-from .generate_latex_pivot_table import generate_latex_pivot_table
+from generate_pivot_table import generate_pivot_table
+from generate_latex_pivot_table import generate_latex_pivot_table
 
 
 def main(experiment_csv_path: str = None):

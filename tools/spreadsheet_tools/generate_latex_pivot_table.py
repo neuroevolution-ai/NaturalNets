@@ -38,7 +38,7 @@ def generate_latex_pivot_table(pivot_table: pd.DataFrame, row_properties, row_na
     modified_latex = modified_latex.replace("\\midrule", "\\hline")
     modified_latex = modified_latex.replace("\\bottomrule", "\\hline")
 
-    with open("spreadsheets/pivot_table.tex", "w") as latex_file:
+    with open("../../spreadsheets/pivot_table.tex", "w") as latex_file:
         latex_file.write(modified_latex)
 
 
