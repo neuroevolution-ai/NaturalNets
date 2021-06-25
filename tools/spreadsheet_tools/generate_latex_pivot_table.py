@@ -3,11 +3,8 @@ import pandas as pd
 
 def generate_latex_pivot_table(pivot_table: pd.DataFrame, row_properties, row_names, new_environment_column_names,
                                environments,
-                               rename_mapper, column_order, contains_elapsed_time_column: bool = True):
-    # TODO as parameter
-    col_names_upper_row = """& Reward & Reward &       & Avg"""
-    col_names_lower_row = """& Mean   & Max    & Count & Time"""
-
+                               rename_mapper, column_order, col_names_upper_row, col_names_lower_row,
+                               contains_elapsed_time_column: bool = True):
     modified_pivot_table = pivot_table
 
     if contains_elapsed_time_column:
@@ -33,16 +30,16 @@ def generate_latex_pivot_table(pivot_table: pd.DataFrame, row_properties, row_na
     modified_latex = _replace_column_names(modified_latex, environments=environments,
                                            col_names_upper_row=col_names_upper_row,
                                            col_names_lower_row=col_names_lower_row)
-    latex = _insert_parameter_in_upper_left_corner(latex)
-    latex = _format_environment_columns(latex, environments=environments, column_order=column_order)
+    modified_latex = _insert_parameter_in_upper_left_corner(modified_latex)
+    modified_latex = _format_environment_columns(modified_latex, environments=environments, column_order=column_order)
 
     # This fixes the lines. Without that the lines would not be drawed through
-    latex = latex.replace("\\toprule", "\\hline")
-    latex = latex.replace("\\midrule", "\\hline")
-    latex = latex.replace("\\bottomrule", "\\hline")
+    modified_latex = modified_latex.replace("\\toprule", "\\hline")
+    modified_latex = modified_latex.replace("\\midrule", "\\hline")
+    modified_latex = modified_latex.replace("\\bottomrule", "\\hline")
 
     with open("spreadsheets/pivot_table.tex", "w") as latex_file:
-        latex_file.write(latex)
+        latex_file.write(modified_latex)
 
 
 #############################################################################################
