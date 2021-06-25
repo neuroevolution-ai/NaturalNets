@@ -311,7 +311,7 @@ def main():
     globally_filtered_data = apply_robotics_filters(experiments_data)
 
     environments = ["Hopper-v2", "HalfCheetah-v2", "Walker2d-v2"]
-    row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range",
+    row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range", "brain.optimize_x0",
                       "brain.set_principle_diagonal_elements_of_W_negative", "optimizer.sigma"]
 
     row_property_types = {
@@ -323,14 +323,15 @@ def main():
         "$\lambda$ (Population Size):",
         "$N_n$ (Number Neurons):",
         "$c$ (Clipping Range):",
+        "$optimize\_x_0$:",
         "$W_{xx}\_negative$:",
         "$\sigma$ (Initial Deviation):"
     ]
 
     new_environment_column_names = {
-        "Hopper-v2": "\textbf{Hopper-v2} ($\Delta t = 0.008\,s$)",
-        "HalfCheetah-v2": "\textbf{HalfCheetah-v2} ($\Delta t = 0.05\,s$)",
-        "Walker2d-v2": "\textbf{Walker2d-v2} ($\Delta t = 0.008\,s$)"
+        "Hopper-v2": "\textbf{Hopper-v2}",
+        "HalfCheetah-v2": "\textbf{HalfCheetah-v2}",
+        "Walker2d-v2": "\textbf{Walker2d-v2}"
     }
 
     column_order = ["best_mean", "best_amax", "best_len", "conf.elapsed_time_mean"]
@@ -383,7 +384,8 @@ def main():
     pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
     rename_mapper = {
-        ('brain.set_principle_diagonal_elements_of_W_negative', 1.0): "True"
+        ('brain.set_principle_diagonal_elements_of_W_negative', 1.0): "True",
+        ('brain.optimize_x0', 1.0): "True"
     }
 
     pivot_table.to_csv("spreadsheets/pivot_table.csv")
