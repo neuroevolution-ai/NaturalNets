@@ -2,8 +2,12 @@ import pandas as pd
 import numpy as np
 
 
-def main():
-    experiments_data = pd.read_csv("../../spreadsheets/output.csv")
+def generate_pivot_table(experiment_csv_path: str = None) -> pd.DataFrame:
+    if experiment_csv_path is not None:
+        experiments_data = pd.read_csv(experiment_csv_path)
+    else:
+        experiments_data = pd.read_csv("../../spreadsheets/output.csv")
+
     pivot_table_save_location = "../../spreadsheets/pivot_table.csv"
 
     # Filters used for each part of the pivot table (e.g. neural network used is CTRNN, ...)
@@ -94,6 +98,8 @@ def main():
     pivot_table = round_pivot_table(pivot_table, round_mapper=round_mapper, type_mapper=type_mapper)
 
     pivot_table.to_csv(pivot_table_save_location)
+
+    return pivot_table
 
 
 #############################################################################################
@@ -195,4 +201,4 @@ def round_pivot_table(pivot_table: pd.DataFrame, round_mapper: dict, type_mapper
 
 
 if __name__ == "__main__":
-    main()
+    generate_pivot_table()
