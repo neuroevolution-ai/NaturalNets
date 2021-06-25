@@ -15,7 +15,7 @@ def main():
     # These will basically be the rows of the pivot table. Each row of the final pivot table will be a value that these
     # properties have during an experiment (e.g. if population size was chosen to be 50, a row with that will be in the
     # pivot table)
-    row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range",
+    row_properties = ["optimizer.population_size", "brain.number_neurons", "brain.clipping_range", "brain.optimize_x0",
                       "brain.set_principle_diagonal_elements_of_W_negative", "optimizer.sigma"]
 
     # The next variables define which functions and properties to use to aggregate on for creating the pivot table.
