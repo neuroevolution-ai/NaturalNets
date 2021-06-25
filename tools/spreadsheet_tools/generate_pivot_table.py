@@ -1,8 +1,10 @@
+from typing import List, Tuple
+
 import pandas as pd
 import numpy as np
 
 
-def generate_pivot_table(experiment_csv_path: str = None) -> pd.DataFrame:
+def generate_pivot_table(experiment_csv_path: str = None) -> Tuple[pd.DataFrame, List[str], List[str], List[str]]:
     if experiment_csv_path is not None:
         experiments_data = pd.read_csv(experiment_csv_path)
     else:
@@ -99,7 +101,7 @@ def generate_pivot_table(experiment_csv_path: str = None) -> pd.DataFrame:
 
     pivot_table.to_csv(pivot_table_save_location)
 
-    return pivot_table
+    return pivot_table, row_properties, environments, column_order
 
 
 #############################################################################################
