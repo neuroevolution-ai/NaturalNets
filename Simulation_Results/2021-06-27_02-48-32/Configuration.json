@@ -6,23 +6,24 @@
     "maximum_env_seed": 100000,
     "environment": {
         "type": "GymMujoco",
-        "name": ["Hopper-v2", "Walker2d-v2", "HalfCheetah-v2"]
+        "name": "HalfCheetah-v2"
     },
     "brain": {
         "type": "CTRNN",
         "delta_t": 0.05,
         "differential_equation": "separated",
-        "number_neurons": [5, 10, 20, 50],
+        "number_neurons": 50,
         "v_mask": "dense",
         "w_mask": "dense",
         "t_mask": "dense",
-        "clipping_range": [1.0, 3.0],
-        "set_principle_diagonal_elements_of_W_negative": [false, true],
+        "clipping_range": 1.0,
+        "set_principle_diagonal_elements_of_W_negative": false,
         "optimize_x0": true
     },
     "optimizer": {
         "type": "CMA-ES-Deap",
-        "population_size": [100, 200, 500],
-        "sigma": [0.5, 1.0, 2.0]
-    }
+        "population_size": 200,
+        "sigma": 2.0
+    },
+    "elapsed_time": 12496.912147045135
 }
