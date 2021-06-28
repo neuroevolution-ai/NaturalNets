@@ -1,12 +1,26 @@
-from typing import List, Tuple
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def generate_pivot_table(filtered_experiments_data: pd.DataFrame, row_properties, row_property_types, environments,
-                         column_order, aggregate_functions_per_row_property, aggregate_functions_over_all_row_properties,
+                         column_order, aggregate_functions_per_row_property,
+                         aggregate_functions_over_all_row_properties,
                          round_mapper, type_mapper) -> pd.DataFrame:
+    """
+    Creates a pivot table for experiments.
+
+    :param filtered_experiments_data: Pre-filtered data by experiment_id
+    :param row_properties: These hyperparameters will be shown in the rows of the pivot table
+    :param row_property_types: Can be used to define the type, which a row property shall have
+    :param environments: Which environments shall be selected to construct the columns (environments used in training)
+    :param column_order: Defines the order which the columns (per environment) shall have
+    :param aggregate_functions_per_row_property: Functions to aggregate inside a row property
+    :param aggregate_functions_over_all_row_properties: Functions to aggregate across row properties
+    :param round_mapper: Defines to which precision the respective rows shall be rounded to
+    :param type_mapper: Defines the type to which respective rows shall be casted to
+    :return: A Pandas DataFrame containing the resulting pivot table, this can then be further formatted to a pivot
+             table
+    """
     rows = []
 
     for row_prop in row_properties:
@@ -43,6 +57,18 @@ def generate_pivot_table(filtered_experiments_data: pd.DataFrame, row_properties
 
 def create_pivot_table_row(data: pd.DataFrame, row_property: str, environments: list,
                            order_of_columns: list, row_property_type=None) -> pd.DataFrame:
+    """
+    Creates one row of the pivot table, which may contain several sub-rows (exactly as many sub-rows as there are
+    values that the respective row_property can be, e.g. if the row_property is 'number_neurons' there may be sub-rows
+    for '10', '20', '50', etc.)
+
+    :param data:
+    :param row_property:
+    :param environments:
+    :param order_of_columns:
+    :param row_property_type:
+    :return:
+    """
     per_env_pivot_tables = []
 
     for env in environments:
@@ -103,7 +129,3 @@ def round_pivot_table(pivot_table: pd.DataFrame, round_mapper: dict, type_mapper
     rounded_pivot_table = pivot_table.round(round_mapper).astype(type_mapper)
 
     return rounded_pivot_table
-
-
-if __name__ == "__main__":
-    generate_pivot_table()
