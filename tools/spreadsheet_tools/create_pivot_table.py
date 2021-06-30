@@ -42,10 +42,9 @@ def main(experiment_csv_path: str = None):
 
     # These functions are used to create the total row at the bottom of the pivot table. They are similar to
     # 'aggregate_functions_per_row_property' but for example for the column that counts how many experiments have been
-    # done, np.sum would be misleading as this would sum over all row_properties. This would be wrong as this much
-    # experiments have not been done but for each row_property the same amount of experiments have been done (this is
-    # a property of the pivot table). If you don't understand this look at the 'Count' column in the generated pivot
-    # table.
+    # done, np.sum would be misleading as this would sum over all row_properties but for each environment the same
+    # amount of experiments have been done per environment (this is a property of the pivot table). A good illustration
+    # to this is looking at the 'Count' column in the generated pivot table.
     aggregate_functions_over_all_row_properties = {
         "best_mean": np.mean,
         "best_amax": np.max,
@@ -68,9 +67,9 @@ def main(experiment_csv_path: str = None):
 
     # If some row properties have the wrong format in the final pivot table (e.g. brain.number_neurons is a float in
     # the table), define here the type it shall be rounded to.
-    # Note that for "brain.set_principle_diagonal_elements_of_W_negative" this does not work as these are correctly
-    # typed here but later when creating the LaTeX from the DataFrame they get messed up, so we have to correct this
-    # when modifying the LaTeX part.
+    # Note that for "brain.set_principle_diagonal_elements_of_W_negative" (and others) this does not work as these are
+    # correctly typed here but later when creating the LaTeX from the DataFrame they get messed up, so we have to
+    # correct this when modifying the LaTeX part.
     row_property_types = {
         "brain.number_neurons": int
     }
@@ -82,9 +81,12 @@ def main(experiment_csv_path: str = None):
                                        aggregate_functions_over_all_row_properties=aggregate_functions_over_all_row_properties,
                                        round_mapper=round_mapper, type_mapper=type_mapper)
 
+    # Now we define parameters used to nicely format the LaTeX table
+
+    # Values in the elapsed time column get a trailing 'h' to indicate 'hours'
     contains_elapsed_time_column = True
 
-    # Pretty names which is used later when creating the LaTeX table
+    # Pretty names for the row properties
     row_names = [
         "$\lambda$ (Population Size):",
         "$N_n$ (Number Neurons):",
@@ -94,21 +96,25 @@ def main(experiment_csv_path: str = None):
         "$\sigma$ (Initial Deviation):"
     ]
 
+    # Pretty names for the columns, i.e. the environments
     new_environment_column_names = {
         "Hopper-v2": "\textbf{Hopper-v2}",
         "HalfCheetah-v2": "\textbf{HalfCheetah-v2}",
         "Walker2d-v2": "\textbf{Walker2d-v2}"
     }
 
+    # For some reason for these row properties Pandas replaces 'True' with 1.0, so we explicitly revoke this to have
+    # in the end a 'True' in the finished pivot table
     rename_mapper = {
         ('brain.set_principle_diagonal_elements_of_W_negative', 1.0): "True",
         ('brain.optimize_x0', 1.0): "True"
     }
 
-    # TODO as parameter
+    # The table is very wide so we will use this and do a string replacement to have a line break in the header row
     col_names_upper_row = """& Reward & Reward &       & Avg"""
     col_names_lower_row = """& Mean   & Max    & Count & Time"""
 
+    # This will generate the LaTeX table and save it to a .tex file
     generate_latex_pivot_table(pivot_table, row_properties=row_properties, row_names=row_names,
                                new_environment_column_names=new_environment_column_names,
                                environments=environments, rename_mapper=rename_mapper, column_order=column_order,

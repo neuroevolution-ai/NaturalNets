@@ -5,6 +5,25 @@ def generate_latex_pivot_table(pivot_table: pd.DataFrame, row_properties, row_na
                                environments,
                                rename_mapper, column_order, col_names_upper_row, col_names_lower_row,
                                contains_elapsed_time_column: bool = True):
+    """
+    This takes the previously created pivot table in Pandas DataFrame format and generates a nicely formatted LaTeX
+    table from it.
+
+    :param pivot_table: The pivot table that shall be reformatted to a LaTeX table
+    :param row_properties: The row_properties that the pivot table has (i.e. the 'main' rows)
+    :param row_names: New names for the 'main' rows, which can contain LaTeX code such as math blocks
+    :param new_environment_column_names: New names for the environment columns, which can contain LaTeX code such as
+           math blocks
+    :param environments: Environments that are presented in the pivot table (i.e. the 'main' columns)
+    :param rename_mapper: Special renaming mapper for row properties that are weirdly casted to floats instead of
+           booleans (which they should have)
+    :param column_order: The order of the sub-columns that has been used when creating the pivot table
+    :param col_names_upper_row: A string containing LaTeX code for the upper part of the sub-column names
+    :param col_names_lower_row: A string containing LaTeX code for the lower part of the sub-column names
+    :param contains_elapsed_time_column: If True, one of the sub-columns is the elapsed time column, then this column
+           will be formatted so that it has a trailing 'h' indicating the time in hours
+    :return:
+    """
     modified_pivot_table = pivot_table
 
     if contains_elapsed_time_column:
@@ -63,11 +82,22 @@ def _make_total_row_bold(pivot_table: pd.DataFrame) -> pd.DataFrame:
     return modified_pivot_table
 
 
-def _add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names, rename_mapper: dict):
-    # Für jeden key in row_properties brauchen wir eine empty row
-    # 1. neue empty row erstellen
-    # 2. name ändern -> So steht es später in der Tabelle
-    # Dann alle umordnen an die richtige Stelle
+def _add_empty_rows(pivot_table: pd.DataFrame, row_properties, row_names, rename_mapper: dict) -> pd.DataFrame:
+    """
+    Adds 'empty' rows to the pivot table.
+
+    These are basically only used for design purposes. Later they will contain only
+    row property name in the first column and nothing in the other columns. Then, in the following rows, the respective
+    values for the row property will be shown. After that, the next 'empty' row with the next row property name is
+    added and again followed by rows containing the values for this row property, and so on.
+
+    :param pivot_table: Pivot table to which the empty rows shall be added
+    :param row_properties: The row properties that the pivot table has
+    :param row_names: New names for the new empty rows, which can contain LaTeX code such as math blocks
+    :param rename_mapper: Special renaming mapper for row properties that are weirdly casted to floats instead of
+           booleans (which they should have)
+    :return: The pivot table which now has added empty rows
+    """
 
     modified_pivot_table = pivot_table.copy()
 
