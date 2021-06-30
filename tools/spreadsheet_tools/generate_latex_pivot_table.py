@@ -29,6 +29,9 @@ def generate_latex_pivot_table(pivot_table: pd.DataFrame, row_properties, row_na
     if contains_elapsed_time_column:
         modified_pivot_table = _format_elapsed_time_column(modified_pivot_table, environments)
 
+    modified_pivot_table = _make_max_of_best_mean_bold(modified_pivot_table, environments=environments,
+                                                       row_properties=row_properties)
+
     modified_pivot_table = _make_total_row_bold(modified_pivot_table)
 
     modified_pivot_table = _add_empty_rows(modified_pivot_table, row_properties=row_properties, row_names=row_names,
@@ -71,6 +74,25 @@ def _format_elapsed_time_column(pivot_table: pd.DataFrame, environments: list) -
 
     for env in environments:
         modified_pivot_table.loc[:, (env, "conf.elapsed_time_mean")] = pivot_table.loc[:, (env, "conf.elapsed_time_mean")].astype(str) + " h"
+
+    return modified_pivot_table
+
+
+def _make_max_of_best_mean_bold(pivot_table: pd.DataFrame, environments: list, row_properties: list) -> pd.DataFrame:
+    modified_pivot_table = pivot_table.copy()
+
+    for env in environments:
+        new_column = pivot_table.loc[:, (env, "best_mean")].copy()
+
+        for row_prop in row_properties:
+            # Get the index name of the index with the highest 'best_mean' per row property. This index shall be bold
+            # in the final LaTeX table
+            row_prop_index = pivot_table.loc[row_prop, (env, "best_mean")].idxmax()
+            current_value = pivot_table.loc[(row_prop, row_prop_index), (env, "best_mean")]
+
+            new_column.loc[(row_prop, row_prop_index)] = "\textbf{" + str(current_value) + "}"
+
+        modified_pivot_table.loc[:, (env, "best_mean")] = new_column
 
     return modified_pivot_table
 
