@@ -47,7 +47,7 @@ while not stop_optimization:
 
             if isinstance(val, dict):
                 result[key] = sample_from_design_space(val)
-            else:
+            else:20
                 result[key] = val
         return result
 
