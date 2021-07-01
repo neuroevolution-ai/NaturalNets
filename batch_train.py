@@ -30,7 +30,7 @@ print("Optimization started")
 
 while not stop_optimization:
 
-    with open("configurations/Mujoco_CMA-ES_CTRNN_Design_Space.json", "r") as readfile:
+    with open("configurations/Mujoco_CMA-ES_Multiple_Brains_Design_Space.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
@@ -40,7 +40,7 @@ while not stop_optimization:
             val = node[key]
             if isinstance(val, list):
                 if val:
-                    val = random.sample(val, 1)[0]
+                    val = random.choice(val)
                 else:
                     # empty lists become None
                     val = None
@@ -51,6 +51,18 @@ while not stop_optimization:
                 result[key] = val
         return result
 
+    # Get brain configs
+    brains = []
+    for i in range(10):
+        key = "brain" + str(i)
+        
+        if key in configuration:
+            brains.append(configuration[key])
+            del configuration[key]
+
+    if brains: 
+        # If list is not empty add brain to config by selecting a random brain from the list
+        configuration["brain"] = random.choice(brains)
 
     configuration_out = sample_from_design_space(configuration)
 
