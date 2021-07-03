@@ -16,11 +16,23 @@
         "v_mask": "dense",
         "w_mask": "dense",
         "t_mask": "dense",
-        "clipping_range": [1.0, 3.0, Infinity],
+        "clipping_range": [1.0, 3.0],
         "set_principle_diagonal_elements_of_W_negative": [false, true],
         "optimize_x0": [false, true]
     },
     "brain2": {
+        "type": "CTRNN",
+        "delta_t": 0.05,
+        "differential_equation": "separated",
+        "number_neurons": [5, 10, 20, 50],
+        "v_mask": "dense",
+        "w_mask": "dense",
+        "t_mask": "dense",
+        "clipping_range": Infinity,
+        "set_principle_diagonal_elements_of_W_negative": [false, true],
+        "optimize_x0": [false, true]
+    },
+    "brain3": {
         "type": "CTRNN",
         "delta_t": 0.05,
         "differential_equation": "original",
@@ -28,17 +40,40 @@
         "v_mask": "dense",
         "w_mask": "dense",
         "t_mask": "dense",
-        "clipping_range": [1.0, 3.0, Infinity],
+        "clipping_range": [1.0, 3.0],
         "set_principle_diagonal_elements_of_W_negative": false,
         "optimize_x0": [false, true],
         "alpha": [0.0, 0.1, 0.01]
     },
-    "brain3": {
-        "type": ["ELMANNN", "GRUNN", "LSTMNN"],
+    "brain4": {
+        "type": "CTRNN",
+        "delta_t": 0.05,
+        "differential_equation": "original",
+        "number_neurons": [5, 10, 20, 50],
+        "v_mask": "dense",
+        "w_mask": "dense",
+        "t_mask": "dense",
+        "clipping_range": Infinity,
+        "set_principle_diagonal_elements_of_W_negative": false,
+        "optimize_x0": [false, true],
+        "alpha": [0.0, 0.1, 0.01]
+    },
+    "brain5": {
+        "type": "ELMANNN",
         "hidden_layer_structure": [[5], [10], [20], [50]],
         "use_bias": [false, true]
     },
-    "brain4": {
+    "brain6": {
+        "type": "GRUNN",
+        "hidden_layer_structure": [[5], [10], [20], [50]],
+        "use_bias": [false, true]
+    },
+    "brain7": {
+        "type": "LSTMNN",
+        "hidden_layer_structure": [[5], [10], [20], [50]],
+        "use_bias": [false, true]
+    },
+    "brain8": {
         "type": "FFNN",
         "hidden_layers": [[5, 5], [10, 10], [20, 20], [50, 50]],
         "neuron_activation": "tanh",
