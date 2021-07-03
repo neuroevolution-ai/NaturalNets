@@ -6,7 +6,7 @@
     "maximum_env_seed": 100000,
     "environment": {
         "type": "GymMujoco",
-        "name": ["Swimmer-v2", "Hopper-v2", "Walker2d-v2", "HalfCheetah-v2"]
+        "name": ["Hopper-v2", "Walker2d-v2", "HalfCheetah-v2"]
     },
     "brain1": {
         "type": "CTRNN",
