@@ -9,6 +9,7 @@ venv/
 configurations/default.json
 configurations/temp.json
 configurations/Configuration.json
+configurations/local_*
 
 checkpoints
 /results/
