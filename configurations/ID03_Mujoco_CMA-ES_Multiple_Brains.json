@@ -279,5 +279,203 @@
 		"population_size": 200,
 		"sigma": 0.5
     	    }
+    },
+	"subconfiguration13":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+		"brain": {
+			"type": "ELMANNN",
+			"hidden_layer_structure": [[10]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 1.0
+    	    }
+    },
+	"subconfiguration14":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+		"brain": {
+			"type": "ELMANNN",
+			"hidden_layer_structure": [[10]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+	"subconfiguration15":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+		"brain": {
+			"type": "ELMANNN",
+			"hidden_layer_structure": [[10]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 2.0
+    	}
+    },
+	"subconfiguration16":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+		"brain": {
+			"type": "GRUNN",
+			"hidden_layer_structure": [[50]],
+			"use_bias": true
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+	"subconfiguration17":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+		"brain": {
+			"type": "GRUNN",
+			"hidden_layer_structure": [[5]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 2.0
+    	    }
+    },
+	"subconfiguration18":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+		"brain": {
+			"type": "GRUNN",
+			"hidden_layer_structure": [[5]],
+			"use_bias": true
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	}
+    },
+	"subconfiguration19":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+		"brain": {
+			"type": "LSTMNN",
+			"hidden_layer_structure": [[50]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 1.0
+    	    }
+    },
+	"subconfiguration20":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+		"brain": {
+			"type": "LSTMNN",
+			"hidden_layer_structure": [[10]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+	"subconfiguration21":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+		"brain": {
+			"type": "LSTMNN",
+			"hidden_layer_structure": [[5]],
+			"use_bias": false
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	}
+    },
+	"subconfiguration22":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+		"brain": {
+			"type": "FFNN",
+			"hidden_layers": [[10, 10]],
+			"neuron_activation": "tanh",
+			"neuron_activation_output": "tanh",
+			"use_bias": true
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+	"subconfiguration23":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+		"brain": {
+			"type": "FFNN",
+			"hidden_layers": [[5, 5]],
+			"neuron_activation": "tanh",
+			"neuron_activation_output": "tanh",
+			"use_bias": true
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+	"subconfiguration24":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+		"brain": {
+			"type": "FFNN",
+			"hidden_layers": [[20, 20]],
+			"neuron_activation": "tanh",
+			"neuron_activation_output": "tanh",
+			"use_bias": true
+		},
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	}
     }
 }
