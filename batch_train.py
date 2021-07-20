@@ -30,7 +30,7 @@ print("Optimization started")
 
 while not stop_optimization:
 
-    with open("configurations/Mujoco_CMA-ES_Multiple_Brains_Design_Space.json", "r") as readfile:
+    with open("configurations/ID03_Mujoco_CMA-ES_Multiple_Brains.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
@@ -50,6 +50,23 @@ while not stop_optimization:
             else:
                 result[key] = val
         return result
+
+    # Get configuration from subconfiguration (optional)
+    subconfigurations = []
+    for i in range(100):
+        key = "subconfiguration" + str(i)
+        
+        if key in configuration:
+            subconfigurations.append(configuration[key])
+            del configuration[key]
+
+    if subconfigurations: 
+        # If list is not empty add subconfiguration by selecting a random subconfiguration from the list
+        subconfiguration = random.choice(subconfigurations)
+
+        # Move configuration key value pairs to experiment
+        for key, value in subconfiguration.items():
+            configuration[key] = subconfiguration[key]
 
     # Get brain configs
     brains = []
@@ -73,6 +90,6 @@ while not stop_optimization:
         d = json.load(readfile)
         stop_optimization = d["stop_optimization"]
 
-    subprocess.run(["python", "train.py"])
+    subprocess.run(["python3", "train.py"])
 
 print("Optimization finished")
