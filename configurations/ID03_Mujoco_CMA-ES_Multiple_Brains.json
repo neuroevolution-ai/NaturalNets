@@ -141,5 +141,143 @@
 		"population_size": 200,
 		"sigma": 0.5
     	    }
+    },
+	"subconfiguration7":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "separated",
+		"number_neurons": 10,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": false,
+		"optimize_x0": true
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 2.0
+    	    }
+    },
+    "subconfiguration8":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "separated",
+		"number_neurons": 5,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": false,
+		"optimize_x0": true
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 2.0
+    	    }
+    },
+    "subconfiguration9":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "separated",
+		"number_neurons": 10,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": true,
+		"optimize_x0": false
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+    "subconfiguration10":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Hopper-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "original",
+		"number_neurons": 10,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": false,
+		"optimize_x0": true
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 1.0
+    	    }
+    },
+    "subconfiguration11":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "HalfCheetah-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "original",
+		"number_neurons": 50,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": false,
+		"optimize_x0": false
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
+    },
+    "subconfiguration12":{
+	    "environment": {
+		"type": "GymMujoco",
+		"name": "Walker2d-v2"
+	    },
+	    "brain": {
+		"type": "CTRNN",
+		"delta_t": 0.05,
+		"differential_equation": "original",
+		"number_neurons": 20,
+		"v_mask": "dense",
+		"w_mask": "dense",
+		"t_mask": "dense",
+		"clipping_range": Infinity,
+		"set_principle_diagonal_elements_of_W_negative": false,
+		"optimize_x0": false
+	    },
+	    "optimizer": {
+		"type": "CMA-ES-Deap",
+		"population_size": 200,
+		"sigma": 0.5
+    	    }
     }
 }
