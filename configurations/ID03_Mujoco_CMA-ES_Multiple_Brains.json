@@ -88,7 +88,8 @@
 		"t_mask": "dense",
 		"clipping_range": 3.0,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": true
+		"optimize_x0": true,
+		"alpha": 0.1
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
@@ -111,7 +112,8 @@
 		"t_mask": "dense",
 		"clipping_range": 1.0,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": true
+		"optimize_x0": true,
+		"alpha": 0.01
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
@@ -134,7 +136,8 @@
 		"t_mask": "dense",
 		"clipping_range": 3.0,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": false
+		"optimize_x0": false,
+		"alpha": 0.01
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
@@ -226,7 +229,8 @@
 		"t_mask": "dense",
 		"clipping_range": Infinity,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": true
+		"optimize_x0": true,
+		"alpha": 0.1
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
@@ -249,7 +253,8 @@
 		"t_mask": "dense",
 		"clipping_range": Infinity,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": false
+		"optimize_x0": false,
+		"alpha": 0.1
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
@@ -272,7 +277,8 @@
 		"t_mask": "dense",
 		"clipping_range": Infinity,
 		"set_principle_diagonal_elements_of_W_negative": false,
-		"optimize_x0": false
+		"optimize_x0": false,
+		"alpha": 0.1
 	    },
 	    "optimizer": {
 		"type": "CMA-ES-Deap",
