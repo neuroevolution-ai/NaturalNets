@@ -28,6 +28,8 @@ stop_optimization = False
 
 print("Optimization started")
 
+subconfiguration_counter = 0
+
 while not stop_optimization:
 
     with open("configurations/ID03_Mujoco_CMA-ES_Multiple_Brains.json", "r") as readfile:
@@ -62,7 +64,8 @@ while not stop_optimization:
 
     if subconfigurations: 
         # If list is not empty add subconfiguration by selecting a random subconfiguration from the list
-        subconfiguration = random.choice(subconfigurations)
+        subconfiguration = subconfigurations[subconfiguration_counter % len(subconfigurations)]
+        subconfiguration_counter += 1
 
         # Move configuration key value pairs to experiment
         for key, value in subconfiguration.items():
