@@ -15,7 +15,7 @@ class CollectPointsCfg:
     agent_radius: int
     point_radius: int
     agent_movement_range: float
-    use_sensors: bool
+    number_of_sensors: int
     reward_per_collected_positive_point: float
     reward_per_collected_negative_point: float
     number_time_steps: int
@@ -44,7 +44,9 @@ class CollectPoints(IEnvironment):
         # Create Maze
         self.maze = Maze(self.config.maze_columns, self.config.maze_rows, self.rs)
 
-        if self.config.use_sensors:
+        self.number_of_sensors = self.config.number_of_sensors
+
+        if self.number_of_sensors == 4:
             self.sensor_top = 0.0
             self.sensor_bottom = 0.0
             self.sensor_left = 0.0
@@ -121,7 +123,7 @@ class CollectPoints(IEnvironment):
             self.agent_position_y = y_bottom - self.config.agent_radius
 
         # Get sensor signals
-        if self.config.use_sensors:
+        if self.number_of_sensors == 4:
             self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
             self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
             self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
@@ -151,7 +153,7 @@ class CollectPoints(IEnvironment):
         ob = self.get_observation()
         info = dict()
 
-        if self.config.use_sensors:
+        if self.number_of_sensors == 4:
             info['sensor_top'] = self.sensor_top
             info['sensor_bottom'] = self.sensor_bottom
             info['sensor_right'] = self.sensor_right
@@ -257,7 +259,7 @@ class CollectPoints(IEnvironment):
         image = cv2.rectangle(image, (0, 0), (self.screen_width-1, self.screen_height-1), black, 3)
 
         # Render sensors lines
-        if self.config.use_sensors:
+        if self.number_of_sensors == 4:
 
             # Render sensor line top
             image = cv2.line(image,
@@ -305,7 +307,7 @@ class CollectPoints(IEnvironment):
         ob_list.append(self.agent_position_x / self.screen_width)
         ob_list.append(self.agent_position_y / self.screen_height)
 
-        if self.config.use_sensors:
+        if self.number_of_sensors == 4:
             ob_list.append(self.sensor_top / self.screen_height)
             ob_list.append(self.sensor_bottom / self.screen_height)
             ob_list.append(self.sensor_left / self.screen_width)
