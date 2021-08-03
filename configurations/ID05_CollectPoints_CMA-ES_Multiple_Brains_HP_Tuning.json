@@ -89,6 +89,29 @@
         "neuron_activation_output": "tanh",
         "use_bias": [false, true]
     },
+    "brain9": {
+        "type": "Indirect-CTRNN",
+        "number_dimensions": 2,
+        "ffnn_config": {
+            "type": "FFNN",
+            "hidden_layers": [[32, 16, 8], [16, 16, 8], [32, 16, 16, 8]],
+            "neuron_activation": "tanh",
+            "neuron_activation_output": "linear",
+            "use_bias": [false, true]
+        },
+        "ctrnn_config": {
+            "type": "CTRNN",
+            "delta_t": 0.05,
+            "number_neurons": [5, 10, 20, 50],
+            "v_mask": "dense",
+            "w_mask": "dense",
+            "t_mask": "dense",
+            "clipping_range": [1.0, 3.0],
+            "differential_equation": "separated",
+            "set_principle_diagonal_elements_of_W_negative": [false, true],
+            "optimize_x0": [false, true]
+        }
+    },
     "optimizer": {
         "type": "CMA-ES-Deap",
         "population_size": 200,
