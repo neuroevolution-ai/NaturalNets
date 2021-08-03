@@ -1,8 +1,10 @@
-import numpy as np
-import attr
-from environments.df_maze import Maze
-import cv2
 import math
+
+import attr
+import cv2
+import numpy as np
+
+from environments.df_maze import Maze
 from environments.i_environment import IEnvironment, registered_environment_classes
 
 
@@ -99,26 +101,26 @@ class CollectPoints(IEnvironment):
             self.agent_position_x = max(self.agent_position_x, x_left + self.config.agent_radius)
 
         # Check agent collision with top-left edge (prevents sneaking through the edge)
-        if self.agent_position_x - x_left < self.config.agent_radius \
-                and self.agent_position_y - y_top < self.config.agent_radius:
+        if (self.agent_position_x - x_left < self.config.agent_radius
+                and self.agent_position_y - y_top < self.config.agent_radius):
             self.agent_position_x = x_left + self.config.agent_radius
             self.agent_position_y = y_top + self.config.agent_radius
 
         # Check agent collision with top-right edge (prevents sneaking through the edge)
-        if x_right - self.agent_position_x < self.config.agent_radius \
-                and self.agent_position_y - y_top < self.config.agent_radius:
+        if (x_right - self.agent_position_x < self.config.agent_radius
+                and self.agent_position_y - y_top < self.config.agent_radius):
             self.agent_position_x = x_right - self.config.agent_radius
             self.agent_position_y = y_top + self.config.agent_radius
 
         # Check agent collision with bottom-right edge (prevents sneaking through the edge)
-        if x_right - self.agent_position_x < self.config.agent_radius \
-                and y_bottom - self.agent_position_y < self.config.agent_radius:
+        if (x_right - self.agent_position_x < self.config.agent_radius
+                and y_bottom - self.agent_position_y < self.config.agent_radius):
             self.agent_position_x = x_right - self.config.agent_radius
             self.agent_position_y = y_bottom - self.config.agent_radius
 
         # Check agent collision with bottom-left edge (prevents sneaking through the edge)
-        if self.agent_position_x - x_left < self.config.agent_radius \
-                and y_bottom - self.agent_position_y < self.config.agent_radius:
+        if (self.agent_position_x - x_left < self.config.agent_radius
+                and y_bottom - self.agent_position_y < self.config.agent_radius):
             self.agent_position_x = x_left + self.config.agent_radius
             self.agent_position_y = y_bottom - self.config.agent_radius
 
@@ -138,7 +140,8 @@ class CollectPoints(IEnvironment):
             rew = self.config.reward_per_collected_positive_point
 
         # Collect negative point in reach
-        distance = math.sqrt((self.negative_point_x - self.agent_position_x) ** 2 + (self.negative_point_y - self.agent_position_y) ** 2)
+        distance = math.sqrt(
+            (self.negative_point_x - self.agent_position_x) ** 2 + (self.negative_point_y - self.agent_position_y) ** 2)
         if distance <= self.config.point_radius + self.config.agent_radius:
             self.negative_point_x, self.negative_point_y = self.place_randomly_in_maze(self.config.point_radius)
             rew = self.config.reward_per_collected_negative_point
@@ -196,8 +199,8 @@ class CollectPoints(IEnvironment):
         j = 0
 
         while True:
-            if self.is_valid_maze_cell(cell_x+i, cell_y+j):
-                cell = self.maze.cell_at(cell_x+i, cell_y+j)
+            if self.is_valid_maze_cell(cell_x + i, cell_y + j):
+                cell = self.maze.cell_at(cell_x + i, cell_y + j)
             else:
                 break
 
@@ -256,36 +259,39 @@ class CollectPoints(IEnvironment):
                     image = cv2.line(image, (x_left, y_top), (x_left, y_bottom), black, 2)
 
         # Draw outer border
-        image = cv2.rectangle(image, (0, 0), (self.screen_width-1, self.screen_height-1), black, 3)
+        image = cv2.rectangle(image, (0, 0), (self.screen_width - 1, self.screen_height - 1), black, 3)
 
         # Render sensors lines
         if self.number_of_sensors == 4:
-
             # Render sensor line top
             image = cv2.line(image,
                              (self.agent_position_x, self.agent_position_y - self.config.agent_radius),
-                             (self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
+                             (
+                             self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
                              orange,
                              1)
 
             # Render sensor line bottom
             image = cv2.line(image,
                              (self.agent_position_x, self.agent_position_y + self.config.agent_radius),
-                             (self.agent_position_x, self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
+                             (self.agent_position_x,
+                              self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
                              orange,
                              1)
 
             # Render sensor line left
             image = cv2.line(image,
                              (self.agent_position_x - self.config.agent_radius, self.agent_position_y),
-                             (self.agent_position_x - self.config.agent_radius - self.sensor_left, self.agent_position_y),
+                             (self.agent_position_x - self.config.agent_radius - self.sensor_left,
+                              self.agent_position_y),
                              orange,
                              1)
 
             # Render sensor line left
             image = cv2.line(image,
                              (self.agent_position_x + self.config.agent_radius, self.agent_position_y),
-                             (self.agent_position_x + self.config.agent_radius + self.sensor_right, self.agent_position_y),
+                             (self.agent_position_x + self.config.agent_radius + self.sensor_right,
+                              self.agent_position_y),
                              orange,
                              1)
 
