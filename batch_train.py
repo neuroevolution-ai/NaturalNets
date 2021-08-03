@@ -32,7 +32,7 @@ subconfiguration_counter = 0
 
 while not stop_optimization:
 
-    with open("configurations/ID03_Mujoco_CMA-ES_Multiple_Brains.json", "r") as readfile:
+    with open("configurations/ID05_CollectPoints_CMA-ES_Multiple_Brains_HP_Tuning.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
