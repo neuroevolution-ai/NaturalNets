@@ -273,6 +273,16 @@ class CollectPointsRays(IEnvironment):
                 ray_length_y *= current_ray.delta_dist_y
                 wall_to_check_y = 'N'
 
+            # If delta_dist_x or delta_dist_y is inf, then the ray_length should be inf as well. Normally this would be
+            # done automatically in the if-else structure above but when for some reason ray_length_x or _y will get
+            # 0.0 in the first assignment, then it will become NaN when it is multiplied with delta_dist_x or _y in the
+            # second assignment. Therefore set it to inf explicitly here
+            if np.isinf(current_ray.delta_dist_x):
+                ray_length_x = np.inf
+
+            if np.isinf(current_ray.delta_dist_y):
+                ray_length_y = np.inf
+
             hit = False
             side = None
 
@@ -410,24 +420,16 @@ class CollectPointsRays(IEnvironment):
         image = cv2.rectangle(image, (0, 0), (self.screen_width - 1, self.screen_height - 1), black, 3)
 
         # Render rays
-
         if self.number_of_sensors > 0:
             for current_ray in self.rays:
 
                 # TODO figure out clever way to get the offset with the agent_radius right
                 pos_x, pos_y = self.agent_position_x, self.agent_position_y
 
-                # If the direction is equal to 0, don't add the offset of the radius because when a direction is 0,
-                # this means that the ray does not go in that direction and therefore an offset would be false
-                if current_ray.direction[0] < 0:
-                    pos_x -= self.config.agent_radius
-                elif current_ray.direction[0] > 0:
-                    pos_x += self.config.agent_radius
-
-                if current_ray.direction[1] < 0:
-                    pos_y += self.config.agent_radius
-                elif current_ray.direction[1] > 0:
-                    pos_y -= self.config.agent_radius
+                # Offset the player position by the agent radius so that they ray starts at the edge of the player
+                # circle, when rendering
+                pos_x = round(pos_x + current_ray.direction[0] * self.config.agent_radius)
+                pos_y = round(pos_y - current_ray.direction[1] * self.config.agent_radius)
 
                 pt1 = (pos_x, pos_y)
                 pt2 = (round(pos_x + current_ray.direction[0] * current_ray.distance),
