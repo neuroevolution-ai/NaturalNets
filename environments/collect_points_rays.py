@@ -415,9 +415,23 @@ class CollectPointsRays(IEnvironment):
             for current_ray in self.rays:
 
                 # TODO figure out clever way to get the offset with the agent_radius right
-                pt1 = (self.agent_position_x, self.agent_position_y)
-                pt2 = (round(self.agent_position_x + current_ray.direction[0] * current_ray.distance),
-                       round(self.agent_position_y + current_ray.direction[1] * current_ray.distance))
+                pos_x, pos_y = self.agent_position_x, self.agent_position_y
+
+                # If the direction is equal to 0, don't add the offset of the radius because when a direction is 0,
+                # this means that the ray does not go in that direction and therefore an offset would be false
+                if current_ray.direction[0] < 0:
+                    pos_x -= self.config.agent_radius
+                elif current_ray.direction[0] > 0:
+                    pos_x += self.config.agent_radius
+
+                if current_ray.direction[1] < 0:
+                    pos_y += self.config.agent_radius
+                elif current_ray.direction[1] > 0:
+                    pos_y -= self.config.agent_radius
+
+                pt1 = (pos_x, pos_y)
+                pt2 = (round(pos_x + current_ray.direction[0] * current_ray.distance),
+                       round(pos_y - current_ray.direction[1] * current_ray.distance))
 
                 image = cv2.line(image, pt1=pt1, pt2=pt2, color=orange, thickness=1)
 
