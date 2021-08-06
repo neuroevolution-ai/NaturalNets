@@ -263,18 +263,29 @@ class CollectPointsRays(IEnvironment):
             if current_ray.direction[1] < 0:
                 # y-dir is negative
                 current_ray.step_y = +1
-                ray_length_y = (self.agent_position_y - y_top) / self.config.maze_cell_size
+                ray_length_y = 1 - ((self.agent_position_y - y_top) / self.config.maze_cell_size)
                 ray_length_y *= current_ray.delta_dist_y
                 wall_to_check_y = 'S'
             else:
                 # y-dir is positive
                 current_ray.step_y = -1
-                ray_length_y = 1 - ((self.agent_position_y - y_top) / self.config.maze_cell_size)
+                ray_length_y = (self.agent_position_y - y_top) / self.config.maze_cell_size
                 ray_length_y *= current_ray.delta_dist_y
                 wall_to_check_y = 'N'
 
             hit = False
             side = None
+
+            cell = self.maze.cell_at(current_cell_x, current_cell_y)
+
+            if ray_length_x < ray_length_y:
+                if cell.walls[wall_to_check_x]:
+                    hit = True
+                    side = 0
+            else:
+                if cell.walls[wall_to_check_y]:
+                    hit = True
+                    side = 1
 
             while not hit:
                 if ray_length_x < ray_length_y:
@@ -297,9 +308,9 @@ class CollectPointsRays(IEnvironment):
                     hit = True
 
             if side == 0:
-                current_ray.distance = ray_length_x
+                current_ray.distance = ray_length_x - self.config.agent_radius
             elif side == 1:
-                current_ray.distance = ray_length_y
+                current_ray.distance = ray_length_y - self.config.agent_radius
             else:
                 raise RuntimeError("Variable 'side' that indicates if ray hit in x or y direction is not set properly")
 
