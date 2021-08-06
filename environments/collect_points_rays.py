@@ -24,23 +24,48 @@ class CollectPointsCfg:
 
 
 class Ray:
-    def __init__(self, direction: np.ndarray, distance: float):
+    def __init__(self, direction: np.ndarray, distance: float, maze_cell_size: int):
         self.direction = direction
         self.distance = distance
 
+        if np.isclose(self.direction[0], 0):
+            self.direction[0] = 0.0
+            self.delta_dist_x = np.inf
+        else:
+            self.delta_dist_x = np.sqrt(1 + (self.direction[1] / self.direction[0]) * (self.direction[1] / self.direction[0]))
+
+        if np.isclose(self.direction[1], 0):
+            self.direction[1] = 0.0
+            self.delta_dist_y = np.inf
+        else:
+            self.delta_dist_y = np.sqrt(1 + (self.direction[0] / self.direction[1]) * (self.direction[0] / self.direction[1]))
+
+        self.delta_dist_x *= maze_cell_size
+        self.delta_dist_y *= maze_cell_size
+
         # TODO check if this actually works. Also not sure why the outer if-s are necessary
-        if self.direction[1] == 0:
-            self.delta_dist_x = 0
-        else:
-            self.delta_dist_x = 1 if self.direction[0] == 0 else np.abs(1 / self.direction[0])
+        # if self.direction[1] == 0:
+        #     self.delta_dist_x = 0
+        # else:
+        #     self.delta_dist_x = 1 if self.direction[0] == 0 else np.abs(1 / self.direction[0])
+        #
+        # if self.direction[0] == 0:
+        #     self.delta_dist_y = 0
+        # else:
+        #     self.delta_dist_y = 1 if self.direction[1] == 0 else np.abs(1 / self.direction[1])
 
-        if self.direction[0] == 0:
-            self.delta_dist_y = 0
-        else:
-            self.delta_dist_y = 1 if self.direction[1] == 0 else np.abs(1 / self.direction[1])
+        # Since the maze is built so that the uppermost left corner is 0,0 and it increase from there, the step in
+        # y-direction is actually mirrored compared to the description of the DDA algorithm
+        self.step_x, step_y = 1, -1
+
+        if self.direction[0] < 0:
+            self.step_x = -1
+
+        if self.direction[1] < 0:
+            self.step_y = +1
 
 
-class CollectPoints(IEnvironment):
+class CollectPointsRays(IEnvironment):
 
     def __init__(self, env_seed: int, configuration: dict):
         self.config = CollectPointsCfg(**configuration)
@@ -99,10 +124,12 @@ class CollectPoints(IEnvironment):
         angle_per_ray = 360.0 / self.number_of_sensors
 
         first_ray = np.array([1, 0])
-        rays = [Ray(first_ray, 0.0)]
+        rays = [Ray(first_ray, distance=0.0, maze_cell_size=self.config.maze_cell_size)]
 
         for i in range(1, self.number_of_sensors):
-            rays.append(Ray(rotate(first_ray, angle_per_ray * i), 0.0))
+            rays.append(
+                Ray(rotate(first_ray, angle_per_ray * i), distance=0.0, maze_cell_size=self.config.maze_cell_size)
+            )
 
         return rays
 
@@ -169,11 +196,11 @@ class CollectPoints(IEnvironment):
         if self.number_of_sensors > 0:
             self.calculate_ray_distances(cell_x=cell_x, cell_y=cell_y)
 
-        # if self.number_of_sensors == 4:
-        #     self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
-        #     self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
-        #     self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
-        #     self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
+        if self.number_of_sensors == 4:
+            self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
+            self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
+            self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
+            self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
 
         rew = 0.0
 
@@ -216,23 +243,65 @@ class CollectPoints(IEnvironment):
         x_left, x_right, y_top, y_bottom = self.get_coordinates_maze_cell(cell_x, cell_y)
 
         for current_ray in self.rays:
-            # Do DDA
+            current_cell_x, current_cell_y = cell_x, cell_y
 
+            # Do DDA per ray
             if current_ray.direction[0] < 0:
                 # x-dir is negative
-                step_x = -1
+                current_ray.step_x = -1
                 # TODO continue here, calculate correct first delta to the x cell
-                ray_length_x = self.agent_position_x - self.config.agent_radius
+                # Divide by maze cell size to normalize the cell to unit length TODO check if this works
+                ray_length_x = (self.agent_position_x - x_left) / self.config.maze_cell_size
+                ray_length_x *= current_ray.delta_dist_x
+                wall_to_check_x = 'W'
             else:
                 # x-dir is positive
-                step_x = 1
-
+                current_ray.step_x = 1
+                ray_length_x = 1 - ((self.agent_position_x - x_left) / self.config.maze_cell_size)
+                ray_length_x *= current_ray.delta_dist_x
+                wall_to_check_x = 'E'
             if current_ray.direction[1] < 0:
                 # y-dir is negative
-                step_y = -1
+                current_ray.step_y = +1
+                ray_length_y = (self.agent_position_y - y_top) / self.config.maze_cell_size
+                ray_length_y *= current_ray.delta_dist_y
+                wall_to_check_y = 'S'
             else:
                 # y-dir is positive
-                step_y = 1
+                current_ray.step_y = -1
+                ray_length_y = 1 - ((self.agent_position_y - y_top) / self.config.maze_cell_size)
+                ray_length_y *= current_ray.delta_dist_y
+                wall_to_check_y = 'N'
+
+            hit = False
+            side = None
+
+            while not hit:
+                if ray_length_x < ray_length_y:
+                    ray_length_x += current_ray.delta_dist_x
+                    current_cell_x += current_ray.step_x
+                    side = 0
+                    wall_to_check = wall_to_check_x
+                else:
+                    ray_length_y += current_ray.delta_dist_y
+                    current_cell_y += current_ray.step_y
+                    side = 1
+                    wall_to_check = wall_to_check_y
+
+                # if self.is_valid_maze_cell(current_cell_x, current_cell_y):
+                cell = self.maze.cell_at(current_cell_x, current_cell_y)
+                # else:
+                #     break
+
+                if cell.walls[wall_to_check]:
+                    hit = True
+
+            if side == 0:
+                current_ray.distance = ray_length_x
+            elif side == 1:
+                current_ray.distance = ray_length_y
+            else:
+                raise RuntimeError("Variable 'side' that indicates if ray hit in x or y direction is not set properly")
 
     def get_sensor_distance(self, direction: str, cell_x: int, cell_y: int) -> float:
         # Get current cell
@@ -329,39 +398,51 @@ class CollectPoints(IEnvironment):
         # Draw outer border
         image = cv2.rectangle(image, (0, 0), (self.screen_width - 1, self.screen_height - 1), black, 3)
 
-        # Render sensors lines
-        if self.number_of_sensors == 4:
-            # Render sensor line top
-            image = cv2.line(image,
-                             (self.agent_position_x, self.agent_position_y - self.config.agent_radius),
-                             (
-                             self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
-                             orange,
-                             1)
+        # Render rays
 
-            # Render sensor line bottom
-            image = cv2.line(image,
-                             (self.agent_position_x, self.agent_position_y + self.config.agent_radius),
-                             (self.agent_position_x,
-                              self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
-                             orange,
-                             1)
+        if self.number_of_sensors > 0:
+            for current_ray in self.rays:
 
-            # Render sensor line left
-            image = cv2.line(image,
-                             (self.agent_position_x - self.config.agent_radius, self.agent_position_y),
-                             (self.agent_position_x - self.config.agent_radius - self.sensor_left,
-                              self.agent_position_y),
-                             orange,
-                             1)
+                # TODO figure out clever way to get the offset with the agent_radius right
+                pt1 = (self.agent_position_x, self.agent_position_y)
+                pt2 = (round(self.agent_position_x + current_ray.direction[0] * current_ray.distance),
+                       round(self.agent_position_y + current_ray.direction[1] * current_ray.distance))
 
-            # Render sensor line left
-            image = cv2.line(image,
-                             (self.agent_position_x + self.config.agent_radius, self.agent_position_y),
-                             (self.agent_position_x + self.config.agent_radius + self.sensor_right,
-                              self.agent_position_y),
-                             orange,
-                             1)
+                image = cv2.line(image, pt1=pt1, pt2=pt2, color=orange, thickness=1)
+
+        # # Render sensors lines
+        # if self.number_of_sensors == 4:
+        #     # Render sensor line top
+        #     image = cv2.line(image,
+        #                      (self.agent_position_x, self.agent_position_y - self.config.agent_radius),
+        #                      (
+        #                      self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
+        #                      orange,
+        #                      1)
+        #
+        #     # Render sensor line bottom
+        #     image = cv2.line(image,
+        #                      (self.agent_position_x, self.agent_position_y + self.config.agent_radius),
+        #                      (self.agent_position_x,
+        #                       self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
+        #                      orange,
+        #                      1)
+        #
+        #     # Render sensor line left
+        #     image = cv2.line(image,
+        #                      (self.agent_position_x - self.config.agent_radius, self.agent_position_y),
+        #                      (self.agent_position_x - self.config.agent_radius - self.sensor_left,
+        #                       self.agent_position_y),
+        #                      orange,
+        #                      1)
+        #
+        #     # Render sensor line left
+        #     image = cv2.line(image,
+        #                      (self.agent_position_x + self.config.agent_radius, self.agent_position_y),
+        #                      (self.agent_position_x + self.config.agent_radius + self.sensor_right,
+        #                       self.agent_position_y),
+        #                      orange,
+        #                      1)
 
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
@@ -412,4 +493,4 @@ class CollectPoints(IEnvironment):
 
 
 # TODO: Do this registration via class decorator
-registered_environment_classes['CollectPointsRays'] = CollectPoints
+registered_environment_classes['CollectPointsRays'] = CollectPointsRays
