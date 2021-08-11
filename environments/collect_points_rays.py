@@ -31,28 +31,21 @@ class Ray:
         if np.isclose(self.direction[0], 0):
             self.direction[0] = 0.0
             self.delta_dist_x = np.inf
+            self.delta_dist_x_inf = True
         else:
             self.delta_dist_x = np.sqrt(1 + (self.direction[1] / self.direction[0]) * (self.direction[1] / self.direction[0]))
+            self.delta_dist_x_inf = False
 
         if np.isclose(self.direction[1], 0):
             self.direction[1] = 0.0
             self.delta_dist_y = np.inf
+            self.delta_dist_y_inf = True
         else:
             self.delta_dist_y = np.sqrt(1 + (self.direction[0] / self.direction[1]) * (self.direction[0] / self.direction[1]))
+            self.delta_dist_y_inf = False
 
         self.delta_dist_x *= maze_cell_size
         self.delta_dist_y *= maze_cell_size
-
-        # TODO check if this actually works. Also not sure why the outer if-s are necessary
-        # if self.direction[1] == 0:
-        #     self.delta_dist_x = 0
-        # else:
-        #     self.delta_dist_x = 1 if self.direction[0] == 0 else np.abs(1 / self.direction[0])
-        #
-        # if self.direction[0] == 0:
-        #     self.delta_dist_y = 0
-        # else:
-        #     self.delta_dist_y = 1 if self.direction[1] == 0 else np.abs(1 / self.direction[1])
 
         # Since the maze is built so that the uppermost left corner is 0,0 and it increase from there, the step in
         # y-direction is actually mirrored compared to the description of the DDA algorithm
@@ -91,12 +84,6 @@ class CollectPointsRays(IEnvironment):
 
         if self.number_of_sensors > 0:
             self.rays = self.initialize_rays()
-
-        # if self.number_of_sensors == 4:
-        #     self.sensor_top = 0.0
-        #     self.sensor_bottom = 0.0
-        #     self.sensor_left = 0.0
-        #     self.sensor_right = 0.0
 
         self.t = 0
 
@@ -196,11 +183,11 @@ class CollectPointsRays(IEnvironment):
         if self.number_of_sensors > 0:
             self.calculate_ray_distances(cell_x=cell_x, cell_y=cell_y)
 
-        if self.number_of_sensors == 4:
-            self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
-            self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
-            self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
-            self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
+        # if self.number_of_sensors == 4:
+        #     self.sensor_top = self.get_sensor_distance('top', cell_x, cell_y)
+        #     self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
+        #     self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
+        #     self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
 
         rew = 0.0
 
@@ -228,14 +215,11 @@ class CollectPointsRays(IEnvironment):
         info = dict()
 
         if self.number_of_sensors > 0:
-            for i in range(len(self.rays)):
-                info["sensor_{}".format(i)] = self.rays[i].distance
+            key_names = ["sensor_" + str(i) for i in range(len(self.rays))]
+            distances = [r.distance for r in self.rays]
 
-        # if self.number_of_sensors == 4:
-        #     info['sensor_top'] = self.sensor_top
-        #     info['sensor_bottom'] = self.sensor_bottom
-        #     info['sensor_right'] = self.sensor_right
-        #     info['sensor_left'] = self.sensor_left
+            for _key, _distance in zip(key_names, distances):
+                info[_key] = _distance
 
         return ob, rew, done, info
 
@@ -277,10 +261,10 @@ class CollectPointsRays(IEnvironment):
             # done automatically in the if-else structure above but when for some reason ray_length_x or _y will get
             # 0.0 in the first assignment, then it will become NaN when it is multiplied with delta_dist_x or _y in the
             # second assignment. Therefore set it to inf explicitly here
-            if np.isinf(current_ray.delta_dist_x):
+            if current_ray.delta_dist_x_inf:
                 ray_length_x = np.inf
 
-            if np.isinf(current_ray.delta_dist_y):
+            if current_ray.delta_dist_y_inf:
                 ray_length_y = np.inf
 
             hit = False
