@@ -1,5 +1,6 @@
 attrs
 git+https://github.com/neuroevolution-ai/deap@eigenvalues-on-gpu
+cupy-cuda101
 numpy
 gym
 scipy
