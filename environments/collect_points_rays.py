@@ -28,6 +28,9 @@ class Ray:
         self.direction = direction
         self.distance = distance
 
+        # delta_dist_x and delta_dist_y is the distance that the ray has to travel in x and y direction, respectively
+        # to get from one cell to the next cell. Since this does not change over the lifetime of the environment this
+        # calculation has to be done only one time
         if np.isclose(self.direction[0], 0):
             self.direction[0] = 0.0
             self.delta_dist_x = np.inf
@@ -59,6 +62,14 @@ class Ray:
 
 
 class CollectPointsRays(IEnvironment):
+    """
+    Extends the CollectPoints environment by a variable amount of rays, with which the player can look into the
+    environment and get the distance to the nearest wall.
+
+    The implementation for the distance calculation of the rays (DDA algorithm) is from these two sources:
+    - https://www.youtube.com/watch?v=NbSee-XM7WA
+    - https://lodev.org/cgtutor/raycasting.html
+    """
 
     def __init__(self, env_seed: int, configuration: dict):
         self.config = CollectPointsCfg(**configuration)
@@ -86,6 +97,9 @@ class CollectPointsRays(IEnvironment):
             self.rays = self.initialize_rays()
 
         self.t = 0
+
+    def __del__(self):
+        cv2.destroyAllWindows()
 
     def get_number_inputs(self):
         return len(self.get_observation())
@@ -188,6 +202,11 @@ class CollectPointsRays(IEnvironment):
         #     self.sensor_bottom = self.get_sensor_distance('bottom', cell_x, cell_y)
         #     self.sensor_left = self.get_sensor_distance('left', cell_x, cell_y)
         #     self.sensor_right = self.get_sensor_distance('right', cell_x, cell_y)
+        #
+        #     assert (round(self.rays[0].distance) == self.sensor_right
+        #             and round(self.rays[1].distance) == self.sensor_top
+        #             and round(self.rays[2].distance) == self.sensor_left
+        #             and round(self.rays[3].distance) == self.sensor_bottom)
 
         rew = 0.0
 
@@ -233,8 +252,7 @@ class CollectPointsRays(IEnvironment):
             if current_ray.direction[0] < 0:
                 # x-dir is negative
                 current_ray.step_x = -1
-                # TODO continue here, calculate correct first delta to the x cell
-                # Divide by maze cell size to normalize the cell to unit length TODO check if this works
+                # Divide by maze cell size to normalize the cell to unit length
                 ray_length_x = (self.agent_position_x - x_left) / self.config.maze_cell_size
                 ray_length_x *= current_ray.delta_dist_x
                 wall_to_check_x = 'W'
@@ -245,7 +263,7 @@ class CollectPointsRays(IEnvironment):
                 ray_length_x *= current_ray.delta_dist_x
                 wall_to_check_x = 'E'
             if current_ray.direction[1] < 0:
-                # y-dir is negative
+                # y-dir is negative (going south means increasing the y index of the cell)
                 current_ray.step_y = +1
                 ray_length_y = 1 - ((self.agent_position_y - y_top) / self.config.maze_cell_size)
                 ray_length_y *= current_ray.delta_dist_y
@@ -268,7 +286,7 @@ class CollectPointsRays(IEnvironment):
                 ray_length_y = np.inf
 
             hit = False
-            side = None
+            side = None  # side == 0 means we go into x-direction, side == 1 y-direction
             current_distance = 0
 
             while not hit:
@@ -303,6 +321,11 @@ class CollectPointsRays(IEnvironment):
                 raise RuntimeError("Variable 'side' that indicates if ray hit in x or y direction is not set properly")
 
     def get_sensor_distance(self, direction: str, cell_x: int, cell_y: int) -> float:
+        """
+        Deprecated, used for the old version where only 4 sensors have been calculated. Can be kept for comparison
+        to the new method to calculate rays.
+        """
+
         # Get current cell
         cell = self.maze.cell_at(cell_x, cell_y)
 
@@ -415,40 +438,6 @@ class CollectPointsRays(IEnvironment):
 
                 image = cv2.line(image, pt1=pt1, pt2=pt2, color=orange, thickness=1)
 
-        # # Render sensors lines
-        # if self.number_of_sensors == 4:
-        #     # Render sensor line top
-        #     image = cv2.line(image,
-        #                      (self.agent_position_x, self.agent_position_y - self.config.agent_radius),
-        #                      (
-        #                      self.agent_position_x, self.agent_position_y - self.config.agent_radius - self.sensor_top),
-        #                      orange,
-        #                      1)
-        #
-        #     # Render sensor line bottom
-        #     image = cv2.line(image,
-        #                      (self.agent_position_x, self.agent_position_y + self.config.agent_radius),
-        #                      (self.agent_position_x,
-        #                       self.agent_position_y + self.config.agent_radius + self.sensor_bottom),
-        #                      orange,
-        #                      1)
-        #
-        #     # Render sensor line left
-        #     image = cv2.line(image,
-        #                      (self.agent_position_x - self.config.agent_radius, self.agent_position_y),
-        #                      (self.agent_position_x - self.config.agent_radius - self.sensor_left,
-        #                       self.agent_position_y),
-        #                      orange,
-        #                      1)
-        #
-        #     # Render sensor line left
-        #     image = cv2.line(image,
-        #                      (self.agent_position_x + self.config.agent_radius, self.agent_position_y),
-        #                      (self.agent_position_x + self.config.agent_radius + self.sensor_right,
-        #                       self.agent_position_y),
-        #                      orange,
-        #                      1)
-
         cv2.imshow("ProcGen Agent", cv2.resize(image, (self.screen_width, self.screen_height)))
         cv2.waitKey(1)
 
@@ -472,12 +461,6 @@ class CollectPointsRays(IEnvironment):
                 # TODO old version divided by screen_height and screen_width, is this necessary? Also what would be to
                 #      do if non orthogonal rays are used
                 ob_list.append(self.rays[i].distance)
-
-        # if self.number_of_sensors == 4:
-        #     ob_list.append(self.sensor_top / self.screen_height)
-        #     ob_list.append(self.sensor_bottom / self.screen_height)
-        #     ob_list.append(self.sensor_left / self.screen_width)
-        #     ob_list.append(self.sensor_right / self.screen_width)
 
         ob_list.append(self.point_x / self.screen_width)
         ob_list.append(self.point_y / self.screen_height)
