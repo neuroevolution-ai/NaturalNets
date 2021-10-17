@@ -11,6 +11,7 @@ class ChallengerNeuralNetworkCfg:
     type: str
     number_inputs: int
     number_outputs: int
+    add_reward_to_observation: bool
     number_time_steps: int
     brain: dict
 
@@ -21,20 +22,28 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         self.config = ChallengerNeuralNetworkCfg(**configuration)
 
-        self.rs = np.random.RandomState(env_seed)
+        rs = np.random.RandomState(env_seed)
 
         # Get brain class from configuration
         brain_class = get_brain_class(self.config.brain['type'])
         brain_configuration = self.config.brain
 
-        brain_state = brain_class.generate_brain_state(self.config.number_outputs, self.config.number_inputs, brain_configuration)
+        number_inputs_challenger_nn = self.config.number_outputs
+        number_outputs_challenger_nn = self.config.number_inputs
 
-        individual_size = brain_class.get_individual_size(self.config.number_outputs, self.config.number_inputs, brain_configuration, brain_state) 
+        if self.config.add_reward_to_observation is False:
+            number_outputs_challenger_nn += 1
 
-        individual = self.rs.randn(individual_size).astype(np.float32)
+        brain_state = brain_class.generate_brain_state(
+            number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration)
 
-        self.brain = brain_class(input_size=self.config.number_outputs,
-                                 output_size=self.config.number_inputs,
+        individual_size = brain_class.get_individual_size(
+            number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration, brain_state)
+
+        individual = rs.randn(individual_size).astype(np.float32)
+
+        self.brain = brain_class(input_size=number_inputs_challenger_nn,
+                                 output_size=number_outputs_challenger_nn,
                                  individual=individual,
                                  configuration=brain_configuration,
                                  brain_state=brain_state)
@@ -55,6 +64,9 @@ class ChallengerNeuralNetwork(IEnvironment):
         ob = self.brain.step(action)
 
         rew = ob[0]
+
+        if self.config.add_reward_to_observation is False:
+            ob = np.delete(ob, 0)
 
         self.t += 1
 
