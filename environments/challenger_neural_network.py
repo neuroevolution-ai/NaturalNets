@@ -63,7 +63,7 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         ob = self.brain.step(action)
 
-        rew = ob[0]
+        rew = ob[0] / float(self.config.number_time_steps)
 
         if self.config.exclude_reward_from_observation:
             ob = np.delete(ob, 0)
