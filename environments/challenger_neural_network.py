@@ -11,7 +11,7 @@ class ChallengerNeuralNetworkCfg:
     type: str
     number_inputs: int
     number_outputs: int
-    add_reward_to_observation: bool
+    exclude_reward_from_observation: bool
     number_time_steps: int
     brain: dict
 
@@ -31,7 +31,7 @@ class ChallengerNeuralNetwork(IEnvironment):
         number_inputs_challenger_nn = self.config.number_outputs
         number_outputs_challenger_nn = self.config.number_inputs
 
-        if self.config.add_reward_to_observation is False:
+        if self.config.exclude_reward_from_observation:
             number_outputs_challenger_nn += 1
 
         brain_state = brain_class.generate_brain_state(
@@ -65,7 +65,7 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         rew = ob[0]
 
-        if self.config.add_reward_to_observation is False:
+        if self.config.exclude_reward_from_observation:
             ob = np.delete(ob, 0)
 
         self.t += 1
