@@ -31,9 +31,6 @@ class ChallengerNeuralNetwork(IEnvironment):
         number_inputs_challenger_nn = self.config.number_outputs
         number_outputs_challenger_nn = self.config.number_inputs
 
-        if self.config.exclude_reward_from_observation:
-            number_outputs_challenger_nn += 1
-
         brain_state = brain_class.generate_brain_state(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration)
 
@@ -66,7 +63,7 @@ class ChallengerNeuralNetwork(IEnvironment):
         rew = ob[0] / float(self.config.number_time_steps)
 
         if self.config.exclude_reward_from_observation:
-            ob = np.delete(ob, 0)
+            ob[0] = 0.0
 
         self.t += 1
 
