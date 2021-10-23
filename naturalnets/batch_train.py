@@ -32,7 +32,7 @@ subconfiguration_counter = 0
 
 while not stop_optimization:
 
-    with open("configurations/ID05_CollectPoints_CMA-ES_Multiple_Brains_HP_Tuning.json", "r") as readfile:
+    with open("naturalnets/configurations/ID05_CollectPoints_CMA-ES_Multiple_Brains_HP_Tuning.json", "r") as readfile:
         configuration = json.load(readfile)
 
 
@@ -86,13 +86,13 @@ while not stop_optimization:
 
     configuration_out = sample_from_design_space(configuration)
 
-    with open('configurations/Configuration.json', 'w') as outfile:
+    with open('naturalnets/configurations/Configuration.json', 'w') as outfile:
         json.dump(configuration_out, outfile, indent=4)
 
-    with open("Stop_Optimization.json", "r") as readfile:
+    with open("naturalnets/Stop_Optimization.json", "r") as readfile:
         d = json.load(readfile)
         stop_optimization = d["stop_optimization"]
 
-    subprocess.run(["python3", "train.py"])
+    subprocess.run(["python3", "naturalnets/train.py"])
 
 print("Optimization finished")

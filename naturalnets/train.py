@@ -34,7 +34,7 @@ def main():
     pool = multiprocessing.Pool()
 
     # Load configuration file
-    with open(os.path.join("configurations", configuration_file), "r") as read_file:
+    with open(os.path.join("naturalnets", "configurations", configuration_file), "r") as read_file:
         configuration = json.load(read_file)
 
     config = TrainingCfg(**configuration)
