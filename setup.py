@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="NaturalNets",
+    name="naturalnets",
     version="0.1.0",
     description="NaturalNets implmented in Python",
     url="https://github.com/neuroevolution-ai/NaturalNets",
