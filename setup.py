@@ -1,0 +1,15 @@
+from setuptools import setup, find_packages
+
+
+setup(
+    name="NaturalNets",
+    version="0.1.0",
+    description="NaturalNets implmented in Python",
+    url="https://github.com/neuroevolution-ai/NaturalNets",
+    author="Daniel Zimmermann",
+    author_email="dzimmer@fzi.de",
+    license="MIT",
+    packages=find_packages(),
+    install_requires=["attrs", "deap", "numpy", "gym", "scipy", "torch",
+                      "procgen", "opencv-python", "cma", "matplotlib", "pandas"]
+)
