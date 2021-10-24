@@ -28,14 +28,9 @@ class TrainingCfg:
     experiment_id: int = -1
 
 
-def main():
-    configuration_file = "Configuration.json"
+def train(configuration):
 
     pool = multiprocessing.Pool()
-
-    # Load configuration file
-    with open(os.path.join("naturalnets", "configurations", configuration_file), "r") as read_file:
-        configuration = json.load(read_file)
 
     config = TrainingCfg(**configuration)
 
@@ -173,8 +168,3 @@ def main():
     # Error messages inside subprocesses could be shown once they are joined
     pool.close()
     pool.join()
-    print("Finished")
-
-
-if __name__ == "__main__":
-    main()
