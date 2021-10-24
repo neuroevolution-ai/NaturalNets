@@ -144,10 +144,6 @@ def train(configuration, results_directory):
     # Save best genome
     np.save(os.path.join(results_subdirectory, 'Best_Genome'), best_genome_overall)
 
-    # Save Log
-    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
-        json.dump(log, outfile, ensure_ascii=False, indent=4)
-
     # Save brain state (i.e. masks)
     ep_runner.save_brain_state(os.path.join(results_subdirectory, 'Brain_State'))
 
@@ -162,8 +158,8 @@ def train(configuration, results_directory):
                               elapsed_time=time.time() - start_time_training)
 
     # Write log additionally to JSON for better parsing
-    with open(os.path.join(results_subdirectory, "Log.json"), "w") as outfile:
-        json.dump(log, outfile)
+    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
+        json.dump(log, outfile, ensure_ascii=False, indent=4)
 
     # Error messages inside subprocesses could be shown once they are joined
     pool.close()
