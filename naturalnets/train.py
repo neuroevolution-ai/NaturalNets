@@ -128,7 +128,7 @@ def train(configuration, results_directory):
         log.append(log_line)
 
     elapsed_time = time.time() - start_time_training
-    configuration["elapsed_time"] = elapsed_time
+    log.append({"elapsed_time_traing": elapsed_time})
 
     print("Elapsed time for training: %.2f seconds" % elapsed_time)
 

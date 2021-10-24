@@ -38,8 +38,8 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
                                                                  'mean', 'max', 'best', 'elapsed time (s)'))
         write_file.write(dash + '\n')
 
-        # Write data for each episode
-        for line in log:
+        # Write data for each episode (ignore last list index of log since it is the elapsed training time)
+        for line in log[:-1]:
             write_file.write(
                 '{:<8d}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}\n'.format(line['gen'], line['min'], line['mean'],
                                                                                line['max'], line['best'],
