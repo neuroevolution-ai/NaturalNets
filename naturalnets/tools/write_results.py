@@ -1,7 +1,7 @@
 
 
 def write_results_to_textfile(path, configuration, log, input_size, output_size, individual_size,
-                              free_parameter_usage, elapsed_time):
+                              free_parameter_usage):
 
     def walk_dict(node, callback_node, depth=0):
         for key, item in node.items():
@@ -38,12 +38,16 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
                                                                  'mean', 'max', 'best', 'elapsed time (s)'))
         write_file.write(dash + '\n')
 
+        # Last element of log contains additional info like elapsed time for training
+        log_info = log.pop()
+        elapsed_time_training = log_info["elapsed_time_training"] 
+
         # Write data for each episode (ignore last list index of log since it is the elapsed training time)
-        for line in log[:-1]:
+        for line in log:
             write_file.write(
                 '{:<8d}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}\n'.format(line['gen'], line['min'], line['mean'],
                                                                                line['max'], line['best'],
                                                                                line['elapsed_time']))
 
         # Write elapsed time
-        write_file.write("\nElapsed time for training: %.2f seconds" % elapsed_time)
+        write_file.write("\nElapsed time for training: %.2f seconds" % elapsed_time_training)

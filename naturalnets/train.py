@@ -128,7 +128,6 @@ def train(configuration, results_directory):
         log.append(log_line)
 
     elapsed_time = time.time() - start_time_training
-    log.append({"elapsed_time_training": elapsed_time})
 
     print("Elapsed time for training: %.2f seconds" % elapsed_time)
 
@@ -147,19 +146,23 @@ def train(configuration, results_directory):
     # Save brain state (i.e. masks)
     ep_runner.save_brain_state(os.path.join(results_subdirectory, 'Brain_State'))
 
-    # Write results to text file
+    # Last element of log contains additional for training
+    log_info = dict()
+    log_info["elapsed_time_training"] = elapsed_time
+    log.append(log_info)
+
+    # Write log to JSON for better parsing
+    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
+        json.dump(log, outfile, ensure_ascii=False, indent=4)
+        
+    # Write results to text file for better readibility
     write_results_to_textfile(path=os.path.join(results_subdirectory, 'Log.txt'),
                               configuration=configuration,
                               log=log,
                               input_size=ep_runner.get_input_size(),
                               output_size=ep_runner.get_output_size(),
                               individual_size=individual_size,
-                              free_parameter_usage=ep_runner.get_free_parameter_usage(),
-                              elapsed_time=time.time() - start_time_training)
-
-    # Write log additionally to JSON for better parsing
-    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
-        json.dump(log, outfile, ensure_ascii=False, indent=4)
+                              free_parameter_usage=ep_runner.get_free_parameter_usage())
 
     # Error messages inside subprocesses could be shown once they are joined
     pool.close()
