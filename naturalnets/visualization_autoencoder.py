@@ -7,8 +7,8 @@ import gym3
 import numpy as np
 from procgen import ProcgenGym3Env
 
-from brains.continuous_time_rnn import ContinuousTimeRNN
-from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
+from naturalnets.brains.continuous_time_rnn import ContinuousTimeRNN
+from naturalnets.tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

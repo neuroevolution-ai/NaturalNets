@@ -3,7 +3,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-from tools.parse_experiments import read_simulations, parse_log
+from naturalnets.tools.parse_experiments import read_simulations, parse_log
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 

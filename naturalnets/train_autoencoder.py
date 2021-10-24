@@ -7,11 +7,11 @@ import attr
 import numpy as np
 import math
 
-from brains.continuous_time_rnn import ContinuousTimeRNN
-from optimizers.canonical_es import OptimizerCanonicalEs
-from optimizers.cma_es_deap import OptimizerCmaEsDeap
-from tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
-from tools.write_results import write_results_to_textfile
+from naturalnets.brains.continuous_time_rnn import ContinuousTimeRNN
+from naturalnets.optimizers.canonical_es import OptimizerCanonicalEs
+from naturalnets.optimizers.cma_es_deap import OptimizerCmaEsDeap
+from naturalnets.tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
+from naturalnets.tools.write_results import write_results_to_textfile
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

@@ -4,7 +4,7 @@ import shutil
 
 import numpy as np
 
-from tools.parse_experiments import read_simulations, parse_log
+from naturalnets.tools.parse_experiments import read_simulations, parse_log
 
 test_base_directory = "tests/test_simulation_base_dir"
 test_experiment_directory = "test_exp"

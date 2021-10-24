@@ -9,11 +9,11 @@ from datetime import datetime
 import attr
 import numpy as np
 
-from brains.i_brain import get_brain_class
-from environments.i_environment import get_environment_class
-from optimizers.i_optimizer import get_optimizer_class
-from tools.episode_runner import EpisodeRunner
-from tools.write_results import write_results_to_textfile
+from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.environments.i_environment import get_environment_class
+from naturalnets.optimizers.i_optimizer import get_optimizer_class
+from naturalnets.tools.episode_runner import EpisodeRunner
+from naturalnets.tools.write_results import write_results_to_textfile
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

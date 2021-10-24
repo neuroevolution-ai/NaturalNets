@@ -19,7 +19,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 import attr
 from collections import deque
 import numpy as np
-from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

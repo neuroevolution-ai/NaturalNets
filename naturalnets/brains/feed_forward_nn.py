@@ -2,7 +2,7 @@ import attr
 import itertools
 import numpy as np
 from typing import List
-from brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
+from naturalnets.brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

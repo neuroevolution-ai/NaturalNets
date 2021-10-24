@@ -6,7 +6,7 @@ from deap import base
 from deap import tools
 from deap.algorithms import varOr
 
-from optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

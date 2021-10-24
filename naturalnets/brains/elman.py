@@ -1,6 +1,6 @@
 import numpy as np
-from brains.i_layer_based_brain import ILayerBasedBrain
-from brains.i_brain import registered_brain_classes
+from naturalnets.brains.i_layer_based_brain import ILayerBasedBrain
+from naturalnets.brains.i_brain import registered_brain_classes
 
 class ElmanNN(ILayerBasedBrain):
 

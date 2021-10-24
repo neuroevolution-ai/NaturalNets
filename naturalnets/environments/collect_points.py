@@ -4,8 +4,8 @@ import attr
 import cv2
 import numpy as np
 
-from environments.df_maze import Maze
-from environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.df_maze import Maze
+from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

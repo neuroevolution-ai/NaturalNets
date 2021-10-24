@@ -1,9 +1,9 @@
 import attr
 import numpy as np
 
-from brains.lstm import LstmNN
-from brains.i_brain import get_brain_class
-from environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.brains.lstm import LstmNN
+from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

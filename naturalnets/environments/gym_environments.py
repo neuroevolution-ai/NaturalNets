@@ -2,7 +2,7 @@ import numpy as np
 import gym
 from gym.spaces.utils import flatdim
 
-from environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
 class GeneralGymEnvironment(IEnvironment):

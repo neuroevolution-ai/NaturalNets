@@ -3,8 +3,8 @@ import time
 import os
 import numpy as np
 
-from brains.i_brain import get_brain_class
-from environments.i_environment import get_environment_class
+from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.environments.i_environment import get_environment_class
 
 directory = os.path.join('Simulation_Results', '2021-03-25_11-18-39')
 

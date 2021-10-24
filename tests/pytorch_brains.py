@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from torch import nn
 
-from brains.i_brain import IBrain, IBrainCfg
+from naturalnets.brains.i_brain import IBrain, IBrainCfg
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)

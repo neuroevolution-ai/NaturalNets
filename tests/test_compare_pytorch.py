@@ -3,7 +3,7 @@ import torch
 import time
 
 from brains import LstmNN, GruNN, ElmanNN
-from brains.i_layer_based_brain import ILayerBasedBrainCfg
+from naturalnets.brains.i_layer_based_brain import ILayerBasedBrainCfg
 from tests.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
 
 class TestPyTorch:
