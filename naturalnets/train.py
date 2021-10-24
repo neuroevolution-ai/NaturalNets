@@ -28,7 +28,7 @@ class TrainingCfg:
     experiment_id: int = -1
 
 
-def train(configuration):
+def train(configuration, results_directory):
 
     pool = multiprocessing.Pool()
 
@@ -133,26 +133,26 @@ def train(configuration):
     print("Elapsed time for training: %.2f seconds" % elapsed_time)
 
     # Create new directory to store data of current training run
-    results_directory = os.path.join('Simulation_Results', start_date_training)
-    os.makedirs(results_directory)
-    print("Output directory: " + str(results_directory))
+    results_subdirectory = os.path.join(results_directory, start_date_training)
+    os.makedirs(results_subdirectory)
+    print("Output directory: " + str(results_subdirectory))
 
     # Save configuration
-    with open(os.path.join(results_directory, 'Configuration.json'), 'w') as outfile:
+    with open(os.path.join(results_subdirectory, 'Configuration.json'), 'w') as outfile:
         json.dump(configuration, outfile, ensure_ascii=False, indent=4)
 
     # Save best genome
-    np.save(os.path.join(results_directory, 'Best_Genome'), best_genome_overall)
+    np.save(os.path.join(results_subdirectory, 'Best_Genome'), best_genome_overall)
 
     # Save Log
-    with open(os.path.join(results_directory, 'Log.json'), 'w') as outfile:
+    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
         json.dump(log, outfile, ensure_ascii=False, indent=4)
 
     # Save brain state (i.e. masks)
-    ep_runner.save_brain_state(os.path.join(results_directory, 'Brain_State'))
+    ep_runner.save_brain_state(os.path.join(results_subdirectory, 'Brain_State'))
 
     # Write results to text file
-    write_results_to_textfile(path=os.path.join(results_directory, 'Log.txt'),
+    write_results_to_textfile(path=os.path.join(results_subdirectory, 'Log.txt'),
                               configuration=configuration,
                               log=log,
                               input_size=ep_runner.get_input_size(),
@@ -162,7 +162,7 @@ def train(configuration):
                               elapsed_time=time.time() - start_time_training)
 
     # Write log additionally to JSON for better parsing
-    with open(os.path.join(results_directory, "Log.json"), "w") as outfile:
+    with open(os.path.join(results_subdirectory, "Log.json"), "w") as outfile:
         json.dump(log, outfile)
 
     # Error messages inside subprocesses could be shown once they are joined
