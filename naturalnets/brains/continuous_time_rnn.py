@@ -68,9 +68,9 @@ class ContinuousTimeRNN(IBrain):
         assert u.ndim == 1
 
         # Differential equation
-        if self.config.differential_equation == 'separated':
+        if self.config.differential_equation == 'NaturalNet':
             dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x)) + self.V.dot(u)
-        elif self.config.differential_equation == 'original':
+        elif self.config.differential_equation == 'LiHoChow2005':
             dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x + self.V.dot(u)))
         else:
             raise RuntimeError("No valid differential equation")
