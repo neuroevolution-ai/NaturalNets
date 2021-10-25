@@ -40,7 +40,6 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
 
         # Last element of log contains additional info like elapsed time for training
         log_info = log.pop()
-        elapsed_time_training = log_info["elapsed_time_training"] 
 
         # Write data for each episode (ignore last list index of log since it is the elapsed training time)
         for line in log:
@@ -50,4 +49,7 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
                                                                                line['elapsed_time']))
 
         # Write elapsed time
-        write_file.write("\nElapsed time for training: %.2f seconds" % elapsed_time_training)
+        write_file.write("\nElapsed time for training: %.2f seconds" % log_info["elapsed_time_training"])
+
+        # Write CPU info
+        write_file.write("\nCPU for training: " + log_info["cpu"])

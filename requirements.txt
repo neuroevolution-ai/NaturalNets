@@ -9,3 +9,4 @@ opencv-python
 cma
 matplotlib
 pandas
+py-cpuinfo

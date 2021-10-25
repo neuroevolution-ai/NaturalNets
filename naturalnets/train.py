@@ -5,6 +5,7 @@ import os
 import random
 import time
 from datetime import datetime
+from cpuinfo import get_cpu_info
 
 import attr
 import numpy as np
@@ -50,6 +51,7 @@ def train(configuration, results_directory):
 
     print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
     print("Individual size: {}".format(individual_size))
+    print("Used CPU for training: " + get_cpu_info()["brand_raw"])
 
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer['type'])
@@ -149,6 +151,7 @@ def train(configuration, results_directory):
     # Last element of log contains additional for training
     log_info = dict()
     log_info["elapsed_time_training"] = elapsed_time
+    log_info["cpu"] = get_cpu_info()["brand_raw"]
     log.append(log_info)
 
     # Write log to JSON for better parsing
