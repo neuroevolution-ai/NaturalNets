@@ -11,5 +11,5 @@ setup(
     license="MIT",
     packages=find_packages(),
     install_requires=["attrs", "deap", "numpy", "gym", "scipy", "torch",
-                      "procgen", "opencv-python", "cma", "matplotlib", "pandas"]
+                      "procgen", "opencv-python", "cma", "matplotlib", "pandas", "py-cpuinfo"]
 )
