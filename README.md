@@ -1,6 +1,8 @@
-## Example for Training
+## Setup
 
 Run `pip install git+https://github.com/neuroevolution-ai/NaturalNets.git` to add this package to your python environment
+
+## Example for Training
 
 ```python
 from naturalnets.train import train
