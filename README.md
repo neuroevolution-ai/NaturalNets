@@ -2,7 +2,42 @@
 
 Run `pip install git+https://github.com/neuroevolution-ai/NaturalNets.git` to add this package to your python environment
 
-## Example for Training
+## Examples
+
+Single training run:
+
+```python
+from naturalnets.train import train
+
+configuration = {
+    "number_generations": 200,
+    "number_validation_runs": 50,
+    "number_rounds": 3,
+    "maximum_env_seed": 100000,
+    "environment": {
+        "type": "GymMujoco",
+        "name": "InvertedDoublePendulum-v2"
+    },
+    "brain": {
+        "type": "CTRNN",
+        "differential_equation": "NaturalNet",
+        "set_principle_diagonal_elements_of_W_negative": True,
+        "delta_t": 0.05,
+        "number_neurons": 5,
+        "clipping_range": 3.0,
+        "optimize_x0": True
+    },
+    "optimizer": {
+        "type": "CMA-ES-Deap",
+        "population_size": 200,
+        "sigma": 1.0
+    }
+}
+
+train(configuration, results_directory='results')
+```
+
+More complex example of a random hyper-parameter search. This experiment executes an indefinite number of training runs until it gets activly interupted:
 
 ```python
 from naturalnets.train import train
