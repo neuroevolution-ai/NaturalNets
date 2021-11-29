@@ -10,6 +10,6 @@ setup(
     author_email="dzimmer@fzi.de",
     license="MIT",
     packages=find_packages(),
-    install_requires=["attrs", "deap", "numpy", "gym", "scipy", "torch",
+    install_requires=["wheel", "attrs", "deap", "numpy", "gym", "scipy", "torch",
                       "procgen", "opencv-python", "cma", "matplotlib", "pandas", "py-cpuinfo"]
 )
