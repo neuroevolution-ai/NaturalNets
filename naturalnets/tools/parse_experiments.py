@@ -49,7 +49,7 @@ def gather_info_for_csv(simulation):
             "max": max(maximum),
             "best": max(best),
             "directory": simulation["dir"],
-            "elapsed_time": log_info["elapsed_time"],
-            "elapsed_time [h]": log_info["elapsed_time"]/3600,
+            "elapsed_time_training": log_info["elapsed_time_training"],
+            "elapsed_time_training [h]": log_info["elapsed_time_training"]/3600,
             "CPU": log_info["cpu"],
             **conf, **brain, **optimizer, **environment}
