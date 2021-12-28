@@ -23,6 +23,7 @@ class TrainingCfg:
     number_validation_runs: int
     number_rounds: int
     maximum_env_seed: int
+    fixed_env_seed: int = -1
     environment: dict
     brain: dict
     optimizer: dict
@@ -71,8 +72,12 @@ def train(configuration, results_directory):
 
         start_time_current_generation = time.time()
 
-        # Environment seed for this generation (excludes validation environment seeds)
-        env_seed = random.randint(config.number_validation_runs, config.maximum_env_seed)
+        # Environment seed for this generation
+        if config.fixed_env_seed == -1:
+            # Excludes validation environment seeds
+            env_seed = random.randint(config.number_validation_runs, config.maximum_env_seed)
+        else:
+            env_seed = config.fixed_env_seed
 
         # Ask optimizers for new population
         genomes = opt.ask()
