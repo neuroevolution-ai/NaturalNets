@@ -48,7 +48,7 @@ class DummyApp(IEnvironment):
         return self.number_checkboxes
 
     def get_number_outputs(self):
-        return 2
+        return 4
 
     def reset(self):
         return self.get_observation()
@@ -58,9 +58,10 @@ class DummyApp(IEnvironment):
         click_position = np.zeros(2)
 
         # Scale actions to click positions
-        #random_number = action[threadID+2] * random_normal()
-        click_position[0] = int(0.5 * (action[0] + 1.0) * 400.0)
-        click_position[1] = int(0.5 * (action[1] + 1.0) * 400.0)
+        random_number1 = action[2] * np.random.normal()
+        random_number2 = action[3] * np.random.normal()
+        click_position[0] = int(0.5 * (action[0] + 1.0 + random_number1) * 400.0)
+        click_position[1] = int(0.5 * (action[1] + 1.0 + random_number2) * 400.0)
     
         #click_position[0] = random.randrange(1,400)
         #click_position[1] = random.randrange(1,400)
