@@ -59,11 +59,11 @@ class DummyApp(IEnvironment):
 
         # Scale actions to click positions
         #random_number = action[threadID+2] * random_normal()
-        #click_position[0] = int(0.5 * (action[0] + 1.0) * 400.0)
-        #click_position[1] = int(0.5 * (action[1] + 1.0) * 400.0)
+        click_position[0] = int(0.5 * (action[0] + 1.0) * 400.0)
+        click_position[1] = int(0.5 * (action[1] + 1.0) * 400.0)
     
-        click_position[0] = random.randrange(1,400)
-        click_position[1] = random.randrange(1,400)
+        #click_position[0] = random.randrange(1,400)
+        #click_position[1] = random.randrange(1,400)
 
         #checkbox = rand(1:environments.number_checkboxes)
         #click_position[threadID] = environments.gui_elements_rectangles[checkbox, threadID] + 10 
