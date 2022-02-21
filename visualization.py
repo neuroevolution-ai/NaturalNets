@@ -6,7 +6,7 @@ import numpy as np
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.environments.i_environment import get_environment_class
 
-directory = os.path.join('Simulation_Results', '2021-03-25_11-18-39')
+directory = os.path.join('Simulation_Results', '2022-02-18_12-08-14')
 
 # Load configuration file
 with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
