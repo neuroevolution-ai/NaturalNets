@@ -1,8 +1,9 @@
+from cmath import inf
 from re import I
 import numpy as np
 import attr
 import cv2
-import random
+import math
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
@@ -85,17 +86,29 @@ class DummyApp(IEnvironment):
 
         rew = 0.0
 
-        for i in range(1, self.number_buttons):
+        # Find chosen button based on mouse click position
+        minimal_distance = inf
+        button = 0
+        for i in range(self.number_buttons):
 
             rect_x = self.gui_elements_rectangles[i, 0]
             rect_y = self.gui_elements_rectangles[i, 1]
             width = self.gui_elements_rectangles[i, 2]
             height = self.gui_elements_rectangles[i, 3]
 
-            if self.is_point_in_rect(self.click_position_x, self.click_position_y, rect_x, rect_y, width, height):
-                if self.gui_elements_states[i] == 0 and self.gui_elements_states[i-1] == 1:
-                    rew += 1.0
-                    self.gui_elements_states[i] = 1
+            distance =  self.rect_distance(self.click_position_x, self.click_position_y, rect_x, rect_y, width, height)
+
+            if distance < minimal_distance:
+                minimal_distance = distance
+                button = i
+
+            if distance < 0.0001:
+                break
+        
+        if button > 0:
+            if self.gui_elements_states[button] == 0 and self.gui_elements_states[button-1] == 1:
+                rew += 1.0
+                self.gui_elements_states[button] = 1
 
         self.t += 1
 
@@ -142,12 +155,9 @@ class DummyApp(IEnvironment):
             image = cv2.rectangle(image, point1, point2, color, -1)
             image = cv2.rectangle(image, point1, point2, black, 1)
 
-        # Action position
+        # Action distribution as ellipse
         action_position_x = int(0.5 * (self.action[0] + 1.0) * self.config.screen_width)
         action_position_y = int(0.5 * (self.action[1] + 1.0) * self.config.screen_height)
-        image = cv2.circle(image, (action_position_x, action_position_y), 2, orange, -1)
-
-        # Action distribution as ellipse
         action_distribution_x = abs(int(0.5 * self.action[2] * self.config.screen_width))
         action_distribution_y = abs(int(0.5 * self.action[3] * self.config.screen_height))
         image = cv2.ellipse(image, (action_position_x, action_position_y), (action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
@@ -161,6 +171,55 @@ class DummyApp(IEnvironment):
     def is_point_in_rect(self, point_x, point_y, rect_x, rect_y, width, height):
 
         return rect_x <= point_x <= (rect_x + width) and rect_y <= point_y <= (rect_y + height)
+
+    # https://stackoverflow.com/questions/5254838/calculating-distance-between-a-point-and-a-rectangular-box-nearest-point
+    def rect_distance(self, point_x, point_y, rect_x, rect_y, width, height):
+        dx = max(rect_x - point_x, 0, point_x - rect_x - width)
+        dy = max(rect_y - point_y, 0, point_y - rect_y - height)
+
+        return math.sqrt(dx*dx + dy*dy)
+
+
+    # https://stackoverflow.com/questions/4978323/how-to-calculate-distance-between-two-rectangles-context-a-game-in-lua
+    def rect_distance2(self, point_x, point_y, rect_x, rect_y, width, height):
+
+        # (x1, y1, x1b, y1b), (x2, y2, x2b, y2b)
+        x1 = point_x
+        y1 = point_y
+        x1b = point_x
+        y1b = point_y
+
+        x2 = rect_x
+        y2 = rect_y
+        x2b = rect_x + width
+        y2b = rect_y + height
+
+        left = x2b < x1
+        right = x1b < x2
+        bottom = y2b < y1
+        top = y1b < y2
+
+        if top and left:
+            return self.dist((x1, y1b), (x2b, y2)), False
+        elif left and bottom:
+            return self.dist((x1, y1), (x2b, y2b)), False
+        elif bottom and right:
+            return self.dist((x1b, y1), (x2, y2b)), False
+        elif right and top:
+            return self.dist((x1b, y1b), (x2, y2)), False
+        elif left:
+            return x1 - x2b, False
+        elif right:
+            return x2 - x1b, False
+        elif bottom:
+            return y1 - y2b, False
+        elif top:
+            return y2 - y1b, False
+        else:             # Point is in rect
+            return 0.0, True
+
+    def dist(self, p1, p2):
+        return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
 
 # TODO: Do this registration via class decorator
