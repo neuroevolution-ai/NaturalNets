@@ -1,6 +1,7 @@
 from cmath import inf
 from re import I
 import numpy as np
+import random
 import attr
 import cv2
 import math
@@ -29,18 +30,18 @@ class DummyApp(IEnvironment):
         # Initialize Cuda Array for positions of GUI elements
         self.gui_elements_rectangles = np.zeros((self.number_buttons, 4), dtype=np.uint32)
 
-        grid_size_horizontal = self.config.screen_width / self.config.number_buttons_horizontal
-        grid_size_vertical = self.config.screen_height / self.config.number_buttons_vertical
-        border_horizontal = (grid_size_horizontal - self.config.buttons_size_horizontal)/2
-        border_vertical = (grid_size_vertical - self.config.buttons_size_vertical)/2
+        self.grid_size_horizontal = self.config.screen_width / self.config.number_buttons_horizontal
+        self.grid_size_vertical = self.config.screen_height / self.config.number_buttons_vertical
+        border_horizontal = (self.grid_size_horizontal - self.config.buttons_size_horizontal)/2
+        border_vertical = (self.grid_size_vertical - self.config.buttons_size_vertical)/2
 
         # Place all 8 checkboxes in 4 colums and 2 rows
         n = 0
-        for i in range(self.config.number_buttons_horizontal):
-            for j in range(self.config.number_buttons_vertical):
+        for j in range(self.config.number_buttons_vertical):
+            for i in range(self.config.number_buttons_horizontal):
 
-                x = grid_size_horizontal * i + border_horizontal
-                y = grid_size_vertical * j + border_vertical
+                x = self.grid_size_horizontal * i + border_horizontal
+                y = self.grid_size_vertical * j + border_vertical
 
                 self.gui_elements_rectangles[n, :] = [x, y, self.config.buttons_size_horizontal, self.config.buttons_size_vertical]
                 n += 1
@@ -81,8 +82,8 @@ class DummyApp(IEnvironment):
         #self.click_position_y = random.randint(1, self.config.screen_height)
 
         #button = random.randrange(self.number_buttons)
-        #self.click_position_x = self.gui_elements_rectangles[button, 0]
-        #self.click_position_y = self.gui_elements_rectangles[button, 1]
+        #self.click_position_x = self.gui_elements_rectangles[button, 0] + 1
+        #self.click_position_y = self.gui_elements_rectangles[button, 1] + 1
 
         rew = 0.0
 
@@ -96,7 +97,7 @@ class DummyApp(IEnvironment):
             width = self.gui_elements_rectangles[i, 2]
             height = self.gui_elements_rectangles[i, 3]
 
-            distance =  self.rect_distance(self.click_position_x, self.click_position_y, rect_x, rect_y, width, height)
+            distance = self.rect_distance(self.click_position_x, self.click_position_y, rect_x, rect_y, width, height)
 
             if distance < minimal_distance:
                 minimal_distance = distance
@@ -104,8 +105,12 @@ class DummyApp(IEnvironment):
 
             if distance < 0.0001:
                 break
-        
-        if button > 0:
+
+        if button == 0:
+            if self.gui_elements_states[0] == 0:
+                rew += 1.0
+                self.gui_elements_states[0] = 1
+        else:
             if self.gui_elements_states[button] == 0 and self.gui_elements_states[button-1] == 1:
                 rew += 1.0
                 self.gui_elements_states[button] = 1
@@ -130,11 +135,11 @@ class DummyApp(IEnvironment):
         red = (0, 0, 255)
         green = (0, 255, 0)
         black = (0, 0, 0)
+        grey = (100, 100, 100)
         blue = (255, 0, 0)
         orange = (0, 88, 255)
 
-        # Initialize image with white background
-        image = 255 * np.ones(shape=[self.config.screen_width, self.config.screen_height, 3], dtype=np.uint8)
+        image = cv2.imread('naturalnets/environments/dummy_app.png')
 
         # Buttons
         for i in range(self.number_buttons):
@@ -148,12 +153,22 @@ class DummyApp(IEnvironment):
             point2 = (rect_x + width, rect_y + height)
 
             if self.gui_elements_states[i] == 0:
-                color = blue
+                color = red
             else:
                 color = green
 
-            image = cv2.rectangle(image, point1, point2, color, -1)
-            image = cv2.rectangle(image, point1, point2, black, 1)
+            image = cv2.rectangle(image, point1, point2, color, 1)
+
+        # Click areas
+        for i in range(self.config.number_buttons_horizontal):
+            for j in range(self.config.number_buttons_vertical):
+
+                x = int(self.grid_size_horizontal * i)
+                y = int(self.grid_size_vertical * j)
+                width = int(self.grid_size_horizontal)
+                height = int(self.grid_size_vertical)
+
+                image = cv2.rectangle(image, (x, y), (x + width, y + height), grey, 1)
 
         # Action distribution as ellipse
         action_position_x = int(0.5 * (self.action[0] + 1.0) * self.config.screen_width)
@@ -163,9 +178,9 @@ class DummyApp(IEnvironment):
         image = cv2.ellipse(image, (action_position_x, action_position_y), (action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
 
         # Click position
-        image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, red, -1)
+        image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, blue, -1)
 
-        cv2.imshow("Dummy App", cv2.resize(image, (self.config.screen_width, self.config.screen_height)))
+        cv2.imshow("Dummy App", image)
         cv2.waitKey(1)
 
     def is_point_in_rect(self, point_x, point_y, rect_x, rect_y, width, height):
@@ -178,48 +193,6 @@ class DummyApp(IEnvironment):
         dy = max(rect_y - point_y, 0, point_y - rect_y - height)
 
         return math.sqrt(dx*dx + dy*dy)
-
-
-    # https://stackoverflow.com/questions/4978323/how-to-calculate-distance-between-two-rectangles-context-a-game-in-lua
-    def rect_distance2(self, point_x, point_y, rect_x, rect_y, width, height):
-
-        # (x1, y1, x1b, y1b), (x2, y2, x2b, y2b)
-        x1 = point_x
-        y1 = point_y
-        x1b = point_x
-        y1b = point_y
-
-        x2 = rect_x
-        y2 = rect_y
-        x2b = rect_x + width
-        y2b = rect_y + height
-
-        left = x2b < x1
-        right = x1b < x2
-        bottom = y2b < y1
-        top = y1b < y2
-
-        if top and left:
-            return self.dist((x1, y1b), (x2b, y2)), False
-        elif left and bottom:
-            return self.dist((x1, y1), (x2b, y2b)), False
-        elif bottom and right:
-            return self.dist((x1b, y1), (x2, y2b)), False
-        elif right and top:
-            return self.dist((x1b, y1b), (x2, y2)), False
-        elif left:
-            return x1 - x2b, False
-        elif right:
-            return x2 - x1b, False
-        elif bottom:
-            return y1 - y2b, False
-        elif top:
-            return y2 - y1b, False
-        else:             # Point is in rect
-            return 0.0, True
-
-    def dist(self, p1, p2):
-        return math.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2)
 
 
 # TODO: Do this registration via class decorator
