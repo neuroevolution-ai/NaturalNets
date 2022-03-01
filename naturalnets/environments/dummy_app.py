@@ -56,7 +56,6 @@ class DummyApp(IEnvironment):
         self.click_position_y = 0
 
         self.gui_elements_states = np.zeros(self.number_buttons)
-        self.gui_elements_states[0] = 1
 
         self.t = 0
 
