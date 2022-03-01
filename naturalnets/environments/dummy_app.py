@@ -75,6 +75,9 @@ class DummyApp(IEnvironment):
         self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height)
 
+        self.click_position_x = np.clip(self.click_position_x, 1, self.config.screen_width)
+        self.click_position_y = np.clip(self.click_position_y, 1, self.config.screen_height)
+
         self.action = action
 
         #self.click_position_x = random.randint(1, self.config.screen_width)
