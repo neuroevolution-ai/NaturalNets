@@ -70,13 +70,12 @@ class DummyApp(IEnvironment):
 
     def step(self, action: np.ndarray):
 
+        action = np.tanh(action)
+
         random_number1 = action[2] * np.random.normal()
         random_number2 = action[3] * np.random.normal()
         self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height)
-
-        self.click_position_x = np.clip(self.click_position_x, 1, self.config.screen_width)
-        self.click_position_y = np.clip(self.click_position_y, 1, self.config.screen_height)
 
         self.action = action
 
