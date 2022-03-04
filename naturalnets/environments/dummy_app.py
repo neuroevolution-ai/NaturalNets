@@ -35,15 +35,19 @@ class DummyApp(IEnvironment):
         border_horizontal = (self.grid_size_horizontal - self.config.buttons_size_horizontal)/2
         border_vertical = (self.grid_size_vertical - self.config.buttons_size_vertical)/2
 
+        self.buttons = [12, 6, 16, 9, 0, 2, 11, 7, 13, 8, 22, 1, 23, 17, 19, 24, 10, 20, 4, 21, 15, 18, 14, 5, 3]
+
         # Place all 8 checkboxes in 4 colums and 2 rows
         n = 0
-        for j in range(self.config.number_buttons_vertical):
-            for i in range(self.config.number_buttons_horizontal):
+        for i in range(self.config.number_buttons_vertical):
+            for j in range(self.config.number_buttons_horizontal):
 
                 x = self.grid_size_horizontal * i + border_horizontal
                 y = self.grid_size_vertical * j + border_vertical
 
-                self.gui_elements_rectangles[n, :] = [x, y, self.config.buttons_size_horizontal, self.config.buttons_size_vertical]
+                button = self.buttons[n]
+
+                self.gui_elements_rectangles[button, :] = [x, y, self.config.buttons_size_horizontal, self.config.buttons_size_vertical]
                 n += 1
 
         self.action_x = 0
@@ -161,13 +165,27 @@ class DummyApp(IEnvironment):
             image = cv2.rectangle(image, point1, point2, color, 1)
 
         # Click areas
-        for i in range(self.config.number_buttons_horizontal):
-            for j in range(self.config.number_buttons_vertical):
+        n = 0
+        for i in range(self.config.number_buttons_vertical):
+            for j in range(self.config.number_buttons_horizontal):
 
                 x = int(self.grid_size_horizontal * i)
                 y = int(self.grid_size_vertical * j)
                 width = int(self.grid_size_horizontal)
                 height = int(self.grid_size_vertical)
+
+                button = self.buttons[n]
+                n += 1
+
+                image = cv2.putText(
+                    img=image,
+                    text=str(button+1),
+                    org=(x, int(y + height*0.5)),
+                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                    fontScale=0.5,
+                    color=black,
+                    thickness=1
+                )
 
                 image = cv2.rectangle(image, (x, y), (x + width, y + height), grey, 1)
 
@@ -176,7 +194,7 @@ class DummyApp(IEnvironment):
         action_position_y = int(0.5 * (self.action[1] + 1.0) * self.config.screen_height)
         action_distribution_x = abs(int(0.5 * self.action[2] * self.config.screen_width))
         action_distribution_y = abs(int(0.5 * self.action[3] * self.config.screen_height))
-        image = cv2.ellipse(image, (action_position_x, action_position_y), (action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
+        image = cv2.ellipse(image, (action_position_x, action_position_y),(action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
 
         # Click position
         image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, blue, -1)
