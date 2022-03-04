@@ -177,15 +177,15 @@ class DummyApp(IEnvironment):
                 button = self.buttons[n]
                 n += 1
 
-                image = cv2.putText(
-                    img=image,
-                    text=str(button+1),
-                    org=(x, int(y + height*0.5)),
-                    fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                    fontScale=0.5,
-                    color=black,
-                    thickness=1
-                )
+                #image = cv2.putText(
+                #    img=image,
+                #    text=str(button+1),
+                #    org=(x, int(y + height*0.5)),
+                #    fontFace=cv2.FONT_HERSHEY_DUPLEX,
+                #    fontScale=0.5,
+                #    color=black,
+                #    thickness=1
+                #)
 
                 image = cv2.rectangle(image, (x, y), (x + width, y + height), grey, 1)
 
