@@ -1,9 +1,9 @@
 import unittest
 import numpy as np
-from argparse import ArgumentError
+
 from dropdown import Dropdown
 #from naturalnets.environments.app.exception import InvalidInputError
-from exception import InvalidInputError
+from exception import InvalidInputError, ArgumentError
 
 TEST_ITEMS = ["item.1", "item.2", "item.3", "item.4"]
 TEST_STATE = np.array([0, 1, 0, 0, 0])
@@ -28,25 +28,25 @@ class TestDropdown(unittest.TestCase):
     # input and state are equal
     valid_input = [0,1,0,0,0]
     np.testing.assert_array_equal(dd.get_state(), valid_input)
-    state = dd.handle_input(valid_input)
+    state = dd.step(valid_input)
     np.testing.assert_array_equal(state, valid_input)
 
     # input opens dropdown
     valid_input = [1,1,0,0,0]
-    state = dd.handle_input(valid_input)
+    state = dd.step(valid_input)
     np.testing.assert_array_equal(state, valid_input)
 
     # value changed to second value
     valid_input = [1,1,1,0,0]
     expected_state = [0,0,1,0,0]
-    state = dd.handle_input(valid_input)
+    state = dd.step(valid_input)
     np.testing.assert_array_equal(state, expected_state)
 
   def test_invalid_inputs(self):
     dd = Dropdown("name", TEST_ITEMS)
     for invalid_input in INVALID_INPUTS:
       with self.assertRaises(InvalidInputError) as context:
-        dd.handle_input(invalid_input)
+        dd.step(invalid_input)
 
   def test_initial_state(self):
     dropdown_open = [1,1,0,0,0]
@@ -72,37 +72,44 @@ class TestDropdown(unittest.TestCase):
     dd = Dropdown("name", TEST_ITEMS, constraints=CONSTRAINTS, initial_state=init_state)
     with self.assertRaises(ArgumentError) as context:
       input = [1,1,1,0,0]
-      state = dd.handle_input(input)
+      state = dd.step(input)
 
-    invalid_constraints = [[0,0,0,1], [0,0,1,0], [1,0,0,0], [0,1], [0,1,0,0,0]]
+    #test InvalidInputError
+    invalid_constraints = [[0,0,0,1], [0,0,1,0], [1,0,0,0]]
     for invalid_constraint in invalid_constraints:
       with self.assertRaises(InvalidInputError) as context:
-        dd.handle_input([1,1,1,0,0], invalid_constraint)
+        dd.step([1,1,1,0,0], invalid_constraint)
+
+    #test ArgumentError
+    invalid_constraints = [None, [0,1], [0,1,0,0,0]]
+    for invalid_constraint in invalid_constraints:
+      with self.assertRaises(ArgumentError) as context:
+        dd.step([1,1,1,0,0], invalid_constraint)
 
     # input == state, constraints should not matter
     # TODO: really? probably dropdown should close (since apperantly the already selected item
     # item was selected) -> state afterwards: [0,1,0,0,0], constraints should be checked
-    dd.handle_input([1,1,0,0,0], [0,0,0,0])
+    dd.step([1,1,0,0,0], [0,0,0,0])
 
     # select first item
     dd.select_first_available_item([1,0,0,0])
     np.testing.assert_array_equal(dd.get_state(), [0,1,0,0,0])
     # open dropdown
-    dd.handle_input([1,1,0,0,0], [0,1,0,0])
+    dd.step([1,1,0,0,0], [0,1,0,0])
     np.testing.assert_array_equal(dd.get_state(), [1,1,0,0,0])
     # select second item
-    dd.handle_input([1,1,1,0,0], [0,1,0,0])
+    dd.step([1,1,1,0,0], [0,1,0,0])
     np.testing.assert_array_equal(dd.get_state(), [0,0,1,0,0])
 
     # select first item
     dd.select_first_available_item([1,0,0,0])
     np.testing.assert_array_equal(dd.get_state(), [0,1,0,0,0])
     # open dropdown
-    dd.handle_input([1,1,0,0,0], [0,1,0,0])
+    dd.step([1,1,0,0,0], [0,1,0,0])
     np.testing.assert_array_equal(dd.get_state(), [1,1,0,0,0])
 
     # select last item 
-    dd.handle_input([1,1,0,0,1], [0,0,0,1])
+    dd.step([1,1,0,0,1], [0,0,0,1])
     np.testing.assert_array_equal(dd.get_state(), [0,0,0,0,1])
 
   #TODO: test constraints

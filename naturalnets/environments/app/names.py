@@ -37,6 +37,11 @@ CALCULATOR_BUTTON = "calc.button"
 ## 2. settings ##
 
 # 2.1 general
+SETTINGS_TABS_TEXT_PRINTER = "settings.tabs.text_printer"
+SETTINGS_TABS_CALCULATOR = "settings.tabs.calculator"
+SETTINGS_TABS_CAR_CONFIG = "settings.tabs.car_config"
+SETTINGS_TABS_FIGURE_PRINTER = "settings.tabs.figure_printer"
+
 SETTINGS_CLOSE = "settings.close"
 
 # 2.2 calculator
