@@ -13,29 +13,40 @@ class Dropdown(Widget):
 
   #TODO: refactor s.t. items are given as Dict[str,int] with initial values (from CALC_WIDGET_DICT)
   # state_h can then just be that dict and initial_values is made obsolete
-  def __init__(self, name: str, items: List[str], constraints: Dict[str,str] = None, initial_state: np.ndarray = None):
+  def __init__(self, state_sector:np.ndarray, name: str, items: List[str], constraints: Dict[str,str] = None, initial_state: np.ndarray = None):
     # TODO: maybe assert smth
     if len(items) < 1:
       raise ValueError("Attempting to build a dropdown with no items.")
 
     self._state_len:int = 1 + len(items) # all dropdown items + the dropdown button itself
+    if len(state_sector) != self._state_len:
+      raise ValueError("State section passed to dropdown is too small.")
 
     # populate is_constrained array (contains True if the state-value at that index is constrained)
     self.is_item_constrained_arr = []
     if constraints != None:
       self.is_item_constrained_arr:np.ndarray = np.array([True if item in constraints else False for item in items], dtype=bool)
 
+    self._state = state_sector
     if initial_state != None:
       self.validate_initial_state(initial_state)
-      self._state:np.ndarray = initial_state.copy()
+      #self._state:np.ndarray = initial_state.copy()
+      self._state[:] = initial_state
     else:
-      self._state:np.ndarray = np.zeros(self._state_len, dtype=int)
+      #self._state:np.ndarray = np.zeros(self._state_len, dtype=int)
       self._state[1] = 1 # first dropdown item is selected on automatic initialization
     
     self.validate_initial_state(self._state)
 
+    self._element_name_to_index = {name: 0}
+    for i in range(len(items)):
+      self._element_name_to_index[items[i]] = i+1
+
     # human-readable state
     self.state_h:Dict[str, int] = self.build_state_h(name, items)
+
+  def get_element_name_to_index(self) -> Dict[str,int]:
+    return self._element_name_to_index
 
   def get_items(self):
     return self._state[1:]
@@ -66,10 +77,11 @@ class Dropdown(Widget):
     return state_h
 
   def get_state_h(self) -> Dict[str,int]:
-    i = 0
-    for key in self.state_h:
-      self.state_h[key] = self._state[i]
-      i = i+1
+    #TODO: test if state_h is automatically kept cince pointer at state
+    #i = 0
+    #for key in self.state_h:
+    #  self.state_h[key] = self._state[i]
+    #  i = i+1
     return self.state_h
 
   #def is_interactable(self) -> bool:
@@ -143,6 +155,7 @@ class Dropdown(Widget):
   input: numpy array of length n
   constraint_state: numpy array of length n-1
   """
+  #TODO: probably a responsibility of app
   def _validate_constraints(self, input:np.ndarray, constraint_state:np.ndarray) -> None:
     if len(self.is_item_constrained_arr) == 0:
       return True
@@ -177,6 +190,7 @@ class Dropdown(Widget):
           self._state[i] = input[i]
 
     self.validate_initial_state(self._state) # TODO: should not be necessary here, state should be kept consistent throughout all methods
+    print("dropdown mutated state: ", self._state)
 
 
   def get_state(self) -> np.ndarray:
@@ -196,16 +210,16 @@ class Dropdown(Widget):
     if constraint_state != None:
       self.check_contraints(state, constraint_state)
 
-
       
 
 
+  # handels closing itself, since all 'next' actions when open must be
+  # on the dropdown
   def exec_on_next_step(self) -> None:
-    #TODO?
+    pass
+    #if self._state[0] == 1:
+    #  self._state[0] = 0
 
-    # handels closing itself, since all 'next' actions when open must be
-    # on the dropdown
-    assert self._state[0] == 0
 
 
 

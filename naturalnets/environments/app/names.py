@@ -1,12 +1,23 @@
 from dropdown import Dropdown
+
+##### how to #######
+# - each name must be unique
+# - each element in the state vector must have a name
+# - constraints are also elements of the state vector (must have a name)
+#   e.g.: CALC_OPERATOR_DIV has constraint SETTINGS_CALC_DIV
+# - each name represents exactly one element in the state vector
+#######################
+
 ## 1. general ##
 
+# 1.1 pages
+SETTINGS = "settings"
 TEXT_PRINTER = "text_printer"
-CALC = "calc"
+CALC = "calculator"
 CAR_CONFIG = "car_config"
 
-# 1.1 text printer
-TEXT_PRINTER_PRINT_TEXT = "text_printer.print_text"
+# 1.2 text printer
+TEXT_PRINTER_PRINT_TEXT = "text_printer.print_text" # TODO: widget(Button) of text printer
 
 
 # 1.2 calculator
@@ -45,12 +56,12 @@ SETTINGS_TABS_FIGURE_PRINTER = "settings.tabs.figure_printer"
 SETTINGS_CLOSE = "settings.close"
 
 # 2.2 calculator
-SETTINGS_CALCULATOR_ADD = "settings.calculator.add"
-SETTINGS_CALCULATOR_SUB = "settings.calculator.sub"
-SETTINGS_CALCULATOR_MULT = "settings.calculator.mult"
-SETTINGS_CALCULATOR_DIV = "settings.calculator.div"
+SETTINGS_CALC_ADD = "settings.calc.add"
+SETTINGS_CALC_SUB = "settings.calc.sub"
+SETTINGS_CALC_MULT = "settings.calc.mult"
+SETTINGS_CALC_DIV = "settings.calc.div"
 
-SETTINGS_CALCULATOR_BASE_DROPDOWN = "settings.calculator.base_dropdown"
-SETTINGS_CALCULATOR_BASE_2 = "settings.calculator.base.2"
-SETTINGS_CALCULATOR_BASE_10 = "settings.calculator.base.10"
-SETTINGS_CALCULATOR_BASE_16 = "settings.calculator.base.16"
+SETTINGS_CALC_BASE_DROPDOWN = "settings.calc.base_dropdown"
+SETTINGS_CALC_BASE_2 = "settings.calc.base.2"
+SETTINGS_CALC_BASE_10 = "settings.calc.base.10"
+SETTINGS_CALC_BASE_16 = "settings.calc.base.16"

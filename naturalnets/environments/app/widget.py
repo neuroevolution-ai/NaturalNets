@@ -14,6 +14,10 @@ class Widget(ABC):
     return self.get_state()
 
   @abstractmethod
+  def get_element_name_to_index(self):
+    pass
+
+  @abstractmethod
   def _validate_input(self, input:np.ndarray) -> None:
     pass
   

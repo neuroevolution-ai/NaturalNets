@@ -7,14 +7,16 @@ import cv2
 import math
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
-from typing import Dict
+from typing import Dict, List, Tuple
 from widget import Widget
 from exception import InvalidInputError
 from calculator import Calculator
+from widgets_dict import WIDGETS_DICT
 
 
+#TODO
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class DummyAppCfg:
+class AppCfg:
     type: str
     number_time_steps: int
     screen_width: int
@@ -24,72 +26,58 @@ class DummyAppCfg:
     buttons_size_horizontal: int
     buttons_size_vertical: int
 
+@attr.s(slots=True, auto_attribs=True, kw_only=True)
+class ElementInfo:
+    name:str
+    constraint_names:List[str] = []
+    constraint_indexes:List[int] = []
+    widget:Widget
+    widget_name:str
+    state_sector:Tuple[int,int]
+    page_name:str
 
-class DummyApp(IEnvironment):
+class App(IEnvironment):
 
     def __init__(self, env_seed: int, configuration: dict):
+        self._state_len:int = 0 
+        self._last_allocated_state_index:int = 0
+        self._state_index_to_element_info:Dict[int,ElementInfo] = {}
+        self._widget_name_to_widget:Dict[str,Widget] = {}
 
-        self.state = np.array()
+        # init state array
+        for page in WIDGETS_DICT.values():
+            for widget in page.values():
+                self._state_len += widget["state_len"]
+
+        print("App init: total state len: ", self._state_len)
+        self._state = np.zeros(self._state_len, dtype=int)
+
+        # add all widgets
+        self.add_widgets(WIDGETS_DICT)
+        self._initial_state = np.copy(self._state)
+
+        # add element_constraint_indexes to all element-infos after initializing all widgets
+        #  (all constraint-elements will be in state-vector then)
+        self._element_name_to_state_index = {element_info["element_name"]: index for index, element_info in self._state_index_to_element_info.items()}
+        for element_info in self._state_index_to_element_info.values():
+            for constraint_name in element_info["element_constraint_names"]:
+                element_info["element_constraint_indexes"].append(self._element_name_to_state_index[constraint_name])
+
+        print("App init: done.")
 
 
-        self.calculator = Calculator()
-        self.state.append(self.calculator.get_state())
-
-        self.last_interacted_widget = None # necessary to execute widget action on next step (if any)
-
-        # TODO: fill a dict with constraint dicts, so that they can be passed
-        #       to the widgets handle_input()
-
-
-        #### old stuff from here down ####
-
-        self.config = DummyAppCfg(**configuration)
-        self.number_buttons = self.config.number_buttons_horizontal * self.config.number_buttons_vertical
-
-        # Initialize Cuda Array for positions of GUI elements
-        self.gui_elements_rectangles = np.zeros((self.number_buttons, 4), dtype=np.uint32)
-
-        self.grid_size_horizontal = self.config.screen_width / self.config.number_buttons_horizontal
-        self.grid_size_vertical = self.config.screen_height / self.config.number_buttons_vertical
-        border_horizontal = (self.grid_size_horizontal - self.config.buttons_size_horizontal)/2
-        border_vertical = (self.grid_size_vertical - self.config.buttons_size_vertical)/2
-
-        self.buttons = [12, 6, 16, 9, 0, 2, 11, 7, 13, 8, 22, 1, 23, 17, 19, 24, 10, 20, 4, 21, 15, 18, 14, 5, 3]
-
-        # Place all 8 checkboxes in 4 colums and 2 rows
-        n = 0
-        for i in range(self.config.number_buttons_vertical):
-            for j in range(self.config.number_buttons_horizontal):
-
-                x = self.grid_size_horizontal * i + border_horizontal
-                y = self.grid_size_vertical * j + border_vertical
-
-                button = self.buttons[n]
-
-                self.gui_elements_rectangles[button, :] = [x, y, self.config.buttons_size_horizontal, self.config.buttons_size_vertical]
-                n += 1
-
-        self.action_x = 0
-        self.action_y = 0
-
-        self.random_number_x = 0
-        self.random_number_y = 0
-
-        self.click_position_x = 0
-        self.click_position_y = 0
-
-        self.gui_elements_states = np.zeros(self.number_buttons)
-
-        self.t = 0
+    ########################################################
+    ## Methods implemented because DummyApp has them:     ##
+    ########################################################
 
     def get_number_inputs(self):
-        return self.number_buttons
+        return self._state_len
 
     def get_number_outputs(self):
-        return 4
+        return self._state_len
 
     def reset(self):
-        return self.get_observation()
+        self._state[:] = self._initial_state
 
     def is_action_valid(self, action: np.ndarray):
         # exactly one element of the input vector has to differ from the state (last output)
