@@ -1,6 +1,6 @@
 import numpy as np
 
-from typing import List, Dict
+from typing import List, Dict, Any
 from widget import Widget
 from exception import InvalidInputError, ArgumentError
 
@@ -13,37 +13,53 @@ class Dropdown(Widget):
 
   #TODO: refactor s.t. items are given as Dict[str,int] with initial values (from CALC_WIDGET_DICT)
   # state_h can then just be that dict and initial_values is made obsolete
-  def __init__(self, state_sector:np.ndarray, name: str, items: List[str], constraints: Dict[str,str] = None, initial_state: np.ndarray = None):
+  def __init__(self, state_sector:np.ndarray, name: str, items_dict: Dict[str,Any], constraints: Dict[str,str] = None, initial_state: np.ndarray = None):
+    super().__init__(state_sector, name)
     # TODO: maybe assert smth
-    if len(items) < 1:
+    if len(items_dict) < 1:
       raise ValueError("Attempting to build a dropdown with no items.")
 
-    self._state_len:int = 1 + len(items) # all dropdown items + the dropdown button itself
+    self._state_len:int = 1 + len(items_dict) # all dropdown items + the dropdown button itself
     if len(state_sector) != self._state_len:
       raise ValueError("State section passed to dropdown is too small.")
+
+    item_names = [item_name for item_name in items_dict.keys()]
+    item_values = [item_value for item_value in items_dict.values()]
+
 
     # populate is_constrained array (contains True if the state-value at that index is constrained)
     self.is_item_constrained_arr = []
     if constraints != None:
-      self.is_item_constrained_arr:np.ndarray = np.array([True if item in constraints else False for item in items], dtype=bool)
+      self.is_item_constrained_arr:np.ndarray = np.array([True if item in constraints else False for item in item_names], dtype=bool)
 
-    self._state = state_sector
+    #self._state = state_sector
     if initial_state != None:
-      self.validate_initial_state(initial_state)
+      self._validate_state(initial_state)
       #self._state:np.ndarray = initial_state.copy()
       self._state[:] = initial_state
     else:
       #self._state:np.ndarray = np.zeros(self._state_len, dtype=int)
       self._state[1] = 1 # first dropdown item is selected on automatic initialization
     
-    self.validate_initial_state(self._state)
+    self._validate_state(self._state)
 
+    self._index_to_value = {}
     self._element_name_to_index = {name: 0}
-    for i in range(len(items)):
-      self._element_name_to_index[items[i]] = i+1
+    for i in range(len(item_names)):
+      self._element_name_to_index[item_names[i]] = i+1
+      self._index_to_value[i+1] = item_values[i]
 
     # human-readable state
-    self.state_h:Dict[str, int] = self.build_state_h(name, items)
+    self.state_h:Dict[str, int] = self.build_state_h(name, item_names)
+
+  def get_current_value(self):
+    if self._state[0] == 1:
+      raise ValueError("Attempting to get value from opened dropdown")
+    for i in range(1, self._state_len):
+        if self._state[i] == 1:
+            return self._index_to_value[i]
+
+    pass
 
   def get_element_name_to_index(self) -> Dict[str,int]:
     return self._element_name_to_index
@@ -189,8 +205,7 @@ class Dropdown(Widget):
         else:
           self._state[i] = input[i]
 
-    self.validate_initial_state(self._state) # TODO: should not be necessary here, state should be kept consistent throughout all methods
-    print("dropdown mutated state: ", self._state)
+    self._validate_state(self._state) # TODO: should not be necessary here, state should be kept consistent throughout all methods
 
 
   def get_state(self) -> np.ndarray:
@@ -199,7 +214,7 @@ class Dropdown(Widget):
   def is_dropdown_open(self) -> bool:
     return self._state[0] == 1
 
-  def validate_initial_state(self, state:np.ndarray, constraint_state:np.ndarray=None) -> None:
+  def _validate_state(self, state:np.ndarray) -> None:
     if len(state) != self._state_len:
       raise ValueError("State vector size and given vector size do not match.")
 
@@ -207,18 +222,18 @@ class Dropdown(Widget):
     if sum_selected_items != 1:
       raise ValueError("Exactly one item has to be selected in any valid dropdown state")
     
-    if constraint_state != None:
-      self.check_contraints(state, constraint_state)
+    #if constraint_state != None:
+    #  self.check_contraints(state, constraint_state)
 
       
 
 
   # handels closing itself, since all 'next' actions when open must be
   # on the dropdown
-  def exec_on_next_step(self) -> None:
+  def exec_on_invalid_action(self) -> None:
     pass
-    #if self._state[0] == 1:
-    #  self._state[0] = 0
+    if self._state[0] == 1:
+      self._state[0] = 0
 
 
 

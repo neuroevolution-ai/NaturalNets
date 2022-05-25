@@ -38,7 +38,7 @@ CALC_OPERAND_TWO_4 = "calc.opreand_two.4"
 
 CALC_OPERATOR_DROPDOWN = "calc.operator"
 CALC_OPERATOR_ADD = "calc.operator.add"
-CALC_OPERATOR_SUB = "calc.operator.div"
+CALC_OPERATOR_SUB = "calc.operator.sub"
 CALC_OPERATOR_MULT = "calc.operator.mult"
 CALC_OPERATOR_DIV = "calc.operator.div"
 

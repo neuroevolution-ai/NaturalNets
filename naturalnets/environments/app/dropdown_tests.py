@@ -5,6 +5,7 @@ from dropdown import Dropdown
 #from naturalnets.environments.app.exception import InvalidInputError
 from exception import InvalidInputError, ArgumentError
 
+TEST_STATE_SECTOR = np.array([0,0,0,0,0], dtype=int)
 TEST_ITEMS = ["item.1", "item.2", "item.3", "item.4"]
 TEST_STATE = np.array([0, 1, 0, 0, 0])
 TEST_ITEMS_EMPTY = []

@@ -5,6 +5,7 @@ import time
 from typing import Dict, List
 from widget import Widget
 from dropdown import Dropdown
+from app import App, ElementInfo
 
 
 # dict mapping page-names to widget-infos
@@ -64,7 +65,7 @@ TEST_WIDGETS = {
 #              happen in relevant widgets
 #   -> pages offer functionality depending on the relevant widget state
 
-class App:
+class TestApp:
   def __init__(self):
     # TODO: +1 only because of mockup item!
     self._state_len = 0 + 1
@@ -184,6 +185,7 @@ class App:
   def step(self, action:np.ndarray):
     xor = np.logical_xor(self._state, action)
     if np.sum(xor) != 1:
+      self._last_step_widget.exec_on_invalid_action()
       raise ValueError("Action differs in more than one element from last state.")
     
     index = 0
@@ -197,6 +199,7 @@ class App:
     for constraint_index in elem_info["element_constraint_indexes"]:
       if self._state[constraint_index] != 1:
         # at least one constraint not satisfied => invalid action
+        self._last_step_widget.exec_on_invalid_action()
         return self._state
 
 
@@ -220,8 +223,8 @@ class App:
 
     # execute widget-dependent actions (e.g. closing dropdown on the next step, or 
     # settint a Button value to 0 (as it only "is clicked" for one time step))
-    if self._last_step_widget != None:
-      self._last_step_widget.exec_on_next_step()
+    #if self._last_step_widget != None:
+    #  self._last_step_widget.exec_on_next_step()
 
 class Page:
   def __init__(self, widget_1):
@@ -250,13 +253,64 @@ class Page:
     return d
 
 
+
+def find_element_index(name:str, state_index_to_element_info:Dict[int, ElementInfo]):
+  for index, elem_info in state_index_to_element_info.items():
+    if elem_info.name == name:
+      return index
+
 if __name__=="__main__":
   app = App()
-  print("app initial state: ", app._state)
-  app.step(np.array([1,1,1,0,0,0,0,0,1,0,0,0,0], dtype=int))
+  print("app initial state:      ", app._state)
+
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERAND_ONE_DROPDOWN, app._state_index_to_element_info)
+  input[i] = 1 # open first dropdown
+  app.step(input)
   print("app state after step 1: ", app._state)
-  app.step(np.array([1,1,1,0,0,0,1,0,1,0,0,0,0], dtype=int))
+
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERAND_ONE_4, app._state_index_to_element_info)
+  input[i] = 1 # set first dropdown to "4"
+  app.step(input)
   print("app state after step 2: ", app._state)
+
+  # open second dropdown
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERAND_TWO_DROPDOWN, app._state_index_to_element_info)
+  input[i] = 1
+  app.step(input)
+  print("app state after step 3: ", app._state)
+
+  # set second dropdown to "2"
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERAND_TWO_2, app._state_index_to_element_info)
+  input[i] = 1
+  app.step(input)
+  print("app state after step 4: ", app._state)
+
+  # print calculator result
+  app._page.step()
+
+  # open operator dropdown
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERATOR_DROPDOWN, app._state_index_to_element_info)
+  input[i] = 1
+  app.step(input)
+  print("app state after step 5: ", app._state)
+
+
+  # set operator to *
+  input = np.copy(app._state)
+  i = find_element_index(n.CALC_OPERATOR_MULT, app._state_index_to_element_info)
+  input[i] = 1
+  app.step(input)
+  print("app state after step 6: ", app._state)
+
+  # print calculator result
+  app._page.step()
+
+
 
 
 
