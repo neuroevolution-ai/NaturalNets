@@ -8,6 +8,8 @@ from dropdown import Dropdown
 # - each name represents exactly one element in the state vector
 #######################
 
+# TODO: enums verwenden
+
 ## 1. general ##
 
 # 1.1 pages

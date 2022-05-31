@@ -7,7 +7,7 @@ import attr
 #import cv2
 #import math
 import time
-#from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 from typing import Dict, List, Tuple
 from widget import Widget
@@ -38,8 +38,8 @@ class ElementInfo:
     state_sector:Tuple[int,int]
     page_name:str
 
-#class App(IEnvironment):
-class App():
+class App(IEnvironment):
+#class App():
 
     #def __init__(self, env_seed: int, configuration: dict):
     def __init__(self):
