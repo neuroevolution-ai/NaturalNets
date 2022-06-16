@@ -40,15 +40,37 @@ MAIN_WINDOW_PAGES = {
 
 SETTINGS_WINDOW_PAGES = {
   # Settings_text-Printer
-  Elements.SETTINGS_PAGE_TEXT_PRINTER: [
-    {
-    "state_len": 1,
-    "type": CheckBox,
-    "args": {
-      "bounding_box": Elements.SETTINGS_TEXT_PRINTER_WIDGET_BOLD.bounding_box
-    },
+  Elements.SETTINGS_PAGE_TEXT_PRINTER: {
+    "navigator": Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON,
+    "state_len": 0,
+    "widgets": [
+      {
+        "state_len": 1,
+        "type": CheckBox,
+        "args": {
+          "bounding_box": Elements.SETTINGS_TEXT_PRINTER_WIDGET_BOLD.bounding_box
+        },
+      },
+    ]
   },
-  ]
+  Elements.SETTINGS_PAGE_CALCULATOR: {
+    "navigator": Elements.SETTINGS_CALCULATOR_TAB_BUTTON,
+    "state_len": 0,
+    "widgets": [
+    ]
+  },
+  Elements.SETTINGS_PAGE_CAR_CONFIGURATOR: {
+    "navigator": Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON,
+    "state_len": 0,
+    "widgets": [
+    ]
+  },
+  Elements.SETTINGS_PAGE_FIGURE_PRINTER: {
+    "navigator": Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON,
+    "state_len": 0,
+    "widgets": [
+    ]
+  },
 }
 
 WINDOWS_DICT = {

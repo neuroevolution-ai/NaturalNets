@@ -57,13 +57,13 @@ class App(IEnvironment):
         self._last_allocated_state_index:int = 0
 
         settings_window_pages = {}
-        for page_dict in SETTINGS_WINDOW_PAGES.values():
+        for page_elem, page_dict in SETTINGS_WINDOW_PAGES.items():
             page_widgets = []
             for widget_dict in page_dict["widgets"]:
                 state_sector = self.get_next_state_sector(widget_dict["state_len"])
                 widget = widget_dict["type"](state_sector, **widget_dict["args"])
                 page_widgets.append(widget)
-            settings_window_pages[page_dict] = {"navigator": page_dict["navigator"], "widgets": page_widgets}
+            settings_window_pages[page_elem] = {"navigator": page_dict["navigator"], "widgets": page_widgets}
 
 
         #self._state_len += CheckBox.STATE_LEN

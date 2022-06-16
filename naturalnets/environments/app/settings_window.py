@@ -1,7 +1,7 @@
 import numpy as np
 
 from cmath import inf
-from typing import List, Dict
+from typing import List, Dict, Any
 from naturalnets.environments.app.element_bounding_box import ElementBB
 from naturalnets.environments.app.elements import Elements
 from naturalnets.environments.app.state_manipulator import StateManipulator
@@ -11,24 +11,28 @@ class SettingsWindow(StateManipulator):
 
     STATE_LEN = 5
 
-    def __init__(self, state_sector:np.ndarray, pages_dict:Dict[Elements, List[Widget]]):
+    def __init__(self, state_sector:np.ndarray, pages_dict:Dict[Elements, Dict[str, Any]]):
         super().__init__(state_sector)
         # len(state_sector) = len(self.tabs) + 1 (self._is_openend flag)
         # 
+        self.tabs_to_pages = {page_dict["navigator"]: page_dict["widgets"] for page_dict in pages_dict.values()}
 
-        self.tabs_to_pages = {
-            Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_TEXT_PRINTER],
-            #Elements.SETTINGS_CALCULATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CALCULATOR],
-            #Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CAR_CONFIGURATOR],
-            #Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_FIGURE_PRINTER]
-        }
 
-        self.tabs = [
-            Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON,
-            Elements.SETTINGS_CALCULATOR_TAB_BUTTON,
-            Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON,
-            Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON
-        ]
+        #self.tabs_to_pages = {
+        #    Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_TEXT_PRINTER],
+        #    #Elements.SETTINGS_CALCULATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CALCULATOR],
+        #    #Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CAR_CONFIGURATOR],
+        #    #Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_FIGURE_PRINTER]
+        #}
+
+        self.tabs = [*self.tabs_to_pages.keys()]
+        print(self.tabs)
+        #self.tabs = [
+        #    Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON,
+        #    Elements.SETTINGS_CALCULATOR_TAB_BUTTON,
+        #    Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON,
+        #    Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON
+        #]
         self.tabs_bb:ElementBB = self.get_tabs_bb(self.tabs)
         self.page_area = Elements.SETTINGS_PAGES
 
