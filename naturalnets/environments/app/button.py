@@ -1,10 +1,13 @@
 import numpy as np
 from exception import ArgumentError, InvalidInputError
 
-from widget import Widget
+from widget import Widget_old
 from typing import Dict, Callable
 
-class Button(Widget):
+# TODO: probably not needed, since buttons do not change state, thus not beeing of relevance
+#       for the output state to the neural net
+
+class Button(Widget_old):
     """Widget representing a Button. It's own state is always [0].
     It modifies app state through the on_click method passed on instantiation.
     """

@@ -1,4 +1,4 @@
-from dropdown import Dropdown
+from naturalnets.environments.app.dropdown import Dropdown
 
 ##### how to #######
 # - each name must be unique

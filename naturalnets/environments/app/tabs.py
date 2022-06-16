@@ -1,10 +1,10 @@
 import numpy as np
 import names as n
 
-from widget import Widget
+from widget import Widget_old
 from typing import Dict
 
-class Tabs(Widget):
+class Tabs(Widget_old):
 
   def __init__(self, tabs:Dict[str, int], constraints:Dict[str,str]=None):
     self._state_len = len(tabs)

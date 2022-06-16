@@ -3,7 +3,7 @@ import names as n
 import time
 
 from typing import Dict, List
-from widget import Widget
+from widget import Widget_old
 from dropdown import Dropdown
 from app import App, ElementInfo
 
@@ -109,7 +109,7 @@ class TestApp:
       for constraint_name in element_info["element_constraint_names"]:
         element_info["element_constraint_indexes"].append(self._element_name_to_state_index[constraint_name])
 
-    self._last_step_widget:Widget = None
+    self._last_step_widget:Widget_old = None
     print(self._element_name_to_state_index)
     print("========= end init ===============")
 
@@ -151,7 +151,7 @@ class TestApp:
         widget_end_index = last_end_index + widget_dict["state_len"]
         state_sector = self._state[widget_start_index:widget_end_index]
 
-        widget:Widget = widget_dict["type"](state_sector, **widget_dict["args"])
+        widget:Widget_old = widget_dict["type"](state_sector, **widget_dict["args"])
 
         # add widget to widget-name to widget map
         self._widget_name_to_widget[widget_name] = widget

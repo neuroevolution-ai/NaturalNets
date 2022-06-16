@@ -1,8 +1,8 @@
 import numpy as np
-import names as n
+import naturalnets.environments.app.names as n
 
-from dropdown import Dropdown
-from widget import Widget
+from naturalnets.environments.app.dropdown import Dropdown
+from naturalnets.environments.app.widget import Widget_old
 from typing import Dict
 
 POSSIBLE_OPERANDS_BASE_10 = [i for i in range(5)]  # pragma: no cover
@@ -26,7 +26,7 @@ WIDGETS = [n.CALC_OPERAND_ONE_DROPDOWN, n.CALC_OPERAND_TWO_DROPDOWN, n.CALC_OPER
 
 
 class Calculator:
-    def __init__(self, state_sector:np.ndarray, widgets:Dict[str,Widget]):  # pragma: no cover
+    def __init__(self, state_sector:np.ndarray, widgets:Dict[str,Widget_old]):  # pragma: no cover
 
         self.operand_one_dropdown:Dropdown = widgets[n.CALC_OPERAND_ONE_DROPDOWN]
         self.operand_two_dropdown:Dropdown = widgets[n.CALC_OPERAND_TWO_DROPDOWN]

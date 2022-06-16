@@ -2,10 +2,26 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from typing import Dict
+from naturalnets.environments.app.element_bounding_box import ElementBB
 
-from exception import ArgumentError
+from naturalnets.environments.app.exception import ArgumentError
+from naturalnets.environments.app.state_manipulator import StateManipulator
 
-class Widget(ABC):
+class Widget(StateManipulator):
+  def __init__(self,state_sector:np.ndarray, bounding_box:ElementBB):
+    super().__init__(state_sector)
+    self._bb = bounding_box
+
+  def get_bounding_box(self):
+    return self._bb
+
+  @abstractmethod
+  def draw():
+    pass
+
+
+  
+class Widget_old(ABC):
 
   def __init__(self, state_sector:np.ndarray, name:str):
     for element in state_sector:

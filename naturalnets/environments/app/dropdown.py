@@ -1,10 +1,10 @@
 import numpy as np
 
 from typing import List, Dict, Any
-from widget import Widget
-from exception import InvalidInputError, ArgumentError
+from naturalnets.environments.app.widget import Widget_old
+from naturalnets.environments.app.exception import InvalidInputError, ArgumentError
 
-class Dropdown(Widget):
+class Dropdown(Widget_old):
   #TODO: settings might change the selected dropdown item (if the first item is selected
   # but then disabled in settings, the dropdown is set to the second item, etc.)
 
