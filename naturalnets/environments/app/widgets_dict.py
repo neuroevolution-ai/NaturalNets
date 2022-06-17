@@ -51,6 +51,20 @@ SETTINGS_WINDOW_PAGES = {
           "bounding_box": Elements.SETTINGS_TEXT_PRINTER_WIDGET_BOLD.bounding_box
         },
       },
+      {
+        "state_len": 1,
+        "type": CheckBox,
+        "args": {
+          "bounding_box": Elements.SETTINGS_TEXT_PRINTER_WIDGET_ITALIC.bounding_box
+        },
+      },
+      {
+        "state_len": 1,
+        "type": CheckBox,
+        "args": {
+          "bounding_box": Elements.SETTINGS_TEXT_PRINTER_WIDGET_UNDERLINE.bounding_box
+        },
+      },
     ]
   },
   Elements.SETTINGS_PAGE_CALCULATOR: {

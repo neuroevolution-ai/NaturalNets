@@ -27,7 +27,7 @@ class Elements(AutoNumber):
   ## Global: Pages, Buttons
   MAIN_WINDOW = ElementBB(0, 0, WIDTH, HEIGHT), "text_printer" # default page is text_printer (page shown on start)
   MAIN_WINDOW_PAGES = ElementBB(115, 19, 448, 448)
-  SETTINGS_PAGES = ElementBB(25,48,378, 262) # TODO: needed? may be substituted by SETTINGS_PAGE_...
+  SETTINGS_PAGE_AREA = ElementBB(25,48,378, 262) # TODO: needed? may be substituted by SETTINGS_PAGE_...
 
   SETTINGS_BUTTON = ElementBB(8, 0, 49, 18)
   TEXT_PRINTER_BUTTON = ElementBB(9, 28, 99, 22)
@@ -57,6 +57,8 @@ class Elements(AutoNumber):
 
   ### Settings-Widgets
   SETTINGS_TEXT_PRINTER_WIDGET_BOLD = ElementBB(38, 215, 14, 14)
+  SETTINGS_TEXT_PRINTER_WIDGET_ITALIC = ElementBB(38, 241, 14, 14)
+  SETTINGS_TEXT_PRINTER_WIDGET_UNDERLINE = ElementBB(38, 267, 14, 14)
 
   ##Calculator
   OPERAND_ONE_DROPDOWN = ElementBB(125, 316, 97, 22)

@@ -26,7 +26,6 @@ class SettingsWindow(StateManipulator):
         #}
 
         self.tabs = [*self.tabs_to_pages.keys()]
-        print(self.tabs)
         #self.tabs = [
         #    Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON,
         #    Elements.SETTINGS_CALCULATOR_TAB_BUTTON,
@@ -34,7 +33,7 @@ class SettingsWindow(StateManipulator):
         #    Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON
         #]
         self.tabs_bb:ElementBB = self.get_tabs_bb(self.tabs)
-        self.page_area = Elements.SETTINGS_PAGES
+        self.page_area = Elements.SETTINGS_PAGE_AREA
 
         # self.get_state()[0] represents the opened-state of the settings window
         self.tabs_to_state_index = {button: i+1 for i, button in enumerate(self.tabs)}
