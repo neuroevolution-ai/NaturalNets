@@ -10,7 +10,7 @@ import cv2
 import time
 from naturalnets.environments.app.check_box import CheckBox
 #from naturalnets.environments.app.element_bounding_box import ElementBB
-from naturalnets.environments.app.element_bounding_box import ElementBB
+from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.elements import Elements
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.settings_window import SettingsWindow
@@ -20,7 +20,7 @@ from typing import Dict, List, Tuple
 from naturalnets.environments.app.widget import Widget_old
 from naturalnets.environments.app.exception import InvalidInputError
 from naturalnets.environments.app.calculator import Calculator
-from naturalnets.environments.app.widgets_dict import MAIN_WINDOW_PAGES, SETTINGS_WINDOW_PAGES
+from naturalnets.environments.app.widgets_dict import MAIN_WINDOW_PAGES, SETTINGS_WINDOW_PAGES, SETTINGS_WINDOW_PAGES_NEW
 
 
 #TODO
@@ -47,7 +47,7 @@ class App(IEnvironment):
         self.config = AppCfg(**configuration)
         self.action = None
 
-        self._state_len:int = MainWindow.STATE_LEN + SettingsWindow.STATE_LEN
+        self._state_len:int = MainWindow.STATE_LEN + SettingsWindow._STATE_LEN
         for page_dict in SETTINGS_WINDOW_PAGES.values():
             self._state_len += page_dict["state_len"]
             for widget_dict in page_dict["widgets"]:
@@ -56,19 +56,31 @@ class App(IEnvironment):
         self._state = np.zeros(self._state_len, dtype=int)
         self._last_allocated_state_index:int = 0
 
-        settings_window_pages = {}
-        for page_elem, page_dict in SETTINGS_WINDOW_PAGES.items():
+        #settings_window_pages = {}
+        #for page_elem, page_dict in SETTINGS_WINDOW_PAGES.items():
+        #    page_widgets = []
+        #    for widget_dict in page_dict["widgets"]:
+        #        state_sector = self.get_next_state_sector(widget_dict["state_len"])
+        #        widget = widget_dict["type"](state_sector, **widget_dict["args"])
+        #        page_widgets.append(widget)
+        #    settings_window_pages[page_elem] = {"navigator": page_dict["navigator"], "widgets": page_widgets}
+
+        #settings_window_pages = {}
+        settings_pages = []
+        for page in SETTINGS_WINDOW_PAGES_NEW:
+            page_state_sector = self.get_next_state_sector(page.get_state_len())
             page_widgets = []
-            for widget_dict in page_dict["widgets"]:
+            for widget in page.get_widget_dicts():
                 state_sector = self.get_next_state_sector(widget_dict["state_len"])
                 widget = widget_dict["type"](state_sector, **widget_dict["args"])
                 page_widgets.append(widget)
-            settings_window_pages[page_elem] = {"navigator": page_dict["navigator"], "widgets": page_widgets}
+            settings_pages.append(page(page_state_sector, page_widgets))
+            
 
 
         #self._state_len += CheckBox.STATE_LEN
 
-        settings_state_sector = self.get_next_state_sector(SettingsWindow.STATE_LEN)
+        settings_state_sector = self.get_next_state_sector(SettingsWindow._STATE_LEN)
         self.settings = SettingsWindow(settings_state_sector, settings_window_pages)
 
         main_window_state_sector = self.get_next_state_sector(MainWindow.STATE_LEN)
@@ -110,11 +122,12 @@ class App(IEnvironment):
 
     def render(self):
         #TODO: get img depending on current state
-        IMG_PATH:str = 'naturalnets/environments/app/img/'
-        current_img_name:str = self.main_window.get_current_img_name()
-        image = cv2.imread(IMG_PATH + current_img_name)
-        print(current_img_name)
-        #image = cv2.imread('naturalnets/environments/app/img/text_printer.png')
+        #IMG_PATH:str = 'naturalnets/environments/app/img/'
+        #current_img_name:str = self.main_window.get_current_img_name()
+        #image = cv2.imread(IMG_PATH + current_img_name)
+        #print(current_img_name)
+
+        image = self.main_window.render()
 
         if self.config.interactive:
             cv2.imshow("App", image)
@@ -127,6 +140,7 @@ class App(IEnvironment):
                     cv2.destroyAllWindows()
                     return None
                 if self.action is not None:
+                    # click sets self.action -> return action
                     action = np.copy(self.action)
                     self.action = None
                     return action
@@ -287,7 +301,7 @@ class App(IEnvironment):
 
         return None # no widget clicked = click on some non-interactable part of application
 
-    def _is_point_inside_bounding_box(self, bounding_box:ElementBB, x, y) -> bool:
+    def _is_point_inside_bounding_box(self, bounding_box:BoundingBox, x, y) -> bool:
         """Returns true if the given x and y are inside the bounding box (including its borders).
         """
         x1 = bounding_box.x

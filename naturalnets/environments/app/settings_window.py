@@ -2,14 +2,16 @@ import numpy as np
 
 from cmath import inf
 from typing import List, Dict, Any
-from naturalnets.environments.app.element_bounding_box import ElementBB
+from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.elements import Elements
 from naturalnets.environments.app.state_manipulator import StateManipulator
+from naturalnets.environments.app.text_printer_settings import TextPrinterSettings
 from naturalnets.environments.app.widget import Widget
 
 class SettingsWindow(StateManipulator):
 
-    STATE_LEN = 5
+    _STATE_LEN = 5
+    _PAGES = [TextPrinterSettings]
 
     def __init__(self, state_sector:np.ndarray, pages_dict:Dict[Elements, Dict[str, Any]]):
         super().__init__(state_sector)
@@ -32,7 +34,7 @@ class SettingsWindow(StateManipulator):
         #    Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON,
         #    Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON
         #]
-        self.tabs_bb:ElementBB = self.get_tabs_bb(self.tabs)
+        self.tabs_bb:BoundingBox = self.get_tabs_bb(self.tabs)
         self.page_area = Elements.SETTINGS_PAGE_AREA
 
         # self.get_state()[0] represents the opened-state of the settings window
@@ -44,7 +46,7 @@ class SettingsWindow(StateManipulator):
         self.get_state()[1] = 1
         print("initial settings state: ", self.get_state())
 
-    def get_tabs_bb(self, tab_buttons:List[Elements]) -> ElementBB:
+    def get_tabs_bb(self, tab_buttons:List[Elements]) -> BoundingBox:
         min_x = inf
         min_y = inf
         width = 0
@@ -56,7 +58,7 @@ class SettingsWindow(StateManipulator):
                 min_y = button.bounding_box.y
             width += button.bounding_box.width
             height += button.bounding_box.height
-        return ElementBB(min_x, min_y, width, height)
+        return BoundingBox(min_x, min_y, width, height)
 
 
     def handle_click(self, click_coordinates:np.ndarray):

@@ -10,7 +10,7 @@ class TestMainWindow(unittest.TestCase):
 
   def setup(self):
     state = np.zeros(MainWindow.STATE_LEN)
-    settings = SettingsWindow(np.zeros(SettingsWindow.STATE_LEN))
+    settings = SettingsWindow(np.zeros(SettingsWindow._STATE_LEN))
     main_window = MainWindow(state, settings)
     return (state, settings, main_window)
 

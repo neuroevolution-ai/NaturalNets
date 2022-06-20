@@ -2,13 +2,13 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from typing import Dict
-from naturalnets.environments.app.element_bounding_box import ElementBB
+from naturalnets.environments.app.bounding_box import BoundingBox
 
 from naturalnets.environments.app.exception import ArgumentError
 from naturalnets.environments.app.state_manipulator import StateManipulator
 
 class Widget(StateManipulator):
-  def __init__(self,state_sector:np.ndarray, bounding_box:ElementBB):
+  def __init__(self,state_sector:np.ndarray, bounding_box:BoundingBox):
     super().__init__(state_sector)
     self._bb = bounding_box
 

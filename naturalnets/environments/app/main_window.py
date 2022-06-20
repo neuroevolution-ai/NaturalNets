@@ -1,3 +1,4 @@
+import cv2
 import numpy as np
 
 from typing import Dict
@@ -81,3 +82,11 @@ class MainWindow(StateManipulator):
         # openende window draws its state, if any), then return img instead
         # of str
         return img + ".png"
+
+    def render(self) -> np.ndarray:
+        img = cv2.imread(self.current_page.img_name)
+        for widget in current_page.get_widgets():
+            widget.render(img)
+        if self.settings.is_opened():
+            self.settings.render(img)
+        return img

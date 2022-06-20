@@ -1,6 +1,6 @@
 import numpy as np
 
-class ElementBB():
+class BoundingBox():
     """ Describes the bounding-box of an element in pixels.
     """
     def __init__(self, x:int, y:int, width:int, height:int):

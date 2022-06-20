@@ -5,6 +5,7 @@ import naturalnets.environments.app.names as n
 from naturalnets.environments.app.dropdown import Dropdown
 from naturalnets.environments.app.calculator import Calculator
 from naturalnets.environments.app.elements import Elements
+from naturalnets.environments.app.text_printer_settings import TextPrinterSettings
 
 # structure:
 # page_name: {
@@ -37,6 +38,10 @@ nav_element_to_img_name = {
 MAIN_WINDOW_PAGES = {
 
 }
+
+
+
+SETTINGS_WINDOW_PAGES_NEW = [TextPrinterSettings]
 
 SETTINGS_WINDOW_PAGES = {
   # Settings_text-Printer
