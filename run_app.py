@@ -12,15 +12,15 @@ config = {
     "number_time_steps": 100,
     "screen_width": 448,
     "screen_height": 448,
-	"interactive": True
+	  "interactive": True
 }
 
 if __name__ == "__main__":
 
-  app = App(config)
-  while True:
-    action = app.render()
-    if action is None:
-      break
+    app = App(config)
+    while True:
+        action = app.render()
+        if action is None:
+            break
 
-    app.step(action)
+        app.step(action)

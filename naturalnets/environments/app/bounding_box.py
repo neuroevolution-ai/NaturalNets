@@ -21,5 +21,8 @@ class BoundingBox():
         y2 = y1 + self.height
         return x1 <= x <= x2 and y1 <= y <= y2
 
+    def get_as_tuple(self):
+        return (self.x, self.y, self.width, self.height)
+
     def __repr__(self):
         return "({0},{1},{2},{3})".format(self.x,self.y,self.width,self.height)

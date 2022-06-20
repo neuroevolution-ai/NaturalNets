@@ -1,67 +1,67 @@
 import cv2
 import numpy as np
 
-from typing import Dict
-from naturalnets.environments.app.elements import Elements
+from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.widgets.button import Button
+from naturalnets.environments.app.constants import IMAGES_PATH
+from naturalnets.environments.app.interfaces import Clickable
+from naturalnets.environments.app.main_window_pages.calculator import Calculator
+from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator
+from naturalnets.environments.app.main_window_pages.figure_printer import FigurePrinter
+from naturalnets.environments.app.main_window_pages.text_printer import TextPrinter
+from naturalnets.environments.app.page import Page
+from naturalnets.environments.app.utils import render_onto_bb
 from naturalnets.environments.app.settings_window import SettingsWindow
-from naturalnets.environments.app.state_manipulator import StateManipulator
+from naturalnets.environments.app.state_element import StateElement
 
-class MainWindow(StateManipulator):
+
+class MainWindow(StateElement, Clickable):
 
     STATE_LEN = 4
+    IMG_PATH = IMAGES_PATH + "main_window_base.png"
+    FIGURE_PRINTER_BUTTON_IMG_PATH = IMAGES_PATH + "figure_printer_button.png"
+    BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
+    MENU_AREA_BB = BoundingBox(0, 0, 116, 448)
+    PAGES_AREA_BB = BoundingBox(117, 22, 326, 420)
 
-    def __init__(self, state_sector:np.ndarray, settings:SettingsWindow):
-        super().__init__(state_sector)
+    SETTINGS_BUTTON_BB = BoundingBox(8, 0, 49, 18)
+    TEXT_PRINTER_BUTTON_BB = BoundingBox(9, 28, 99, 22)
+    CALCULATOR_BUTTON_BB = BoundingBox(9, 56, 99, 22)
+    CAR_CONFIGURATOR_BUTTON_BB =  BoundingBox(9, 84, 99, 22)
+    FIGURE_PRINTER_BUTTON_BB = BoundingBox(9, 112, 99, 22)
 
-        #TODO: field: self._state= state_sector, then map 
-        #      pages to indexes of that state sector,
-        #      then manipulate state_sector[index] to change overall state sector of app
+    def __init__(self):
+        super().__init__(self.STATE_LEN)
 
-        self.settings = settings
+        self.settings_window = SettingsWindow()
 
-        self.buttons_to_pages = {
-            Elements.TEXT_PRINTER_BUTTON: Elements.PAGE_TEXT_PRINTER, 
-            Elements.CALCULATOR_BUTTON: Elements.PAGE_CALCULATOR,
-            Elements.CAR_CONFIGURATOR_BUTTON: Elements.PAGE_CAR_CONFIGURATOR,
-            Elements.FIGURE_PRINTER_BUTTON: Elements.PAGE_FIGURE_PRINTER,
-        }
+        self.text_printer = TextPrinter()
+        calculator = Calculator()
+        car_configurator = CarConfigurator()
+        self.figure_printer = FigurePrinter()
 
+        self.pages:list[Page] = [self.text_printer, calculator, car_configurator, self.figure_printer]
+        assert len(self.pages) == self.get_state_len()
+        self.pages_to_state_index:dict[Page, int] = {page: index for index, page in enumerate(self.pages)}
 
-        pages = [page for page in self.buttons_to_pages.values()]
-        assert len(pages) == len(self.get_state())
-        self.pages_to_state_index = {page: i for i, page in enumerate(pages)}
+        self.set_current_page(self.text_printer)
 
-        # set initial page
-        self.get_state()[self.pages_to_state_index[Elements.PAGE_TEXT_PRINTER]] = 1
-        self.current_page = Elements.PAGE_TEXT_PRINTER
-        print("main_window state:", self.get_state())
-        #self.current_img = self.current_page.img_name + '.png'
-  
-    def handle_click(self, click_coordinates:np.ndarray) -> str:
-        if self.settings.is_opened():
-            self.settings.handle_click(click_coordinates)
-        elif Elements.MAIN_WINDOW_PAGES.bounding_box.is_point_inside(click_coordinates):
-            # TODO
-            #self.current_page.step(click_coordinates)
-            print("Click in pages area of main window!")
-            print("pages not yet implemented!")
-            #TODO return page.step(click_coordinates) # should return img_name
-        else: # click was in menu
-            print("click in menu area of main window!")
-            # open settings
-            if Elements.SETTINGS_BUTTON.bounding_box.is_point_inside(click_coordinates):
-                self.settings.set_opened(1)
-                return
+        self.figure_printer_button = Button(self.FIGURE_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.figure_printer))
+        self.buttons = [
+            #self.settings_button,
+            Button(self.SETTINGS_BUTTON_BB, lambda: self.settings_window.open()),
+            Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer)),
+            Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(calculator)),
+            Button(self.CAR_CONFIGURATOR_BUTTON_BB, lambda: self.set_current_page(car_configurator)),
+            self.figure_printer_button,
+        ]
 
-            # change main-window page
-            for button, page in self.buttons_to_pages.items():
-                if button.bounding_box.is_point_inside(click_coordinates):
-                    self.set_current_page(page)
-                    return
+        self.add_child(self.settings_window)
 
-        # click outside of any widget
+    def is_figure_printer_button_visible(self):
+        return self.settings_window.figure_printer_settings.is_figure_printer_activated()
 
-    def set_current_page(self, current_page):
+    def set_current_page(self, current_page:Page):
         for page, index in self.pages_to_state_index.items():
             if page == current_page:
                 self.get_state()[index] = 1
@@ -69,24 +69,45 @@ class MainWindow(StateManipulator):
             else:
                 self.get_state()[index] = 0
 
-    def get_current_img_name(self) -> str:
-        img = self.current_page.img_name
-        if self.settings.is_opened():
-            # TODO: one could have a separate img for each main-window page
-            #       s.t. the repective page can be seen behind the settings
-            #       window..
-            img = "text_printer"
-            img = img + "_" + self.settings.get_current_img_name()
+    def handle_click(self, click_position:np.ndarray) -> None:
 
-        # TODO: draw widget-dependent state (each widget in currrently
-        # openende window draws its state, if any), then return img instead
-        # of str
-        return img + ".png"
+        if self.settings_window.is_open():
+            self.settings_window.handle_click(click_position)
+        elif self.MENU_AREA_BB.is_point_inside(click_position):
+            self.handle_menu_click(click_position)
 
-    def render(self) -> np.ndarray:
-        img = cv2.imread(self.current_page.img_name)
-        for widget in current_page.get_widgets():
-            widget.render(img)
-        if self.settings.is_opened():
-            self.settings.render(img)
+        elif self.PAGES_AREA_BB.is_point_inside(click_position):
+            self.current_page.handle_click()
+        else:
+            # no interactable part of window clicked
+            pass
+
+        ## handle state changes resulting from settings state changes
+
+        # switch to text printer if figure printer is current page but not activated in settings
+        if self.current_page == self.figure_printer and not self.is_figure_printer_button_visible():
+            self.set_current_page(self.text_printer)
+    
+    def handle_menu_click(self, click_position:np.ndarray) -> None:
+        for button in self.buttons:
+            if button.is_clicked_by(click_position):
+                if not button == self.figure_printer_button or self.is_figure_printer_button_visible():
+                    button.handle_click()
+
+    def render(self, img:np.ndarray):
+        to_render = cv2.imread(self.IMG_PATH)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        img = self.current_page.render(img)
+
+        if self.is_figure_printer_button_visible():
+            figure_printer_img = cv2.imread(self.FIGURE_PRINTER_BUTTON_IMG_PATH)
+            img = render_onto_bb(img, self.FIGURE_PRINTER_BUTTON_BB, figure_printer_img)
+
+        if self.settings_window.is_open():
+            img = self.settings_window.render(img)
+
         return img
+
+    def get_bb(self) -> BoundingBox:
+        return self.BOUNDING_BOX
+

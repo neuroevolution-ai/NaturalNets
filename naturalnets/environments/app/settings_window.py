@@ -1,88 +1,89 @@
+import cv2
 import numpy as np
 
 from cmath import inf
-from typing import List, Dict, Any
+from typing import List
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.elements import Elements
-from naturalnets.environments.app.state_manipulator import StateManipulator
-from naturalnets.environments.app.text_printer_settings import TextPrinterSettings
-from naturalnets.environments.app.widget import Widget
+from naturalnets.environments.app.widgets.button import Button
+from naturalnets.environments.app.interfaces import Clickable
+from naturalnets.environments.app.page import Page
+from naturalnets.environments.app.settings_window_pages.calculator_settings import CalculatorSettings
+from naturalnets.environments.app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
+from naturalnets.environments.app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
+from naturalnets.environments.app.settings_window_pages.text_printer_settings import TextPrinterSettings
+from naturalnets.environments.app.state_element import StateElement
+from naturalnets.environments.app.utils import render_onto_bb
 
-class SettingsWindow(StateManipulator):
+class SettingsWindow(StateElement, Clickable):
+    STATE_LEN:int = 5
+    BOUNDING_BOX = BoundingBox(3, 1, 422, 367)
 
-    _STATE_LEN = 5
-    _PAGES = [TextPrinterSettings]
+    CLOSE_BUTTON_BB = BoundingBox(25, 318, 377, 27)
 
-    def __init__(self, state_sector:np.ndarray, pages_dict:Dict[Elements, Dict[str, Any]]):
-        super().__init__(state_sector)
-        # len(state_sector) = len(self.tabs) + 1 (self._is_openend flag)
-        # 
-        self.tabs_to_pages = {page_dict["navigator"]: page_dict["widgets"] for page_dict in pages_dict.values()}
+    TEXT_PRINTER_TAB_BUTTON_BB = BoundingBox(25, 25, 85, 23)
+    CALCULATOR_TAB_BUTTON_BB = BoundingBox(111, 25, 79, 23)
+    CAR_CONFIGURATOR_TAB_BUTTON_BB = BoundingBox(191, 25, 85, 23)
+    FIGURE_PRINTER_TAB_BUTTON_BB = BoundingBox(277, 25, 97, 23)
 
+    def __init__(self):
+        super().__init__(self.STATE_LEN)
 
-        #self.tabs_to_pages = {
-        #    Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_TEXT_PRINTER],
-        #    #Elements.SETTINGS_CALCULATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CALCULATOR],
-        #    #Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_CAR_CONFIGURATOR],
-        #    #Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON: pages_dict[Elements.SETTINGS_PAGE_FIGURE_PRINTER]
-        #}
+        self.text_printer_settings = TextPrinterSettings()
+        self.calculator_settings = CalculatorSettings()
+        self.car_config_settings = CarConfiguratorSettings()
+        self.figure_printer_settings = FigurePrinterSettings()
 
-        self.tabs = [*self.tabs_to_pages.keys()]
-        #self.tabs = [
-        #    Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON,
-        #    Elements.SETTINGS_CALCULATOR_TAB_BUTTON,
-        #    Elements.SETTINGS_CAR_CONFIGURATOR_TAB_BUTTON,
-        #    Elements.SETTINGS_FIGURE_PRINTER_TAB_BUTTON
-        #]
-        self.tabs_bb:BoundingBox = self.get_tabs_bb(self.tabs)
-        self.page_area = Elements.SETTINGS_PAGE_AREA
+        self.close_button = Button(self.CLOSE_BUTTON_BB, lambda: self.close())
+
+        self.tabs:list[Page] = [self.text_printer_settings, self.calculator_settings, self.car_config_settings, self.figure_printer_settings]
+
+        self.tab_buttons:list[Button] = [
+            Button(self.TEXT_PRINTER_TAB_BUTTON_BB, lambda: self.set_current_tab(self.text_printer_settings)),
+            Button(self.CALCULATOR_TAB_BUTTON_BB, lambda: self.set_current_tab(self.calculator_settings)),
+            Button(self.CAR_CONFIGURATOR_TAB_BUTTON_BB, lambda: self.set_current_tab(self.car_config_settings)),
+            Button(self.FIGURE_PRINTER_TAB_BUTTON_BB, lambda: self.set_current_tab(self.figure_printer_settings)),
+        ]
+
+        self.tabs_bb:BoundingBox = self.get_tabs_bb(self.tab_buttons)
 
         # self.get_state()[0] represents the opened-state of the settings window
-        self.tabs_to_state_index = {button: i+1 for i, button in enumerate(self.tabs)}
-        self.close_button = Elements.SETTINGS_CLOSE_BUTTON
+        #assert len(self.tabs) == self.get_state_len() - 1
+        self.tabs_to_state_index:dict[Page, int] = {tab: index + 1 for index, tab in enumerate(self.tabs)}
 
-        assert len(self.tabs_to_state_index) + 1 == len(self.get_state()) # +1 for opened-state
-        self.current_tab:Elements = Elements.SETTINGS_TEXT_PRINTER_TAB_BUTTON
-        self.get_state()[1] = 1
-        print("initial settings state: ", self.get_state())
+        self.set_current_tab(self.text_printer_settings)
 
-    def get_tabs_bb(self, tab_buttons:List[Elements]) -> BoundingBox:
-        min_x = inf
-        min_y = inf
-        width = 0
-        height = 0
-        for button in tab_buttons:
-            if button.bounding_box.x < min_x:
-                min_x = button.bounding_box.x
-            if button.bounding_box.y < min_y:
-                min_y = button.bounding_box.y
-            width += button.bounding_box.width
-            height += button.bounding_box.height
-        return BoundingBox(min_x, min_y, width, height)
+        self.add_child(self.text_printer_settings)
+        self.add_child(self.figure_printer_settings)
 
+    def is_open(self) -> int:
+        return self.get_state()[0]
 
-    def handle_click(self, click_coordinates:np.ndarray):
-        assert self.is_opened() == 1
-        if self.close_button.bounding_box.is_point_inside(click_coordinates):
-            self.set_opened(0)
-        elif self.tabs_bb.is_point_inside(click_coordinates):
-            print("click in settings menu!")
-            for tab in self.tabs:
-                if tab.bounding_box.is_point_inside(click_coordinates):
-                    self.set_current_tab(tab)
-                    return
-        elif self.page_area.bounding_box.is_point_inside(click_coordinates):
-            # TODO: traverse all widgets of current page/tab and check if
-            #       any are hit by click, then call step() method of widget
-            for widget in self.tabs_to_pages[self.current_tab]:
-                if widget.get_bounding_box().is_point_inside(click_coordinates):
-                    widget.handle_click(click_coordinates)
+    def open(self):
+        self.get_state()[0] = 1
+
+    def close(self):
+        self.get_state()[0] = 0
+
+    def get_bb(self) -> BoundingBox:
+        return self.BOUNDING_BOX
+
+    def handle_click(self, click_position: np.ndarray):
+        if self.close_button.is_clicked_by(click_position):
+            self.close_button.handle_click()
+        elif self.tabs_bb.is_point_inside(click_position):
+            self.handle_tabs_button_click(click_position)
+        else:
+            #TODO: think about this
+            self.current_tab.handle_click(click_position)
+            # no interactable part of window clicked
             pass
-        else: 
-            pass # no widget clicked
 
+    def handle_tabs_button_click(self, click_position:np.ndarray) -> None:
+        for tab in self.tab_buttons:
+            if tab.is_clicked_by(click_position):
+                tab.handle_click()
 
-    def set_current_tab(self, current_tab:Elements):
+    def set_current_tab(self, current_tab:Page):
         for tab, index in self.tabs_to_state_index.items():
             if tab == current_tab:
                 self.get_state()[index] = 1
@@ -90,12 +91,24 @@ class SettingsWindow(StateManipulator):
             else:
                 self.get_state()[index] = 0
 
+    def render(self, img:np.ndarray) -> np.ndarray:
+        to_render = cv2.imread(self.current_tab.get_img_path())
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        self.current_tab.render(img)
+        return img
 
-    def is_opened(self) -> int:
-        return self.get_state()[0]
+    def get_tabs_bb(self, tab_buttons:List[Button]) -> BoundingBox:
+        min_x = inf
+        min_y = inf
+        width = 0
+        height = 0
+        for button in tab_buttons:
+            if button.get_bb().x < min_x:
+                min_x = button.get_bb().x
+            if button.get_bb().y < min_y:
+                min_y = button.get_bb().y
+            width += button.get_bb().width
+            height = button.get_bb().height
+        return BoundingBox(min_x, min_y, width, height)
 
-    def set_opened(self, opened:int):
-        self.get_state()[0] = opened
 
-    def get_current_img_name(self) -> str:
-        return self.current_tab.img_name

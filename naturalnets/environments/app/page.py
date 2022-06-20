@@ -1,29 +1,42 @@
+import cv2
 import numpy as np
 
-from abc import ABC, abstractmethod
-
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.state_manipulator import StateManipulator
+from naturalnets.environments.app.interfaces import Clickable, Renderable
+from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.state_element import StateElement
 
-class Page(StateManipulator):
-    @abstractmethod
-    @staticmethod
-    def get_state_len(self):
+class Widget(StateElement, Clickable):
+    def __init__(self, state_len:int, bounding_box:BoundingBox):
+        super().__init__(state_len)
+        self.bounding_box = bounding_box
+
+    def get_bb(self):
+        return self.bounding_box
+
+class Page(StateElement, Clickable):
+    def __init__(self, state_len:int, bounding_box:BoundingBox, img_path:str):
+        super().__init__(state_len)
+        self._bounding_box = bounding_box
+        self._img_path = img_path
+        self.widgets:list[Widget] = []
         pass
 
-    @abstractmethod
-    @staticmethod
-    def get_widget_dicts(self):
-        pass
+    def get_img_path(self):
+        return self._img_path
 
-    @abstractmethod
-    @staticmethod
-    def get_accessor(self):
-        pass
+    def get_bb(self):
+        return self._bounding_box
+        
+    def add_widget(self, widget:Widget):
+        self.widgets.append(widget)
 
-    def _init__(self, state_sector:np.ndarray, bounding_box:BoundingBox, widgets):
-        super().__init__(state_sector)
-
-    @abstractmethod
+    def get_widgets(self):
+        return self.widgets
+    
     def render(self, img:np.ndarray):
-        pass
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        for widget in self.get_widgets():
+            img = widget.render(img)
+        return img
