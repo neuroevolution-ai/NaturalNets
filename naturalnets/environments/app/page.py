@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.interfaces import Clickable, Renderable
+from naturalnets.environments.app.interfaces import Clickable, HasPopups, Renderable
 from naturalnets.environments.app.utils import render_onto_bb
 from naturalnets.environments.app.state_element import StateElement
 
@@ -19,7 +19,7 @@ class Widget(StateElement, Clickable):
         self._bounding_box = bounding_box
         
 
-class Page(StateElement, Clickable):
+class Page(StateElement, Clickable, HasPopups):
     def __init__(self, state_len:int, bounding_box:BoundingBox, img_path:str):
         super().__init__(state_len)
         self._bounding_box = bounding_box
@@ -56,3 +56,6 @@ class Page(StateElement, Clickable):
         for widget in self.get_widgets():
             img = widget.render(img)
         return img
+
+    def is_popup_open(self) -> bool:
+        return False

@@ -66,7 +66,7 @@ class FigureCheckboxesPopup(Page):
         return img
 
 
-class FigurePrinterSettings(Page, HasPopups):
+class FigurePrinterSettings(Page):
     STATE_LEN = 0
     IMG_PATH = IMAGES_PATH + "figure_printer_settings.png"
 

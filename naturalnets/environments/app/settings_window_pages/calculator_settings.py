@@ -5,7 +5,7 @@ from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.page import Page
 
-class CalculatorSettings(Page, HasPopups):
+class CalculatorSettings(Page):
     STATE_LEN = 5
     IMG_PATH = IMAGES_PATH + "calculator_settings.png"
 

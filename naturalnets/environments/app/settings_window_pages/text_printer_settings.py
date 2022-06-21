@@ -5,7 +5,7 @@ from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.page import Page
 
-class TextPrinterSettings(Page, HasPopups):
+class TextPrinterSettings(Page):
     STATE_LEN = 2
     IMG_PATH = IMAGES_PATH + "text_printer_settings.png"
 
