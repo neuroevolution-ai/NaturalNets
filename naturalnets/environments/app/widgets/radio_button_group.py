@@ -3,12 +3,11 @@ import numpy as np
 
 from typing import Callable, List
 from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.exception import ArgumentError
 from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box
 
-#TODO: build a superclass for RadioButton and CheckBox (same functionality)
-#      and inherit for specific render fucntion
 class RadioButton(Widget):
 
     STATE_LEN = 1
@@ -37,7 +36,7 @@ class RadioButton(Widget):
             c_x = x + circle_width//2
             c_y = y + circle_height//2
             radius = min(circle_width, circle_height)//4
-            color = (0,0,0)
+            color = Color.BLACK.value
             thickness = -1
             cv2.circle(img, (c_x, c_y), radius, color ,thickness)
         return img
@@ -98,6 +97,9 @@ class RadioButtonGroup(Widget):
                 self._selected_radio_button = radio_button
             else:
                 radio_button.set_state(0)
+
+    def get_selected_radio_button(self) -> RadioButton:
+        return self._selected_radio_button
 
     def render(self, img: np.ndarray) -> np.ndarray:
         self._selected_radio_button.render(img)

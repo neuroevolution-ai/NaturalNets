@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.page import Widget
 
 class CheckBox(Widget):
@@ -20,10 +21,13 @@ class CheckBox(Widget):
     def is_selected(self):
         return self.get_state()[0]
 
+    def set_selected(self, selected:int) -> None:
+        self.get_state()[0] = selected
+        
     def render(self, img:np.ndarray) -> np.ndarray:
         width = height = 14 # width,height of the square part of the checkbox
         if self.is_selected():
-            cross_color = (0,0,0)
+            cross_color = Color.BLACK.value
             thickness = 2
             x, y = self.get_bb().get_as_tuple()[0:2]
             x += 2

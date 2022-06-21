@@ -1,3 +1,4 @@
+from typing import List
 import cv2
 import numpy as np
 
@@ -41,6 +42,10 @@ class Page(StateElement, Clickable):
         """
         self.widgets.append(widget)
         self.add_child(widget)
+
+    def add_widgets(self, widgets:List[Widget]):
+        for widget in widgets:
+            self.add_widget(widget)
 
     def get_widgets(self):
         return self.widgets

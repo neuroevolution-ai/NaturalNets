@@ -39,7 +39,7 @@ class MainWindow(StateElement, Clickable):
         self.text_printer = TextPrinter()
         calculator = Calculator()
         car_configurator = CarConfigurator()
-        self.figure_printer = FigurePrinter()
+        self.figure_printer = FigurePrinter(self.settings_window.get_figure_printer_settings())
 
         self.pages:list[Page] = [self.text_printer, calculator, car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
@@ -92,8 +92,10 @@ class MainWindow(StateElement, Clickable):
     def handle_menu_click(self, click_position:np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
+                # check if figure printer button is visible
                 if not button == self.figure_printer_button or self.is_figure_printer_button_visible():
                     button.handle_click()
+                    break
 
     def render(self, img:np.ndarray):
         to_render = cv2.imread(self.IMG_PATH)

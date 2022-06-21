@@ -2,9 +2,10 @@ import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.page import Page
 
-class CalculatorSettings(Page):
+class CalculatorSettings(Page, HasPopups):
     STATE_LEN = 5
     IMG_PATH = IMAGES_PATH + "calculator_settings.png"
 
@@ -16,3 +17,7 @@ class CalculatorSettings(Page):
         print("calculator_settings click handle called.")
         #TODO
         pass
+
+    def is_popup_open(self) -> bool:
+        #TODO
+        return False

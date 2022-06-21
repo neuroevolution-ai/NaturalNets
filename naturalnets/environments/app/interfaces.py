@@ -23,8 +23,13 @@ class HasBoundingBox(ABC):
 
 class Clickable(HasBoundingBox):
     @abstractmethod
-    def handle_click(self, click_position:np.ndarray=None):
+    def handle_click(self, click_position:np.ndarray=None) -> None:
         pass
 
     def is_clicked_by(self, click_position:np.ndarray) -> bool:
         return self.get_bb().is_point_inside(click_position)
+
+class HasPopups(ABC):
+    @abstractmethod
+    def is_popup_open(self) -> bool:
+        pass
