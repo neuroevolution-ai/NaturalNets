@@ -9,10 +9,14 @@ from naturalnets.environments.app.state_element import StateElement
 class Widget(StateElement, Clickable):
     def __init__(self, state_len:int, bounding_box:BoundingBox):
         super().__init__(state_len)
-        self.bounding_box = bounding_box
+        self._bounding_box = bounding_box
 
-    def get_bb(self):
-        return self.bounding_box
+    def get_bb(self) -> BoundingBox:
+        return self._bounding_box
+
+    def set_bb(self, bounding_box: BoundingBox) -> None:
+        self._bounding_box = bounding_box
+        
 
 class Page(StateElement, Clickable):
     def __init__(self, state_len:int, bounding_box:BoundingBox, img_path:str):
@@ -25,11 +29,18 @@ class Page(StateElement, Clickable):
     def get_img_path(self):
         return self._img_path
 
-    def get_bb(self):
+    def get_bb(self) -> BoundingBox:
         return self._bounding_box
+
+    def set_bb(self, bounding_box: BoundingBox) -> None:
+        self._bounding_box = bounding_box
         
     def add_widget(self, widget:Widget):
+        """Adds the widget to this Page. This will also add the widget to the
+        pages' StateElement-children.
+        """
         self.widgets.append(widget)
+        self.add_child(widget)
 
     def get_widgets(self):
         return self.widgets

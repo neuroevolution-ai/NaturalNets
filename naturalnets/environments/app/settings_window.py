@@ -12,7 +12,7 @@ from naturalnets.environments.app.settings_window_pages.car_configurator_setting
 from naturalnets.environments.app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
 from naturalnets.environments.app.settings_window_pages.text_printer_settings import TextPrinterSettings
 from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.utils import get_group_bounding_box, render_onto_bb
 
 class SettingsWindow(StateElement, Clickable):
     STATE_LEN:int = 5
@@ -27,6 +27,7 @@ class SettingsWindow(StateElement, Clickable):
 
     def __init__(self):
         super().__init__(self.STATE_LEN)
+        self._bounding_box = self.BOUNDING_BOX
 
         self.text_printer_settings = TextPrinterSettings()
         self.calculator_settings = CalculatorSettings()
@@ -55,6 +56,18 @@ class SettingsWindow(StateElement, Clickable):
         self.add_child(self.text_printer_settings)
         self.add_child(self.figure_printer_settings)
 
+    def get_text_printer_settings(self):
+        return self.text_printer_settings
+
+    def get_calculator_settings(self):
+        return self.calculator_settings
+
+    def get_car_configurator_settings(self):
+        return self.car_config_settings
+
+    def get_figure_printer_settings(self):
+        return self.figure_printer_settings
+
     def is_open(self) -> int:
         return self.get_state()[0]
 
@@ -65,7 +78,10 @@ class SettingsWindow(StateElement, Clickable):
         self.get_state()[0] = 0
 
     def get_bb(self) -> BoundingBox:
-        return self.BOUNDING_BOX
+        return self._bounding_box
+
+    def set_bb(self, bounding_box: BoundingBox) -> None:
+        self._bounding_box = bounding_box
 
     def handle_click(self, click_position: np.ndarray):
         if self.close_button.is_clicked_by(click_position):
@@ -98,17 +114,6 @@ class SettingsWindow(StateElement, Clickable):
         return img
 
     def get_tabs_bb(self, tab_buttons:List[Button]) -> BoundingBox:
-        min_x = inf
-        min_y = inf
-        width = 0
-        height = 0
-        for button in tab_buttons:
-            if button.get_bb().x < min_x:
-                min_x = button.get_bb().x
-            if button.get_bb().y < min_y:
-                min_y = button.get_bb().y
-            width += button.get_bb().width
-            height = button.get_bb().height
-        return BoundingBox(min_x, min_y, width, height)
+        return get_group_bounding_box(tab_buttons)
 
 

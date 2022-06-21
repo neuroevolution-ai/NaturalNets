@@ -11,20 +11,21 @@ class CheckBox(Widget):
     def __init__(self, bounding_box:BoundingBox):
         super().__init__(self.STATE_LEN, bounding_box)
 
-    def handle_click(self):
+    def handle_click(self, click_position: np.ndarray = None):
         if self.get_state()[0] == 0:
             self.get_state()[0] = 1
         else:
             self.get_state()[0] = 0
 
-    def is_checked(self):
+    def is_selected(self):
         return self.get_state()[0]
 
     def render(self, img:np.ndarray) -> np.ndarray:
-        if self.is_checked():
+        width = height = 14 # width,height of the square part of the checkbox
+        if self.is_selected():
             cross_color = (0,0,0)
             thickness = 2
-            x, y, width, height = self.get_bb().get_as_tuple()
+            x, y = self.get_bb().get_as_tuple()[0:2]
             x += 2
             y += 2
             width -= 4

@@ -12,6 +12,9 @@ class Button(Clickable):
 
     def get_bb(self):
         return self._bounding_box
+        
+    def set_bb(self, bounding_box: BoundingBox) -> None:
+        self._bounding_box = bounding_box
 
     def handle_click(self):
         self._click_action()

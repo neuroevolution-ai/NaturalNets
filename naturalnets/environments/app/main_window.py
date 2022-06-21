@@ -32,6 +32,7 @@ class MainWindow(StateElement, Clickable):
 
     def __init__(self):
         super().__init__(self.STATE_LEN)
+        self._bounding_box = self.BOUNDING_BOX
 
         self.settings_window = SettingsWindow()
 
@@ -59,7 +60,7 @@ class MainWindow(StateElement, Clickable):
         self.add_child(self.settings_window)
 
     def is_figure_printer_button_visible(self):
-        return self.settings_window.figure_printer_settings.is_figure_printer_activated()
+        return self.settings_window.get_figure_printer_settings().is_figure_printer_activated()
 
     def set_current_page(self, current_page:Page):
         for page, index in self.pages_to_state_index.items():
@@ -109,5 +110,8 @@ class MainWindow(StateElement, Clickable):
         return img
 
     def get_bb(self) -> BoundingBox:
-        return self.BOUNDING_BOX
+        return self._bounding_box
+
+    def set_bb(self, bounding_box: BoundingBox) -> None:
+        self.bounding_box = bounding_box
 
