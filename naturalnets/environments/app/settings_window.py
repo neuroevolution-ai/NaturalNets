@@ -4,6 +4,7 @@ import numpy as np
 from cmath import inf
 from typing import List
 from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.interfaces import Clickable, HasPopups
 from naturalnets.environments.app.page import Page
@@ -25,14 +26,14 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
     CAR_CONFIGURATOR_TAB_BUTTON_BB = BoundingBox(191, 25, 85, 23)
     FIGURE_PRINTER_TAB_BUTTON_BB = BoundingBox(277, 25, 97, 23)
 
-    def __init__(self):
+    def __init__(self, main_window:MainWindow):
         super().__init__(self.STATE_LEN)
         self._bounding_box = self.BOUNDING_BOX
 
-        self.text_printer_settings = TextPrinterSettings()
-        self.calculator_settings = CalculatorSettings()
-        self.car_config_settings = CarConfiguratorSettings()
-        self.figure_printer_settings = FigurePrinterSettings()
+        self.text_printer_settings = TextPrinterSettings(main_window.text_printer)
+        self.calculator_settings = CalculatorSettings(main_window.calculator)
+        self.car_config_settings = CarConfiguratorSettings(main_window.car_configurator)
+        self.figure_printer_settings = FigurePrinterSettings(main_window)
 
         self.close_button = Button(self.CLOSE_BUTTON_BB, lambda: self.close())
 
@@ -56,18 +57,6 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
         self.add_child(self.text_printer_settings)
         self.add_child(self.figure_printer_settings)
 
-    def get_text_printer_settings(self):
-        return self.text_printer_settings
-
-    def get_calculator_settings(self):
-        return self.calculator_settings
-
-    def get_car_configurator_settings(self):
-        return self.car_config_settings
-
-    def get_figure_printer_settings(self):
-        return self.figure_printer_settings
-
     def is_open(self) -> int:
         return self.get_state()[0]
 
@@ -85,10 +74,8 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
 
     def is_popup_open(self) -> bool:
         is_any_popup_open = False
-        is_any_popup_open |= self.get_text_printer_settings().is_popup_open()
-        is_any_popup_open |= self.get_calculator_settings().is_popup_open()
-        is_any_popup_open |= self.get_car_configurator_settings().is_popup_open()
-        is_any_popup_open |= self.get_figure_printer_settings().is_popup_open()
+        for page in self.tabs:
+            is_any_popup_open |= page.is_popup_open()
         return is_any_popup_open
 
 

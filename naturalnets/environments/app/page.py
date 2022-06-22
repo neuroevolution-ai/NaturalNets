@@ -47,7 +47,7 @@ class Page(StateElement, Clickable, HasPopups):
         for widget in widgets:
             self.add_widget(widget)
 
-    def get_widgets(self):
+    def get_widgets(self) -> List[Widget]:
         return self.widgets
     
     def render(self, img:np.ndarray):

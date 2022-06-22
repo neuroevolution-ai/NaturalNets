@@ -5,6 +5,7 @@ import numpy as np
 import attr
 import cv2
 import time
+from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.settings_window import SettingsWindow
@@ -31,41 +32,13 @@ class App(IEnvironment):
         self.config = AppCfg(**configuration)
         self.action = None
 
-        self.main_window = MainWindow()
-        self._state_len = self.get_total_state_len(self.main_window)
-
-        self._state = np.zeros(self._state_len, dtype=int)
-        self._last_allocated_state_index:int = 0
-        self.assign_state(self.main_window)
-
-
-        self._initial_state = np.copy(self._state)
+        self.app_controller = AppController()
+        self._initial_state = np.copy(self.app_controller.get_app_state())
 
         t1 = time.time()
         print("App initialized in {0}s.".format(t1-t0))
-        print("Total app state length is {0}.".format(self._state_len))
+        print("Total app state length is {0}.".format(self.app_controller._total_state_len))
         print("")
-
-    def get_total_state_len(self, stateElement:StateElement) -> int:
-        accumulated_len = 0
-        for child in stateElement.get_children():
-            accumulated_len += self.get_total_state_len(child)
-        accumulated_len += stateElement.get_state_len()
-        return accumulated_len
-
-    def assign_state(self, stateElement:StateElement) -> None:
-        state_len = stateElement.get_state_len()
-        state_sector = self.get_next_state_sector(state_len)
-        stateElement.assign_state_sector(state_sector)
-
-        for child in stateElement.get_children():
-            self.assign_state(child)
-
-    def get_next_state_sector(self, state_len):
-        sector_end = self._last_allocated_state_index + state_len
-        sector = self._state[self._last_allocated_state_index:sector_end]
-        self._last_allocated_state_index = sector_end
-        return sector
 
     def step(self, action: np.ndarray):
         t0 = time.time()
@@ -83,12 +56,12 @@ class App(IEnvironment):
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         #print(click_coordinates)
-        self.main_window.handle_click(click_coordinates)
+        self.app_controller.handle_click(click_coordinates)
 
         t1 = time.time()
 
         #print("step took {0}s".format(t1-t0))
-        print("current state:", self._state)
+        print("current state:", self.app_controller.get_app_state())
 
     def click_event(self, event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -96,18 +69,14 @@ class App(IEnvironment):
             self.action = np.array([x,y,10,10])
 
     def render(self):
-        #TODO: get img depending on current state
-        #IMG_PATH:str = 'naturalnets/environments/app/img/'
-        #current_img_name:str = self.main_window.get_current_img_name()
-        #image = cv2.imread(IMG_PATH + current_img_name)
-        #print(current_img_name)
 
         img_shape = (self.config.screen_width,self.config.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
-        image = self.main_window.render(image)
+        image = self.app_controller.render(image)
 
+        cv2.imshow("App", image)
         if self.config.interactive:
-            cv2.imshow("App", image)
+            # listen for user-click
             cv2.setMouseCallback("App", self.click_event)
             while True:
                 ESC_KEY = 27
@@ -122,7 +91,6 @@ class App(IEnvironment):
                     self.action = None
                     return action
         else:
-            cv2.imshow("App", image)
             cv2.waitKey(1)
         
 

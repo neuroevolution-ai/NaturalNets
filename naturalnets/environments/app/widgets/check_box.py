@@ -21,7 +21,7 @@ class CheckBox(Widget):
     def is_selected(self):
         return self.get_state()[0]
 
-    def set_selected(self, selected:int) -> None:
+    def set_selected(self, selected:bool) -> None:
         self.get_state()[0] = selected
         
     def render(self, img:np.ndarray) -> np.ndarray:

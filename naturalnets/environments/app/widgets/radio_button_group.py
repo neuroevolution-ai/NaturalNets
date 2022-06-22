@@ -20,8 +20,8 @@ class RadioButton(Widget):
         if self.has_click_action():
             self._action()
 
-    def set_state(self, state:int):
-        self.get_state()[0] = state
+    def set_selected(self, selected:bool):
+        self.get_state()[0] = selected
 
     def is_selected(self):
         return self.get_state()[0]
@@ -93,10 +93,10 @@ class RadioButtonGroup(Widget):
     def set_selected_button(self, selected_button:RadioButton):
         for radio_button in self.radio_buttons:
             if radio_button == selected_button:
-                radio_button.set_state(1)
+                radio_button.set_selected(True)
                 self._selected_radio_button = radio_button
             else:
-                radio_button.set_state(0)
+                radio_button.set_selected(False)
 
     def get_selected_radio_button(self) -> RadioButton:
         return self._selected_radio_button

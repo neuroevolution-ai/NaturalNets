@@ -11,16 +11,30 @@ class DropdownItem(Widget):
     STATE_LEN = 1
 
     # BoundingBox is set by/depends on Dropdown
-    def __init__(self, bounding_box:BoundingBox=BoundingBox(0,0,0,0), is_active_constraint:Callable=lambda: True):
+    def __init__(self, value, bounding_box:BoundingBox=BoundingBox(0,0,0,0)):
         super().__init__(self.STATE_LEN, bounding_box)
-        self._is_active = is_active_constraint
+        self._is_visible = True
+        self._value = value
+        self.get_state()[0] = 0 # is_selected state
+        
+    def get_value(self):
+        return self._value
 
-    def is_active(self) -> bool:
-        return self._is_active()
+    def is_visible(self) -> bool:
+        return self._is_visible
+        
+    def set_visible(self, active:bool) -> None:
+        self._is_visible = active
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
-        #TODO
+        #TODO: probably not needed
         pass
+
+    def set_selected(self, selected:bool):
+        self.get_state()[0] = selected
+
+    def is_selected(self) -> bool:
+        return self.get_state()[0]
 
     def render(self, img: np.ndarray) -> np.ndarray:
         x, y, width, height = self.get_bb().get_as_tuple()
@@ -39,6 +53,7 @@ class Dropdown(Widget):
         self.dropdown_button_bb = bounding_box
         self._all_items:list[DropdownItem] = items 
         self.add_children(self._all_items)
+        self._selected_item = None
         
     def is_open(self):
         return self.get_state()[0]
@@ -56,7 +71,8 @@ class Dropdown(Widget):
         if self.is_open():
             for item in self.get_items():
                 if item.is_clicked_by(click_position):
-                    item.handle_click(click_position)
+                    self.set_selected_item(item)
+                    #item.handle_click(click_position)
             # any click action closes dropdown if it was open
             self.close()
         else:
@@ -76,11 +92,28 @@ class Dropdown(Widget):
         for item in self._all_items:
             #TODO: check if window bounds are surpassed by any item's next_bb
             next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i, first_bb.width, first_bb.height)
-            if item.is_active():
+            if item.is_visible():
                 item.set_bb(next_bb)
                 available_items.append(item)
                 i += 1
         return available_items
+        
+    def set_selected_item(self, ddi:DropdownItem):
+        for item in self._all_items:
+            if item == ddi:
+                item.set_selected(True)
+                self._selected_item = item
+            else:
+                item.set_selected(False)
+
+    def get_selected_item(self) -> DropdownItem:
+        return self._selected_item
+
+    def get_current_value(self):
+        if self.get_selected_item() is not None:
+            return self.get_selected_item().get_value()
+        else:
+            return None
     
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_open():
