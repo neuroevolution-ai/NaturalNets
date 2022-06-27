@@ -55,6 +55,7 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
         self.set_current_tab(self.text_printer_settings)
 
         self.add_child(self.text_printer_settings)
+        self.add_child(self.car_config_settings)
         self.add_child(self.figure_printer_settings)
 
     def is_open(self) -> int:

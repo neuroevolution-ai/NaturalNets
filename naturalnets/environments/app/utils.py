@@ -35,7 +35,7 @@ def get_group_bounding_box(group:List[HasBoundingBox]):
             min_y = y
         if x + width > max_x:
             max_x = x + width
-        if y + width > max_y:
+        if y + height > max_y:
             max_y = y + height
 
     width = max_x - min_x
