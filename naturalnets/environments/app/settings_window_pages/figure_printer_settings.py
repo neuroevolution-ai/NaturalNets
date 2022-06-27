@@ -39,6 +39,7 @@ class FigurePrinterSettings(Page):
     def __init__(self, main_window:MainWindow):
         super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
         self.main_window = main_window
+        self.figure_printer = main_window.figure_printer
 
         self.figure_checkboxes_popup = FigureCheckboxesPopup(self)
         self.add_child(self.figure_checkboxes_popup)
@@ -54,15 +55,18 @@ class FigurePrinterSettings(Page):
         self._color_rbg, self._button_to_color = self._get_color_rbg()
         self.add_widget(self._color_rbg)
 
-        self.figure_printer = main_window.figure_printer
         self.figure_printer.set_figure_color(self.get_figure_color())
 
     def _get_figure_checkboxes(self) -> Tuple[List[CheckBox], Dict[CheckBox, Figure]]:
         figure_checkboxes = []
-        christmas_tree_checkbox = CheckBox(self.CHRISTMAS_TREE_BB)
-        space_ship_checkbox = CheckBox(self.SPACE_SHIP_BB)
-        guitar_checkbox = CheckBox(self.GUITAR_BB)
-        house_checkbox = CheckBox(self.HOUSE_BB)
+        christmas_tree_checkbox = CheckBox(self.CHRISTMAS_TREE_BB, 
+            lambda is_checked : self.figure_printer.dropdown.set_visible(self.figure_printer.christmas_tree_ddi, is_checked))
+        space_ship_checkbox = CheckBox(self.SPACE_SHIP_BB, 
+            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.space_ship_ddi, is_checked))
+        guitar_checkbox = CheckBox(self.GUITAR_BB, 
+            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.guitar_ddi, is_checked))
+        house_checkbox = CheckBox(self.HOUSE_BB, 
+            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.house_ddi, is_checked))
 
         figure_checkboxes.append(christmas_tree_checkbox)
         figure_checkboxes.append(space_ship_checkbox)

@@ -32,10 +32,15 @@ class FigurePrinter(Page):
         self.guitar_ddi = DropdownItem(Figure.GUITAR)
         self.house_ddi = DropdownItem(Figure.HOUSE)
         ddis = [self.christmas_tree_ddi, self.space_ship_ddi, self.guitar_ddi, self.house_ddi]
-
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
+
+        # set initial state
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
+        self.dropdown.set_visible(self.space_ship_ddi, 0)
+        self.dropdown.set_visible(self.guitar_ddi, 0)
+        self.dropdown.set_visible(self.house_ddi, 0)
         self.current_figure = None
+
         self.add_widget(self.dropdown)
 
         self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, lambda: self.draw_figure())

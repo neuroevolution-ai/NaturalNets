@@ -23,7 +23,7 @@ class DropdownItem(Widget):
     def is_visible(self) -> bool:
         return self._is_visible
         
-    def set_visible(self, active:bool) -> None:
+    def _set_visible(self, active:bool) -> None:
         self._is_visible = active
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
@@ -61,7 +61,7 @@ class Dropdown(Widget):
     def open(self):
         """Opens the dropdown, if it contains at least one item.
         """
-        if len(self.get_items()) > 0:
+        if len(self.get_visible_items()) > 0:
             self.get_state()[0] = 1
 
     def close(self):
@@ -69,7 +69,7 @@ class Dropdown(Widget):
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         if self.is_open():
-            for item in self.get_items():
+            for item in self.get_visible_items():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
                     #item.handle_click(click_position)
@@ -78,14 +78,28 @@ class Dropdown(Widget):
         else:
             self.open()
 
+    def set_visible(self, ddi:DropdownItem, visible:bool):
+        index = self._all_items.index(ddi)
+        item = self._all_items[index]
+        item._set_visible(visible)
+        if visible == False and item == self._selected_item:
+            visible_items = self.get_visible_items()
+            if len(visible_items) == 0:
+                self._selected_item = None
+            else:
+                self._selected_item = visible_items[0]
+        # set selected if item is set to visible and none is selected
+        elif self._selected_item is None:
+            self._selected_item = item
+
     #override
     def get_bb(self):
         if not self.is_open():
             return self.dropdown_button_bb
         else:
-            return get_group_bounding_box(self.get_items())
+            return get_group_bounding_box(self.get_visible_items())
 
-    def get_items(self):
+    def get_visible_items(self):
         i:int = 0
         first_bb = self.dropdown_button_bb
         available_items:list[DropdownItem] = []
@@ -117,7 +131,7 @@ class Dropdown(Widget):
     
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_open():
-            for item in self.get_items():
+            for item in self.get_visible_items():
                 item.render(img)
         else:
             #TODO
