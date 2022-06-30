@@ -26,7 +26,7 @@ class DropdownItem(Widget):
     def _set_visible(self, active:bool) -> None:
         self._is_visible = active
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         #TODO: probably not needed
         pass
 
@@ -67,7 +67,7 @@ class Dropdown(Widget):
     def close(self):
         self.get_state()[0] = 0
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.is_open():
             for item in self.get_visible_items():
                 if item.is_clicked_by(click_position):

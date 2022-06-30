@@ -1,3 +1,5 @@
+from enum import Enum
+from faulthandler import disable
 import itertools
 import numpy as np
 
@@ -13,7 +15,7 @@ from naturalnets.environments.app.widgets.check_box import CheckBox
 
 
 class CarConfiguratorSettings(Page):
-    STATE_LEN = 0
+    STATE_LEN = 3
     IMG_PATH = IMAGES_PATH + "car_configurator_settings.png"
 
     TIRE_20_INCH_BB = BoundingBox(48, 73, 83, 14)
@@ -34,7 +36,7 @@ class CarConfiguratorSettings(Page):
 
     def __init__(self, car_configurator:CarConfigurator):
         super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
-        self.car_configurator = car_configurator
+        self._car_configurator = car_configurator
 
         # add popup window as child
         self.car_disabled_popup = CarDisabledPopup()
@@ -55,8 +57,34 @@ class CarConfiguratorSettings(Page):
         for checkbox in self._all_checkboxes:
             checkbox.set_selected(1)
 
+        # all cars are initially enabled
+        self.set_car_a_enabled(True)
+        self.set_car_b_enabled(True)
+        self.set_car_c_enabled(True)
+
         # configure car availability-rules
-        self.car_A_rules = self._build_car_A_rules()
+        #self.car_A_rules = self._build_car_A_components()
+
+    def set_car_a_enabled(self, enabled:bool) -> None:
+        self.get_state()[0] = enabled
+        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_a_ddi, enabled)
+
+    def set_car_b_enabled(self, enabled:bool) -> None:
+        self.get_state()[1] = enabled
+        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_b_ddi, enabled)
+
+    def set_car_c_enabled(self, enabled:bool) -> None:
+        self.get_state()[2] = enabled
+        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_c_ddi, enabled)
+
+    def is_car_a_enabled(self) -> bool:
+        return self.get_state()[0]
+
+    def is_car_b_enabled(self) -> bool:
+        return self.get_state()[1]
+
+    def is_car_c_enabled(self) -> bool:
+        return self.get_state()[2]
 
     def _get_tire_checkboxes(self) -> List[CheckBox]:
         tire_checkboxes:list[CheckBox] = []
@@ -75,12 +103,12 @@ class CarConfiguratorSettings(Page):
     def _get_interior_checkboxes(self) -> List[CheckBox]:
         interior_checkboxes = []
         self.interior_modern = CheckBox(self.INTERIOR_MODERN_BB)
-        self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB, lambda state: print("year"))
-        self.interior_SPORT = CheckBox(self.INTERIOR_SPORT_BB)
+        self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB)
+        self.interior_sport = CheckBox(self.INTERIOR_SPORT_BB)
 
         interior_checkboxes.append(self.interior_modern)
         interior_checkboxes.append(self.interior_vintage)
-        interior_checkboxes.append(self.interior_SPORT)
+        interior_checkboxes.append(self.interior_sport)
 
         return interior_checkboxes
 
@@ -102,38 +130,143 @@ class CarConfiguratorSettings(Page):
 
         return motor_checkboxes
 
-    def _build_car_A_rules(self):
-        car_A_rules = []
-        car_A_rules.append([self.tire_20_inch, self.tire_22_inch])
-
-        return car_A_rules
+    def _get_disabled_cars_by_tire(self):
+        car_b_disabled = [not checkbox.is_selected() for checkbox in [self.tire_18_inch, self.tire_19_inch, self.tire_20_inch]]
+        pass
         
     def _check_if_car_disabled(self, last_state):
         #TODO
-        print("TODO: implement check if car disabled")
+        #print("TODO: implement check if car disabled")
         pass
 
 
-    def handle_click(self, click_position: np.ndarray = None):
-        #TODO: this is duplicated code, use for each
-        for checkbox_group in self._checkbox_groups:
-            if get_group_bounding_box(checkbox_group).is_point_inside(click_position):
-                current_state = [checkbox.is_selected() for checkbox in self._all_checkboxes]
-                for checkbox in checkbox_group:
-                    is_any_clicked = False
-                    if checkbox.is_clicked_by(click_position):
-                        #TODO check if popup needs to be shown
-                        checkbox.handle_click(click_position)
-                        is_any_clicked = True
-                        break #TODO: use break in all handle_click-iterations in project
-                if is_any_clicked:
-                    self._check_if_car_disabled(current_state)
+    def handle_click(self, click_position: np.ndarray):
+        if self.is_popup_open():
+            self.car_disabled_popup.handle_click(click_position)
+        else:
+            for checkbox_group in self._checkbox_groups:
+                if get_group_bounding_box(checkbox_group).is_point_inside(click_position):
+                    #current_state = [checkbox.is_selected() for checkbox in self._all_checkboxes]
+                    for checkbox in checkbox_group:
+                        #is_any_clicked = False
+                        if checkbox.is_clicked_by(click_position):
+                            #TODO check if popup needs to be shown
+                            checkbox.handle_click(click_position)
+                            #is_any_clicked = True
+                            self.update_cars_enabled_status()
+                            self._car_configurator.reset()
+                            break #TODO: use break in all handle_click-iterations in project
+                #if is_any_clicked:
+                #    self._check_if_car_disabled(current_state)
 
     def is_popup_open(self) -> bool:
         return self.car_disabled_popup.is_open()
 
+    def update_cars_enabled_status(self):
+        disabled_cars = []
+
+        car_a_disabled_tire, car_b_disabled_tire, car_c_disabled_tire = self.update_cars_by_tire()
+        car_a_disabled_interior, car_b_disabled_interior, car_c_disabled_interior = self.update_cars_by_interior()
+        car_a_disabled_propulsion, car_b_disabled_propulsion, car_c_disabled_propulsion = self.update_cars_by_propulsion_system()
+
+        if not car_a_disabled_tire and not car_a_disabled_interior and not car_a_disabled_propulsion:
+            self.set_car_a_enabled(True)
+        else:
+            if self.is_car_a_enabled():
+                disabled_cars.append(Car.A)
+            self.set_car_a_enabled(False)
+
+        if not car_b_disabled_tire and not car_b_disabled_interior and not car_b_disabled_propulsion:
+            self.set_car_b_enabled(True)
+        else:
+            if self.is_car_b_enabled():
+                disabled_cars.append(Car.B)
+            self.set_car_b_enabled(False)
+
+        if not car_c_disabled_tire and not car_c_disabled_interior and not car_c_disabled_propulsion:
+            self.set_car_c_enabled(True)
+        else:
+            if self.is_car_c_enabled:
+                disabled_cars.append(Car.C)
+            self.set_car_c_enabled(False)
+
+        if len(disabled_cars) > 0:
+            self.car_disabled_popup.open(disabled_cars)
+
+    def update_cars_by_tire(self):
+        car_a_disabled = True
+        car_b_disabled = True
+        car_c_disabled = True
+
+        if self.tire_18_inch.is_selected():
+            car_b_disabled = False
+        if self.tire_19_inch.is_selected():
+            car_b_disabled = False
+            car_c_disabled = False
+        if self.tire_20_inch.is_selected():
+            car_a_disabled = False
+            car_b_disabled = False
+            car_c_disabled = False
+        if self.tire_22_inch.is_selected():
+            car_a_disabled = False
+            car_c_disabled = False
+
+        return car_a_disabled, car_b_disabled, car_c_disabled
+
+    def update_cars_by_interior(self):
+        car_a_disabled = True
+        car_b_disabled = True
+        car_c_disabled = True
+
+        if self.interior_modern.is_selected():
+            car_a_disabled = False
+            car_b_disabled = False
+        if self.interior_vintage.is_selected():
+            car_a_disabled = False
+            car_c_disabled = False
+        if self.interior_sport.is_selected():
+            car_b_disabled = False
+            car_c_disabled = False
+
+        return car_a_disabled, car_b_disabled, car_c_disabled
+
+    def update_cars_by_propulsion_system(self):
+        car_a_disabled = True
+        car_b_disabled = True
+        car_c_disabled = True
+
+        if self.combustion_A.is_selected():
+            car_a_disabled = False
+        if self.combustion_B.is_selected():
+            car_c_disabled = False
+        if self.combustion_C.is_selected():
+            car_a_disabled = False
+            car_c_disabled = False
+        if self.electric_A.is_selected():
+            car_b_disabled = False
+            car_c_disabled = False
+        if self.electric_B.is_selected():
+            car_b_disabled = False
+            car_c_disabled = False
+
+        return car_a_disabled, car_b_disabled, car_c_disabled
+
+    def render(self, img: np.ndarray):
+        img = super().render(img)
+        if self.is_popup_open():
+            img = self.car_disabled_popup.render(img)
+        return img
+
+
+
+class Car(Enum):
+    A = 0
+    B = 1
+    C = 2
+
 class CarDisabledPopup(Page):
-    STATE_LEN = 1
+    STATE_LEN = 4 # state-index 0 for open/closed state, rest for shown "text" 
+                  # (which cars were disabled by last click)
     BOUNDING_BOX = BoundingBox(87, 101, 235, 86)
     IMG_PATH = IMAGES_PATH + "car_config_car_disabled_popup.png"
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
@@ -142,14 +275,22 @@ class CarDisabledPopup(Page):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, lambda: self.close())
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click()
 
-    def open(self):
+    def open(self, disabled_cars:List[str]):
+        if Car.A in disabled_cars:
+            self.get_state()[Car.A.value] = 1
+        if Car.B in disabled_cars:
+            self.get_state()[Car.B.value] = 1
+        if Car.C in disabled_cars:
+            self.get_state()[Car.C.value] = 1
+
         self.get_state()[0] = 1
 
     def close(self):
+        self.get_state()[1:self.STATE_LEN] = np.zeros(self.STATE_LEN - 1, dtype=int)
         self.get_state()[0] = 0
 
     def is_open(self):

@@ -78,7 +78,7 @@ class FigurePrinter(Page):
         elif self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()
         #TODO
-        print("Figure printer current color is", self._figure_color)
+        #print("Figure printer current color is", self._figure_color)
 
     def render(self, img: np.ndarray):
         super().render(img)

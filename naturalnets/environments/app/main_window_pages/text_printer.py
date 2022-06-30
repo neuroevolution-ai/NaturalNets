@@ -14,6 +14,6 @@ class TextPrinter(Page):
         pass
 
     def handle_click(self, click_position: np.ndarray = None):
-        print("text_printer click handle called.")
+        #print("text_printer click handle called.")
         #TODO
         pass

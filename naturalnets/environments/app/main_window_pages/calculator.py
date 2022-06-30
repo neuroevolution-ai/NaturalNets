@@ -14,7 +14,7 @@ class Calculator(Page):
         pass
 
     def handle_click(self, click_position: np.ndarray = None):
-        print("calculator click handle called.")
+        #print("calculator click handle called.")
         #TODO
         pass
 

@@ -123,7 +123,7 @@ class FigurePrinterSettings(Page):
     def is_popup_open(self) -> bool:
         return self.figure_checkboxes_popup.is_open()
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.figure_checkboxes_popup.is_open():
             self.figure_checkboxes_popup.handle_click(click_position)
 
@@ -191,7 +191,7 @@ class FigureCheckboxesPopup(Page):
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
         self.add_child(self.dropdown)
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         # check dropdown first, may obscure apply-button when opened
         if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
             self.dropdown.handle_click(click_position)

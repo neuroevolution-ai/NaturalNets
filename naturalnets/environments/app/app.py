@@ -7,6 +7,7 @@ import cv2
 import time
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.settings_window import SettingsWindow
 from naturalnets.environments.app.state_element import StateElement
@@ -22,6 +23,7 @@ class AppCfg:
     screen_width: int
     screen_height: int
     interactive: bool
+    monkey_tester: bool
 
 
 class App(IEnvironment):
@@ -43,7 +45,7 @@ class App(IEnvironment):
     def step(self, action: np.ndarray):
         t0 = time.time()
 
-        if self.config.interactive:
+        if self.config.interactive or self.config.monkey_tester:
             self.click_position_x = action[0]
             self.click_position_y = action[1]
         else:
@@ -61,18 +63,20 @@ class App(IEnvironment):
         t1 = time.time()
 
         #print("step took {0}s".format(t1-t0))
-        print("current state:", self.app_controller.get_app_state())
+        #print("current state:", self.app_controller.get_app_state())
 
     def click_event(self, event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
-            print("click event at ({0},{1})".format(x, y))
+            #print("click event at ({0},{1})".format(x, y))
             self.action = np.array([x,y,10,10])
 
-    def render(self):
+    def render(self, click_position:np.ndarray=None):
 
         img_shape = (self.config.screen_width,self.config.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
+        if click_position is not None:
+            cv2.circle(image, (click_position[0], click_position[1]), 4, Color.BLACK.value, -1)
 
         cv2.imshow("App", image)
         if self.config.interactive:
