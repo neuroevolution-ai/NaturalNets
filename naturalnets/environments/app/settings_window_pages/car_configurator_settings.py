@@ -9,7 +9,7 @@ from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import get_group_bounding_box
+from naturalnets.environments.app.utils import get_group_bounding_box, put_text
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.check_box import CheckBox
 
@@ -186,7 +186,7 @@ class CarConfiguratorSettings(Page):
         if not car_c_disabled_tire and not car_c_disabled_interior and not car_c_disabled_propulsion:
             self.set_car_c_enabled(True)
         else:
-            if self.is_car_c_enabled:
+            if self.is_car_c_enabled():
                 disabled_cars.append(Car.C)
             self.set_car_c_enabled(False)
 
@@ -257,12 +257,10 @@ class CarConfiguratorSettings(Page):
             img = self.car_disabled_popup.render(img)
         return img
 
-
-
 class Car(Enum):
-    A = 0
-    B = 1
-    C = 2
+    A = 1
+    B = 2
+    C = 3
 
 class CarDisabledPopup(Page):
     STATE_LEN = 4 # state-index 0 for open/closed state, rest for shown "text" 
@@ -274,6 +272,17 @@ class CarDisabledPopup(Page):
     def __init__(self):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, lambda: self.close())
+        self.index_to_car_str = {1: "Car A", 2: "Car B", 3: "Car C"}
+
+
+    def _get_disabled_cars_str(self) -> List[str]:
+        disabled_cars = "Disabled "
+        for i in range(1,4):
+            if self.get_state()[i] == 1:
+                disabled_cars += self.index_to_car_str[i] + " "
+        return disabled_cars
+
+
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -287,11 +296,18 @@ class CarDisabledPopup(Page):
         if Car.C in disabled_cars:
             self.get_state()[Car.C.value] = 1
 
-        self.get_state()[0] = 1
+        self.get_state()[0] = 1 # open-state
 
     def close(self):
         self.get_state()[1:self.STATE_LEN] = np.zeros(self.STATE_LEN - 1, dtype=int)
-        self.get_state()[0] = 0
+        self.get_state()[0] = 0 # open-state
 
     def is_open(self):
         return self.get_state()[0]
+
+    def render(self, img: np.ndarray):
+        img = super().render(img)
+        bottomLeftCorner = (107, 135) # global position of text
+        put_text(img, self._get_disabled_cars_str(), bottomLeftCorner, 0.4)
+        return img
+        

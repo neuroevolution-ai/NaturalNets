@@ -6,6 +6,7 @@ import numpy as np
 
 from cmath import inf
 from typing import List
+from naturalnets.environments.app.colors import Color
 
 from naturalnets.environments.app.interfaces import HasBoundingBox
 
@@ -21,7 +22,7 @@ def render_onto_bb(img:np.ndarray, bounding_box:BoundingBox, to_render:np.ndarra
     height = bounding_box.height
     img[y:y + height,x:x + width] = to_render
     return img
-    
+
 def get_group_bounding_box(group:List[HasBoundingBox]):
     min_x = inf
     min_y = inf
@@ -42,3 +43,10 @@ def get_group_bounding_box(group:List[HasBoundingBox]):
     height = max_y - min_y
     
     return BoundingBox(min_x, min_y, width, height)
+
+def put_text(img, text, bottomLeftCornerOfText, fontScale):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    fontColor = Color.BLACK.value
+    thickness = 1
+    lineType = 2
+    cv2.putText(img, text, bottomLeftCornerOfText, font, fontScale, fontColor, thickness, lineType)

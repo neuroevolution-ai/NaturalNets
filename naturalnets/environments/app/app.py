@@ -43,7 +43,7 @@ class App(IEnvironment):
         print("")
 
     def step(self, action: np.ndarray):
-        t0 = time.time()
+        #t0 = time.time()
 
         if self.config.interactive or self.config.monkey_tester:
             self.click_position_x = action[0]
@@ -60,10 +60,10 @@ class App(IEnvironment):
         #print(click_coordinates)
         self.app_controller.handle_click(click_coordinates)
 
-        t1 = time.time()
+        #t1 = time.time()
 
         #print("step took {0}s".format(t1-t0))
-        #print("current state:", self.app_controller.get_app_state())
+        print("current state:", self.app_controller.get_app_state())
 
     def click_event(self, event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:
