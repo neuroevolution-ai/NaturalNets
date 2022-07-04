@@ -27,10 +27,10 @@ class FigurePrinter(Page):
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
         self._figure_color:Color = None
-        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE)
-        self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP)
-        self.guitar_ddi = DropdownItem(Figure.GUITAR)
-        self.house_ddi = DropdownItem(Figure.HOUSE)
+        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
+        self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
+        self.guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
+        self.house_ddi = DropdownItem(Figure.HOUSE, display_name="House")
         ddis = [self.christmas_tree_ddi, self.space_ship_ddi, self.guitar_ddi, self.house_ddi]
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
 
@@ -52,6 +52,12 @@ class FigurePrinter(Page):
         self._set_figure_state(figure)
         self.current_figure = figure
         self._show_figure(True)
+
+    def set_dd_item_visible(self, item, visible):
+        self.dropdown.set_visible(item, visible)
+        if visible == True:
+            # update selected item when a new item becomes visible
+            self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
         
     def _set_figure_state(self, figure:Figure):
         if figure == Figure.CHRISTMAS_TREE:
@@ -72,8 +78,11 @@ class FigurePrinter(Page):
     def set_figure_color(self, color:Color):
         self._figure_color = color
 
+    def is_dropdown_open(self) -> bool:
+        return self.dropdown.is_open()
+
     def handle_click(self, click_position):
-        if self.dropdown.is_clicked_by(click_position):
+        if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
             self.dropdown.handle_click(click_position)
         elif self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()

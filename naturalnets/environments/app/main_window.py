@@ -58,7 +58,7 @@ class MainWindow(StateElement, Clickable):
             self.figure_printer_button,
         ]
 
-        self.add_child(self.figure_printer)
+        self.add_children([self.car_configurator, self.figure_printer])
         #self.add_child(self.settings_window)
 
     def set_figure_printer_button_visible(self, visible:bool) -> None:
@@ -77,13 +77,12 @@ class MainWindow(StateElement, Clickable):
 
     def handle_click(self, click_position:np.ndarray) -> None:
 
-        #if self.settings_window.is_open():
-        #    self.settings_window.handle_click(click_position)
-        if self.MENU_AREA_BB.is_point_inside(click_position):
+        if self.current_page.is_dropdown_open() or self.PAGES_AREA_BB.is_point_inside(click_position):
+            self.current_page.handle_click(click_position)
+
+        elif self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
 
-        elif self.PAGES_AREA_BB.is_point_inside(click_position):
-            self.current_page.handle_click(click_position)
         else:
             # no interactable part of window clicked
             pass
@@ -93,6 +92,9 @@ class MainWindow(StateElement, Clickable):
         # switch to text printer if figure printer is current page but not activated in settings
         #if self.current_page == self.figure_printer and not self.is_figure_printer_button_visible():
         #    self.set_current_page(self.text_printer)
+
+    def is_dropdown_open(self):
+        return self.current_page.is_dropdown_open()
     
     def handle_menu_click(self, click_position:np.ndarray) -> None:
         for button in self.buttons:

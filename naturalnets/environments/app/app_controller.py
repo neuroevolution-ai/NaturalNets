@@ -54,7 +54,7 @@ class AppController():
     def handle_click(self, click_position:np.ndarray):
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
-        elif self.settings_button.is_clicked_by(click_position):
+        elif not self.main_window.is_dropdown_open() and self.settings_button.is_clicked_by(click_position):
             self.settings_window.open()
         else:
             self.main_window.handle_click(click_position)

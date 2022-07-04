@@ -5,6 +5,7 @@ import numpy as np
 
 from typing import List
 from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.app.car import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator
@@ -64,6 +65,31 @@ class CarConfiguratorSettings(Page):
 
         # configure car availability-rules
         #self.car_A_rules = self._build_car_A_components()
+        self.car_config_ddis_to_curr_checkbox_status = {
+        }
+
+    def update_car_config_ddi_state(self):
+        """Sets the state of the dropdown items in the car cunfigurator page according to
+        the state of the checkboxes in this settings page.
+        """
+        self._car_configurator.set_ddi_state_from_settings({
+            self._car_configurator.tire_18_ddi: self.tire_18_inch.is_selected(),
+            self._car_configurator.tire_19_ddi: self.tire_19_inch.is_selected(),
+            self._car_configurator.tire_20_ddi: self.tire_20_inch.is_selected(),
+            self._car_configurator.tire_22_ddi: self.tire_22_inch.is_selected(),
+
+            self._car_configurator.interior_modern_ddi: self.interior_modern.is_selected(),
+            self._car_configurator.interior_vintage_ddi: self.interior_vintage.is_selected(),
+            self._car_configurator.interior_sport_ddi: self.interior_sport.is_selected(),
+
+            self._car_configurator.prop_combustion_A_ddi: self.combustion_A.is_selected(),
+            self._car_configurator.prop_combustion_B_ddi: self.combustion_B.is_selected(),
+            self._car_configurator.prop_combustion_C_ddi: self.combustion_C.is_selected(),
+            self._car_configurator.prop_electric_A_ddi: self.electric_A.is_selected(),
+            self._car_configurator.prop_electric_B_ddi: self.electric_B.is_selected(),
+        })
+
+
 
     def set_car_a_enabled(self, enabled:bool) -> None:
         self.get_state()[0] = enabled
@@ -88,10 +114,10 @@ class CarConfiguratorSettings(Page):
 
     def _get_tire_checkboxes(self) -> List[CheckBox]:
         tire_checkboxes:list[CheckBox] = []
-        self.tire_20_inch = CheckBox(self.TIRE_20_INCH_BB)
-        self.tire_22_inch = CheckBox(self.TIRE_22_INCH_BB)
-        self.tire_18_inch = CheckBox(self.TIRE_18_INCH_BB)
-        self.tire_19_inch = CheckBox(self.TIRE_19_INCH_BB)
+        self.tire_20_inch = CheckBox(self.TIRE_20_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_20_ddi, is_checked))
+        self.tire_22_inch = CheckBox(self.TIRE_22_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_22_ddi, is_checked))
+        self.tire_18_inch = CheckBox(self.TIRE_18_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_18_ddi, is_checked))
+        self.tire_19_inch = CheckBox(self.TIRE_19_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_19_ddi, is_checked))
 
         tire_checkboxes.append(self.tire_20_inch)
         tire_checkboxes.append(self.tire_22_inch)
@@ -102,9 +128,9 @@ class CarConfiguratorSettings(Page):
 
     def _get_interior_checkboxes(self) -> List[CheckBox]:
         interior_checkboxes = []
-        self.interior_modern = CheckBox(self.INTERIOR_MODERN_BB)
-        self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB)
-        self.interior_sport = CheckBox(self.INTERIOR_SPORT_BB)
+        self.interior_modern = CheckBox(self.INTERIOR_MODERN_BB, lambda is_checked: self._car_configurator.interior_dropdown.set_visible(self._car_configurator.interior_modern_ddi, is_checked))
+        self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB, lambda is_checked: self._car_configurator.interior_dropdown.set_visible(self._car_configurator.interior_vintage_ddi, is_checked))
+        self.interior_sport = CheckBox(self.INTERIOR_SPORT_BB, lambda is_checked: self._car_configurator.interior_dropdown.set_visible(self._car_configurator.interior_sport_ddi, is_checked))
 
         interior_checkboxes.append(self.interior_modern)
         interior_checkboxes.append(self.interior_vintage)
@@ -116,11 +142,11 @@ class CarConfiguratorSettings(Page):
     def _get_motor_checkboxes(self) -> List[CheckBox]:
         motor_checkboxes = []
 
-        self.combustion_A = CheckBox(self.COMBUSTION_ENGINE_A_BB)
-        self.combustion_B = CheckBox(self.COMBUSTION_ENGINE_B_BB)
-        self.combustion_C = CheckBox(self.COMBUSTION_ENGINE_C_BB)
-        self.electric_A = CheckBox(self.ELECTRIC_MOTOR_A_BB)
-        self.electric_B = CheckBox(self.ELECTRIC_MOTOR_B_BB)
+        self.combustion_A = CheckBox(self.COMBUSTION_ENGINE_A_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_combustion_A_ddi, is_checked))
+        self.combustion_B = CheckBox(self.COMBUSTION_ENGINE_B_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_combustion_B_ddi, is_checked))
+        self.combustion_C = CheckBox(self.COMBUSTION_ENGINE_C_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_combustion_C_ddi, is_checked))
+        self.electric_A = CheckBox(self.ELECTRIC_MOTOR_A_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_electric_A_ddi, is_checked))
+        self.electric_B = CheckBox(self.ELECTRIC_MOTOR_B_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_electric_B_ddi, is_checked))
 
         motor_checkboxes.append(self.combustion_A)
         motor_checkboxes.append(self.combustion_B)
@@ -154,6 +180,7 @@ class CarConfiguratorSettings(Page):
                             checkbox.handle_click(click_position)
                             #is_any_clicked = True
                             self.update_cars_enabled_status()
+                            self.update_car_config_ddi_state()
                             self._car_configurator.reset()
                             break #TODO: use break in all handle_click-iterations in project
                 #if is_any_clicked:
@@ -257,10 +284,6 @@ class CarConfiguratorSettings(Page):
             img = self.car_disabled_popup.render(img)
         return img
 
-class Car(Enum):
-    A = 1
-    B = 2
-    C = 3
 
 class CarDisabledPopup(Page):
     STATE_LEN = 4 # state-index 0 for open/closed state, rest for shown "text" 

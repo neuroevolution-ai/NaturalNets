@@ -5,17 +5,18 @@ from typing import Callable, List
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.page import Widget
-from naturalnets.environments.app.utils import get_group_bounding_box
+from naturalnets.environments.app.utils import get_group_bounding_box, put_text
 
 class DropdownItem(Widget):
     STATE_LEN = 1
 
     # BoundingBox is set by/depends on Dropdown
-    def __init__(self, value, bounding_box:BoundingBox=BoundingBox(0,0,0,0)):
-        super().__init__(self.STATE_LEN, bounding_box)
+    def __init__(self, value, display_name:str):
+        super().__init__(self.STATE_LEN, BoundingBox(0,0,0,0))
         self._is_visible = True
         self._value = value
         self.get_state()[0] = 0 # is_selected state
+        self.display_name = display_name
         
     def get_value(self):
         return self._value
@@ -43,6 +44,15 @@ class DropdownItem(Widget):
         color = Color.BLACK.value
         thickness = 2
         cv2.rectangle(img, start_point, end_point, color, thickness)
+
+        text_padding = 3*thickness
+        bottomLeftCorner = (x + text_padding, y + height - text_padding)
+        if self.display_name is not None:
+            put_text(img, self.display_name, bottomLeftCorner, 0.4)
+        else:
+            put_text(img, self.get_value(), bottomLeftCorner, 0.4)
+
+
         return img
 
 class Dropdown(Widget):
@@ -79,18 +89,19 @@ class Dropdown(Widget):
             self.open()
 
     def set_visible(self, ddi:DropdownItem, visible:bool):
+        #print([item.get_value() for item in self._all_items])
         index = self._all_items.index(ddi)
         item = self._all_items[index]
         item._set_visible(visible)
-        if visible == False and item == self._selected_item:
-            visible_items = self.get_visible_items()
-            if len(visible_items) == 0:
-                self._selected_item = None
-            else:
-                self._selected_item = visible_items[0]
-        # set selected if item is set to visible and none is selected
-        elif self._selected_item is None:
-            self._selected_item = item
+        #if visible == False and item == self._selected_item:
+        #    visible_items = self.get_visible_items()
+        #    if len(visible_items) == 0:
+        #        self._selected_item = None
+        #    else:
+        #        self._selected_item = visible_items[0]
+        ## set selected if item is set to visible and none is selected
+        #elif self._selected_item is None:
+        #    self._selected_item = item
 
     #override
     def get_bb(self):
@@ -111,8 +122,14 @@ class Dropdown(Widget):
                 available_items.append(item)
                 i += 1
         return available_items
+
+    def get_all_items(self):
+        return self._all_items
         
     def set_selected_item(self, ddi:DropdownItem):
+        if ddi is None:
+            self._selected_item = None
+
         for item in self._all_items:
             if item == ddi:
                 item.set_selected(True)
@@ -128,14 +145,25 @@ class Dropdown(Widget):
             return self.get_selected_item().get_value()
         else:
             return None
+
+    def set_selected_value(self, value) -> None:
+        for item in self.get_visible_items():
+            if item.get_value() == value:
+                self.set_selected_item(item)
     
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_open():
             for item in self.get_visible_items():
                 item.render(img)
-        else:
-            #TODO
-            pass
+        else: # render selected item on dropdown-button position if dropdown is closed
+            x, y, _, height = self.get_bb().get_as_tuple()
+            text_padding = 6
+            bottomLeftCorner = (x + text_padding, y + height - text_padding)
+            display_text = ""
+            if self.get_current_value() is not None:
+                display_text = self.get_selected_item().display_name
+            put_text(img, display_text, bottomLeftCorner, 0.4)
+
         return img
 
   

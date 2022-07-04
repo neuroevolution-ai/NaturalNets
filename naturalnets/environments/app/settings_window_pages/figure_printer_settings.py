@@ -60,13 +60,13 @@ class FigurePrinterSettings(Page):
     def _get_figure_checkboxes(self) -> Tuple[List[CheckBox], Dict[CheckBox, Figure]]:
         figure_checkboxes = []
         christmas_tree_checkbox = CheckBox(self.CHRISTMAS_TREE_BB, 
-            lambda is_checked : self.figure_printer.dropdown.set_visible(self.figure_printer.christmas_tree_ddi, is_checked))
+            lambda is_checked : self.figure_printer.set_dd_item_visible(self.figure_printer.christmas_tree_ddi, is_checked))
         space_ship_checkbox = CheckBox(self.SPACE_SHIP_BB, 
-            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.space_ship_ddi, is_checked))
+            lambda is_checked: self.figure_printer.set_dd_item_visible(self.figure_printer.space_ship_ddi, is_checked))
         guitar_checkbox = CheckBox(self.GUITAR_BB, 
-            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.guitar_ddi, is_checked))
+            lambda is_checked: self.figure_printer.set_dd_item_visible(self.figure_printer.guitar_ddi, is_checked))
         house_checkbox = CheckBox(self.HOUSE_BB, 
-            lambda is_checked: self.figure_printer.dropdown.set_visible(self.figure_printer.house_ddi, is_checked))
+            lambda is_checked: self.figure_printer.set_dd_item_visible(self.figure_printer.house_ddi, is_checked))
 
         figure_checkboxes.append(christmas_tree_checkbox)
         figure_checkboxes.append(space_ship_checkbox)
@@ -183,13 +183,13 @@ class FigureCheckboxesPopup(Page):
         self.apply_button = Button(self.APPLY_BUTTON_BB, lambda: self.close())
         self.figure_printer_settings = figure_printer_settings
 
-        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE)
-        space_ship_ddi = DropdownItem(Figure.SPACE_SHIP)
-        guitar_ddi = DropdownItem(Figure.GUITAR)
-        house_ddi = DropdownItem(Figure.HOUSE)
+        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
+        space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
+        guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
+        house_ddi = DropdownItem(Figure.HOUSE, display_name="House")
         ddis = [self.christmas_tree_ddi, space_ship_ddi, guitar_ddi, house_ddi]
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
-        self.add_child(self.dropdown)
+        self.add_widget(self.dropdown)
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # check dropdown first, may obscure apply-button when opened
@@ -200,6 +200,7 @@ class FigureCheckboxesPopup(Page):
             curr_dropdown_value:Figure = self.dropdown.get_current_value()
             if curr_dropdown_value is not None:
                 self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
+                self.figure_printer_settings.figure_printer.dropdown.set_selected_value(curr_dropdown_value)
         #TODO
         pass
 
@@ -213,9 +214,9 @@ class FigureCheckboxesPopup(Page):
     def is_open(self):
         return self.get_state()[0]
 
-    def render(self, img: np.ndarray):
-        if self.is_open():
-            img = super().render(img)
-            if self.dropdown.is_open():
-                img = self.dropdown.render(img)
-        return img
+    #def render(self, img: np.ndarray):
+    #    if self.is_open():
+    #        img = super().render(img)
+    #        if self.dropdown.is_open():
+    #            img = self.dropdown.render(img)
+    #    return img
