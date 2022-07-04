@@ -7,6 +7,7 @@ from naturalnets.environments.app.car import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
 class CarConfigurator(Page):
@@ -28,14 +29,19 @@ class CarConfigurator(Page):
     PROP_FRAME_BB = BoundingBox(125, 325, 303, 75)
     PROP_FRAME_IMG_PATH = IMAGES_PATH + "car_config_prop_frame.png"
 
+    BUTTON_BB = BoundingBox(125, 406, 303, 22)
+    BUTTON_IMG_PATH = IMAGES_PATH + "car_config_button_frame.png"
+
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        # add car dropdown
         self.car_a_ddi = DropdownItem(Car.A, display_name="Car A")
         self.car_b_ddi = DropdownItem(Car.B, display_name="Car B")
         self.car_c_ddi = DropdownItem(Car.C, display_name="Car C")
         self.car_dropdown = Dropdown(self.CAR_DROPDOWN_BB, [self.car_a_ddi, self.car_b_ddi, self.car_c_ddi])
         self.add_widget(self.car_dropdown)
 
+        # add tire dropdown
         self.tire_20_ddi = DropdownItem("Tire 20", "Tire 20")
         self.tire_22_ddi = DropdownItem("Tire 22", "Tire 22")
         self.tire_18_ddi = DropdownItem("Tire 18", "Tire 18")
@@ -43,12 +49,14 @@ class CarConfigurator(Page):
         self.tire_dropdown = Dropdown(self.TIRE_DROPDOWN_BB, [self.tire_18_ddi, self.tire_19_ddi, self.tire_20_ddi, self.tire_22_ddi])
         self.add_widget(self.tire_dropdown)
 
+        # add interior dropdown
         self.interior_modern_ddi = DropdownItem("Modern", "Modern")
         self.interior_vintage_ddi = DropdownItem("Vintage", "Vintage")
         self.interior_sport_ddi = DropdownItem("Sport", "Sport")
         self.interior_dropdown = Dropdown(self.INTERIOR_DROPDOWN_BB, [self.interior_modern_ddi, self.interior_vintage_ddi, self.interior_sport_ddi])
         self.add_widget(self.interior_dropdown)
 
+        # add propulsion system dropdown
         self.prop_combustion_A_ddi = DropdownItem("Combustion A", "Combustion A")
         self.prop_combustion_B_ddi = DropdownItem("Combustion B", "Combustion B")
         self.prop_combustion_C_ddi = DropdownItem("Combustion C", "Combustion C")
@@ -58,11 +66,24 @@ class CarConfigurator(Page):
                 self.prop_combustion_C_ddi, self.prop_electric_A_ddi, self.prop_electric_B_ddi])
         self.add_widget(self.prop_dropdown)
 
+        # setup data structures
         self.dropdowns = [self.car_dropdown, self.tire_dropdown, self.interior_dropdown, self.prop_dropdown]
-
         self.ddi_state_from_settings:dict[DropdownItem, bool] = {}
 
+        #add show configuration button and window
+        self.popup = CarConfiguratorPopup()
+        self.show_config_button = Button(self.BUTTON_BB, lambda: self.popup.open())
+
     def handle_click(self, click_position: np.ndarray):
+        if self.is_popup_open():
+            self.popup.handle_click(click_position)
+            return
+
+        # button only clickable if a value is selected in last dropdown
+        if self.dropdowns[len(self.dropdowns) - 1].get_current_value() is not None and self.show_config_button.is_clicked_by(click_position):
+            self.show_config_button.handle_click()
+            return
+
         for index, dropdown in enumerate(self.dropdowns):
             if dropdown.is_clicked_by(click_position) or dropdown.is_open():
                 old_value = dropdown.get_current_value()
@@ -77,7 +98,8 @@ class CarConfigurator(Page):
                     # reset to dropdown if next dropdown(s) already have selected values
                     if index + 1 < len(self.dropdowns) and self.dropdowns[index + 1].get_selected_item() != None:
                         self._reset_to(index)
-                break
+                return
+
 
     def set_ddi_state_from_settings(self, ddi_state:Dict[DropdownItem, bool]) -> None:
         """Used by the car-configurator-settings page to set which checkboxes are currently enabled
@@ -152,6 +174,8 @@ class CarConfigurator(Page):
                     or self.interior_dropdown.is_open()\
                     or self.prop_dropdown.is_open()
 
+    def is_popup_open(self) -> bool:
+        return self.popup.is_open()
 
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
@@ -169,7 +193,40 @@ class CarConfigurator(Page):
             frame = cv2.imread(self.PROP_FRAME_IMG_PATH)
             render_onto_bb(img, self.PROP_FRAME_BB, frame)
 
+        if self.prop_dropdown.get_selected_item() is not None:
+            frame = cv2.imread(self.BUTTON_IMG_PATH)
+            render_onto_bb(img, self.BUTTON_BB, frame)
+
+
         for widget in self.get_widgets():
             img = widget.render(img)
 
+        if self.is_popup_open():
+            img = self.popup.render(img)
+
         return img
+
+class CarConfiguratorPopup(Page):
+    STATE_LEN = 1 # open/closed
+    BOUNDING_BOX = BoundingBox(75, 160, 298, 128)
+    IMG_PATH = IMAGES_PATH + "car_config_popup.png"
+
+    OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
+
+    def __init__(self):
+        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        self.ok_button = Button(self.OK_BUTTON_BB, lambda: self.close())
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        if self.ok_button.is_clicked_by(click_position):
+            self.ok_button.handle_click()
+
+    def is_open(self) -> bool:
+        return self.get_state()[0]
+
+    def open(self) -> None:
+        print("foooooooooo")
+        self.get_state()[0] = 1 # open-state
+
+    def close(self) -> None:
+        self.get_state()[0] = 0 # open-state

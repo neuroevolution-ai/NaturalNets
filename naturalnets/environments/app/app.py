@@ -63,7 +63,7 @@ class App(IEnvironment):
         #t1 = time.time()
 
         #print("step took {0}s".format(t1-t0))
-        print("current state:", self.app_controller.get_app_state())
+        #print("current state:", self.app_controller.get_app_state())
 
     def click_event(self, event, x, y, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN:

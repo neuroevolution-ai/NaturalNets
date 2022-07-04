@@ -10,7 +10,7 @@ WIDTH = 448
 HEIGHT = 448
 
 config = {
-    "number_time_steps": 100000,
+    "number_time_steps": 10**6,
     "screen_width": 448,
     "screen_height": 448,
 	"interactive": False,
@@ -30,6 +30,9 @@ if __name__ == "__main__":
         app.step(action)
         t1 = time.time()
         time_sum += (t1-t0)
+
+        if i % 10**5 == 0:
+            print("{} steps done.".format(i*10**5))
 
     print(time_sum/config["number_time_steps"])
     

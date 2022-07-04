@@ -75,9 +75,12 @@ class MainWindow(StateElement, Clickable):
             else:
                 self.get_state()[index] = 0
 
+    def current_page_blocks_click(self):
+        return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
+
     def handle_click(self, click_position:np.ndarray) -> None:
 
-        if self.current_page.is_dropdown_open() or self.PAGES_AREA_BB.is_point_inside(click_position):
+        if self.current_page_blocks_click() or self.PAGES_AREA_BB.is_point_inside(click_position):
             self.current_page.handle_click(click_position)
 
         elif self.MENU_AREA_BB.is_point_inside(click_position):

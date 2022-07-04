@@ -1,5 +1,3 @@
-from enum import Enum
-from faulthandler import disable
 import itertools
 import numpy as np
 
@@ -44,13 +42,13 @@ class CarConfiguratorSettings(Page):
         self.add_child(self.car_disabled_popup)
 
         # configure checkboxes
-        self._tire_checkboxes = self._get_tire_checkboxes()
+        self._tire_checkboxes = self._create_tire_checkboxes()
         self.add_widgets(self._tire_checkboxes)
 
-        self._interior_checkboxes = self._get_interior_checkboxes()
+        self._interior_checkboxes = self._create_interior_checkboxes()
         self.add_widgets(self._interior_checkboxes)
 
-        self._motor_checkboxes = self._get_motor_checkboxes()
+        self._motor_checkboxes = self._create_propulsion_system_checkboxes()
         self.add_widgets(self._motor_checkboxes)
 
         self._checkbox_groups = [self._tire_checkboxes, self._interior_checkboxes, self._motor_checkboxes]
@@ -62,11 +60,6 @@ class CarConfiguratorSettings(Page):
         self.set_car_a_enabled(True)
         self.set_car_b_enabled(True)
         self.set_car_c_enabled(True)
-
-        # configure car availability-rules
-        #self.car_A_rules = self._build_car_A_components()
-        self.car_config_ddis_to_curr_checkbox_status = {
-        }
 
     def update_car_config_ddi_state(self):
         """Sets the state of the dropdown items in the car cunfigurator page according to
@@ -89,8 +82,6 @@ class CarConfiguratorSettings(Page):
             self._car_configurator.prop_electric_B_ddi: self.electric_B.is_selected(),
         })
 
-
-
     def set_car_a_enabled(self, enabled:bool) -> None:
         self.get_state()[0] = enabled
         self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_a_ddi, enabled)
@@ -112,7 +103,7 @@ class CarConfiguratorSettings(Page):
     def is_car_c_enabled(self) -> bool:
         return self.get_state()[2]
 
-    def _get_tire_checkboxes(self) -> List[CheckBox]:
+    def _create_tire_checkboxes(self) -> List[CheckBox]:
         tire_checkboxes:list[CheckBox] = []
         self.tire_20_inch = CheckBox(self.TIRE_20_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_20_ddi, is_checked))
         self.tire_22_inch = CheckBox(self.TIRE_22_INCH_BB, lambda is_checked: self._car_configurator.tire_dropdown.set_visible(self._car_configurator.tire_22_ddi, is_checked))
@@ -126,7 +117,7 @@ class CarConfiguratorSettings(Page):
 
         return tire_checkboxes
 
-    def _get_interior_checkboxes(self) -> List[CheckBox]:
+    def _create_interior_checkboxes(self) -> List[CheckBox]:
         interior_checkboxes = []
         self.interior_modern = CheckBox(self.INTERIOR_MODERN_BB, lambda is_checked: self._car_configurator.interior_dropdown.set_visible(self._car_configurator.interior_modern_ddi, is_checked))
         self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB, lambda is_checked: self._car_configurator.interior_dropdown.set_visible(self._car_configurator.interior_vintage_ddi, is_checked))
@@ -138,8 +129,7 @@ class CarConfiguratorSettings(Page):
 
         return interior_checkboxes
 
-
-    def _get_motor_checkboxes(self) -> List[CheckBox]:
+    def _create_propulsion_system_checkboxes(self) -> List[CheckBox]:
         motor_checkboxes = []
 
         self.combustion_A = CheckBox(self.COMBUSTION_ENGINE_A_BB, lambda is_checked: self._car_configurator.prop_dropdown.set_visible(self._car_configurator.prop_combustion_A_ddi, is_checked))
@@ -156,35 +146,19 @@ class CarConfiguratorSettings(Page):
 
         return motor_checkboxes
 
-    def _get_disabled_cars_by_tire(self):
-        car_b_disabled = [not checkbox.is_selected() for checkbox in [self.tire_18_inch, self.tire_19_inch, self.tire_20_inch]]
-        pass
-        
-    def _check_if_car_disabled(self, last_state):
-        #TODO
-        #print("TODO: implement check if car disabled")
-        pass
-
-
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
             self.car_disabled_popup.handle_click(click_position)
         else:
             for checkbox_group in self._checkbox_groups:
                 if get_group_bounding_box(checkbox_group).is_point_inside(click_position):
-                    #current_state = [checkbox.is_selected() for checkbox in self._all_checkboxes]
                     for checkbox in checkbox_group:
-                        #is_any_clicked = False
                         if checkbox.is_clicked_by(click_position):
-                            #TODO check if popup needs to be shown
                             checkbox.handle_click(click_position)
-                            #is_any_clicked = True
                             self.update_cars_enabled_status()
                             self.update_car_config_ddi_state()
                             self._car_configurator.reset()
                             break #TODO: use break in all handle_click-iterations in project
-                #if is_any_clicked:
-                #    self._check_if_car_disabled(current_state)
 
     def is_popup_open(self) -> bool:
         return self.car_disabled_popup.is_open()
@@ -286,8 +260,7 @@ class CarConfiguratorSettings(Page):
 
 
 class CarDisabledPopup(Page):
-    STATE_LEN = 4 # state-index 0 for open/closed state, rest for shown "text" 
-                  # (which cars were disabled by last click)
+    STATE_LEN = 1 # open/closed
     BOUNDING_BOX = BoundingBox(87, 101, 235, 86)
     IMG_PATH = IMAGES_PATH + "car_config_car_disabled_popup.png"
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
@@ -295,17 +268,13 @@ class CarDisabledPopup(Page):
     def __init__(self):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, lambda: self.close())
-        self.index_to_car_str = {1: "Car A", 2: "Car B", 3: "Car C"}
-
+        self.disabled_cars:List[str] = []
 
     def _get_disabled_cars_str(self) -> List[str]:
-        disabled_cars = "Disabled "
-        for i in range(1,4):
-            if self.get_state()[i] == 1:
-                disabled_cars += self.index_to_car_str[i] + " "
-        return disabled_cars
-
-
+        disabled_cars_str = "Disabled "
+        for car in self.disabled_cars:
+            disabled_cars_str += car + " "
+        return disabled_cars_str
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -313,16 +282,16 @@ class CarDisabledPopup(Page):
 
     def open(self, disabled_cars:List[str]):
         if Car.A in disabled_cars:
-            self.get_state()[Car.A.value] = 1
+            self.disabled_cars.append("Car A")
         if Car.B in disabled_cars:
-            self.get_state()[Car.B.value] = 1
+            self.disabled_cars.append("Car B")
         if Car.C in disabled_cars:
-            self.get_state()[Car.C.value] = 1
+            self.disabled_cars.append("Car C")
 
         self.get_state()[0] = 1 # open-state
 
     def close(self):
-        self.get_state()[1:self.STATE_LEN] = np.zeros(self.STATE_LEN - 1, dtype=int)
+        self.disabled_cars = []
         self.get_state()[0] = 0 # open-state
 
     def is_open(self):

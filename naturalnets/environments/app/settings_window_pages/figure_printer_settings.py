@@ -213,10 +213,3 @@ class FigureCheckboxesPopup(Page):
 
     def is_open(self):
         return self.get_state()[0]
-
-    #def render(self, img: np.ndarray):
-    #    if self.is_open():
-    #        img = super().render(img)
-    #        if self.dropdown.is_open():
-    #            img = self.dropdown.render(img)
-    #    return img
