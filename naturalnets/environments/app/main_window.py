@@ -58,7 +58,7 @@ class MainWindow(StateElement, Clickable):
             self.figure_printer_button,
         ]
 
-        self.add_children([self.car_configurator, self.figure_printer])
+        self.add_children([self.calculator, self.car_configurator, self.figure_printer])
         #self.add_child(self.settings_window)
 
     def set_figure_printer_button_visible(self, visible:bool) -> None:

@@ -41,8 +41,8 @@ class FigurePrinterSettings(Page):
         self.main_window = main_window
         self.figure_printer = main_window.figure_printer
 
-        self.figure_checkboxes_popup = FigureCheckboxesPopup(self)
-        self.add_child(self.figure_checkboxes_popup)
+        self.popup = FigureCheckboxesPopup(self)
+        self.add_child(self.popup)
 
         self._show_fig_printer_checkbox = CheckBox(self.SHOW_FIG_PRINTER_BB)
 
@@ -121,11 +121,11 @@ class FigurePrinterSettings(Page):
         return self._show_fig_printer_checkbox.is_selected()
 
     def is_popup_open(self) -> bool:
-        return self.figure_checkboxes_popup.is_open()
+        return self.popup.is_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.figure_checkboxes_popup.is_open():
-            self.figure_checkboxes_popup.handle_click(click_position)
+        if self.is_popup_open():
+            self.popup.handle_click(click_position)
 
         elif self._show_fig_printer_checkbox.is_clicked_by(click_position):
             self._show_fig_printer_checkbox.handle_click()
@@ -148,7 +148,7 @@ class FigurePrinterSettings(Page):
                         checkbox.handle_click(click_position)
                         break
                 if self.get_selected_checkboxes_count() == 0:
-                    self.figure_checkboxes_popup.open()
+                    self.popup.open()
 
                 
             #for widget in self.get_widgets():
@@ -165,8 +165,8 @@ class FigurePrinterSettings(Page):
 
     def render(self, img: np.ndarray):
         img = super().render(img)
-        if self.figure_checkboxes_popup.is_open():
-            img = self.figure_checkboxes_popup.render(img)
+        if self.popup.is_open():
+            img = self.popup.render(img)
         return img
 
 
@@ -201,8 +201,6 @@ class FigureCheckboxesPopup(Page):
             if curr_dropdown_value is not None:
                 self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
                 self.figure_printer_settings.figure_printer.dropdown.set_selected_value(curr_dropdown_value)
-        #TODO
-        pass
 
     def open(self):
         self.get_state()[0] = 1

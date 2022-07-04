@@ -15,7 +15,7 @@ from naturalnets.environments.app.settings_window_pages.text_printer_settings im
 from naturalnets.environments.app.state_element import StateElement
 from naturalnets.environments.app.utils import get_group_bounding_box, render_onto_bb
 
-class SettingsWindow(StateElement, Clickable, HasPopups):
+class SettingsWindow(StateElement, Clickable):
     STATE_LEN:int = 5
     BOUNDING_BOX = BoundingBox(3, 1, 422, 367)
 
@@ -54,9 +54,7 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
 
         self.set_current_tab(self.text_printer_settings)
 
-        self.add_child(self.text_printer_settings)
-        self.add_child(self.car_config_settings)
-        self.add_child(self.figure_printer_settings)
+        self.add_children(self.tabs)
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -73,15 +71,8 @@ class SettingsWindow(StateElement, Clickable, HasPopups):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
-    def is_popup_open(self) -> bool:
-        is_any_popup_open = False
-        for page in self.tabs:
-            is_any_popup_open |= page.is_popup_open()
-        return is_any_popup_open
-
-
     def handle_click(self, click_position: np.ndarray):
-        if self.is_popup_open():
+        if self.current_tab.is_popup_open() or self.current_tab.is_dropdown_open():
             self.current_tab.handle_click(click_position)
 
         elif self.close_button.is_clicked_by(click_position):
