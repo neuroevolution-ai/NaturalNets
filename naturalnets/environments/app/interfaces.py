@@ -30,8 +30,6 @@ class Clickable(HasBoundingBox):
         return self.get_bb().is_point_inside(click_position)
 
 class HasPopups(ABC):
-    #TODO: could be changed to MayBlockClicks or smth, than integrate 
-    #      is_popup_open() and is_dropdown_open()
     @abstractmethod
     def is_popup_open(self) -> bool:
         pass

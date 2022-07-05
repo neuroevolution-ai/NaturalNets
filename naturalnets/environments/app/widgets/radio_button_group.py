@@ -12,9 +12,10 @@ class RadioButton(Widget):
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box:BoundingBox, action:Callable=None):
+    def __init__(self, bounding_box:BoundingBox, value=None, action:Callable=None):
         super().__init__(self.STATE_LEN, bounding_box)
         self._action = action
+        self._value = value
 
     def handle_click(self):
         if self.has_click_action():
@@ -28,6 +29,9 @@ class RadioButton(Widget):
 
     def has_click_action(self):
         return self._action is not None
+
+    def get_value(self):
+        return self._value
 
     def render(self, img: np.ndarray) -> np.ndarray:
         circle_width = circle_height = 14
@@ -100,6 +104,9 @@ class RadioButtonGroup(Widget):
 
     def get_selected_radio_button(self) -> RadioButton:
         return self._selected_radio_button
+
+    def get_value(self):
+        return self._selected_radio_button.get_value()
 
     def render(self, img: np.ndarray) -> np.ndarray:
         self._selected_radio_button.render(img)

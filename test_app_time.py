@@ -32,7 +32,7 @@ if __name__ == "__main__":
         time_sum += (t1-t0)
 
         if i % 10**5 == 0:
-            print("{} steps done.".format(i*10**5))
+            print("{} steps done.".format(i))
 
     print(time_sum/config["number_time_steps"])
     

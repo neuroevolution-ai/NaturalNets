@@ -100,6 +100,7 @@ class Calculator(Page):
             self.button.handle_click()
 
     def calculate(self):
+        # TODO: probably needed s.t. nn knows there is a button
         # TODO(maybe): not needed for neural net training, 
         # may be implemented if desired for rendering
         pass

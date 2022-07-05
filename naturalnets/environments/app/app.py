@@ -96,6 +96,7 @@ class App(IEnvironment):
                     return action
         else:
             cv2.waitKey(1)
+
         
 
 
