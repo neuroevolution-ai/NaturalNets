@@ -28,8 +28,8 @@ if __name__ == "__main__":
     app = App(config)
     time_sum = 0
     action = None
-    initial_state = np.copy(app.get_state())
-    state_diff = np.zeros(len(initial_state), dtype=int)
+    #initial_state = np.copy(app.get_state())
+    #state_diff = np.zeros(len(initial_state), dtype=int)
     for i in range(config["number_time_steps"]):
         #app.render(action)
         action = np.array([randrange(0,448), randrange(0,448), 0, 0],dtype=int)
@@ -42,10 +42,10 @@ if __name__ == "__main__":
         if i % 10**5 == 0:
             print("{} steps done.".format(i))
         
-        state_diff = calc_state_diff(app.get_state(), initial_state, state_diff)
+        #state_diff = calc_state_diff(app.get_state(), initial_state, state_diff)
 
     print(time_sum/config["number_time_steps"])
-    print(state_diff)
-    print("Changed state elements: {}".format(np.sum(state_diff)/len(state_diff)))
+    #print(state_diff)
+    #print("Changed state elements: {}".format(np.sum(state_diff)/len(state_diff)))
 
     

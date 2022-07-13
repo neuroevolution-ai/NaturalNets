@@ -1,7 +1,8 @@
 from typing import Any, List
-import numpy as np
 
 import cv2
+import numpy as np
+
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.page import Widget
@@ -138,7 +139,8 @@ class Dropdown(Widget):
         first_bb = self._dropdown_button_bb
         available_items:list[DropdownItem] = []
         for item in self._all_items:
-            #TODO: check if window bounds are surpassed by any item's next_bb
+            #TODO: check if window bounds are surpassed by any item's next_bb 
+            # (not necessary for this app)
             next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i,
                                   first_bb.width, first_bb.height)
             if item.is_visible():
