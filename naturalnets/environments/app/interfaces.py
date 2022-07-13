@@ -23,7 +23,7 @@ class HasBoundingBox(ABC):
 
 class Clickable(HasBoundingBox):
     @abstractmethod
-    def handle_click(self, click_position:np.ndarray=None) -> None:
+    def handle_click(self, click_position:np.ndarray) -> None:
         pass
 
     def is_clicked_by(self, click_position:np.ndarray) -> bool:

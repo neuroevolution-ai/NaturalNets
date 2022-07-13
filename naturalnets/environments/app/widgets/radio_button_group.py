@@ -1,7 +1,8 @@
+from typing import Any, Callable, List
+
 import cv2
 import numpy as np
 
-from typing import Callable, List
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.exception import ArgumentError
@@ -9,15 +10,34 @@ from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box
 
 class RadioButton(Widget):
+    """Widget representing a single RadioButton. Every RadioButton
+    needs to be part of a RadioButtonGroup, which handles the
+    selected-state of all its RadioButtons.
+
+       State description:
+            state[0]: the selected-state of this RadioButton.
+    """
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box:BoundingBox, value=None, action:Callable=None):
+    def __init__(self, bounding_box:BoundingBox, value:Any=None, action:Callable=None):
+        """
+        Args:
+            bounding_box (BoundingBox): The BoundingBox of this Widget.
+            value (Any, optional): The value that this RadioButton represents. Defaults to None.
+            action (Callable, optional): The action performed when calling handle_click().
+            Defaults to None.
+        """
         super().__init__(self.STATE_LEN, bounding_box)
         self._action = action
         self._value = value
 
-    def handle_click(self):
+    def handle_click(self, click_position: np.ndarray=None) -> None:
+        """ The handle_click() method executes this RadioButtons action, if any.
+
+        Args:
+            click_position (np.ndarray, optional): Not used. Defaults to None.
+        """
         if self.has_click_action():
             self._action()
 
@@ -47,6 +67,12 @@ class RadioButton(Widget):
 
 
 class RadioButtonGroup(Widget):
+    """Widget representing a RadioButtonGroup. Handles the selected-state of
+       its RadioButtons (see handle_cilck()).
+
+       State description:
+            Has no inherent state, the state is made up of the state from it's RadioButtons.
+    """
 
     STATE_LEN = 0
     BOUNDING_BOX = BoundingBox(0, 0, 0, 0)
@@ -56,20 +82,22 @@ class RadioButtonGroup(Widget):
         first RadioButton in radio_buttons is initially selected.
 
         Args:
-            radio_buttons (List[RadioButton]): Initial RadioButtons for this group. 
+            radio_buttons (List[RadioButton]): Initial RadioButtons for this group.
             len(radio_buttons) >= 1.
 
         Raises:
             ArgumentError: If len(radio_buttons) < 1
         """
         if len(radio_buttons) < 1:
-            raise ArgumentError("RadioButtonGroup must be instantiated with at least one RadioButton.")
+            error_msg:str = "RadioButtonGroup must be instantiated with at least one RadioButton."
+            raise ArgumentError(error_msg)
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX)
 
         self.radio_buttons:list[RadioButton] = []
         self.add_radio_buttons(radio_buttons)
+        self._selected_radio_button = None
         self.set_selected_button(radio_buttons[0])
-        
+
     def add_radio_button(self, radio_button:RadioButton):
         self.add_child(radio_button)
         self.radio_buttons.append(radio_button)
@@ -78,14 +106,14 @@ class RadioButtonGroup(Widget):
     def add_radio_buttons(self, radio_buttons:List[RadioButton]):
         for radio_button in radio_buttons:
             self.add_radio_button(radio_button)
-        
-    def handle_click(self, click_position:np.ndarray):
-        """If click_position hits a radio button in this group, selects the 
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        """If click_position hits a radio button in this group, selects the
         radio button if it has no click-action. Otherwise the click action is
         executed without changing the current selection.
 
         Args:
-            click_position (np.ndarray): the position of the click
+            click_position (np.ndarray): the position of the click.
         """
         for radio_button in self.radio_buttons:
             if radio_button.is_clicked_by(click_position):
@@ -95,22 +123,25 @@ class RadioButtonGroup(Widget):
                     self.set_selected_button(radio_button)
 
     def set_selected_button(self, selected_button:RadioButton):
-        for radio_button in self.radio_buttons:
-            if radio_button == selected_button:
-                radio_button.set_selected(True)
-                self._selected_radio_button = radio_button
-            else:
-                radio_button.set_selected(False)
+        """Selects the given RadioButton and deselects all others.
+
+        Args:
+            selected_button (RadioButton): RadioButton to be selected, must be part of this
+            RadioButtonGroup.
+        """
+        if self._selected_radio_button is not None:
+            self._selected_radio_button.set_selected(False)
+        selected_button.set_selected(True)
+        self._selected_radio_button = selected_button
 
     def get_selected_radio_button(self) -> RadioButton:
         return self._selected_radio_button
 
     def get_value(self):
+        """Returns the value of the currently selected RadioButton.
+        """
         return self._selected_radio_button.get_value()
 
     def render(self, img: np.ndarray) -> np.ndarray:
         self._selected_radio_button.render(img)
         return img
-
-
-
