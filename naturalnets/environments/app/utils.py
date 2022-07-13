@@ -44,9 +44,9 @@ def get_group_bounding_box(group:List[HasBoundingBox]):
     
     return BoundingBox(min_x, min_y, width, height)
 
-def put_text(img, text, bottomLeftCornerOfText, fontScale):
+def put_text(img, text, bottom_left_corner, font_scale):
     font = cv2.FONT_HERSHEY_SIMPLEX
-    fontColor = Color.BLACK.value
+    font_color = Color.BLACK.value
     thickness = 1
-    lineType = 2
-    cv2.putText(img, text, bottomLeftCornerOfText, font, fontScale, fontColor, thickness, lineType)
+    line_type = 2
+    cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)

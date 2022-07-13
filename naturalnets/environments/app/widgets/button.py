@@ -16,5 +16,5 @@ class Button(Clickable):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
-    def handle_click(self):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         self._click_action()

@@ -35,12 +35,15 @@ class App(IEnvironment):
         self.action = None
 
         self.app_controller = AppController()
-        self._initial_state = np.copy(self.app_controller.get_app_state())
+        self._initial_state = np.copy(self.app_controller.get_complete_state())
 
         t1 = time.time()
         print("App initialized in {0}s.".format(t1-t0))
         print("Total app state length is {0}.".format(self.app_controller._total_state_len))
         print("")
+
+    def get_state(self):
+        return self.app_controller.get_complete_state()
 
     def step(self, action: np.ndarray):
         #t0 = time.time()
@@ -104,7 +107,7 @@ class App(IEnvironment):
         return 4
 
     def get_number_outputs(self) -> int:
-        return self._state_len
+        return self.app_controller.get_complete_state_len()
 
     def reset(self) -> None:
-        self._state[:] = self._initial_state
+        self.get_state()[:] = self._initial_state

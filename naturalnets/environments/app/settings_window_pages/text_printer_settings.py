@@ -114,7 +114,12 @@ class TextPrinterSettings(Page):
 
         opened_dd = self._get_opened_dropdown()
         if opened_dd is not None:
+            #TODO duplicate code here further down when handling dropdown clicks
+            # => add action to dropdown items?
+            old_value = opened_dd.get_current_value()
             opened_dd.handle_click(click_position)
+            if old_value != opened_dd.get_current_value():
+                self.dropdown_to_func[opened_dd]()
             return
 
         # handle dropdown clicks first, as they may occlude other widgets if opened

@@ -48,8 +48,11 @@ class AppController():
         self._last_allocated_state_index = sector_end
         return sector
 
-    def get_app_state(self):
+    def get_complete_state(self):
         return self._state
+
+    def get_complete_state_len(self) -> int:
+        return self._total_state_len
     
     def handle_click(self, click_position:np.ndarray):
         if self.settings_window.is_open():
