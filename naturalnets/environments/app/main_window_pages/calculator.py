@@ -4,21 +4,12 @@ import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
+from naturalnets.environments.app.enums import Base, Operator
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import put_text
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
-class Base(Enum):
-    DECIMAL = 0
-    BINARY = 2
-    HEX = 16
-
-class Operator(Enum):
-    ADDITION = "+"
-    SUBTRACTION = "-"
-    MULTIPLICATION = "*"
-    DIVISION = "/"
 
 class Calculator(Page):
 

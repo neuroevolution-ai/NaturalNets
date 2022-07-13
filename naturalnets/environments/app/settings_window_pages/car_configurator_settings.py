@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import List
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.car import Car
+from naturalnets.environments.app.enums import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator

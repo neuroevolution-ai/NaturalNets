@@ -2,7 +2,8 @@ import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
-from naturalnets.environments.app.main_window_pages.calculator import Base, Calculator, Operator
+from naturalnets.environments.app.enums import Base
+from naturalnets.environments.app.main_window_pages.calculator import Calculator, Operator
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.check_box import CheckBox

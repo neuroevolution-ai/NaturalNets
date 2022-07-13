@@ -1,10 +1,12 @@
+"""Module containing the CheckBox class.
+"""
 from typing import Callable
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.page import Widget
 
 class CheckBox(Widget):

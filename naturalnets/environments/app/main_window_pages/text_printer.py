@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.enums import Font, FontStyle
 from naturalnets.environments.app.page import Page

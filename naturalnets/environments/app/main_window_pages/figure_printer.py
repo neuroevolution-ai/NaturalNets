@@ -3,18 +3,12 @@ import numpy as np
 
 from enum import Enum
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color, Figure
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
-
-class Figure(Enum):
-    CHRISTMAS_TREE = "figure_christmas_tree.png"
-    SPACE_SHIP = "figure_space_ship.png"
-    GUITAR = "figure_guitar.png"
-    HOUSE = "figure_house.png"
 
 class FigurePrinter(Page):
 
@@ -43,7 +37,7 @@ class FigurePrinter(Page):
 
         self.add_widget(self.dropdown)
 
-        self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, lambda: self.draw_figure())
+        self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, lambda: self._draw_figure())
 
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()

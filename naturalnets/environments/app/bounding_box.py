@@ -1,7 +1,8 @@
+"""Contains the BoundingBox class."""
 import numpy as np
 
 class BoundingBox():
-    """ Describes the bounding-box of an element in pixels.
+    """ Describes the bounding-box consising of x, y ,width and height of an element in pixels.
     """
     def __init__(self, x:int, y:int, width:int, height:int):
         self.x = x
@@ -22,7 +23,8 @@ class BoundingBox():
         return x1 <= x <= x2 and y1 <= y <= y2
 
     def get_as_tuple(self):
+        """Returns this BoudningBox' values as a Tuple (x, y, width, height)."""
         return (self.x, self.y, self.width, self.height)
 
     def __repr__(self):
-        return "({0},{1},{2},{3})".format(self.x,self.y,self.width,self.height)
+        return f"({self.x},{self.y},{self.width},{self.height})"

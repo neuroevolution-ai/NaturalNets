@@ -1,10 +1,11 @@
+"""Module containing the classes relevant for the RadioButtonGroup-widget."""
 from typing import Any, Callable, List
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.exception import ArgumentError
 from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box

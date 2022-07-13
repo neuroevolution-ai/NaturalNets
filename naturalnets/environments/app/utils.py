@@ -6,7 +6,7 @@ import numpy as np
 
 from cmath import inf
 from typing import List
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 
 from naturalnets.environments.app.interfaces import HasBoundingBox
 

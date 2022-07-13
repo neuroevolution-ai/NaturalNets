@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.car import Car
+from naturalnets.environments.app.enums import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import render_onto_bb
@@ -225,7 +225,6 @@ class CarConfiguratorPopup(Page):
         return self.get_state()[0]
 
     def open(self) -> None:
-        print("foooooooooo")
         self.get_state()[0] = 1 # open-state
 
     def close(self) -> None:

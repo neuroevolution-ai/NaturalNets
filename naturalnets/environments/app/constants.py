@@ -1,5 +1,6 @@
-from naturalnets.environments.app.bounding_box import BoundingBox
+"""Contains constants for the app."""
 
+from naturalnets.environments.app.bounding_box import BoundingBox
 
 IMAGES_PATH:str = "naturalnets/environments/app/img/"
 

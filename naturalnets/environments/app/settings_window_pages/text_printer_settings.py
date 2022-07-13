@@ -1,9 +1,7 @@
-from ntpath import join
-from tkinter.tix import IMAGE
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.enums import Font, FontStyle
 from naturalnets.environments.app.interfaces import HasPopups

@@ -1,11 +1,9 @@
-from ntpath import join
-from tabnanny import check
 from typing import Dict, List, Tuple
 import numpy as np
 
 from enum import Enum
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.app.interfaces import HasPopups
 from naturalnets.environments.app.main_window import MainWindow

@@ -1,22 +1,14 @@
-from cmath import inf
-from importlib.util import spec_from_file_location
-from re import I
+"""Contains the App."""
+
+import time
+import cv2
 import numpy as np
 import attr
-import cv2
-import time
 from naturalnets.environments.app.app_controller import AppController
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.colors import Color
-from naturalnets.environments.app.main_window import MainWindow
-from naturalnets.environments.app.settings_window import SettingsWindow
-from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
-
-from naturalnets.environments.app.exception import InvalidInputError
+from naturalnets.environments.app.enums import Color
+from naturalnets.environments.i_environment import IEnvironment
 
 
-#TODO
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
     number_time_steps: int
@@ -35,18 +27,26 @@ class App(IEnvironment):
         self.action = None
 
         self.app_controller = AppController()
-        self._initial_state = np.copy(self.app_controller.get_complete_state())
+        self._initial_state = np.copy(self.app_controller.get_total_state())
+
+        self.action_x = 0
+        self.action_y = 0
+
+        self.random_number_x = 0
+        self.random_number_y = 0
+
+        self.click_position_x = 0
+        self.click_position_y = 0
 
         t1 = time.time()
-        print("App initialized in {0}s.".format(t1-t0))
-        print("Total app state length is {0}.".format(self.app_controller._total_state_len))
+        print(f"App initialized in {t1-t0}s.")
+        print(f"Total app state length is {self.app_controller._total_state_len}.")
         print("")
 
     def get_state(self):
-        return self.app_controller.get_complete_state()
+        return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
-        #t0 = time.time()
 
         if self.config.interactive or self.config.monkey_tester:
             self.click_position_x = action[0]
@@ -56,24 +56,22 @@ class App(IEnvironment):
 
             random_number1 = action[2] * np.random.normal()
             random_number2 = action[3] * np.random.normal()
-            self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width)
-            self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height)
+            self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1)
+                                                * self.config.screen_width)
+            self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2)
+                                                * self.config.screen_height)
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
-        #print(click_coordinates)
         self.app_controller.handle_click(click_coordinates)
 
-        #t1 = time.time()
-
-        #print("step took {0}s".format(t1-t0))
-        #print("current state:", self.app_controller.get_app_state())
 
     def click_event(self, event, x, y, flags, params):
+        """Sets action when cv2 mouse-callback is detected."""
         if event == cv2.EVENT_LBUTTONDOWN:
-            #print("click event at ({0},{1})".format(x, y))
             self.action = np.array([x,y,10,10])
 
     def render(self, click_position:np.ndarray=None):
+        """Renders the app depending on the apps configuration (interactive vs. other)"""
 
         img_shape = (self.config.screen_width,self.config.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
@@ -100,14 +98,14 @@ class App(IEnvironment):
         else:
             cv2.waitKey(1)
 
-        
-
-
     def get_number_inputs(self) -> int:
         return 4
 
     def get_number_outputs(self) -> int:
-        return self.app_controller.get_complete_state_len()
+        return self.app_controller.get_total_state_len()
 
     def reset(self) -> None:
         self.get_state()[:] = self._initial_state
+
+    def get_observation(self):
+        return self.get_state()
