@@ -141,7 +141,7 @@ class CarConfigurator(Page):
 
     def reset_ddi_visibility_to_stettings_state(self):
         for ddi, is_visible in self.ddi_state_from_settings.items():
-            ddi._set_visible(is_visible)
+            ddi.set_visible(is_visible)
 
     def reset(self):
         self._dropdowns_state = self._save_dropdowns_state()

@@ -1,35 +1,52 @@
-import cv2
+from typing import Any, List
 import numpy as np
 
-from typing import Callable, List
+import cv2
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.colors import Color
 from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box, put_text
 
 class DropdownItem(Widget):
+    """Widget representing a single dropdown-item.
+
+       State description:
+            state[0]: the selected-state of this dropdown-item.
+    """
     STATE_LEN = 1
 
-    # BoundingBox is set by/depends on Dropdown
     def __init__(self, value, display_name:str):
+        """
+        The BoundingBox of this widget is set by the corresponding dropdown and
+        is thus not passed to the constructor.
+
+        Args:
+            value (_type_): The value that this dropdown-item represents.
+            display_name (str): The string representation that is shown when rendering
+            this dropdown-item.
+        """
+        # BoundingBox is set by/depends on Dropdown
         super().__init__(self.STATE_LEN, BoundingBox(0,0,0,0))
         self._is_visible = True
         self._value = value
-        self.get_state()[0] = 0 # is_selected state
+        self.get_state()[0] = 0 # is-selected state
         self.display_name = display_name
-        
+
     def get_value(self):
         return self._value
 
     def is_visible(self) -> bool:
         return self._is_visible
-        
-    def _set_visible(self, active:bool) -> None:
+
+    def set_visible(self, active:bool) -> None:
+        """Sets the visible-status (denoting if this item shows up in the dropdown) of this 
+        dropdown-item. Should only be accessed by the Dropdown-Class.
+        """
         self._is_visible = active
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        #TODO: probably not needed
-        pass
+        """Currently unused method. May be used to perform on-click actions.
+        """
 
     def set_selected(self, selected:bool):
         self.get_state()[0] = selected
@@ -46,28 +63,39 @@ class DropdownItem(Widget):
         cv2.rectangle(img, start_point, end_point, color, thickness)
 
         text_padding = 3*thickness
-        bottomLeftCorner = (x + text_padding, y + height - text_padding)
+        bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:
-            put_text(img, self.display_name, bottomLeftCorner, 0.4)
+            put_text(img, self.display_name, bottom_left_corner, 0.4)
         else:
-            put_text(img, self.get_value(), bottomLeftCorner, 0.4)
+            put_text(img, self.get_value(), bottom_left_corner, 0.4)
 
 
         return img
 
 class Dropdown(Widget):
-    INITIAL_STATE_LEN = 1
+    """Widget representing a dropdown. May hold multiple dropdown items, managing
+    their selected-state.
+
+       State description:
+            state[0]: the opened-state of this dropdown.
+    """
+    STATE_LEN = 1
 
     def __init__(self, bounding_box:BoundingBox, items:List[DropdownItem]):
-        super().__init__(self.INITIAL_STATE_LEN, bounding_box)
-        self.dropdown_button_bb = bounding_box
-        self._all_items:list[DropdownItem] = items 
+        """
+        Args:
+            bounding_box (BoundingBox): The BoundingBox of the dropdown (i.e. the dropdown-button).
+            items (List[DropdownItem]): List containing dropdown-items, may be empty.
+        """
+        super().__init__(self.STATE_LEN, bounding_box)
+        self._dropdown_button_bb = bounding_box
+        self._all_items:list[DropdownItem] = items
         self.add_children(self._all_items)
         self._selected_item = None
-        
+
     def is_open(self):
         return self.get_state()[0]
-        
+
     def open(self):
         """Opens the dropdown, if it contains at least one item.
         """
@@ -78,45 +106,41 @@ class Dropdown(Widget):
         self.get_state()[0] = 0
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        """Sets the selected drodpown-item, if any. Closes the 
+        dropdown if it was open.
+
+        Args:
+            click_position (np.ndarray): the position of the click.
+        """
         if self.is_open():
             for item in self.get_visible_items():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
-                    #item.handle_click(click_position)
             # any click action closes dropdown if it was open
             self.close()
         else:
             self.open()
 
     def set_visible(self, ddi:DropdownItem, visible:bool):
-        #print([item.get_value() for item in self._all_items])
         index = self._all_items.index(ddi)
         item = self._all_items[index]
-        item._set_visible(visible)
-        #if visible == False and item == self._selected_item:
-        #    visible_items = self.get_visible_items()
-        #    if len(visible_items) == 0:
-        #        self._selected_item = None
-        #    else:
-        #        self._selected_item = visible_items[0]
-        ## set selected if item is set to visible and none is selected
-        #elif self._selected_item is None:
-        #    self._selected_item = item
+        item.set_visible(visible)
 
     #override
     def get_bb(self):
         if not self.is_open():
-            return self.dropdown_button_bb
-        else:
-            return get_group_bounding_box(self.get_visible_items())
+            return self._dropdown_button_bb
+
+        return get_group_bounding_box(self.get_visible_items())
 
     def get_visible_items(self):
         i:int = 0
-        first_bb = self.dropdown_button_bb
+        first_bb = self._dropdown_button_bb
         available_items:list[DropdownItem] = []
         for item in self._all_items:
             #TODO: check if window bounds are surpassed by any item's next_bb
-            next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i, first_bb.width, first_bb.height)
+            next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i,
+                                  first_bb.width, first_bb.height)
             if item.is_visible():
                 item.set_bb(next_bb)
                 available_items.append(item)
@@ -125,7 +149,7 @@ class Dropdown(Widget):
 
     def get_all_items(self):
         return self._all_items
-        
+
     def set_selected_item(self, ddi:DropdownItem):
         if ddi is None:
             self._selected_item = None
@@ -140,7 +164,7 @@ class Dropdown(Widget):
     def get_selected_item(self) -> DropdownItem:
         return self._selected_item
 
-    def get_current_value(self):
+    def get_current_value(self) -> Any:
         if self.get_selected_item() is not None:
             return self.get_selected_item().get_value()
         else:
@@ -150,7 +174,7 @@ class Dropdown(Widget):
         for item in self.get_visible_items():
             if item.get_value() == value:
                 self.set_selected_item(item)
-    
+
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_open():
             for item in self.get_visible_items():
@@ -158,12 +182,10 @@ class Dropdown(Widget):
         else: # render selected item on dropdown-button position if dropdown is closed
             x, y, _, height = self.get_bb().get_as_tuple()
             text_padding = 6
-            bottomLeftCorner = (x + text_padding, y + height - text_padding)
+            bottom_left_corner = (x + text_padding, y + height - text_padding)
             display_text = ""
             if self.get_current_value() is not None:
                 display_text = self.get_selected_item().display_name
-            put_text(img, display_text, bottomLeftCorner, 0.4)
+            put_text(img, display_text, bottom_left_corner, 0.4)
 
         return img
-
-  
