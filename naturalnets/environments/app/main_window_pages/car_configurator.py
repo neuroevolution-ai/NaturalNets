@@ -6,7 +6,7 @@ from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.enums import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.utils import put_text, render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
@@ -222,6 +222,7 @@ class CarConfiguratorPopup(Page):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(75, 160, 298, 128)
+    CONFIGURATION_TEXT_BB = BoundingBox(94, 167, 263, 73)
     IMG_PATH = IMAGES_PATH + "car_config_popup.png"
 
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
@@ -247,3 +248,17 @@ class CarConfiguratorPopup(Page):
     def is_open(self) -> bool:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def render(self, img: np.ndarray):
+        img = super().render(img)
+        x, y, _, height = self.CONFIGURATION_TEXT_BB.get_as_tuple()
+        props = [f"Propulsion System: {self.car_configurator.prop_dropdown.get_current_value()}",
+            f"Interior: {self.car_configurator.interior_dropdown.get_current_value()}",
+            f"Tires: {self.car_configurator.tire_dropdown.get_current_value()}",
+            f"Car: {self.car_configurator.car_dropdown.get_current_value()}"]
+
+        space = 20
+        for i, prop in enumerate(props):
+            bottom_left_corner = (x, y + height - i*space)
+            put_text(img, prop, bottom_left_corner, 0.4)
+        return img
