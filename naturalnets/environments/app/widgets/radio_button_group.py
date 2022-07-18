@@ -34,7 +34,7 @@ class RadioButton(Widget):
         self._value = value
 
     def handle_click(self, click_position: np.ndarray=None) -> None:
-        """ The handle_click() method executes this RadioButtons action, if any.
+        """ Executes this RadioButtons action, if any.
 
         Args:
             click_position (np.ndarray, optional): Not used. Defaults to None.

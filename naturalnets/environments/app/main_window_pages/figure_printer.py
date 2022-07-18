@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 
-from enum import Enum
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.enums import Color, Figure
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
@@ -11,6 +10,8 @@ from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
 class FigurePrinter(Page):
+    """The figure-printer page in the main-window.
+    """
 
     STATE_LEN = 3
     IMG_PATH = IMAGES_PATH + "figure_printer.png"

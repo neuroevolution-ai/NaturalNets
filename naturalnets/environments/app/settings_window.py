@@ -1,24 +1,35 @@
+from typing import List
 import cv2
 import numpy as np
 
-from cmath import inf
-from typing import List
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.widgets.button import Button
-from naturalnets.environments.app.interfaces import Clickable, HasPopups
+from naturalnets.environments.app.interfaces import Clickable
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.settings_window_pages.calculator_settings import CalculatorSettings
-from naturalnets.environments.app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
-from naturalnets.environments.app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
-from naturalnets.environments.app.settings_window_pages.text_printer_settings import TextPrinterSettings
+from naturalnets.environments.app.settings_window_pages.calculator_settings\
+    import CalculatorSettings
+from naturalnets.environments.app.settings_window_pages.car_configurator_settings\
+    import CarConfiguratorSettings
+from naturalnets.environments.app.settings_window_pages.figure_printer_settings\
+        import FigurePrinterSettings
+from naturalnets.environments.app.settings_window_pages.text_printer_settings\
+    import TextPrinterSettings
 from naturalnets.environments.app.state_element import StateElement
 from naturalnets.environments.app.utils import get_group_bounding_box, render_onto_bb
 
 class SettingsWindow(StateElement, Clickable):
+    """The settings window ot the app, containing the different settings-pages, one for
+    each page of the main-window pages.
+
+       State description:
+            state[0]: the opened-state of the settings window.
+            state[i]: represents the selected/shown status of page i, i in {1,..,4}.
+    """
     STATE_LEN:int = 5
     BOUNDING_BOX = BoundingBox(3, 1, 422, 367)
 
+    PAGE_BB = BoundingBox(25, 48, 378, 262)
     CLOSE_BUTTON_BB = BoundingBox(25, 318, 377, 27)
 
     TEXT_PRINTER_TAB_BUTTON_BB = BoundingBox(25, 25, 85, 23)
@@ -35,34 +46,40 @@ class SettingsWindow(StateElement, Clickable):
         self.car_config_settings = CarConfiguratorSettings(main_window.car_configurator)
         self.figure_printer_settings = FigurePrinterSettings(main_window)
 
-        self.close_button = Button(self.CLOSE_BUTTON_BB, lambda: self.close())
+        self.close_button = Button(self.CLOSE_BUTTON_BB, self.close)
 
-        self.tabs:list[Page] = [self.text_printer_settings, self.calculator_settings, self.car_config_settings, self.figure_printer_settings]
+        self.tabs:list[Page] = [self.text_printer_settings,
+                                self.calculator_settings,
+                                self.car_config_settings,
+                                self.figure_printer_settings]
 
         self.tab_buttons:list[Button] = [
-            Button(self.TEXT_PRINTER_TAB_BUTTON_BB, lambda: self.set_current_tab(self.text_printer_settings)),
-            Button(self.CALCULATOR_TAB_BUTTON_BB, lambda: self.set_current_tab(self.calculator_settings)),
-            Button(self.CAR_CONFIGURATOR_TAB_BUTTON_BB, lambda: self.set_current_tab(self.car_config_settings)),
-            Button(self.FIGURE_PRINTER_TAB_BUTTON_BB, lambda: self.set_current_tab(self.figure_printer_settings)),
+            Button(self.TEXT_PRINTER_TAB_BUTTON_BB,
+                    lambda: self.set_current_tab(self.text_printer_settings)),
+            Button(self.CALCULATOR_TAB_BUTTON_BB,
+                    lambda: self.set_current_tab(self.calculator_settings)),
+            Button(self.CAR_CONFIGURATOR_TAB_BUTTON_BB,
+                    lambda: self.set_current_tab(self.car_config_settings)),
+            Button(self.FIGURE_PRINTER_TAB_BUTTON_BB,
+                    lambda: self.set_current_tab(self.figure_printer_settings)),
         ]
 
         self.tabs_bb:BoundingBox = self.get_tabs_bb(self.tab_buttons)
-
-        # self.get_state()[0] represents the opened-state of the settings window
-        #assert len(self.tabs) == self.get_state_len() - 1
-        self.tabs_to_state_index:dict[Page, int] = {tab: index + 1 for index, tab in enumerate(self.tabs)}
-
+        self.tabs_to_state_index:dict[Page, int] = {tab: index + 1 for index,
+                                                    tab in enumerate(self.tabs)}
         self.set_current_tab(self.text_printer_settings)
-
         self.add_children(self.tabs)
 
     def is_open(self) -> int:
+        """Returns if the settings window is open."""
         return self.get_state()[0]
 
     def open(self):
+        """Opens the settings window."""
         self.get_state()[0] = 1
 
     def close(self):
+        """Closes the settings window."""
         self.get_state()[0] = 0
 
     def get_bb(self) -> BoundingBox:
@@ -72,24 +89,39 @@ class SettingsWindow(StateElement, Clickable):
         self._bounding_box = bounding_box
 
     def handle_click(self, click_position: np.ndarray):
-        if self.current_tab.is_popup_open() or self.current_tab.is_dropdown_open():
+        # check if current page is blocking click or click in current page bounding-box
+        if self.current_tab.is_popup_open() or self.current_tab.is_dropdown_open()\
+            or self.PAGE_BB.is_point_inside(click_position):
             self.current_tab.handle_click(click_position)
-
-        elif self.close_button.is_clicked_by(click_position):
+            return
+        # check if close button clicked
+        if self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click()
-
-        elif self.tabs_bb.is_point_inside(click_position):
+            return
+        # check if menu (tab-buttons) are clicked
+        if self.tabs_bb.is_point_inside(click_position):
             self.handle_tabs_button_click(click_position)
-
-        else:
-            self.current_tab.handle_click(click_position)
+            return
 
     def handle_tabs_button_click(self, click_position:np.ndarray) -> None:
+        """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
+        if any).
+
+        Args:
+            click_position (np.ndarray): the click position (inside the menu-bounding-box).
+        """
         for tab in self.tab_buttons:
             if tab.is_clicked_by(click_position):
                 tab.handle_click()
 
     def set_current_tab(self, current_tab:Page):
+        """Sets the currently selected/shown page/tab, setting the respective
+        state element to 1 and the state elements representing the other pages/tabs
+        to 0.
+
+        Args:
+            current_tab (Page): the page/tab to be selected.
+        """
         for tab, index in self.tabs_to_state_index.items():
             if tab == current_tab:
                 self.get_state()[index] = 1
@@ -98,12 +130,13 @@ class SettingsWindow(StateElement, Clickable):
                 self.get_state()[index] = 0
 
     def render(self, img:np.ndarray) -> np.ndarray:
+        """ Renders the main window and all its children onto the given image.
+        """
         to_render = cv2.imread(self.current_tab.get_img_path())
         img = render_onto_bb(img, self.get_bb(), to_render)
         self.current_tab.render(img)
         return img
 
     def get_tabs_bb(self, tab_buttons:List[Button]) -> BoundingBox:
+        """Returns the bounding-box of the tabs-menu (bounding-box of all buttons)."""
         return get_group_bounding_box(tab_buttons)
-
-

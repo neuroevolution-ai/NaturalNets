@@ -141,8 +141,8 @@ class Dropdown(Widget):
         first_bb = self._dropdown_button_bb
         available_items:list[DropdownItem] = []
         for item in self._all_items:
-            #TODO: check if window bounds are surpassed by any item's next_bb 
-            # (not necessary for this app)
+            #TODO: check if window bounds are surpassed by any item's next_bb (
+            #not necessary for this app)
             next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i,
                                   first_bb.width, first_bb.height)
             if item.is_visible():
