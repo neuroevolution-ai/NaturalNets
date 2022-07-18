@@ -86,10 +86,9 @@ class CarConfigurator(Page):
         self.ddi_state_from_settings:dict[DropdownItem, bool] = {}
 
         #add show configuration button and window
-        self.popup = CarConfiguratorPopup()
+        self.popup = CarConfiguratorPopup(self)
         self.show_config_button = Button(self.BUTTON_BB, self.popup.open)
 
-        self._dropdowns_state = self._save_dropdowns_state()
 
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
@@ -97,8 +96,8 @@ class CarConfigurator(Page):
             return
 
         # button only clickable if a value is selected in last dropdown
-        if self.dropdowns[len(self.dropdowns) - 1].get_current_value()\
-                is not None and self.show_config_button.is_clicked_by(click_position):
+        if self.dropdowns[len(self.dropdowns) - 1].get_current_value() is not None\
+                and self.show_config_button.is_clicked_by(click_position):
             self.show_config_button.handle_click()
             return
 
@@ -134,7 +133,7 @@ class CarConfigurator(Page):
 
         if car is None:
             return
-        elif car == Car.A:
+        if car == Car.A:
             self.tire_dropdown.set_visible(self.tire_18_ddi, False)
             self.tire_dropdown.set_visible(self.tire_19_ddi, False)
 
@@ -166,7 +165,6 @@ class CarConfigurator(Page):
 
     def reset(self):
         """Resets all dropdowns/hides all dropdowns but the first."""
-        self._dropdowns_state = self._save_dropdowns_state()
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
 
@@ -176,19 +174,8 @@ class CarConfigurator(Page):
     def _reset_to(self, dd_index:int):
         """Resets all dropdowns selection up to self.dropdowns[dd_index].
         """
-        self._dropdowns_state = self._save_dropdowns_state()
         for i in range(dd_index + 1, len(self.dropdowns)):
             self.dropdowns[i].set_selected_item(None)
-
-
-    def _save_dropdowns_state(self):
-        dropdowns_state = []
-        for dropdown in self.dropdowns:
-            dropdown_state = []
-            for ddi in dropdown.get_all_items():
-                dropdown_state.append(ddi.is_visible())
-            dropdowns_state.append(dropdown_state)
-        return dropdowns_state
 
 
     def is_dropdown_open(self) -> bool:
@@ -219,7 +206,6 @@ class CarConfigurator(Page):
             frame = cv2.imread(self.BUTTON_IMG_PATH)
             render_onto_bb(img, self.BUTTON_BB, frame)
 
-
         for widget in self.get_widgets():
             img = widget.render(img)
 
@@ -240,9 +226,10 @@ class CarConfiguratorPopup(Page):
 
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 
-    def __init__(self):
+    def __init__(self, car_configurator:CarConfigurator):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
+        self.car_configurator = car_configurator
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -255,6 +242,7 @@ class CarConfiguratorPopup(Page):
     def close(self) -> None:
         """Closes this popup."""
         self.get_state()[0] = 0
+        self.car_configurator.reset()
 
     def is_open(self) -> bool:
         """Returns the opened-state of this popup."""

@@ -67,6 +67,7 @@ class CarConfiguratorSettings(Page):
         self.set_car_a_enabled(True)
         self.set_car_b_enabled(True)
         self.set_car_c_enabled(True)
+        self.update_car_config_ddi_state()
 
     def update_car_config_ddi_state(self):
         """Sets the state of the dropdown items in the car cunfigurator page according to
