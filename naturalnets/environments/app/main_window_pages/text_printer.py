@@ -1,4 +1,3 @@
-from typing import List
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -10,12 +9,18 @@ from naturalnets.environments.app.utils import put_text
 from naturalnets.environments.app.widgets.button import Button
 
 class TextPrinter(Page):
+    """The text-printer page in the main-window.
+
+       State description:
+            state[0]: Denotes if the text is currently shown.
+    """
 
     STATE_LEN = 1
     IMG_PATH = IMAGES_PATH + "text_printer.png"
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
-    TEXT_AREA_BB = BoundingBox(135, 48, 286, 183) # area adjusted to only show properties (bb does not match the grafical bb)
+    # area adjusted to only show properties (bb does not match the grafical bb)
+    TEXT_AREA_BB = BoundingBox(135, 48, 286, 183)
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
@@ -36,7 +41,7 @@ class TextPrinter(Page):
 
     def set_font(self, font:Font) -> None:
         self._font = font
-        
+
     def set_font_size(self, size:int) -> None:
         self._font_size = size
 
@@ -56,8 +61,6 @@ class TextPrinter(Page):
 
     def set_print_settings_changed(self):
         self.get_state()[1] = 1
-        # TODO: set print settings changed to 0 whenever button is clicked, then to 1
-        # whenever the settings change => profit.
 
     def update_display_dict(self):
         return {
@@ -76,14 +79,14 @@ class TextPrinter(Page):
         return img
 
     def display_text(self, img):
+        """Renders the text-settings onto the text area."""
         x, y, _, height = self.TEXT_AREA_BB.get_as_tuple()
-        bottom_left_corner = lambda i: (x, y + height - i)
-        props = ["Number of words: {}".format(self.display_dict["n_words"]),
-                    "Font: {}".format(self.display_dict["font"]),
-                    "Font Size: {}".format(self.display_dict["font_size"]),
-                    "Color: {}".format(self.display_dict["color"]),
-                    "Font Stylez: {}".format(self.display_dict["font_styles"])]
-        SPACE = 20
-        for i in range(len(props)):
-            put_text(img, props[i], bottom_left_corner(i*SPACE), 0.4)
-
+        props = [f"Number of words: {self.display_dict['n_words']}",
+                    f"Font: {self.display_dict['font']}",
+                    f"Font Size: {self.display_dict['font_size']}",
+                    f"Color: {self.display_dict['color']}",
+                    f"Font Stylez: {self.display_dict['font_styles']}"]
+        space = 20
+        for i, prop in enumerate(props):
+            bottom_left_corner = (x, y + height - i*space)
+            put_text(img, prop, bottom_left_corner, 0.4)
