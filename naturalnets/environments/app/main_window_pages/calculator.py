@@ -56,7 +56,7 @@ class Calculator(Page):
         self.current_result = 0
 
     def set_operator_dd_item_visible(self, item, visible):
-        """Sets the given operator dropdown-item's visibility, used by
+        """Sets the given operator dropdown-item's visibility. Used by
         calculator-settings."""
         self.operator_dd.set_visible(item, visible)
         if visible:

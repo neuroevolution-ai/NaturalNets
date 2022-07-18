@@ -5,7 +5,7 @@ from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.enums import Color, Figure
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.utils import put_text, render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
@@ -24,7 +24,7 @@ class FigurePrinter(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self._figure_color:Color = None
+        self._figure_color_from_settings:Color = None # color set in settings
         self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
         self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
         self.guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
@@ -41,7 +41,8 @@ class FigurePrinter(Page):
 
         self.add_widget(self.dropdown)
 
-        self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, lambda: self._draw_figure())
+        self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
+        self._rendered_figure_color:Color = None # color rendered onto the image
 
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
@@ -51,8 +52,10 @@ class FigurePrinter(Page):
         self._show_figure(True)
 
     def set_dd_item_visible(self, item, visible):
+        """Sets the given dropdown-item's visibility. Used by
+        text-printer settings."""
         self.dropdown.set_visible(item, visible)
-        if visible == True:
+        if visible:
             # update selected item when a new item becomes visible
             self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
 
@@ -63,7 +66,7 @@ class FigurePrinter(Page):
         return self.get_state()[0]
 
     def set_figure_color(self, color:Color):
-        self._figure_color = color
+        self._figure_color_from_settings = color
 
     def is_dropdown_open(self) -> bool:
         return self.dropdown.is_open()
@@ -72,13 +75,18 @@ class FigurePrinter(Page):
         if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
             self.dropdown.handle_click(click_position)
         elif self._draw_figure_button.is_clicked_by(click_position):
+            self._rendered_figure_color = self._figure_color_from_settings
             self._draw_figure()
-        #TODO
-        #print("Figure printer current color is", self._figure_color)
 
     def render(self, img: np.ndarray):
         super().render(img)
         if self.is_figure_shown() and self.current_figure is not None:
             figure_img_path = IMAGES_PATH + self.current_figure.value
             img = render_onto_bb(img, self.FIGURE_CANVAS_BB, cv2.imread(figure_img_path))
+
+            #print figure color
+            x, y, _, height = self.FIGURE_CANVAS_BB.get_as_tuple()
+            padding = 10
+            bottom_left_corner = (x + padding, y + height - padding)
+            put_text(img, f"{self._rendered_figure_color}", bottom_left_corner, 0.4)
         return img
