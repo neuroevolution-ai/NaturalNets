@@ -11,9 +11,12 @@ from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
 class FigurePrinter(Page):
     """The figure-printer page in the main-window.
+
+       State description:
+            state[0]: Denotes if a figure is currently shown.
     """
 
-    STATE_LEN = 3
+    STATE_LEN = 1
     IMG_PATH = IMAGES_PATH + "figure_printer.png"
     DROPDOWN_BB = BoundingBox(125, 348, 303, 22)
     DRAW_FIGURE_BUTTON_BB = BoundingBox(125, 406, 303, 22)
@@ -44,7 +47,6 @@ class FigurePrinter(Page):
         figure = self.dropdown.get_current_value()
         if figure is None:
             raise ValueError("Figure dropdown should have a value.")
-        self._set_figure_state(figure)
         self.current_figure = figure
         self._show_figure(True)
 
@@ -53,16 +55,6 @@ class FigurePrinter(Page):
         if visible == True:
             # update selected item when a new item becomes visible
             self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
-        
-    def _set_figure_state(self, figure:Figure):
-        if figure == Figure.CHRISTMAS_TREE:
-            self.get_state()[1:3] = np.array([0,0], dtype=int)
-        elif figure == Figure.SPACE_SHIP:
-            self.get_state()[1:3] = np.array([0,1], dtype=int)
-        elif figure == Figure.GUITAR:
-            self.get_state()[1:3] = np.array([1,0], dtype=int)
-        elif figure == Figure.HOUSE:
-            self.get_state()[1:3] = np.array([1,1], dtype=int)
 
     def _show_figure(self, show:bool):
         self.get_state()[0] = show
