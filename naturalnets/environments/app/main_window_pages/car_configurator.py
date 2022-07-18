@@ -257,7 +257,7 @@ class CarConfiguratorPopup(Page):
             f"Tires: {self.car_configurator.tire_dropdown.get_current_value()}",
             f"Car: {self.car_configurator.car_dropdown.get_current_value()}"]
 
-        space = 20
+        space = 16
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i*space)
             put_text(img, prop, bottom_left_corner, 0.4)
