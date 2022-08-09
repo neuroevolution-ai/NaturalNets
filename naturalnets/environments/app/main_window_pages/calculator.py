@@ -176,6 +176,6 @@ class CalculatorPopup(Page):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-    def is_open(self):
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
