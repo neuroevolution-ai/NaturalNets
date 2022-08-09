@@ -84,7 +84,7 @@ class Calculator(Page):
     def is_dropdown_open(self):
         return self.get_opened_dropdown() is not None
 
-    def get_opened_dropdown(self) -> Dropdown:
+    def get_opened_dropdown(self) -> Optional[Dropdown]:
         for dropdown in self.dropdowns:
             if dropdown.is_open():
                 return dropdown
