@@ -6,11 +6,12 @@ import numpy as np
 import attr
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.enums import Color
-from naturalnets.environments.i_environment import IEnvironment
+from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
+    type: str
     number_time_steps: int
     screen_width: int
     screen_height: int
@@ -106,6 +107,10 @@ class App(IEnvironment):
 
     def reset(self) -> None:
         self.get_state()[:] = self._initial_state
+        return self.get_state()
 
     def get_observation(self):
         return self.get_state()
+
+registered_environment_classes["GUIApp"] = App
+
