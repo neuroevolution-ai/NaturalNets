@@ -12,6 +12,7 @@ from naturalnets.environments.app.utils import put_text, render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
+
 class CarConfigurator(Page):
     """The car-configurator page in the main-window.
     """
@@ -179,14 +180,13 @@ class CarConfigurator(Page):
         for i in range(dd_index + 1, len(self.dropdowns)):
             self.dropdowns[i].set_selected_item(None)
 
-
     def is_dropdown_open(self) -> bool:
         return (self.car_dropdown.is_open()
                 or self.tire_dropdown.is_open()
                 or self.interior_dropdown.is_open()
                 or self.prop_dropdown.is_open())
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.popup.is_open()
 
     def render(self, img: np.ndarray):
@@ -216,6 +216,7 @@ class CarConfigurator(Page):
             img = self.popup.render(img)
 
         return img
+
 
 class CarConfiguratorPopup(Page):
     """Popup for the car-configurator (pops up when the "show configuration"-button is clicked).
@@ -248,17 +249,19 @@ class CarConfiguratorPopup(Page):
         self.get_state()[0] = 0
         self.car_configurator.reset()
 
-    def is_open(self) -> bool:
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
 
     def render(self, img: np.ndarray):
         img = super().render(img)
         x, y, _, height = self.CONFIGURATION_TEXT_BB.get_as_tuple()
-        props = [f"Propulsion System: {self.car_configurator.prop_dropdown.get_current_value()}",
+        props = [
+            f"Propulsion System: {self.car_configurator.prop_dropdown.get_current_value()}",
             f"Interior: {self.car_configurator.interior_dropdown.get_current_value()}",
             f"Tires: {self.car_configurator.tire_dropdown.get_current_value()}",
-            f"Car: {self.car_configurator.car_dropdown.get_current_value()}"]
+            f"Car: {self.car_configurator.car_dropdown.get_current_value()}"
+        ]
 
         space = 16
         for i, prop in enumerate(props):

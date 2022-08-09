@@ -109,7 +109,7 @@ class Calculator(Page):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click()
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.popup.is_open()
 
     # adopted from master-thesis code this app is based on.

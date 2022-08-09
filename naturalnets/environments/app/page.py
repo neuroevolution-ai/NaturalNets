@@ -70,8 +70,8 @@ class Page(StateElement, Clickable, HasPopups):
             img = widget.render(img)
         return img
 
-    def is_popup_open(self) -> bool:
-        return False
+    def is_popup_open(self) -> int:
+        return 0
 
     def is_dropdown_open(self) -> bool:
         return False

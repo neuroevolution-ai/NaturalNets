@@ -11,6 +11,7 @@ from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.check_box import CheckBox
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
+
 class CalculatorSettings(Page):
     """The calculator settings page, manipulates the calculator page."""
     STATE_LEN = 0
@@ -95,7 +96,7 @@ class CalculatorSettings(Page):
         """Returns the number of selected checkboxes."""
         return sum(checkbox.is_selected() for checkbox in self.operator_checkboxes)
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.popup.is_open()
 
     def is_dropdown_open(self) -> bool:
@@ -111,6 +112,7 @@ class CalculatorSettings(Page):
         if self.popup.is_open():
             img = self.popup.render(img)
         return img
+
 
 class CalculatorSettingsPopup(Page):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -162,6 +164,6 @@ class CalculatorSettingsPopup(Page):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-    def is_open(self):
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]

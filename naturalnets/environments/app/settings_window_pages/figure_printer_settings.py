@@ -127,7 +127,7 @@ class FigurePrinterSettings(Page):
     def is_figure_printer_activated(self) -> bool:
         return self._show_fig_printer_checkbox.is_selected()
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.popup.is_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -219,6 +219,6 @@ class FigureCheckboxesPopup(Page):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-    def is_open(self):
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]

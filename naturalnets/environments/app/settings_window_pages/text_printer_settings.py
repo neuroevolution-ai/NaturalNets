@@ -14,6 +14,7 @@ from naturalnets.environments.app.widgets.check_box import CheckBox
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
+
 class TextPrinterSettings(Page):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
@@ -32,7 +33,7 @@ class TextPrinterSettings(Page):
     ITALIC_BB = BoundingBox(38, 241, 47, 14)
     UNDERLINE_BB = BoundingBox(38, 267, 75, 14)
 
-    def __init__(self, text_printer:TextPrinter):
+    def __init__(self, text_printer: TextPrinter):
         super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
         self.text_printer = text_printer
 
@@ -156,7 +157,7 @@ class TextPrinterSettings(Page):
             self.rbg.handle_click(click_position)
             self.text_printer.set_color(self.rbg.get_value())
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.popup.is_open()
 
     def render(self, img: np.ndarray):
@@ -205,6 +206,6 @@ class TextPrinterSettingsPopup(Page):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-    def is_open(self):
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]

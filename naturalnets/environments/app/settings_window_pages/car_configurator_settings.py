@@ -202,7 +202,7 @@ class CarConfiguratorSettings(Page):
                         self._car_configurator.reset()
                         break
 
-    def is_popup_open(self) -> bool:
+    def is_popup_open(self) -> int:
         return self.car_disabled_popup.is_open()
 
     # pretty much copied from the masters-thesis code this app is based on.
@@ -332,9 +332,9 @@ class CarDisabledPopup(Page):
     def __init__(self):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
-        self.disabled_cars:List[str] = []
+        self.disabled_cars: List[str] = []
 
-    def _get_disabled_cars_str(self) -> List[str]:
+    def _get_disabled_cars_str(self) -> str:
         disabled_cars_str = "Disabled "
         for car in self.disabled_cars:
             disabled_cars_str += car + " "
@@ -344,7 +344,7 @@ class CarDisabledPopup(Page):
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click()
 
-    def open(self, disabled_cars:List[str]):
+    def open(self, disabled_cars: List[Car]):
         """Opens this popup and adds the disabled cars to the list of cars to be
         shown in this popup."""
         if Car.A in disabled_cars:
@@ -354,14 +354,14 @@ class CarDisabledPopup(Page):
         if Car.C in disabled_cars:
             self.disabled_cars.append("Car C")
 
-        self.get_state()[0] = 1 # open-state
+        self.get_state()[0] = 1  # open-state
 
     def close(self):
         """Closes this popup and empties its list of disabled cars."""
         self.disabled_cars = []
-        self.get_state()[0] = 0 # open-state
+        self.get_state()[0] = 0  # open-state
 
-    def is_open(self):
+    def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
 
@@ -370,4 +370,3 @@ class CarDisabledPopup(Page):
         bottom_left_corner = (107, 135) # global position of text
         put_text(img, self._get_disabled_cars_str(), bottom_left_corner, 0.4)
         return img
-        
