@@ -52,6 +52,7 @@ class MainWindow(StateElement, Clickable):
         self.pages_to_state_index:dict[Page, int] = {page: index for index,
                                                         page in enumerate(self.pages)}
 
+        self.current_page = None
         self.set_current_page(self.text_printer)
 
         self.is_figure_printer_button_visible = 0
