@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -12,7 +14,7 @@ from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 class CalculatorSettings(Page):
     """The calculator settings page, manipulates the calculator page."""
     STATE_LEN = 0
-    IMG_PATH = IMAGES_PATH + "calculator_settings.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings.png")
 
     ADDITION_BB = BoundingBox(38, 117, 66, 14)
     MULTIPLICATION_BB = BoundingBox(38, 143, 91, 14)
@@ -118,7 +120,7 @@ class CalculatorSettingsPopup(Page):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(47, 87, 315, 114)
-    IMG_PATH = IMAGES_PATH + "calculator_settings_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings_popup.png")
 
     DROPDOWN_BB = BoundingBox(69, 129, 271, 22)
     APPLY_BUTTON_BB = BoundingBox(123, 157, 163, 22)

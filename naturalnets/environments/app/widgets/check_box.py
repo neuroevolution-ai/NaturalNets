@@ -28,7 +28,7 @@ class CheckBox(Widget):
         self.action = action
 
     def handle_click(self, click_position: np.ndarray = None):
-        """Toggles the selected state of this checkbox and executes it's action, if any.
+        """Toggles the selected state of this checkbox and executes its action, if any.
         """
         if self.get_state()[0] == 0:
             self.get_state()[0] = 1

@@ -1,3 +1,6 @@
+import os
+from typing import List
+
 import cv2
 import numpy as np
 
@@ -23,8 +26,8 @@ class MainWindow(StateElement, Clickable):
     """
 
     STATE_LEN = 4
-    IMG_PATH = IMAGES_PATH + "main_window_base.png"
-    FIGURE_PRINTER_BUTTON_IMG_PATH = IMAGES_PATH + "figure_printer_button.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
+    FIGURE_PRINTER_BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_button.png")
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(4, 25, 110, 118)
     PAGES_AREA_BB = BoundingBox(117, 22, 326, 420)
@@ -43,7 +46,7 @@ class MainWindow(StateElement, Clickable):
         self.car_configurator = CarConfigurator()
         self.figure_printer = FigurePrinter()
 
-        self.pages:list[Page] = [self.text_printer, self.calculator,
+        self.pages: List[Page] = [self.text_printer, self.calculator,
                                  self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
         self.pages_to_state_index:dict[Page, int] = {page: index for index,
@@ -92,7 +95,9 @@ class MainWindow(StateElement, Clickable):
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position:np.ndarray) -> None:
-        # page processes click if bage blocks clicks to main-layout or click is inside of page BB
+        # Let the current page process the click if the current page blocks clicks to the main page (e.g. due to open drop downs) or the click
+        # is inside of the bounding box of the current page
+        # Note that the settings menu button is handled in the AppController class
         if self.current_page_blocks_click() or self.PAGES_AREA_BB.is_point_inside(click_position):
             self.current_page.handle_click(click_position)
             return

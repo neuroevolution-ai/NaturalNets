@@ -7,7 +7,7 @@ config = {
     "number_time_steps": 100,
     "screen_width": 448,
     "screen_height": 448,
-	"interactive": True,
+    "interactive": True,
     "monkey_tester": False
 }
 

@@ -1,4 +1,6 @@
+import os
 from typing import Dict, List, Tuple
+
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -16,7 +18,7 @@ from naturalnets.environments.app.widgets.radio_button_group import RadioButton,
 class FigurePrinterSettings(Page):
     """The figure-printer settings page, manipulates the figure-printer page."""
     STATE_LEN = 0
-    IMG_PATH = IMAGES_PATH + "figure_printer_settings.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_settings.png")
 
     SHOW_FIG_PRINTER_BB = BoundingBox(38, 91, 141, 14)
 
@@ -135,13 +137,12 @@ class FigurePrinterSettings(Page):
 
         if self._show_fig_printer_checkbox.is_clicked_by(click_position):
             self._show_fig_printer_checkbox.handle_click()
-            self.main_window\
-                .set_figure_printer_button_visible(self._show_fig_printer_checkbox.is_selected())
+            self.main_window.set_figure_printer_button_visible(self._show_fig_printer_checkbox.is_selected())
 
             # change current main window page if it was the figure printer and the figure printer
             # has been deactivated
-            if self.main_window.get_current_page() == self.main_window.figure_printer\
-                    and not self._show_fig_printer_checkbox.is_selected():
+            if (self.main_window.get_current_page() == self.main_window.figure_printer
+                    and not self._show_fig_printer_checkbox.is_selected()):
                 self.main_window.set_current_page(self.main_window.text_printer)
             return
 
@@ -179,7 +180,7 @@ class FigureCheckboxesPopup(Page):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(14, 87, 381, 114)
-    IMG_PATH = IMAGES_PATH + "figure_settings_checkboxes_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "figure_settings_checkboxes_popup.png")
 
     APPLY_BUTTON_BB = BoundingBox(103, 157, 203, 22)
     DROPDOWN_BB = BoundingBox(36, 129, 337, 22)

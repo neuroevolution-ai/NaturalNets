@@ -1,3 +1,6 @@
+import os
+from typing import List
+
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -16,7 +19,7 @@ class TextPrinter(Page):
     """
 
     STATE_LEN = 1
-    IMG_PATH = IMAGES_PATH + "text_printer.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
     # area adjusted to only show properties (bb does not match the grafical bb)
@@ -24,7 +27,7 @@ class TextPrinter(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self._font_styles:list[FontStyle] = []
+        self._font_styles: List[FontStyle] = []
         self._font:Font = Font.DEJAVU_SANS
         self._font_size = 12
         self._color = Color.BLACK
@@ -85,8 +88,8 @@ class TextPrinter(Page):
                     f"Font: {self.display_dict['font']}",
                     f"Font Size: {self.display_dict['font_size']}",
                     f"Color: {self.display_dict['color']}",
-                    f"Font Stylez: {self.display_dict['font_styles']}"]
+                    f"Font Styles: {self.display_dict['font_styles']}"]
         space = 20
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i*space)
-            put_text(img, prop, bottom_left_corner, 0.4)
+            put_text(img, prop, bottom_left_corner, font_scale=0.4)

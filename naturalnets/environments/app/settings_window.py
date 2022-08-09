@@ -1,4 +1,5 @@
-from typing import List
+from typing import Dict, List
+
 import cv2
 import numpy as np
 
@@ -7,14 +8,10 @@ from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.interfaces import Clickable
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.settings_window_pages.calculator_settings\
-    import CalculatorSettings
-from naturalnets.environments.app.settings_window_pages.car_configurator_settings\
-    import CarConfiguratorSettings
-from naturalnets.environments.app.settings_window_pages.figure_printer_settings\
-        import FigurePrinterSettings
-from naturalnets.environments.app.settings_window_pages.text_printer_settings\
-    import TextPrinterSettings
+from naturalnets.environments.app.settings_window_pages.calculator_settings import CalculatorSettings
+from naturalnets.environments.app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
+from naturalnets.environments.app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
+from naturalnets.environments.app.settings_window_pages.text_printer_settings import TextPrinterSettings
 from naturalnets.environments.app.state_element import StateElement
 from naturalnets.environments.app.utils import get_group_bounding_box, render_onto_bb
 
@@ -48,25 +45,26 @@ class SettingsWindow(StateElement, Clickable):
 
         self.close_button = Button(self.CLOSE_BUTTON_BB, self.close)
 
-        self.tabs:list[Page] = [self.text_printer_settings,
-                                self.calculator_settings,
-                                self.car_config_settings,
-                                self.figure_printer_settings]
+        self.tabs: List[Page] = [self.text_printer_settings,
+                                 self.calculator_settings,
+                                 self.car_config_settings,
+                                 self.figure_printer_settings]
 
-        self.tab_buttons:list[Button] = [
+        self.tab_buttons: List[Button] = [
             Button(self.TEXT_PRINTER_TAB_BUTTON_BB,
-                    lambda: self.set_current_tab(self.text_printer_settings)),
+                   lambda: self.set_current_tab(self.text_printer_settings)),
             Button(self.CALCULATOR_TAB_BUTTON_BB,
-                    lambda: self.set_current_tab(self.calculator_settings)),
+                   lambda: self.set_current_tab(self.calculator_settings)),
             Button(self.CAR_CONFIGURATOR_TAB_BUTTON_BB,
-                    lambda: self.set_current_tab(self.car_config_settings)),
+                   lambda: self.set_current_tab(self.car_config_settings)),
             Button(self.FIGURE_PRINTER_TAB_BUTTON_BB,
-                    lambda: self.set_current_tab(self.figure_printer_settings)),
+                   lambda: self.set_current_tab(self.figure_printer_settings)),
         ]
 
         self.tabs_bb:BoundingBox = self.get_tabs_bb(self.tab_buttons)
-        self.tabs_to_state_index:dict[Page, int] = {tab: index + 1 for index,
-                                                    tab in enumerate(self.tabs)}
+        self.tabs_to_state_index: Dict[Page, int] = {tab: index + 1 for index,
+                                                     tab in enumerate(self.tabs)}
+        self.current_tab = None
         self.set_current_tab(self.text_printer_settings)
         self.add_children(self.tabs)
 

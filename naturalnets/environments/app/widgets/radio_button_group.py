@@ -69,7 +69,7 @@ class RadioButton(Widget):
 
 class RadioButtonGroup(Widget):
     """Widget representing a RadioButtonGroup. Handles the selected-state of
-       its RadioButtons (see handle_cilck()).
+       its RadioButtons (see handle_click()).
 
        State description:
             Has no inherent state, the state is made up of the state from it's RadioButtons.
@@ -94,7 +94,7 @@ class RadioButtonGroup(Widget):
             raise ArgumentError(error_msg)
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX)
 
-        self.radio_buttons:list[RadioButton] = []
+        self.radio_buttons: List[RadioButton] = []
         self.add_radio_buttons(radio_buttons)
         self._selected_radio_button = None
         self.set_selected_button(radio_buttons[0])
@@ -109,9 +109,10 @@ class RadioButtonGroup(Widget):
             self.add_radio_button(radio_button)
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        """If click_position hits a radio button in this group, selects the
-        radio button if it has no click-action. Otherwise the click action is
-        executed without changing the current selection.
+        """If click_position hits a radio button in this group, check if it has a click action.
+        If so, run the click action. Otherwise, simply select the radio button. A click action
+        can be for example a confirmation dialog, if that particular radio button shall indeed
+        be selected.
 
         Args:
             click_position (np.ndarray): the position of the click.

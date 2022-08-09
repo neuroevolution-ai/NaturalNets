@@ -1,6 +1,6 @@
 """ Module containing classes relevant for the dropdown-widget.
 """
-from typing import Any, List
+from typing import Any, List, Optional
 
 import cv2
 import numpy as np
@@ -68,9 +68,9 @@ class DropdownItem(Widget):
         text_padding = 3*thickness
         bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:
-            put_text(img, self.display_name, bottom_left_corner, 0.4)
+            put_text(img, self.display_name, bottom_left_corner, font_scale=0.4)
         else:
-            put_text(img, self.get_value(), bottom_left_corner, 0.4)
+            put_text(img, self.get_value(), bottom_left_corner, font_scale=0.4)
 
 
         return img
@@ -92,7 +92,7 @@ class Dropdown(Widget):
         """
         super().__init__(self.STATE_LEN, bounding_box)
         self._dropdown_button_bb = bounding_box
-        self._all_items:list[DropdownItem] = items
+        self._all_items: List[DropdownItem] = items
         self.add_children(self._all_items)
         self._selected_item = None
 
@@ -139,7 +139,7 @@ class Dropdown(Widget):
     def get_visible_items(self):
         i:int = 0
         first_bb = self._dropdown_button_bb
-        available_items:list[DropdownItem] = []
+        available_items: List[DropdownItem] = []
         for item in self._all_items:
             #TODO: check if window bounds are surpassed by any item's next_bb (
             #not necessary for this app)
@@ -183,13 +183,13 @@ class Dropdown(Widget):
         if self.is_open():
             for item in self.get_visible_items():
                 item.render(img)
-        else: # render selected item on dropdown-button position if dropdown is closed
+        else:  # Render the selected item on the dropdown-button position if the dropdown is closed
             x, y, _, height = self.get_bb().get_as_tuple()
             text_padding = 6
             bottom_left_corner = (x + text_padding, y + height - text_padding)
             display_text = ""
             if self.get_current_value() is not None:
                 display_text = self.get_selected_item().display_name
-            put_text(img, display_text, bottom_left_corner, 0.4)
+            put_text(img, display_text, bottom_left_corner, font_scale=0.4)
 
         return img

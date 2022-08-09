@@ -1,5 +1,7 @@
-from typing import List
 import itertools
+import os
+from typing import List
+
 import numpy as np
 
 
@@ -20,7 +22,7 @@ class CarConfiguratorSettings(Page):
             state[i]: the enabled-state of car i, i in {0,1,2}.
     """
     STATE_LEN = 3
-    IMG_PATH = IMAGES_PATH + "car_configurator_settings.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator_settings.png")
 
     TIRE_20_INCH_BB = BoundingBox(48, 73, 83, 14)
     TIRE_22_INCH_BB = BoundingBox(48, 99, 83, 14)
@@ -70,7 +72,7 @@ class CarConfiguratorSettings(Page):
         self.update_car_config_ddi_state()
 
     def update_car_config_ddi_state(self):
-        """Sets the state of the dropdown items in the car cunfigurator page according to
+        """Sets the state of the dropdown items in the car configurator page according to
         the state of the checkboxes in this settings page.
         """
         self._car_configurator.set_ddi_state_from_settings({
@@ -112,7 +114,7 @@ class CarConfiguratorSettings(Page):
         return self.get_state()[2]
 
     def _create_tire_checkboxes(self) -> List[CheckBox]:
-        tire_checkboxes:list[CheckBox] = []
+        tire_checkboxes: List[CheckBox] = []
         self.tire_20_inch = CheckBox(self.TIRE_20_INCH_BB,
             lambda is_checked: self._car_configurator.tire_dropdown
                                    .set_visible(self._car_configurator.tire_20_ddi, is_checked))
@@ -205,7 +207,7 @@ class CarConfiguratorSettings(Page):
 
     # pretty much copied from the masters-thesis code this app is based on.
     def update_cars_enabled_status(self):
-        """Updates the enabled cars, mutating this settings assigned state."""
+        """Updates the enabled cars, by changing the state that is assigned to the respective setting."""
         disabled_cars = []
 
         car_a_disabled_tire, car_b_disabled_tire, car_c_disabled_tire\
@@ -215,27 +217,27 @@ class CarConfiguratorSettings(Page):
         car_a_disabled_propulsion, car_b_disabled_propulsion, car_c_disabled_propulsion\
             = self.update_cars_by_propulsion_system()
 
-        if not car_a_disabled_tire\
-                and not car_a_disabled_interior\
-                and not car_a_disabled_propulsion:
+        if (not car_a_disabled_tire
+                and not car_a_disabled_interior
+                and not car_a_disabled_propulsion):
             self.set_car_a_enabled(True)
         else:
             if self.is_car_a_enabled():
                 disabled_cars.append(Car.A)
             self.set_car_a_enabled(False)
 
-        if not car_b_disabled_tire\
-                and not car_b_disabled_interior\
-                and not car_b_disabled_propulsion:
+        if (not car_b_disabled_tire
+                and not car_b_disabled_interior
+                and not car_b_disabled_propulsion):
             self.set_car_b_enabled(True)
         else:
             if self.is_car_b_enabled():
                 disabled_cars.append(Car.B)
             self.set_car_b_enabled(False)
 
-        if not car_c_disabled_tire\
-                and not car_c_disabled_interior\
-                and not car_c_disabled_propulsion:
+        if (not car_c_disabled_tire
+                and not car_c_disabled_interior
+                and not car_c_disabled_propulsion):
             self.set_car_c_enabled(True)
         else:
             if self.is_car_c_enabled():
@@ -324,7 +326,7 @@ class CarDisabledPopup(Page):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(87, 101, 235, 86)
-    IMG_PATH = IMAGES_PATH + "car_config_car_disabled_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "car_config_car_disabled_popup.png")
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
 
     def __init__(self):

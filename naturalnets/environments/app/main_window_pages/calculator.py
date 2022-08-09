@@ -1,4 +1,6 @@
-from typing import List
+import os
+from typing import List, Optional
+
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -15,7 +17,7 @@ class Calculator(Page):
     """
 
     STATE_LEN = 0
-    IMG_PATH = IMAGES_PATH + "calculator.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "calculator.png")
 
     OPERAND_1_BB = BoundingBox(125, 316, 97, 22)
     OPERATOR_BB = BoundingBox(228, 316, 97, 22)
@@ -39,8 +41,9 @@ class Calculator(Page):
                          self.division_ddi]
         self.operator_dd = Dropdown(self.OPERATOR_BB, operator_ddis)
         self.operator_dd.set_selected_item(self.addition_ddi)
-        # set all operator droddown items to invisible, 
-        # visible ones will be set through calculator settings
+        # Set all operator dropdown items to invisible, 
+        # the default visible ones will be set when initializing
+        # the calculator settings class
         for operator_ddi in operator_ddis:
             self.operator_dd.set_visible(operator_ddi, False)
 
@@ -70,7 +73,7 @@ class Calculator(Page):
                 DropdownItem(1, "1"),
                 DropdownItem(2, "2"),
                 DropdownItem(3, "3"),
-                DropdownItem(4, "4"),]
+                DropdownItem(4, "4")]
         dropdown = Dropdown(bounding_box, ddis)
         dropdown.set_selected_item(first_item)
         return dropdown
@@ -137,21 +140,21 @@ class Calculator(Page):
             img = self.popup.render(img)
         x, y, _, height = self.RESULT_AREA_BB.get_as_tuple()
         bottom_left_corner = (x, y + height)
-        put_text(img, f"{self.base}", bottom_left_corner, 0.4)
+        put_text(img, f"{self.base}", bottom_left_corner, font_scale=0.4)
         bottom_left_corner = (x, y + height - vertical_space)
-        put_text(img, f"Last result: {self.current_result}", bottom_left_corner, 0.4)
+        put_text(img, f"Last result: {self.current_result}", bottom_left_corner, font_scale=0.4)
 
         return img
 
 class CalculatorPopup(Page):
-    """Popup for the calculator (pops up when the a division by zero is attempted).
+    """Popup for the calculator (pops up when a division by zero is attempted).
 
        State description:
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(87, 101, 234, 86)
-    IMG_PATH = IMAGES_PATH + "calculator_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_popup.png")
 
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 

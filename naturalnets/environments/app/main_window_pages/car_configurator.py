@@ -1,4 +1,6 @@
+import os
 from typing import Dict
+
 import cv2
 import numpy as np
 
@@ -15,7 +17,7 @@ class CarConfigurator(Page):
     """
 
     STATE_LEN = 0
-    IMG_PATH = IMAGES_PATH + "car_configurator.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator.png")
 
     CAR_DROPDOWN_BB = BoundingBox(252, 108, 166, 22)
     TIRE_DROPDOWN_BB = BoundingBox(252, 189, 166, 22)
@@ -23,16 +25,16 @@ class CarConfigurator(Page):
     PROPULSION_DROPDOWN_BB = BoundingBox(252, 351, 166, 22)
 
     TIRE_FRAME_BB = BoundingBox(125, 163, 303, 75)
-    TIRE_FRAME_IMG_PATH = IMAGES_PATH + "car_config_tire_frame.png"
+    TIRE_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_tire_frame.png")
 
     INTERIOR_FRAME_BB = BoundingBox(125, 244, 303, 75)
-    INTERIOR_FRAME_IMG_PATH = IMAGES_PATH + "car_config_interior_frame.png"
+    INTERIOR_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_interior_frame.png")
 
     PROP_FRAME_BB = BoundingBox(125, 325, 303, 75)
-    PROP_FRAME_IMG_PATH = IMAGES_PATH + "car_config_prop_frame.png"
+    PROP_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_prop_frame.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
-    BUTTON_IMG_PATH = IMAGES_PATH + "car_config_button_frame.png"
+    BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_button_frame.png")
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
@@ -83,7 +85,7 @@ class CarConfigurator(Page):
                           self.tire_dropdown,
                           self.interior_dropdown,
                           self.prop_dropdown]
-        self.ddi_state_from_settings:dict[DropdownItem, bool] = {}
+        self.ddi_state_from_settings: Dict[DropdownItem, bool] = {}
 
         #add show configuration button and window
         self.popup = CarConfiguratorPopup(self)
@@ -95,9 +97,9 @@ class CarConfigurator(Page):
             self.popup.handle_click(click_position)
             return
 
-        # button only clickable if a value is selected in last dropdown
-        if self.dropdowns[len(self.dropdowns) - 1].get_current_value() is not None\
-                and self.show_config_button.is_clicked_by(click_position):
+        # Show config button only clickable if a value has been selected in the last dropdown
+        if (self.dropdowns[len(self.dropdowns) - 1].get_current_value() is not None
+                and self.show_config_button.is_clicked_by(click_position)):
             self.show_config_button.handle_click()
             return
 
@@ -179,9 +181,10 @@ class CarConfigurator(Page):
 
 
     def is_dropdown_open(self) -> bool:
-        return self.car_dropdown.is_open() or self.tire_dropdown.is_open()\
-                    or self.interior_dropdown.is_open()\
-                    or self.prop_dropdown.is_open()
+        return (self.car_dropdown.is_open()
+                or self.tire_dropdown.is_open()
+                or self.interior_dropdown.is_open()
+                or self.prop_dropdown.is_open())
 
     def is_popup_open(self) -> bool:
         return self.popup.is_open()
@@ -223,7 +226,7 @@ class CarConfiguratorPopup(Page):
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(75, 160, 298, 128)
     CONFIGURATION_TEXT_BB = BoundingBox(94, 167, 263, 73)
-    IMG_PATH = IMAGES_PATH + "car_config_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "car_config_popup.png")
 
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 
@@ -260,5 +263,5 @@ class CarConfiguratorPopup(Page):
         space = 16
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i*space)
-            put_text(img, prop, bottom_left_corner, 0.4)
+            put_text(img, prop, bottom_left_corner, font_scale=0.4)
         return img

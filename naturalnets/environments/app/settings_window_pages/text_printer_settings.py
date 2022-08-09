@@ -1,3 +1,6 @@
+import os
+from typing import List, Optional
+
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
@@ -14,7 +17,7 @@ from naturalnets.environments.app.widgets.radio_button_group import RadioButton,
 class TextPrinterSettings(Page):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
-    IMG_PATH = IMAGES_PATH + "text_printer_settings.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
 
     N_WORDS_BB = BoundingBox(217, 71, 173, 22)
     FONT_SIZE_BB = BoundingBox(38, 110, 87, 22)
@@ -82,13 +85,12 @@ class TextPrinterSettings(Page):
 
         # n-words dropdown needs to be first since it may occlude the
         # others when opened (important for iteration in handle_click)
-        self.dropdowns:list[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
-        self.dropdown_to_func = {self.n_words_dd: lambda : self.text_printer
-                                            .set_n_words(self.n_words_dd.get_current_value()),
-                                self.font_size_dd: lambda : self.text_printer
-                                            .set_font_size(self.font_size_dd.get_current_value()),
-                                self.fonts_dd: lambda : self.text_printer
-                                            .set_font(self.fonts_dd.get_current_value())}
+        self.dropdowns: List[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
+        self.dropdown_to_func = {
+            self.n_words_dd: lambda: self.text_printer.set_n_words(self.n_words_dd.get_current_value()),
+            self.font_size_dd: lambda: self.text_printer.set_font_size(self.font_size_dd.get_current_value()),
+            self.fonts_dd: lambda: self.text_printer.set_font(self.fonts_dd.get_current_value())
+        }
         self.add_widgets(self.dropdowns)
 
         # init radio button group
@@ -171,7 +173,7 @@ class TextPrinterSettingsPopup(Page):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(99, 94, 210, 100)
-    IMG_PATH = IMAGES_PATH + "text_printer_settings_popup.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings_popup.png")
 
     YES_BUTTON_BB = BoundingBox(121, 150, 80, 22)
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)

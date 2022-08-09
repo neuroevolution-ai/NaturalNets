@@ -10,10 +10,10 @@ class StateElement(Renderable):
     A StateElement may have children StateElements, which allows recursively traversing all
     state-elements in order to get the app's total state vector length, as well as assign
     part of the app's total state vector to every StateElement. Each StateElement then manipulates
-    it's part of the app's total state vector directly, in order to save computation time."""
+    its part of the app's total state vector directly, in order to save computation time."""
     def __init__(self, state_len:int):
         self._state:np.ndarray = np.zeros(state_len, dtype=int)
-        self._children:list['StateElement'] = []
+        self._children: List['StateElement'] = []
 
     def get_state(self) -> np.ndarray:
         """Returns this state's current state."""

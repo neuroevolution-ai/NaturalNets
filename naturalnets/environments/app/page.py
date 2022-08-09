@@ -30,7 +30,7 @@ class Page(StateElement, Clickable, HasPopups):
         super().__init__(state_len)
         self._bounding_box = bounding_box
         self._img_path = img_path
-        self.widgets:list[Widget] = []
+        self.widgets: List[Widget] = []
 
     def get_img_path(self) -> str:
         """Returns the path to this pages image file.
@@ -63,7 +63,7 @@ class Page(StateElement, Clickable, HasPopups):
         return self.widgets
 
     def render(self, img:np.ndarray):
-        """Renders this page as well as all of it's widgets to the given image."""
+        """Renders this page as well as all of its widgets to the given image."""
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         for widget in self.get_widgets():

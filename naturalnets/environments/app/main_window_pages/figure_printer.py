@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy as np
 
@@ -17,7 +19,7 @@ class FigurePrinter(Page):
     """
 
     STATE_LEN = 1
-    IMG_PATH = IMAGES_PATH + "figure_printer.png"
+    IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer.png")
     DROPDOWN_BB = BoundingBox(125, 348, 303, 22)
     DRAW_FIGURE_BUTTON_BB = BoundingBox(125, 406, 303, 22)
     FIGURE_CANVAS_BB = BoundingBox(125, 39, 303, 303)
@@ -81,12 +83,12 @@ class FigurePrinter(Page):
     def render(self, img: np.ndarray):
         super().render(img)
         if self.is_figure_shown() and self.current_figure is not None:
-            figure_img_path = IMAGES_PATH + self.current_figure.value
+            figure_img_path = os.path.join(IMAGES_PATH, self.current_figure.value)
             img = render_onto_bb(img, self.FIGURE_CANVAS_BB, cv2.imread(figure_img_path))
 
             #print figure color
             x, y, _, height = self.FIGURE_CANVAS_BB.get_as_tuple()
             padding = 10
             bottom_left_corner = (x + padding, y + height - padding)
-            put_text(img, f"{self._rendered_figure_color}", bottom_left_corner, 0.4)
+            put_text(img, f"{self._rendered_figure_color}", bottom_left_corner, font_scale=0.4)
         return img

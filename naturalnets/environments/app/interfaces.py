@@ -22,7 +22,7 @@ class HasBoundingBox(ABC):
 
 
 class Clickable(HasBoundingBox):
-    """Represents a element that can be clicked."""
+    """Represents an element that can be clicked."""
     @abstractmethod
     def handle_click(self, click_position:np.ndarray) -> None:
         """This elements' on-click action."""

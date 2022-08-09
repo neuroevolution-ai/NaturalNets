@@ -78,7 +78,8 @@ class App(IEnvironment):
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
         if click_position is not None:
-            cv2.circle(image, (click_position[0], click_position[1]), 4, Color.BLACK.value, -1)
+            # thickness=-1 will fill the circle shape with the specified color
+            cv2.circle(image, (click_position[0], click_position[1]), radius=4, color=Color.BLACK.value, thickness=-1)
 
         cv2.imshow("App", image)
         if self.config.interactive:
