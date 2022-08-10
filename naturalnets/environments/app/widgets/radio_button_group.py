@@ -10,6 +10,7 @@ from naturalnets.environments.app.exception import ArgumentError
 from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box
 
+
 class RadioButton(Widget):
     """Widget representing a single RadioButton. Every RadioButton
     needs to be part of a RadioButtonGroup, which handles the
@@ -21,7 +22,7 @@ class RadioButton(Widget):
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box:BoundingBox, value:Any=None, action:Callable=None):
+    def __init__(self, bounding_box: BoundingBox, value: Any = None, action: Callable = None):
         """
         Args:
             bounding_box (BoundingBox): The BoundingBox of this Widget.
@@ -33,7 +34,7 @@ class RadioButton(Widget):
         self._action = action
         self._value = value
 
-    def handle_click(self, click_position: np.ndarray=None) -> None:
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         """ Executes this RadioButtons action, if any.
 
         Args:
@@ -42,10 +43,10 @@ class RadioButton(Widget):
         if self.has_click_action():
             self._action()
 
-    def set_selected(self, selected:bool):
+    def set_selected(self, selected: int):
         self.get_state()[0] = selected
 
-    def is_selected(self):
+    def is_selected(self) -> int:
         return self.get_state()[0]
 
     def has_click_action(self):
@@ -124,7 +125,7 @@ class RadioButtonGroup(Widget):
                 else:
                     self.set_selected_button(radio_button)
 
-    def set_selected_button(self, selected_button:RadioButton):
+    def set_selected_button(self, selected_button: RadioButton):
         """Selects the given RadioButton and deselects all others.
 
         Args:
@@ -132,8 +133,8 @@ class RadioButtonGroup(Widget):
             RadioButtonGroup.
         """
         if self._selected_radio_button is not None:
-            self._selected_radio_button.set_selected(False)
-        selected_button.set_selected(True)
+            self._selected_radio_button.set_selected(0)
+        selected_button.set_selected(1)
         self._selected_radio_button = selected_button
 
     def get_selected_radio_button(self) -> RadioButton:
