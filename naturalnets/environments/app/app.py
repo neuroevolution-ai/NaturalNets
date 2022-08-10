@@ -1,5 +1,4 @@
-"""Contains the App."""
-
+import logging
 import time
 import cv2
 import numpy as np
@@ -20,8 +19,9 @@ class AppCfg:
 
 
 class App(IEnvironment):
-    def __init__(self, configuration: dict, env_seed: int=None):
-
+    def __init__(self, configuration: dict, **kwargs):
+        if "env_seed" in kwargs:
+            logging.warning("'env_seed' is not used in the GUIApp environment")
         t0 = time.time()
 
         self.config = AppCfg(**configuration)
@@ -40,9 +40,9 @@ class App(IEnvironment):
         self.click_position_y = 0
 
         t1 = time.time()
-        print(f"App initialized in {t1-t0}s.")
-        print(f"Total app state length is {self.app_controller._total_state_len}.")
-        print("")
+
+        logging.debug(f"App initialized in {t1 - t0}s.")
+        logging.debug(f"Total app state length is {len(self._initial_state)}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
@@ -64,7 +64,6 @@ class App(IEnvironment):
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
-
 
     def click_event(self, event, x, y, flags, params):
         """Sets action when cv2 mouse-callback is detected."""
@@ -100,18 +99,21 @@ class App(IEnvironment):
         else:
             cv2.waitKey(1)
 
+    # TODO change number_inputs and number_outputs as these are false, but wait for the GitHub
+    #   PR review comment to be resolved
+
     def get_number_inputs(self) -> int:
         return 4
 
     def get_number_outputs(self) -> int:
         return self.app_controller.get_total_state_len()
 
-    def reset(self) -> None:
+    def reset(self) -> np.ndarray:
         self.get_state()[:] = self._initial_state
         return self.get_state()
 
     def get_observation(self):
         return self.get_state()
 
-registered_environment_classes["GUIApp"] = App
 
+registered_environment_classes["GUIApp"] = App
