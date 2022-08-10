@@ -41,41 +41,53 @@ class TextPrinterSettings(Page):
         self.popup = TextPrinterSettingsPopup(self)
 
         # init font-style checkboxes
-        self.bold = CheckBox(self.BOLD_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.BOLD, is_checked))
-        self.italic = CheckBox(self.ITALIC_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.ITALIC, is_checked))
-        self.underline = CheckBox(self.UNDERLINE_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.UNDERLINE, is_checked))
+        self.bold = CheckBox(
+            self.BOLD_BB,
+            lambda is_checked: self.text_printer.set_font_style(FontStyle.BOLD, is_checked)
+        )
+        self.italic = CheckBox(
+            self.ITALIC_BB,
+            lambda is_checked: self.text_printer.set_font_style(FontStyle.ITALIC, is_checked)
+        )
+        self.underline = CheckBox(
+            self.UNDERLINE_BB,
+            lambda is_checked: self.text_printer.set_font_style(FontStyle.UNDERLINE, is_checked)
+        )
         self.font_style_checkboxes = [self.bold, self.italic, self.underline]
         self.add_widgets(self.font_style_checkboxes)
 
-        # init dropdowns
-        ## number of words dropdown
+        # Init dropdowns
+        # Number of words dropdown
         self.n_words_50_ddi = DropdownItem(50, "50")
         self.n_words_100_ddi = DropdownItem(100, "100")
         self.n_words_200_ddi = DropdownItem(200, "200")
         self.n_words_400_ddi = DropdownItem(400, "400")
-        self.n_words_ddis = [self.n_words_50_ddi,
-                             self.n_words_100_ddi,
-                             self.n_words_200_ddi,
-                             self.n_words_400_ddi]
+        self.n_words_ddis = [
+            self.n_words_50_ddi,
+            self.n_words_100_ddi,
+            self.n_words_200_ddi,
+            self.n_words_400_ddi
+        ]
         self.n_words_dd = Dropdown(self.N_WORDS_BB, self.n_words_ddis)
         self.n_words_dd.set_selected_item(self.n_words_50_ddi)
-        ## font size dropdown
+
+        # Font size dropdown
         self.font_size_12 = DropdownItem(12, "12")
         self.font_size_14 = DropdownItem(14, "14")
         self.font_size_16 = DropdownItem(16, "16")
         self.font_size_18 = DropdownItem(18, "18")
         self.font_size_20 = DropdownItem(20, "20")
-        self.font_size_ddis = [self.font_size_12,
-                               self.font_size_14,
-                               self.font_size_16,
-                               self.font_size_18,
-                               self.font_size_20]
+        self.font_size_ddis = [
+            self.font_size_12,
+            self.font_size_14,
+            self.font_size_16,
+            self.font_size_18,
+            self.font_size_20
+        ]
         self.font_size_dd = Dropdown(self.FONT_SIZE_BB, self.font_size_ddis)
         self.font_size_dd.set_selected_item(self.font_size_12)
-        ## font dropdown #DejaVu Sans, Liberation Mono, Nimbus Roman, Ubuntu
+
+        # Font dropdown: DejaVu Sans, Liberation Mono, Nimbus Roman, Ubuntu
         self.font_ds_ddi = DropdownItem(Font.DEJAVU_SANS, Font.DEJAVU_SANS.value)
         self.font_lm_ddi = DropdownItem(Font.LIBERATION_MONO, Font.LIBERATION_MONO.value)
         self.font_nr_ddi = DropdownItem(Font.NIMBUS_ROMAN, Font.NIMBUS_ROMAN.value)
@@ -94,7 +106,7 @@ class TextPrinterSettings(Page):
         }
         self.add_widgets(self.dropdowns)
 
-        # init radio button group
+        # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
         self.green_rb = RadioButton(self.GREEN_RB_BB, value=Color.GREEN, action=self.open_popup)
         self.blue_rb = RadioButton(self.BLUE_RB_BB, value=Color.BLUE)
@@ -108,11 +120,11 @@ class TextPrinterSettings(Page):
         if not self.green_rb.is_selected():
             self.popup.open()
 
-    def set_selected_rb(self, radio_button:RadioButton) -> None:
+    def set_selected_rb(self, radio_button: RadioButton) -> None:
         """Sets the selected radio button.
 
         Args:
-            rb (RadioButton): The radio button to select, must be in self.rbg
+            radio_button (RadioButton): The radio button to select, must be in self.rbg
         """
         self.rbg.set_selected_button(radio_button)
         self.text_printer.set_color(radio_button.get_value())
@@ -166,6 +178,7 @@ class TextPrinterSettings(Page):
             img = self.popup.render(img)
         return img
 
+
 class TextPrinterSettingsPopup(Page):
     """Popup for the text-printer settings (pops up when the green radio-button is selected).
 
@@ -183,8 +196,8 @@ class TextPrinterSettingsPopup(Page):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.settings = text_printer_settings
 
-        self.yes_button:Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
-        self.no_button:Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
+        self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
+        self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
     def set_rb_and_close(self, selected:bool) -> None:
         if selected:

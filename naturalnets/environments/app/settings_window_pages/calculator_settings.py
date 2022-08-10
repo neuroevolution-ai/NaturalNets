@@ -24,31 +24,41 @@ class CalculatorSettings(Page):
 
     BASE_DD_BB = BoundingBox(217, 220, 173, 22)
 
-    def __init__(self, calculator:Calculator):
+    def __init__(self, calculator: Calculator):
         super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
         self.calculator = calculator
 
-        self.addition = CheckBox(self.ADDITION_BB,
-            lambda is_checked: self.calculator
-                                   .set_operator_dd_item_visible(self.calculator.addition_ddi,
-                                                                 is_checked))
-        self.subtraction = CheckBox(self.SUBTRACTION_BB,
-            lambda is_checked: self.calculator
-                                   .set_operator_dd_item_visible(self.calculator.subtraction_ddi,
-                                                                 is_checked))
-        self.multiplication = CheckBox(self.MULTIPLICATION_BB,
-            lambda is_checked: self.calculator
-                                   .set_operator_dd_item_visible(self.calculator.multiplication_ddi,
-                                                                 is_checked))
-        self.division = CheckBox(self.DIVISION_BB,
-            lambda is_checked: self.calculator
-                                   .set_operator_dd_item_visible(self.calculator.division_ddi,
-                                                                 is_checked))
+        self.addition = CheckBox(
+            self.ADDITION_BB,
+            lambda is_checked: self.calculator.set_operator_dd_item_visible(
+                self.calculator.addition_ddi, is_checked
+            )
+        )
+        self.subtraction = CheckBox(
+            self.SUBTRACTION_BB,
+            lambda is_checked: self.calculator.set_operator_dd_item_visible(
+                self.calculator.subtraction_ddi, is_checked
+            )
+        )
+        self.multiplication = CheckBox(
+            self.MULTIPLICATION_BB,
+            lambda is_checked: self.calculator.set_operator_dd_item_visible(
+                self.calculator.multiplication_ddi, is_checked
+            )
+        )
+        self.division = CheckBox(
+            self.DIVISION_BB,
+            lambda is_checked: self.calculator.set_operator_dd_item_visible(
+                self.calculator.division_ddi, is_checked
+            )
+        )
 
-        self.operator_checkboxes = [self.addition,
-                                    self.subtraction,
-                                    self.multiplication,
-                                    self.division]
+        self.operator_checkboxes = [
+            self.addition,
+            self.subtraction,
+            self.multiplication,
+            self.division
+        ]
         self.add_widgets(self.operator_checkboxes)
 
         self.operator_to_checkbox = {
@@ -70,8 +80,8 @@ class CalculatorSettings(Page):
 
         # initial state
         self.dropdown.set_selected_item(self.base_10_ddi)
-        self.addition.set_selected(True)
-        self.subtraction.set_selected(True)
+        self.addition.set_selected(1)
+        self.subtraction.set_selected(1)
 
     def handle_click(self, click_position: np.ndarray):
         # handle popup click
@@ -99,12 +109,12 @@ class CalculatorSettings(Page):
     def is_popup_open(self) -> int:
         return self.popup.is_open()
 
-    def is_dropdown_open(self) -> bool:
+    def is_dropdown_open(self) -> int:
         return self.dropdown.is_open()
 
-    def select_operator_checkbox(self, operator:Operator):
+    def select_operator_checkbox(self, operator: Operator):
         """Selects the checkbox corresponding to the given operator (used by popup)."""
-        self.operator_to_checkbox[operator].set_selected(True)
+        self.operator_to_checkbox[operator].set_selected(1)
 
     def render(self, img: np.ndarray):
         """Renders the calculator settings as well as its popup (if opened) onto the given image."""

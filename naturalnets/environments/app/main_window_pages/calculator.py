@@ -35,30 +35,32 @@ class Calculator(Page):
         self.subtraction_ddi = DropdownItem(Operator.SUBTRACTION, "-")
         self.multiplication_ddi = DropdownItem(Operator.MULTIPLICATION, "*")
         self.division_ddi = DropdownItem(Operator.DIVISION, "/")
-        operator_ddis = [self.addition_ddi,
-                         self.subtraction_ddi,
-                         self.multiplication_ddi,
-                         self.division_ddi]
+        operator_ddis = [
+            self.addition_ddi,
+            self.subtraction_ddi,
+            self.multiplication_ddi,
+            self.division_ddi
+        ]
         self.operator_dd = Dropdown(self.OPERATOR_BB, operator_ddis)
         self.operator_dd.set_selected_item(self.addition_ddi)
         # Set all operator dropdown items to invisible, 
         # the default visible ones will be set when initializing
         # the calculator settings class
         for operator_ddi in operator_ddis:
-            self.operator_dd.set_visible(operator_ddi, False)
+            self.operator_dd.set_visible(operator_ddi, 0)
 
         # create operand dropdowns
         self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
         self.operand_2_dd = self.create_operand_dd(self.OPERAND_2_BB)
 
-        self.dropdowns:List[Dropdown] = [self.operator_dd, self.operand_1_dd, self.operand_2_dd]
+        self.dropdowns: List[Dropdown] = [self.operator_dd, self.operand_1_dd, self.operand_2_dd]
         self.add_widgets(self.dropdowns)
 
         self.base = Base.DECIMAL
         self.button = Button(self.BUTTON_BB, self.calculate)
         self.current_result = 0
 
-    def set_operator_dd_item_visible(self, item, visible):
+    def set_operator_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given operator dropdown-item's visibility. Used by
         calculator-settings."""
         self.operator_dd.set_visible(item, visible)
@@ -69,11 +71,13 @@ class Calculator(Page):
     def create_operand_dd(self, bounding_box:BoundingBox) -> Dropdown:
         """Creates the operand dropdown."""
         first_item = DropdownItem(0, "0")
-        ddis = [first_item,
-                DropdownItem(1, "1"),
-                DropdownItem(2, "2"),
-                DropdownItem(3, "3"),
-                DropdownItem(4, "4")]
+        ddis = [
+            first_item,
+            DropdownItem(1, "1"),
+            DropdownItem(2, "2"),
+            DropdownItem(3, "3"),
+            DropdownItem(4, "4")
+        ]
         dropdown = Dropdown(bounding_box, ddis)
         dropdown.set_selected_item(first_item)
         return dropdown
@@ -81,7 +85,7 @@ class Calculator(Page):
     def set_base(self, base:Base) -> None:
         self.base = base
 
-    def is_dropdown_open(self):
+    def is_dropdown_open(self) -> bool:
         return self.get_opened_dropdown() is not None
 
     def get_opened_dropdown(self) -> Optional[Dropdown]:
@@ -112,11 +116,11 @@ class Calculator(Page):
     def is_popup_open(self) -> int:
         return self.popup.is_open()
 
-    # adopted from master-thesis code this app is based on.
+    # Adopted from master-thesis code this app is based on.
     def calculate(self):
-        operator:str = self.operator_dd.get_current_value().value
-        a:int = self.operand_1_dd.get_current_value()
-        b:int = self.operand_2_dd.get_current_value()
+        operator: str = self.operator_dd.get_current_value().value
+        a: int = self.operand_1_dd.get_current_value()
+        b: int = self.operand_2_dd.get_current_value()
         output = None
         if operator == "+":
             output = a + b
@@ -146,6 +150,7 @@ class Calculator(Page):
 
         return img
 
+
 class CalculatorPopup(Page):
     """Popup for the calculator (pops up when a division by zero is attempted).
 
@@ -162,7 +167,7 @@ class CalculatorPopup(Page):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.settings = calculator
 
-        self.button:Button = Button(self.BUTTON_BB, self.close)
+        self.button: Button = Button(self.BUTTON_BB, self.close)
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.button.is_clicked_by(click_position):

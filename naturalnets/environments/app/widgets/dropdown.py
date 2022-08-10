@@ -10,6 +10,7 @@ from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.page import Widget
 from naturalnets.environments.app.utils import get_group_bounding_box, put_text
 
+
 class DropdownItem(Widget):
     """Widget representing a single dropdown-item.
 
@@ -18,7 +19,7 @@ class DropdownItem(Widget):
     """
     STATE_LEN = 1
 
-    def __init__(self, value, display_name:str):
+    def __init__(self, value, display_name: str):
         """
         The BoundingBox of this widget is set by the corresponding dropdown and
         is thus not passed to the constructor.
@@ -29,19 +30,21 @@ class DropdownItem(Widget):
             this dropdown-item.
         """
         # BoundingBox is set by/depends on Dropdown
-        super().__init__(self.STATE_LEN, BoundingBox(0,0,0,0))
-        self._is_visible = True
+        super().__init__(self.STATE_LEN, BoundingBox(0, 0, 0, 0))
+        # Like in CheckBox and other places use 0 as False, and 1 as True.
+        # This ties in with the state vector, as it contains either zeros or ones.
+        self._is_visible = 1
         self._value = value
-        self.get_state()[0] = 0 # is-selected state
+        self.get_state()[0] = 0  # is-selected state
         self.display_name = display_name
 
     def get_value(self):
         return self._value
 
-    def is_visible(self) -> bool:
+    def is_visible(self) -> int:
         return self._is_visible
 
-    def set_visible(self, active:bool) -> None:
+    def set_visible(self, active: int) -> None:
         """Sets the visible-status (denoting if this item shows up in the dropdown) of this 
         dropdown-item. Should only be accessed by the Dropdown-Class.
         """
@@ -51,15 +54,15 @@ class DropdownItem(Widget):
         """Currently unused method. May be used to perform on-click actions.
         """
 
-    def set_selected(self, selected:bool):
+    def set_selected(self, selected: int):
         self.get_state()[0] = selected
 
-    def is_selected(self) -> bool:
+    def is_selected(self) -> int:
         return self.get_state()[0]
 
     def render(self, img: np.ndarray) -> np.ndarray:
         x, y, width, height = self.get_bb().get_as_tuple()
-        start_point = (x,y)
+        start_point = (x, y)
         end_point = (x + width, y + height)
         color = Color.BLACK.value
         thickness = 2
@@ -72,8 +75,8 @@ class DropdownItem(Widget):
         else:
             put_text(img, self.get_value(), bottom_left_corner, font_scale=0.4)
 
-
         return img
+
 
 class Dropdown(Widget):
     """Widget representing a dropdown. May hold multiple dropdown items, managing
@@ -84,7 +87,7 @@ class Dropdown(Widget):
     """
     STATE_LEN = 1
 
-    def __init__(self, bounding_box:BoundingBox, items:List[DropdownItem]):
+    def __init__(self, bounding_box: BoundingBox, items: List[DropdownItem]):
         """
         Args:
             bounding_box (BoundingBox): The BoundingBox of the dropdown (i.e. the dropdown-button).
@@ -96,7 +99,7 @@ class Dropdown(Widget):
         self.add_children(self._all_items)
         self._selected_item = None
 
-    def is_open(self):
+    def is_open(self) -> int:
         return self.get_state()[0]
 
     def open(self):
@@ -124,12 +127,11 @@ class Dropdown(Widget):
         else:
             self.open()
 
-    def set_visible(self, ddi:DropdownItem, visible:bool):
+    def set_visible(self, ddi: DropdownItem, visible: int):
         index = self._all_items.index(ddi)
         item = self._all_items[index]
         item.set_visible(visible)
 
-    #override
     def get_bb(self):
         if not self.is_open():
             return self._dropdown_button_bb
@@ -154,7 +156,7 @@ class Dropdown(Widget):
     def get_all_items(self):
         return self._all_items
 
-    def set_selected_item(self, ddi:DropdownItem):
+    def set_selected_item(self, ddi: Optional[DropdownItem]):
         if ddi is None:
             self._selected_item = None
 

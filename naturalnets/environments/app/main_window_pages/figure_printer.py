@@ -51,7 +51,7 @@ class FigurePrinter(Page):
         if figure is None:
             raise ValueError("Figure dropdown should have a value.")
         self.current_figure = figure
-        self._show_figure(True)
+        self._show_figure(1)
 
     def set_dd_item_visible(self, item, visible):
         """Sets the given dropdown-item's visibility. Used by
@@ -61,16 +61,16 @@ class FigurePrinter(Page):
             # update selected item when a new item becomes visible
             self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
 
-    def _show_figure(self, show:bool):
+    def _show_figure(self, show: int):
         self.get_state()[0] = show
 
-    def is_figure_shown(self):
+    def is_figure_shown(self) -> int:
         return self.get_state()[0]
 
     def set_figure_color(self, color:Color):
         self._figure_color_from_settings = color
 
-    def is_dropdown_open(self) -> bool:
+    def is_dropdown_open(self) -> int:
         return self.dropdown.is_open()
 
     def handle_click(self, click_position):
@@ -86,7 +86,7 @@ class FigurePrinter(Page):
             figure_img_path = os.path.join(IMAGES_PATH, self.current_figure.value)
             img = render_onto_bb(img, self.FIGURE_CANVAS_BB, cv2.imread(figure_img_path))
 
-            #print figure color
+            # Indicate the selected color of the figure with a text string
             x, y, _, height = self.FIGURE_CANVAS_BB.get_as_tuple()
             padding = 10
             bottom_left_corner = (x + padding, y + height - padding)

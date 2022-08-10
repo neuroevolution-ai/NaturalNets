@@ -40,7 +40,7 @@ class CarConfiguratorSettings(Page):
     ELECTRIC_MOTOR_A_BB = BoundingBox(270, 219, 106, 14)
     ELECTRIC_MOTOR_B_BB = BoundingBox(270, 245, 106, 14)
 
-    def __init__(self, car_configurator:CarConfigurator):
+    def __init__(self, car_configurator: CarConfigurator):
         super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
         self._car_configurator = car_configurator
 
@@ -58,17 +58,19 @@ class CarConfiguratorSettings(Page):
         self._motor_checkboxes = self._create_propulsion_system_checkboxes()
         self.add_widgets(self._motor_checkboxes)
 
-        self._checkbox_groups = [self._tire_checkboxes,
-                                self._interior_checkboxes,
-                                self._motor_checkboxes]
+        self._checkbox_groups = [
+            self._tire_checkboxes,
+            self._interior_checkboxes,
+            self._motor_checkboxes
+        ]
         self._all_checkboxes = itertools.chain(*self._checkbox_groups)
         for checkbox in self._all_checkboxes:
             checkbox.set_selected(1)
 
         # all cars are initially enabled
-        self.set_car_a_enabled(True)
-        self.set_car_b_enabled(True)
-        self.set_car_c_enabled(True)
+        self.set_car_a_enabled(1)
+        self.set_car_b_enabled(1)
+        self.set_car_c_enabled(1)
         self.update_car_config_ddi_state()
 
     def update_car_config_ddi_state(self):
@@ -92,41 +94,53 @@ class CarConfiguratorSettings(Page):
             self._car_configurator.prop_electric_b_ddi: self.electric_b.is_selected(),
         })
 
-    def set_car_a_enabled(self, enabled:bool) -> None:
+    def set_car_a_enabled(self, enabled: int) -> None:
         self.get_state()[0] = enabled
         self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_a_ddi, enabled)
 
-    def set_car_b_enabled(self, enabled:bool) -> None:
+    def set_car_b_enabled(self, enabled: int) -> None:
         self.get_state()[1] = enabled
         self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_b_ddi, enabled)
 
-    def set_car_c_enabled(self, enabled:bool) -> None:
+    def set_car_c_enabled(self, enabled: int) -> None:
         self.get_state()[2] = enabled
         self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_c_ddi, enabled)
 
-    def is_car_a_enabled(self) -> bool:
+    def is_car_a_enabled(self) -> int:
         return self.get_state()[0]
 
-    def is_car_b_enabled(self) -> bool:
+    def is_car_b_enabled(self) -> int:
         return self.get_state()[1]
 
-    def is_car_c_enabled(self) -> bool:
+    def is_car_c_enabled(self) -> int:
         return self.get_state()[2]
 
     def _create_tire_checkboxes(self) -> List[CheckBox]:
         tire_checkboxes: List[CheckBox] = []
-        self.tire_20_inch = CheckBox(self.TIRE_20_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown
-                                   .set_visible(self._car_configurator.tire_20_ddi, is_checked))
-        self.tire_22_inch = CheckBox(self.TIRE_22_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown
-                                    .set_visible(self._car_configurator.tire_22_ddi, is_checked))
-        self.tire_18_inch = CheckBox(self.TIRE_18_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown
-                                    .set_visible(self._car_configurator.tire_18_ddi, is_checked))
-        self.tire_19_inch = CheckBox(self.TIRE_19_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown
-                                    .set_visible(self._car_configurator.tire_19_ddi, is_checked))
+        self.tire_20_inch = CheckBox(
+            self.TIRE_20_INCH_BB,
+            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
+                self._car_configurator.tire_20_ddi, is_checked
+            )
+        )
+        self.tire_22_inch = CheckBox(
+            self.TIRE_22_INCH_BB,
+            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
+                self._car_configurator.tire_22_ddi, is_checked
+            )
+        )
+        self.tire_18_inch = CheckBox(
+            self.TIRE_18_INCH_BB,
+            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
+                self._car_configurator.tire_18_ddi, is_checked
+            )
+        )
+        self.tire_19_inch = CheckBox(
+            self.TIRE_19_INCH_BB,
+            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
+                self._car_configurator.tire_19_ddi, is_checked
+            )
+        )
 
         tire_checkboxes.append(self.tire_20_inch)
         tire_checkboxes.append(self.tire_22_inch)
@@ -137,18 +151,24 @@ class CarConfiguratorSettings(Page):
 
     def _create_interior_checkboxes(self) -> List[CheckBox]:
         interior_checkboxes = []
-        self.interior_modern = CheckBox(self.INTERIOR_MODERN_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown
-                                    .set_visible(self._car_configurator.interior_modern_ddi,
-                                                 is_checked))
-        self.interior_vintage = CheckBox(self.INTERIOR_VINTAGE_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown
-                                    .set_visible(self._car_configurator.interior_vintage_ddi,
-                                                is_checked))
-        self.interior_sport = CheckBox(self.INTERIOR_SPORT_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown
-                                    .set_visible(self._car_configurator.interior_sport_ddi,
-                                                is_checked))
+        self.interior_modern = CheckBox(
+            self.INTERIOR_MODERN_BB,
+            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
+                self._car_configurator.interior_modern_ddi, is_checked
+            )
+        )
+        self.interior_vintage = CheckBox(
+            self.INTERIOR_VINTAGE_BB,
+            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
+                self._car_configurator.interior_vintage_ddi, is_checked
+            )
+        )
+        self.interior_sport = CheckBox(
+            self.INTERIOR_SPORT_BB,
+            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
+                self._car_configurator.interior_sport_ddi, is_checked
+            )
+        )
 
         interior_checkboxes.append(self.interior_modern)
         interior_checkboxes.append(self.interior_vintage)
@@ -159,26 +179,36 @@ class CarConfiguratorSettings(Page):
     def _create_propulsion_system_checkboxes(self) -> List[CheckBox]:
         motor_checkboxes = []
 
-        self.combustion_a = CheckBox(self.COMBUSTION_ENGINE_A_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown
-                                .set_visible(self._car_configurator.prop_combustion_a_ddi,
-                                                    is_checked))
-        self.combustion_b = CheckBox(self.COMBUSTION_ENGINE_B_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown
-                                .set_visible(self._car_configurator.prop_combustion_b_ddi,
-                                                    is_checked))
-        self.combustion_c = CheckBox(self.COMBUSTION_ENGINE_C_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown
-                                .set_visible(self._car_configurator.prop_combustion_c_ddi,
-                                                    is_checked))
-        self.electric_a = CheckBox(self.ELECTRIC_MOTOR_A_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown
-                                .set_visible(self._car_configurator.prop_electric_a_ddi,
-                                                    is_checked))
-        self.electric_b = CheckBox(self.ELECTRIC_MOTOR_B_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown
-                                .set_visible(self._car_configurator.prop_electric_b_ddi,
-                                                    is_checked))
+        self.combustion_a = CheckBox(
+            self.COMBUSTION_ENGINE_A_BB,
+            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
+                self._car_configurator.prop_combustion_a_ddi, is_checked
+            )
+        )
+        self.combustion_b = CheckBox(
+            self.COMBUSTION_ENGINE_B_BB,
+            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
+                self._car_configurator.prop_combustion_b_ddi, is_checked
+            )
+        )
+        self.combustion_c = CheckBox(
+            self.COMBUSTION_ENGINE_C_BB,
+            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
+                self._car_configurator.prop_combustion_c_ddi, is_checked
+            )
+        )
+        self.electric_a = CheckBox(
+            self.ELECTRIC_MOTOR_A_BB,
+            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
+                self._car_configurator.prop_electric_a_ddi, is_checked
+            )
+        )
+        self.electric_b = CheckBox(
+            self.ELECTRIC_MOTOR_B_BB,
+            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
+                self._car_configurator.prop_electric_b_ddi, is_checked
+            )
+        )
 
         motor_checkboxes.append(self.combustion_a)
         motor_checkboxes.append(self.combustion_b)
@@ -205,49 +235,47 @@ class CarConfiguratorSettings(Page):
     def is_popup_open(self) -> int:
         return self.car_disabled_popup.is_open()
 
-    # pretty much copied from the masters-thesis code this app is based on.
+    # Pretty much copied from the masters-thesis code this app is based on.
     def update_cars_enabled_status(self):
         """Updates the enabled cars, by changing the state that is assigned to the respective setting."""
         disabled_cars = []
 
-        car_a_disabled_tire, car_b_disabled_tire, car_c_disabled_tire\
-            = self.update_cars_by_tire()
-        car_a_disabled_interior, car_b_disabled_interior, car_c_disabled_interior\
-            = self.update_cars_by_interior()
-        car_a_disabled_propulsion, car_b_disabled_propulsion, car_c_disabled_propulsion\
-            = self.update_cars_by_propulsion_system()
+        car_a_disabled_tire, car_b_disabled_tire, car_c_disabled_tire = self.update_cars_by_tire()
+        car_a_disabled_interior, car_b_disabled_interior, car_c_disabled_interior = self.update_cars_by_interior()
+        disabled_propulsion = self.update_cars_by_propulsion_system()
+        car_a_disabled_propulsion, car_b_disabled_propulsion, car_c_disabled_propulsion = disabled_propulsion
 
         if (not car_a_disabled_tire
                 and not car_a_disabled_interior
                 and not car_a_disabled_propulsion):
-            self.set_car_a_enabled(True)
+            self.set_car_a_enabled(1)
         else:
             if self.is_car_a_enabled():
                 disabled_cars.append(Car.A)
-            self.set_car_a_enabled(False)
+            self.set_car_a_enabled(0)
 
         if (not car_b_disabled_tire
                 and not car_b_disabled_interior
                 and not car_b_disabled_propulsion):
-            self.set_car_b_enabled(True)
+            self.set_car_b_enabled(1)
         else:
             if self.is_car_b_enabled():
                 disabled_cars.append(Car.B)
-            self.set_car_b_enabled(False)
+            self.set_car_b_enabled(0)
 
         if (not car_c_disabled_tire
                 and not car_c_disabled_interior
                 and not car_c_disabled_propulsion):
-            self.set_car_c_enabled(True)
+            self.set_car_c_enabled(1)
         else:
             if self.is_car_c_enabled():
                 disabled_cars.append(Car.C)
-            self.set_car_c_enabled(False)
+            self.set_car_c_enabled(0)
 
         if len(disabled_cars) > 0:
             self.car_disabled_popup.open(disabled_cars)
 
-    # pretty much copied from the masters-thesis code this app is based on.
+    # Pretty much copied from the masters-thesis code this app is based on.
     def update_cars_by_tire(self):
         car_a_disabled = True
         car_b_disabled = True

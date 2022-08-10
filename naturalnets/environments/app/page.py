@@ -73,5 +73,5 @@ class Page(StateElement, Clickable, HasPopups):
     def is_popup_open(self) -> int:
         return 0
 
-    def is_dropdown_open(self) -> bool:
-        return False
+    def is_dropdown_open(self) -> int:
+        return 0

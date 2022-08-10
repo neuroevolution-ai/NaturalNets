@@ -69,7 +69,7 @@ class MainWindow(StateElement, Clickable):
 
         self.add_children([self.calculator, self.car_configurator, self.figure_printer])
 
-    def set_figure_printer_button_visible(self, visible:bool) -> None:
+    def set_figure_printer_button_visible(self, visible: int) -> None:
         self.is_figure_printer_button_visible = visible
 
     def get_current_page(self):

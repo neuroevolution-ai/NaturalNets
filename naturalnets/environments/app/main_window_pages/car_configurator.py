@@ -86,12 +86,11 @@ class CarConfigurator(Page):
                           self.tire_dropdown,
                           self.interior_dropdown,
                           self.prop_dropdown]
-        self.ddi_state_from_settings: Dict[DropdownItem, bool] = {}
+        self.ddi_state_from_settings: Dict[DropdownItem, int] = {}
 
-        #add show configuration button and window
+        # Add show configuration button and window
         self.popup = CarConfiguratorPopup(self)
         self.show_config_button = Button(self.BUTTON_BB, self.popup.open)
-
 
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
@@ -120,13 +119,12 @@ class CarConfigurator(Page):
                         self._reset_to(index)
                 return
 
-
-    def set_ddi_state_from_settings(self, ddi_state:Dict[DropdownItem, bool]) -> None:
+    def set_ddi_state_from_settings(self, ddi_state: Dict[DropdownItem, int]) -> None:
         """Used by the car-configurator-settings page to set which checkboxes are currently enabled
         in the settings.
 
         Args:
-            ddi_state (Dict[DropdownItem, bool]): Mapping from car-config dropdown items
+            ddi_state (Dict[DropdownItem, int]): Mapping from car-config dropdown items
             to enabled status.
         """
         self.ddi_state_from_settings = ddi_state
@@ -137,28 +135,28 @@ class CarConfigurator(Page):
         if car is None:
             return
         if car == Car.A:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, False)
-            self.tire_dropdown.set_visible(self.tire_19_ddi, False)
+            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
+            self.tire_dropdown.set_visible(self.tire_19_ddi, 0)
 
-            self.interior_dropdown.set_visible(self.interior_sport_ddi, False)
+            self.interior_dropdown.set_visible(self.interior_sport_ddi, 0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, False)
-            self.prop_dropdown.set_visible(self.prop_electric_a_ddi, False)
-            self.prop_dropdown.set_visible(self.prop_electric_b_ddi, False)
+            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
+            self.prop_dropdown.set_visible(self.prop_electric_a_ddi, 0)
+            self.prop_dropdown.set_visible(self.prop_electric_b_ddi, 0)
         elif car == Car.B:
-            self.tire_dropdown.set_visible(self.tire_22_ddi, False)
+            self.tire_dropdown.set_visible(self.tire_22_ddi, 0)
 
-            self.interior_dropdown.set_visible(self.interior_vintage_ddi, False)
+            self.interior_dropdown.set_visible(self.interior_vintage_ddi, 0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, False)
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, False)
-            self.prop_dropdown.set_visible(self.prop_combustion_c_ddi, False)
+            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
+            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
+            self.prop_dropdown.set_visible(self.prop_combustion_c_ddi, 0)
         elif car == Car.C:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, False)
+            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
 
-            self.interior_dropdown.set_visible(self.interior_modern_ddi, False)
+            self.interior_dropdown.set_visible(self.interior_modern_ddi, 0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, False)
+            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
 
     def reset_ddi_visibility_to_stettings_state(self):
         """Resets all dropdown items visibility state to the visibility state specified
@@ -173,14 +171,13 @@ class CarConfigurator(Page):
 
         self.reset_ddi_visibility_to_stettings_state()
 
-
     def _reset_to(self, dd_index:int):
         """Resets all dropdowns selection up to self.dropdowns[dd_index].
         """
         for i in range(dd_index + 1, len(self.dropdowns)):
             self.dropdowns[i].set_selected_item(None)
 
-    def is_dropdown_open(self) -> bool:
+    def is_dropdown_open(self) -> int:
         return (self.car_dropdown.is_open()
                 or self.tire_dropdown.is_open()
                 or self.interior_dropdown.is_open()

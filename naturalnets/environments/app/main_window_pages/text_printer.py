@@ -36,22 +36,22 @@ class TextPrinter(Page):
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
 
-    def set_font_style(self, style:FontStyle, enabled:bool) -> None:
+    def set_font_style(self, style: FontStyle, enabled: int) -> None:
         if enabled:
             self._font_styles.append(style)
         else:
             self._font_styles.remove(style)
 
-    def set_font(self, font:Font) -> None:
+    def set_font(self, font: Font) -> None:
         self._font = font
 
-    def set_font_size(self, size:int) -> None:
+    def set_font_size(self, size: int) -> None:
         self._font_size = size
 
-    def set_color(self, color:Color) -> None:
+    def set_color(self, color: Color) -> None:
         self._color = color
 
-    def set_n_words(self, n:int) -> None:
+    def set_n_words(self, n: int) -> None:
         self._n_words = n
 
     def print_text(self):
