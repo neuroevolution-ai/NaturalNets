@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import List
 import numpy as np
 
@@ -36,7 +37,7 @@ class StateElement(Renderable):
         Raises:
             ArgumentError: if the state-sector is a non-zero vector.
         """
-        if not np.array_equal(np.zeros(len(state_sector)), state_sector):
+        if np.count_nonzero(state_sector) > 0:
             # throw error to emphasize that state_sector state would be overwritten
             # i.e. state cannot be set with this method
             raise ArgumentError("Given state sector is not empty.")
@@ -57,3 +58,8 @@ class StateElement(Renderable):
         """Adds all given children to this StateElement."""
         for child in children:
             self.add_child(child)
+
+    @abstractmethod
+    def render(self, img: np.ndarray) -> np.ndarray:
+        pass
+
