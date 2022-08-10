@@ -8,6 +8,7 @@ WIDTH = 448
 HEIGHT = 448
 
 config = {
+    "type": "GUIApp",
     "number_time_steps": 10**6,
     "screen_width": 448,
     "screen_height": 448,
@@ -17,10 +18,12 @@ config = {
 
 state_diff: np.array = None
 
+
 def calc_state_diff(curr_state, init_state, target):
     diff = np.bitwise_xor(curr_state, init_state)
     target = np.bitwise_or(diff, target)
     return target
+
 
 if __name__ == "__main__":
 
