@@ -130,7 +130,7 @@ class CarConfigurator(Page):
         self.ddi_state_from_settings = ddi_state
 
     def _adjust_visible_dropdown_items_by_car(self, car: Car) -> None:
-        self.reset_ddi_visibility_to_stettings_state()
+        self.reset_ddi_visibility_to_settings_state()
 
         if car is None:
             return
@@ -158,7 +158,7 @@ class CarConfigurator(Page):
 
             self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
 
-    def reset_ddi_visibility_to_stettings_state(self):
+    def reset_ddi_visibility_to_settings_state(self):
         """Resets all dropdown items visibility state to the visibility state specified
         in the car-configurator settings."""
         for ddi, is_visible in self.ddi_state_from_settings.items():
@@ -169,7 +169,7 @@ class CarConfigurator(Page):
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
 
-        self.reset_ddi_visibility_to_stettings_state()
+        self.reset_ddi_visibility_to_settings_state()
 
     def _reset_to(self, dd_index:int):
         """Resets all dropdowns selection up to self.dropdowns[dd_index].
