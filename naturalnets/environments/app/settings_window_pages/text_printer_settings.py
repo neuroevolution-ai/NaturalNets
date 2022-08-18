@@ -4,8 +4,8 @@ from typing import List, Optional
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.enums import Font, FontStyle
 from naturalnets.environments.app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.app.page import Page
@@ -192,14 +192,14 @@ class TextPrinterSettingsPopup(Page):
     YES_BUTTON_BB = BoundingBox(121, 150, 80, 22)
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)
 
-    def __init__(self, text_printer_settings:TextPrinterSettings):
+    def __init__(self, text_printer_settings: TextPrinterSettings):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.settings = text_printer_settings
 
         self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
         self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
-    def set_rb_and_close(self, selected:bool) -> None:
+    def set_rb_and_close(self, selected: bool) -> None:
         if selected:
             self.settings.set_selected_rb(self.settings.green_rb)
         self.close()

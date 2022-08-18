@@ -4,8 +4,8 @@ from typing import Dict, List, Tuple
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.main_window_pages.figure_printer import Figure
 from naturalnets.environments.app.page import Page
@@ -47,8 +47,9 @@ class FigurePrinterSettings(Page):
         self.add_widget(self._show_fig_printer_checkbox)
 
         self.figure_checkboxes, self.checkbox_to_figure = self._get_figure_checkboxes()
-        self.figure_to_checkbox = {figure: checkbox
-                                    for (checkbox, figure) in self.checkbox_to_figure.items()}
+        self.figure_to_checkbox = {
+            figure: checkbox for (checkbox, figure) in self.checkbox_to_figure.items()
+        }
         self.add_widgets(self.figure_checkboxes)
 
         self._color_rbg, self._button_to_color = self._get_color_rbg()
@@ -193,7 +194,7 @@ class FigureCheckboxesPopup(Page):
     APPLY_BUTTON_BB = BoundingBox(103, 157, 203, 22)
     DROPDOWN_BB = BoundingBox(36, 129, 337, 22)
 
-    def __init__(self, figure_printer_settings:FigurePrinterSettings):
+    def __init__(self, figure_printer_settings: FigurePrinterSettings):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.apply_button = Button(self.APPLY_BUTTON_BB, self.close)
         self.figure_printer_settings = figure_printer_settings
@@ -212,11 +213,10 @@ class FigureCheckboxesPopup(Page):
             self.dropdown.handle_click(click_position)
         elif self.apply_button.is_clicked_by(click_position):
             self.apply_button.handle_click()
-            curr_dropdown_value:Figure = self.dropdown.get_current_value()
+            curr_dropdown_value: Figure = self.dropdown.get_current_value()
             if curr_dropdown_value is not None:
                 self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
-                self.figure_printer_settings.figure_printer.dropdown\
-                                                           .set_selected_value(curr_dropdown_value)
+                self.figure_printer_settings.figure_printer.dropdown.set_selected_value(curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""

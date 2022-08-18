@@ -1,9 +1,11 @@
 from abc import abstractmethod
 from typing import List
+
 import numpy as np
 
 from naturalnets.environments.app.exception import ArgumentError
 from naturalnets.environments.app.interfaces import Renderable
+
 
 class StateElement(Renderable):
     """Basic building block of the app. Represents the elements (in {0,1})
@@ -12,8 +14,9 @@ class StateElement(Renderable):
     state-elements in order to get the app's total state vector length, as well as assign
     part of the app's total state vector to every StateElement. Each StateElement then manipulates
     its part of the app's total state vector directly, in order to save computation time."""
-    def __init__(self, state_len:int):
-        self._state:np.ndarray = np.zeros(state_len, dtype=int)
+
+    def __init__(self, state_len: int):
+        self._state: np.ndarray = np.zeros(state_len, dtype=int)
         self._children: List['StateElement'] = []
 
     def get_state(self) -> np.ndarray:
@@ -24,7 +27,7 @@ class StateElement(Renderable):
         """Returns the state length of this state-element."""
         return len(self.get_state())
 
-    def assign_state_sector(self, state_sector:np.ndarray):
+    def assign_state_sector(self, state_sector: np.ndarray):
         """Will assign the given state-sector to this state-element. This means
         the given state-sector will be mutated according to this state-elements current
         state and future state changes!
@@ -54,7 +57,7 @@ class StateElement(Renderable):
         """Adds a child to this StateElement."""
         self.get_children().append(child)
 
-    def add_children(self, children:List['StateElement']):
+    def add_children(self, children: List['StateElement']):
         """Adds all given children to this StateElement."""
         for child in children:
             self.add_child(child)
@@ -62,4 +65,3 @@ class StateElement(Renderable):
     @abstractmethod
     def render(self, img: np.ndarray) -> np.ndarray:
         pass
-

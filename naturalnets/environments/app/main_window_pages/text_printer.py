@@ -4,12 +4,13 @@ from typing import List
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
+from naturalnets.environments.app.enums import Color
 from naturalnets.environments.app.enums import Font, FontStyle
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import put_text
 from naturalnets.environments.app.widgets.button import Button
+
 
 class TextPrinter(Page):
     """The text-printer page in the main-window.
@@ -22,13 +23,13 @@ class TextPrinter(Page):
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
-    # area adjusted to only show properties (bb does not match the grafical bb)
+    # Area adjusted to only show properties (bb does not match the graphical BB)
     TEXT_AREA_BB = BoundingBox(135, 48, 286, 183)
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
         self._font_styles: List[FontStyle] = []
-        self._font:Font = Font.DEJAVU_SANS
+        self._font: Font = Font.DEJAVU_SANS
         self._font_size = 12
         self._color = Color.BLACK
         self._n_words = 50
@@ -76,7 +77,7 @@ class TextPrinter(Page):
 
     def render(self, img: np.ndarray):
         img = super().render(img)
-        if self.get_state()[0] == 1: # text is shown
+        if self.get_state()[0] == 1:  # text is shown
             self.display_text(img)
 
         return img
@@ -85,11 +86,11 @@ class TextPrinter(Page):
         """Renders the text-settings onto the text area."""
         x, y, _, height = self.TEXT_AREA_BB.get_as_tuple()
         props = [f"Number of words: {self.display_dict['n_words']}",
-                    f"Font: {self.display_dict['font']}",
-                    f"Font Size: {self.display_dict['font_size']}",
-                    f"Color: {self.display_dict['color']}",
-                    f"Font Styles: {self.display_dict['font_styles']}"]
+                 f"Font: {self.display_dict['font']}",
+                 f"Font Size: {self.display_dict['font_size']}",
+                 f"Color: {self.display_dict['color']}",
+                 f"Font Styles: {self.display_dict['font_styles']}"]
         space = 20
         for i, prop in enumerate(props):
-            bottom_left_corner = (x, y + height - i*space)
+            bottom_left_corner = (x, y + height - i * space)
             put_text(img, prop, bottom_left_corner, font_scale=0.4)

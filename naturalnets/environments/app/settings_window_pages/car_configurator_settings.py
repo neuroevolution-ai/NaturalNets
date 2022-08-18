@@ -395,6 +395,6 @@ class CarDisabledPopup(Page):
 
     def render(self, img: np.ndarray):
         img = super().render(img)
-        bottom_left_corner = (107, 135) # global position of text
+        bottom_left_corner = (107, 135)  # global position of text
         put_text(img, self._get_disabled_cars_str(), bottom_left_corner, 0.4)
         return img

@@ -137,7 +137,7 @@ class CalculatorSettingsPopup(Page):
     DROPDOWN_BB = BoundingBox(69, 129, 271, 22)
     APPLY_BUTTON_BB = BoundingBox(123, 157, 163, 22)
 
-    def __init__(self, calculator_settings:CalculatorSettings):
+    def __init__(self, calculator_settings: CalculatorSettings):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.apply_button = Button(self.APPLY_BUTTON_BB, self.close)
         self.calculator_settings = calculator_settings
@@ -162,8 +162,7 @@ class CalculatorSettingsPopup(Page):
             assert curr_dropdown_value is not None
             self.apply_button.handle_click()
             self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
-            self.calculator_settings.calculator.operator_dd\
-                                    .set_selected_value(curr_dropdown_value)
+            self.calculator_settings.calculator.operator_dd.set_selected_value(curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""

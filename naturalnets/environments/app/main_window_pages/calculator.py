@@ -68,7 +68,7 @@ class Calculator(Page):
             # update selected item when a new item becomes visible (always first item in dd list)
             self.operator_dd.set_selected_item(self.operator_dd.get_visible_items()[0])
 
-    def create_operand_dd(self, bounding_box:BoundingBox) -> Dropdown:
+    def create_operand_dd(self, bounding_box: BoundingBox) -> Dropdown:
         """Creates the operand dropdown."""
         first_item = DropdownItem(0, "0")
         ddis = [
@@ -82,7 +82,7 @@ class Calculator(Page):
         dropdown.set_selected_item(first_item)
         return dropdown
 
-    def set_base(self, base:Base) -> None:
+    def set_base(self, base: Base) -> None:
         self.base = base
 
     def is_dropdown_open(self) -> bool:
@@ -163,7 +163,7 @@ class CalculatorPopup(Page):
 
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 
-    def __init__(self, calculator:Calculator):
+    def __init__(self, calculator: Calculator):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.settings = calculator
 

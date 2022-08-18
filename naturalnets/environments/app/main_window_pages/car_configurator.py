@@ -5,8 +5,8 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Car
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
+from naturalnets.environments.app.enums import Car
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import put_text, render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
@@ -111,11 +111,11 @@ class CarConfigurator(Page):
 
                 # check if the click changed a dropdown-value to another
                 if old_value is not dropdown.get_current_value():
-                    if index == 0: # car dropdown
+                    if index == 0:  # car dropdown
                         self._adjust_visible_dropdown_items_by_car(dropdown.get_current_value())
                     # reset to dropdown if next dropdown(s) already have selected values
-                    if index + 1 < len(self.dropdowns)\
-                            and self.dropdowns[index + 1].get_selected_item() is not None:
+                    if (index + 1 < len(self.dropdowns)
+                            and self.dropdowns[index + 1].get_selected_item() is not None):
                         self._reset_to(index)
                 return
 
@@ -171,7 +171,7 @@ class CarConfigurator(Page):
 
         self.reset_ddi_visibility_to_settings_state()
 
-    def _reset_to(self, dd_index:int):
+    def _reset_to(self, dd_index: int):
         """Resets all dropdowns selection up to self.dropdowns[dd_index].
         """
         for i in range(dd_index + 1, len(self.dropdowns)):
@@ -228,7 +228,7 @@ class CarConfiguratorPopup(Page):
 
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 
-    def __init__(self, car_configurator:CarConfigurator):
+    def __init__(self, car_configurator: CarConfigurator):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
         self.car_configurator = car_configurator
@@ -262,6 +262,6 @@ class CarConfiguratorPopup(Page):
 
         space = 16
         for i, prop in enumerate(props):
-            bottom_left_corner = (x, y + height - i*space)
+            bottom_left_corner = (x, y + height - i * space)
             put_text(img, prop, bottom_left_corner, font_scale=0.4)
         return img

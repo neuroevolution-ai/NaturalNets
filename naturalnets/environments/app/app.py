@@ -1,8 +1,10 @@
 import logging
 import time
+
+import attr
 import cv2
 import numpy as np
-import attr
+
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.enums import Color
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
@@ -57,10 +59,12 @@ class App(IEnvironment):
 
             random_number1 = action[2] * np.random.normal()
             random_number2 = action[3] * np.random.normal()
-            self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1)
-                                                * self.config.screen_width)
-            self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2)
-                                                * self.config.screen_height)
+            self.click_position_x = int(
+                0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width
+            )
+            self.click_position_y = int(
+                0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height
+            )
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
@@ -68,26 +72,27 @@ class App(IEnvironment):
     def click_event(self, event, x, y, flags, params):
         """Sets action when cv2 mouse-callback is detected."""
         if event == cv2.EVENT_LBUTTONDOWN:
-            self.action = np.array([x,y,10,10])
+            self.action = np.array([x, y, 10, 10])
 
-    def render(self, click_position:np.ndarray=None):
-        """Renders the app depending on the apps configuration (interactive vs. other)"""
+    def render(self, click_position: np.ndarray = None):
+        """Renders the app depending on the apps' configuration (interactive vs. other)"""
 
-        img_shape = (self.config.screen_width,self.config.screen_height, 3)
+        img_shape = (self.config.screen_width, self.config.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
         if click_position is not None:
-            # thickness=-1 will fill the circle shape with the specified color
+            # Thickness=-1 will fill the circle shape with the specified color
             cv2.circle(image, (click_position[0], click_position[1]), radius=4, color=Color.BLACK.value, thickness=-1)
 
         cv2.imshow("App", image)
         if self.config.interactive:
-            # listen for user-click
+            # Listen for user-click
             cv2.setMouseCallback("App", self.click_event)
             while True:
-                ESC_KEY = 27
                 input_key = cv2.waitKey(10)
-                if input_key == ESC_KEY:
+
+                # Keycode 27 is the ESC key
+                if input_key == 27:
                     # return None as exit "action"
                     cv2.destroyAllWindows()
                     return None

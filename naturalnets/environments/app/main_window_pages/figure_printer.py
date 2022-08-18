@@ -4,12 +4,13 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color, Figure
 from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
+from naturalnets.environments.app.enums import Color, Figure
 from naturalnets.environments.app.page import Page
 from naturalnets.environments.app.utils import put_text, render_onto_bb
 from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
+
 
 class FigurePrinter(Page):
     """The figure-printer page in the main-window.
@@ -26,7 +27,7 @@ class FigurePrinter(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self._figure_color_from_settings:Color = None # color set in settings
+        self._figure_color_from_settings: Color = None  # color set in settings
         self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
         self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
         self.guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
@@ -44,7 +45,7 @@ class FigurePrinter(Page):
         self.add_widget(self.dropdown)
 
         self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
-        self._rendered_figure_color:Color = None # color rendered onto the image
+        self._rendered_figure_color: Color = None  # color rendered onto the image
 
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
@@ -67,7 +68,7 @@ class FigurePrinter(Page):
     def is_figure_shown(self) -> int:
         return self.get_state()[0]
 
-    def set_figure_color(self, color:Color):
+    def set_figure_color(self, color: Color):
         self._figure_color_from_settings = color
 
     def is_dropdown_open(self) -> int:

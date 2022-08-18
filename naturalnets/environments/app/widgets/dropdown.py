@@ -1,5 +1,4 @@
-""" Module containing classes relevant for the dropdown-widget.
-"""
+""" Module containing classes relevant for the dropdown-widget."""
 from typing import Any, List, Optional
 
 import cv2
@@ -68,7 +67,7 @@ class DropdownItem(Widget):
         thickness = 2
         cv2.rectangle(img, start_point, end_point, color, thickness)
 
-        text_padding = 3*thickness
+        text_padding = 3 * thickness
         bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:
             put_text(img, self.display_name, bottom_left_corner, font_scale=0.4)
@@ -112,7 +111,7 @@ class Dropdown(Widget):
         self.get_state()[0] = 0
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        """Sets the selected drodpown-item, if any. Closes the 
+        """Sets the selected dropdown-item, if any. Closes the
         dropdown if it was open.
 
         Args:
@@ -139,13 +138,13 @@ class Dropdown(Widget):
         return get_group_bounding_box(self.get_visible_items())
 
     def get_visible_items(self):
-        i:int = 0
+        i: int = 0
         first_bb = self._dropdown_button_bb
         available_items: List[DropdownItem] = []
         for item in self._all_items:
-            #TODO: check if window bounds are surpassed by any item's next_bb (
-            #not necessary for this app)
-            next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height*i,
+            # TODO: check if window bounds are surpassed by any item's next_bb (
+            # not necessary for this app)
+            next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height * i,
                                   first_bb.width, first_bb.height)
             if item.is_visible():
                 item.set_bb(next_bb)

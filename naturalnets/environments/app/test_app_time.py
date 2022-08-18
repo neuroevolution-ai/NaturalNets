@@ -33,7 +33,7 @@ if __name__ == "__main__":
     initial_state = np.copy(app.get_state())
     state_diff = np.zeros(len(initial_state), dtype=int)
     for i in range(config["number_time_steps"]):
-        #app.render(action)
+        # app.render(action)
         action = np.array([randrange(0, 448), randrange(0, 448), 0, 0], dtype=int)
 
         t0 = time.time()

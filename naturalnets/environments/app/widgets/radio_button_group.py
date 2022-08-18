@@ -1,4 +1,3 @@
-"""Module containing the classes relevant for the RadioButtonGroup-widget."""
 from typing import Any, Callable, List
 
 import cv2
@@ -59,12 +58,12 @@ class RadioButton(Widget):
         circle_width = circle_height = 14
         if self.is_selected():
             x, y = self.get_bb().get_as_tuple()[0:2]
-            c_x = x + circle_width//2
-            c_y = y + circle_height//2
-            radius = min(circle_width, circle_height)//4
+            c_x = x + circle_width // 2
+            c_y = y + circle_height // 2
+            radius = min(circle_width, circle_height) // 4
             color = Color.BLACK.value
             thickness = -1
-            cv2.circle(img, (c_x, c_y), radius, color ,thickness)
+            cv2.circle(img, (c_x, c_y), radius, color, thickness)
         return img
 
 
@@ -79,7 +78,7 @@ class RadioButtonGroup(Widget):
     STATE_LEN = 0
     BOUNDING_BOX = BoundingBox(0, 0, 0, 0)
 
-    def __init__(self, radio_buttons:List[RadioButton]):
+    def __init__(self, radio_buttons: List[RadioButton]):
         """Instantiates a RadioButtonGroup with at least one RadioButton. The
         first RadioButton in radio_buttons is initially selected.
 
@@ -91,7 +90,7 @@ class RadioButtonGroup(Widget):
             ArgumentError: If len(radio_buttons) < 1
         """
         if len(radio_buttons) < 1:
-            error_msg:str = "RadioButtonGroup must be instantiated with at least one RadioButton."
+            error_msg: str = "RadioButtonGroup must be instantiated with at least one RadioButton."
             raise ArgumentError(error_msg)
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX)
 
@@ -100,12 +99,12 @@ class RadioButtonGroup(Widget):
         self._selected_radio_button = None
         self.set_selected_button(radio_buttons[0])
 
-    def add_radio_button(self, radio_button:RadioButton):
+    def add_radio_button(self, radio_button: RadioButton):
         self.add_child(radio_button)
         self.radio_buttons.append(radio_button)
         self.set_bb(get_group_bounding_box(self.radio_buttons))
 
-    def add_radio_buttons(self, radio_buttons:List[RadioButton]):
+    def add_radio_buttons(self, radio_buttons: List[RadioButton]):
         for radio_button in radio_buttons:
             self.add_radio_button(radio_button)
 

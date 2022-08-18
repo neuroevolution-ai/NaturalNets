@@ -1,11 +1,10 @@
 import os
-from typing import List
+from typing import Dict, List
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.widgets.button import Button
 from naturalnets.environments.app.constants import IMAGES_PATH
 from naturalnets.environments.app.interfaces import Clickable
 from naturalnets.environments.app.main_window_pages.calculator import Calculator
@@ -13,8 +12,9 @@ from naturalnets.environments.app.main_window_pages.car_configurator import CarC
 from naturalnets.environments.app.main_window_pages.figure_printer import FigurePrinter
 from naturalnets.environments.app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import render_onto_bb
 from naturalnets.environments.app.state_element import StateElement
+from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.app.widgets.button import Button
 
 
 class MainWindow(StateElement, Clickable):
@@ -34,7 +34,7 @@ class MainWindow(StateElement, Clickable):
 
     TEXT_PRINTER_BUTTON_BB = BoundingBox(9, 28, 99, 22)
     CALCULATOR_BUTTON_BB = BoundingBox(9, 56, 99, 22)
-    CAR_CONFIGURATOR_BUTTON_BB =  BoundingBox(9, 84, 99, 22)
+    CAR_CONFIGURATOR_BUTTON_BB = BoundingBox(9, 84, 99, 22)
     FIGURE_PRINTER_BUTTON_BB = BoundingBox(9, 112, 99, 22)
 
     def __init__(self):
@@ -47,23 +47,24 @@ class MainWindow(StateElement, Clickable):
         self.figure_printer = FigurePrinter()
 
         self.pages: List[Page] = [self.text_printer, self.calculator,
-                                 self.car_configurator, self.figure_printer]
+                                  self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
-        self.pages_to_state_index:dict[Page, int] = {page: index for index,
-                                                        page in enumerate(self.pages)}
+        self.pages_to_state_index: Dict[Page, int] = {
+            page: index for index, page in enumerate(self.pages)
+        }
 
         self.current_page = None
         self.set_current_page(self.text_printer)
 
         self.is_figure_printer_button_visible = 0
         self.figure_printer_button = Button(self.FIGURE_PRINTER_BUTTON_BB,
-                                        lambda: self.set_current_page(self.figure_printer))
+                                            lambda: self.set_current_page(self.figure_printer))
 
         self.buttons = [
             Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer)),
             Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator)),
             Button(self.CAR_CONFIGURATOR_BUTTON_BB,
-                            lambda: self.set_current_page(self.car_configurator)),
+                   lambda: self.set_current_page(self.car_configurator)),
             self.figure_printer_button,
         ]
 
@@ -75,7 +76,7 @@ class MainWindow(StateElement, Clickable):
     def get_current_page(self):
         return self.current_page
 
-    def set_current_page(self, current_page:Page):
+    def set_current_page(self, current_page: Page):
         """Sets the currently selected/shown page, setting the respective
         state element to 1 and the state elements representing the other pages
         to 0.
@@ -95,14 +96,15 @@ class MainWindow(StateElement, Clickable):
         """
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
-    def handle_click(self, click_position:np.ndarray) -> None:
-        # Let the current page process the click if the current page blocks clicks to the main page (e.g. due to open drop downs) or the click
-        # is inside of the bounding box of the current page
-        # Note that the settings menu button is handled in the AppController class
+    def handle_click(self, click_position: np.ndarray) -> None:
+        # Let the current page process the click, if the current page blocks clicks
+        # to the main page (e.g. due to open dropdowns) or the click
+        # is inside the bounding box of the current page.
+        # Note that the settings menu button is handled in the AppController class.
         if self.current_page_blocks_click() or self.PAGES_AREA_BB.is_point_inside(click_position):
             self.current_page.handle_click(click_position)
             return
-        # check if menu is clicked
+        # Check if menu is clicked
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
@@ -112,7 +114,7 @@ class MainWindow(StateElement, Clickable):
         """
         return self.current_page.is_dropdown_open()
 
-    def handle_menu_click(self, click_position:np.ndarray) -> None:
+    def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
         if any).
 
@@ -126,7 +128,7 @@ class MainWindow(StateElement, Clickable):
                     button.handle_click()
                     break
 
-    def render(self, img:np.ndarray):
+    def render(self, img: np.ndarray):
         """ Renders the main window and all its children onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)
