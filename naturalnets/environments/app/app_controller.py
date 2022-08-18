@@ -1,15 +1,15 @@
 """Contains the AppController."""
 
 import numpy as np
-from naturalnets.environments.app.bounding_box import BoundingBox
 
+from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.main_window import MainWindow
 from naturalnets.environments.app.settings_window import SettingsWindow
 from naturalnets.environments.app.state_element import StateElement
 from naturalnets.environments.app.widgets.button import Button
 
 
-class AppController():
+class AppController:
     """Controller-class that builds all components of the app, initializes the app state-vector
     and delegates clicks to the app components (acts as the click- and render-root of the app).
     """
@@ -31,11 +31,11 @@ class AppController():
         self.assign_state(self.main_window)
         self.assign_state(self.settings_window)
 
-    def get_element_state_len(self, state_element:StateElement) -> int:
+    def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
 
         Args:
-            stateElement (StateElement): the state element.
+            state_element (StateElement): the state element.
 
         Returns:
             int: the total state length of the given StateElement and all of its children.
@@ -46,7 +46,7 @@ class AppController():
         accumulated_len += state_element.get_state_len()
         return accumulated_len
 
-    def assign_state(self, state_element:StateElement) -> None:
+    def assign_state(self, state_element: StateElement) -> None:
         """Assigns (part of) the app state-vector to the given StateElement and all of its children.
 
         Args:
@@ -82,18 +82,18 @@ class AppController():
         """
         return self._total_state_len
 
-    def handle_click(self, click_position:np.ndarray):
+    def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component.
         """
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
         elif (not self.main_window.current_page_blocks_click()
-                and self.settings_button.is_clicked_by(click_position)):
+              and self.settings_button.is_clicked_by(click_position)):
             self.settings_window.open()
         else:
             self.main_window.handle_click(click_position)
 
-    def render(self, img:np.ndarray) -> np.ndarray:
+    def render(self, img: np.ndarray) -> np.ndarray:
         """Calls the main window rendering method and the settings window rendering method,
         if the settings window is open.
 
