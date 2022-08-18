@@ -1,16 +1,28 @@
+from abc import abstractmethod
 from typing import List
+
 import cv2
 import numpy as np
 
 from naturalnets.environments.app.bounding_box import BoundingBox
 from naturalnets.environments.app.interfaces import Clickable, HasPopups
-from naturalnets.environments.app.utils import render_onto_bb
 from naturalnets.environments.app.state_element import StateElement
+from naturalnets.environments.app.utils import render_onto_bb
+
 
 class Widget(StateElement, Clickable):
     """Represents a widget of the app, i.e. a clickable state-element.
     """
-    def __init__(self, state_len:int, bounding_box:BoundingBox):
+
+    @abstractmethod
+    def render(self, img: np.ndarray) -> np.ndarray:
+        pass
+
+    @abstractmethod
+    def handle_click(self, click_position: np.ndarray) -> None:
+        pass
+
+    def __init__(self, state_len: int, bounding_box: BoundingBox):
         super().__init__(state_len)
         self._bounding_box = bounding_box
 
@@ -20,13 +32,18 @@ class Widget(StateElement, Clickable):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
+
 class Page(StateElement, Clickable, HasPopups):
     """Represents a Page of the app (used in main-window and settings-window). A page
     may contain widgets and popups (in addition to non-widget state-elements). Popups block
     clicks to all other elements of the app. A page has it's own image that may be rendered
     onto the base app image."""
 
-    def __init__(self, state_len:int, bounding_box:BoundingBox, img_path:str):
+    @abstractmethod
+    def handle_click(self, click_position: np.ndarray) -> None:
+        pass
+
+    def __init__(self, state_len: int, bounding_box: BoundingBox, img_path: str):
         super().__init__(state_len)
         self._bounding_box = bounding_box
         self._img_path = img_path
@@ -46,13 +63,13 @@ class Page(StateElement, Clickable, HasPopups):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
-    def add_widget(self, widget:Widget):
+    def add_widget(self, widget: Widget):
         """Adds the given widget to this Page. This will also add the widget to the
         pages' StateElement-children."""
         self.widgets.append(widget)
         self.add_child(widget)
 
-    def add_widgets(self, widgets:List[Widget]):
+    def add_widgets(self, widgets: List[Widget]):
         """Adds the given widget-list to this Page. This will also add the widgets to the
         pages' StateElement-children."""
         for widget in widgets:
@@ -62,7 +79,7 @@ class Page(StateElement, Clickable, HasPopups):
         """Returns all widgets of this page. Might differ from the pages' state-element children!"""
         return self.widgets
 
-    def render(self, img:np.ndarray):
+    def render(self, img: np.ndarray):
         """Renders this page as well as all of its widgets to the given image."""
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
