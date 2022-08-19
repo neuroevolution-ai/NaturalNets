@@ -27,7 +27,6 @@ class App(IEnvironment):
         t0 = time.time()
 
         self.config = AppCfg(**configuration)
-        self.action = None
 
         self.app_controller = AppController()
         self._initial_state = np.copy(self.app_controller.get_total_state())
@@ -40,6 +39,12 @@ class App(IEnvironment):
 
         self.click_position_x = 0
         self.click_position_y = 0
+
+        # Used for the interactive mode, in which the user can click through an OpenCV rendered
+        # version of the app
+        self.window_name = "App"
+        self.action = None
+        self.clicked = False
 
         t1 = time.time()
 
@@ -69,49 +74,68 @@ class App(IEnvironment):
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
 
-    def click_event(self, event, x, y, flags, params):
-        """Sets action when cv2 mouse-callback is detected."""
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.action = np.array([x, y, 10, 10])
-
-    def render(self, click_position: np.ndarray = None):
-        """Renders the app depending on the apps' configuration (interactive vs. other)"""
-
+    def _render_image(self):
         img_shape = (self.config.screen_width, self.config.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
-        if click_position is not None:
-            # Thickness=-1 will fill the circle shape with the specified color
-            cv2.circle(image, (click_position[0], click_position[1]), radius=4, color=Color.BLACK.value, thickness=-1)
 
-        cv2.imshow("App", image)
-        if self.config.interactive:
-            # Listen for user-click
-            cv2.setMouseCallback("App", self.click_event)
+        return image
+
+    def render(self):
+        image = self._render_image()
+        cv2.imshow(self.window_name, image)
+        cv2.waitKey(1)
+
+    def click_event(self, event, x, y, flags, params):
+        """Sets action when cv2 mouse-callback is detected."""
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.action = np.array([x, y])
+            self.clicked = True
+
+    def interactive_mode(self):
+        # Create the window here first, so that the callback can be registered
+        # The callback simply registers the clicks of a user
+        cv2.namedWindow(self.window_name)
+        cv2.setMouseCallback(self.window_name, self.click_event)
+
+        while True:
+            current_action = None
+            if self.clicked:
+                current_action = self.action
+                self.step(self.action)
+                self.clicked = False
+
+            image = self._render_image()
+
+            if current_action is not None:
+                # Draw the position of the click as a black circle;
+                # thickness=-1 will fill the circle shape with the specified color
+                cv2.circle(
+                    image,
+                    (current_action[0], current_action[1]), radius=4, color=Color.BLACK.value, thickness=-1
+                )
+
+            cv2.imshow(self.window_name, image)
+
             while True:
-                input_key = cv2.waitKey(10)
+                # Waits 50ms for a key press (notice that this does not include mouse clicks,
+                # therefore we use the callback method for the clicks)
+                key = cv2.waitKey(50)
 
                 # Keycode 27 is the ESC key
-                if input_key == 27:
-                    # return None as exit "action"
+                if key == 27:
                     cv2.destroyAllWindows()
-                    return None
-                if self.action is not None:
-                    # click sets self.action -> return action
-                    action = np.copy(self.action)
-                    self.action = None
-                    return action
-        else:
-            cv2.waitKey(1)
+                    return
 
-    # TODO change number_inputs and number_outputs as these are false, but wait for the GitHub
-    #   PR review comment to be resolved
+                if self.clicked:
+                    # The user clicked, thus use the position for a step() and render the new image
+                    break
 
     def get_number_inputs(self) -> int:
-        return 4
+        return self.app_controller.get_total_state_len()
 
     def get_number_outputs(self) -> int:
-        return self.app_controller.get_total_state_len()
+        return 4
 
     def reset(self) -> np.ndarray:
         self.get_state()[:] = self._initial_state
