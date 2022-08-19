@@ -108,10 +108,10 @@ class App(IEnvironment):
     #   PR review comment to be resolved
 
     def get_number_inputs(self) -> int:
-        return 4
+        return self.app_controller.get_total_state_len()
 
     def get_number_outputs(self) -> int:
-        return self.app_controller.get_total_state_len()
+        return 4
 
     def reset(self) -> np.ndarray:
         self.get_state()[:] = self._initial_state
