@@ -39,6 +39,7 @@ class TextPrinterSettings(Page):
 
         # init popup
         self.popup = TextPrinterSettingsPopup(self)
+        self.add_child(self.popup)
 
         # init font-style checkboxes
         self.bold = CheckBox(

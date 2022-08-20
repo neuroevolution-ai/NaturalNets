@@ -11,17 +11,19 @@ class BoundingBox:
         self.width = width
         self.height = height
 
+        # generate values needed to check if a point is inside this bounding box
+        self.x1 = self.x
+        self.x2 = self.x1 + self.width
+        self.y1 = self.y
+        self.y2 = self.y1 + self.height
+
     def is_point_inside(self, point: np.ndarray):
         """Returns true if the given x and y are inside the bounding box (including its borders).
         """
         x = point[0]
         y = point[1]
 
-        x1 = self.x
-        x2 = x1 + self.width
-        y1 = self.y
-        y2 = y1 + self.height
-        return x1 <= x <= x2 and y1 <= y <= y2
+        return self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2
 
     def get_as_tuple(self):
         """Returns the BoundingBox values as a Tuple (x, y, width, height)."""

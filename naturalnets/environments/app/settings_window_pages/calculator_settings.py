@@ -77,6 +77,7 @@ class CalculatorSettings(Page):
         self.add_widget(self.dropdown)
 
         self.popup = CalculatorSettingsPopup(self)
+        self.add_child(self.popup)
 
         # initial state
         self.dropdown.set_selected_item(self.base_10_ddi)

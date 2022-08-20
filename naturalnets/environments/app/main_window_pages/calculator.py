@@ -29,7 +29,8 @@ class Calculator(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self.popup = CalculatorPopup(self)
+        self.popup = CalculatorPopup()
+        self.add_child(self.popup)
         # init operator dropdown
         self.addition_ddi = DropdownItem(Operator.ADDITION, "+")
         self.subtraction_ddi = DropdownItem(Operator.SUBTRACTION, "-")
@@ -163,10 +164,8 @@ class CalculatorPopup(Page):
 
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 
-    def __init__(self, calculator: Calculator):
+    def __init__(self):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        self.settings = calculator
-
         self.button: Button = Button(self.BUTTON_BB, self.close)
 
     def handle_click(self, click_position: np.ndarray) -> None:

@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, Optional
 
 import cv2
 import numpy as np
@@ -90,11 +90,23 @@ class CarConfigurator(Page):
 
         # Add show configuration button and window
         self.popup = CarConfiguratorPopup(self)
+        self.add_child(self.popup)
         self.show_config_button = Button(self.BUTTON_BB, self.popup.open)
+
+    def get_opened_dropdown(self) -> Optional[Dropdown]:
+        for dropdown in self.dropdowns:
+            if dropdown.is_open():
+                return dropdown
+        return None
 
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
             self.popup.handle_click(click_position)
+            return
+
+        opened_dd = self.get_opened_dropdown()
+        if opened_dd is not None:
+            opened_dd.handle_click(click_position)
             return
 
         # Show config button only clickable if a value has been selected in the last dropdown

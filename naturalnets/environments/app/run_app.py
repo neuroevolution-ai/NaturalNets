@@ -6,8 +6,6 @@ HEIGHT = 448
 config = {
     "type": "GUIApp",
     "number_time_steps": 100,
-    "screen_width": 448,
-    "screen_height": 448,
     "interactive": True,
     "monkey_tester": False
 }

@@ -49,9 +49,6 @@ class MainWindow(StateElement, Clickable):
         self.pages: List[Page] = [self.text_printer, self.calculator,
                                   self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
-        self.pages_to_state_index: Dict[Page, int] = {
-            page: index for index, page in enumerate(self.pages)
-        }
 
         self.current_page = None
         self.set_current_page(self.text_printer)
@@ -68,7 +65,7 @@ class MainWindow(StateElement, Clickable):
             self.figure_printer_button,
         ]
 
-        self.add_children([self.calculator, self.car_configurator, self.figure_printer])
+        self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
 
     def set_figure_printer_button_visible(self, visible: int) -> None:
         self.is_figure_printer_button_visible = visible
@@ -76,20 +73,17 @@ class MainWindow(StateElement, Clickable):
     def get_current_page(self):
         return self.current_page
 
-    def set_current_page(self, current_page: Page):
+    def set_current_page(self, page: Page):
         """Sets the currently selected/shown page, setting the respective
         state element to 1 and the state elements representing the other pages
         to 0.
 
         Args:
-            current_page (Page): the page to be selected.
+            page (Page): the page to be selected.
         """
-        for page, index in self.pages_to_state_index.items():
-            if page == current_page:
-                self.get_state()[index] = 1
-                self.current_page = page
-            else:
-                self.get_state()[index] = 0
+        self.get_state()[:] = 0
+        self.get_state()[self.pages.index(page)] = 1
+        self.current_page = page
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
