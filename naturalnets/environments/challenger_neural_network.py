@@ -1,8 +1,8 @@
 import attr
 import numpy as np
 
-from naturalnets.brains.lstm import LstmNN
 from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.environments.environment_utils import deprecate_environment
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
@@ -18,6 +18,7 @@ class ChallengerNeuralNetworkCfg:
 
 class ChallengerNeuralNetwork(IEnvironment):
 
+    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
 
         self.config = ChallengerNeuralNetworkCfg(**configuration)

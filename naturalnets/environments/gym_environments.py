@@ -1,12 +1,14 @@
-import numpy as np
 import gym
+import numpy as np
 from gym.spaces.utils import flatdim
 
+from naturalnets.environments.environment_utils import deprecate_environment
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
 
 class GeneralGymEnvironment(IEnvironment):
 
+    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
         self.configuration = configuration
         self.env = gym.make(configuration["env_id"])
