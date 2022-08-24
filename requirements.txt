@@ -10,3 +10,4 @@ cma
 matplotlib
 pandas
 py-cpuinfo
+pytest
