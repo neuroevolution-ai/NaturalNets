@@ -14,13 +14,13 @@ class GymMujocoCfg:
 
 class GymMujoco(IEnvironment):
 
-    def __init__(self, env_seed: int, configuration: dict):
+    def __init__(self, configuration: dict):
 
         self.config = GymMujocoCfg(**configuration)
 
-        self.env = gym.make(self.config.name)
-
-        self.env.seed(env_seed)
+        # The new step API returns two booleans, terminated and truncated, to indicate if an environment is either
+        # done (terminated) or met a truncation condition (truncated), e.g. a time limit
+        self.env = gym.make(self.config.name, new_step_api=True)
 
         assert isinstance(self.env.action_space, gym.spaces.Box), ("Only environments with a Box action space "
                                                                    "(continuous values) are supported.")
@@ -42,8 +42,8 @@ class GymMujoco(IEnvironment):
     def get_number_outputs(self):
         return self.env.action_space.shape[0]
 
-    def reset(self):
-        return self.env.reset()
+    def reset(self, env_seed: int):
+        return self.env.reset(seed=env_seed)
 
     def step(self, action: np.ndarray):
         assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
@@ -55,7 +55,10 @@ class GymMujoco(IEnvironment):
             rescale_values(action, previous_low=-1, previous_high=1, new_low=self.action_space_low,
                            new_high=self.action_space_high)
 
-        return self.env.step(action)
+        ob, rew, terminated, truncated, info = self.env.step(action)
+
+        # "Calculate" done to be True of either the environment ist terminated or truncated
+        return ob, rew, terminated or truncated, info
 
     def render(self):
         self.env.render()

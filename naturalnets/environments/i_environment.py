@@ -22,7 +22,7 @@ class IEnvironment(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def reset(self):
+    def reset(self, env_seed: int):
         pass
 
     @abc.abstractmethod

@@ -69,7 +69,7 @@ class DummyApp(IEnvironment):
     def get_number_outputs(self):
         return 4
 
-    def reset(self):
+    def reset(self, env_seed: int = None):
         return self.get_observation()
 
     def step(self, action: np.ndarray):

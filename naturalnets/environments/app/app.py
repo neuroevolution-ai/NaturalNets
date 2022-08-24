@@ -131,7 +131,7 @@ class App(IEnvironment):
     def get_number_outputs(self) -> int:
         return 4
 
-    def reset(self) -> np.ndarray:
+    def reset(self, env_seed: int = None) -> np.ndarray:
         self.get_state()[:] = self._initial_state
         return self.get_state()
 
