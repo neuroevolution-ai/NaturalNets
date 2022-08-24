@@ -55,6 +55,8 @@ class App(IEnvironment):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
+        assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
+                                                              "value range.")
 
         if self.config.interactive or self.config.monkey_tester:
             self.click_position_x = action[0]

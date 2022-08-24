@@ -46,6 +46,9 @@ class GymMujoco(IEnvironment):
         return self.env.reset()
 
     def step(self, action: np.ndarray):
+        assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
+                                                              "value range.")
+
         # We settled on the fact that every brain outputs values between [-1, 1]. If this particular Gym MuJoCo
         # environment has another value range, we need to transform the actions from the brain to that range
         if self.action_space_low != -1 or self.action_space_high != -1:

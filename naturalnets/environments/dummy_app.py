@@ -73,6 +73,8 @@ class DummyApp(IEnvironment):
         return self.get_observation()
 
     def step(self, action: np.ndarray):
+        assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
+                                                              "value range.")
 
         action = np.tanh(action)
 
