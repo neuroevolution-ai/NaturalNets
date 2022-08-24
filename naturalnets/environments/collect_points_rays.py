@@ -72,8 +72,10 @@ class CollectPointsRays(IEnvironment):
     - https://lodev.org/cgtutor/raycasting.html
     """
 
-    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
+
+        deprecate_environment("CollectPointsRays")
+
         self.config = CollectPointsCfg(**configuration)
 
         self.screen_width = self.config.maze_cell_size * self.config.maze_columns

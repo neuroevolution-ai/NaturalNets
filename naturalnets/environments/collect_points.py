@@ -26,8 +26,9 @@ class CollectPointsCfg:
 
 class CollectPoints(IEnvironment):
 
-    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
+
+        deprecate_environment("CollectPoints")
 
         self.config = CollectPointsCfg(**configuration)
 
@@ -340,4 +341,4 @@ class CollectPoints(IEnvironment):
 
 
 # TODO: Do this registration via class decorator
-registered_environment_classes['CollectPoints'] = CollectPoints
+registered_environment_classes["CollectPoints"] = CollectPoints

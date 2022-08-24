@@ -1,8 +1,8 @@
-def deprecate_environment(_environment_init_func):
+def deprecate_environment(environment_name: str):
     supported_environments = [
         "DummyApp",
         "GUIApp",
         "GymMujoco"
     ]
-    raise DeprecationWarning("This environment has been deprecated, please use one of the following supported "
-                             f"environments: {supported_environments!r}.")
+    raise DeprecationWarning(f"The environment '{environment_name}' has been deprecated, please use one of the "
+                             f"following supported environments: {supported_environments!r}.")

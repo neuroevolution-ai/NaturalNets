@@ -16,8 +16,9 @@ class ReacherMemoryCfg:
 
 class ReacherMemory(IEnvironment):
 
-    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
+
+        deprecate_environment("ReacherMemory")
 
         self.config = ReacherMemoryCfg(**configuration)
 
@@ -63,4 +64,4 @@ class ReacherMemory(IEnvironment):
 
 
 # TODO: Do this registration via class decorator
-registered_environment_classes['ReacherMemory'] = ReacherMemory
+registered_environment_classes["ReacherMemory"] = ReacherMemory

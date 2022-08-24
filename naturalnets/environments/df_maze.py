@@ -4,8 +4,6 @@
 # https://scipython.com/blog/making-a-maze/
 # Christian Hill, April 2017.
 
-from naturalnets.environments.environment_utils import deprecate_environment
-
 
 class Cell:
     """A cell in the maze.
@@ -18,7 +16,6 @@ class Cell:
     # A wall separates a pair of cells in the N-S or W-E directions.
     wall_pairs = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
 
-    @deprecate_environment
     def __init__(self, x, y):
         """Initialize the cell at (x,y). At first it is surrounded by walls."""
 

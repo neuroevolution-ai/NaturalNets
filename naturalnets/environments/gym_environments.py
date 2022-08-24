@@ -8,8 +8,8 @@ from naturalnets.environments.i_environment import IEnvironment, registered_envi
 
 class GeneralGymEnvironment(IEnvironment):
 
-    @deprecate_environment
     def __init__(self, env_seed: int, configuration: dict):
+        deprecate_environment("GeneralGymEnv")
         self.configuration = configuration
         self.env = gym.make(configuration["env_id"])
         self.env.seed(env_seed)
