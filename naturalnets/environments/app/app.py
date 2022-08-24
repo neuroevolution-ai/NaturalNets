@@ -16,8 +16,6 @@ class AppCfg:
     number_time_steps: int
     screen_width: int
     screen_height: int
-    interactive: bool
-    monkey_tester: bool
 
 
 class App(IEnvironment):
@@ -58,20 +56,14 @@ class App(IEnvironment):
         assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
                                                               "value range.")
 
-        if self.config.interactive or self.config.monkey_tester:
-            self.click_position_x = action[0]
-            self.click_position_y = action[1]
-        else:
-            action = np.tanh(action)
-
-            random_number1 = action[2] * np.random.normal()
-            random_number2 = action[3] * np.random.normal()
-            self.click_position_x = int(
-                0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width
-            )
-            self.click_position_y = int(
-                0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height
-            )
+        random_number1 = action[2] * np.random.normal()
+        random_number2 = action[3] * np.random.normal()
+        self.click_position_x = int(
+            0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width
+        )
+        self.click_position_y = int(
+            0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height
+        )
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
@@ -88,8 +80,8 @@ class App(IEnvironment):
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 
-    def click_event(self, event, x, y, flags, params):
-        """Sets action when cv2 mouse-callback is detected."""
+    def click_event(self, event, x, y, _flags, _params):
+        """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
         if event == cv2.EVENT_LBUTTONDOWN:
             self.action = np.array([x, y])
             self.clicked = True
