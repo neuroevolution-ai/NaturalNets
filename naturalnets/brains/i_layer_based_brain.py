@@ -163,7 +163,7 @@ class ILayerBasedBrain(IBrain, abc.ABC):
                                            self.hidden[layer])
             self.hidden[layer] = layer_result[0]
             self.layer_output[layer] = layer_result[1]
-        return np.dot(self.weight_ho, self.layer_output[len(self.layer_output) - 1])
+        return np.tanh(np.dot(self.weight_ho, self.layer_output[len(self.layer_output) - 1]))
 
     def reset(self):
         self.hidden = np.zeros_like(self.hidden)
