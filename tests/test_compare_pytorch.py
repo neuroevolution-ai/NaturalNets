@@ -1,10 +1,12 @@
-import numpy as np
-import torch
 import time
 
-from brains import LstmNN, GruNN, ElmanNN
+import numpy as np
+import torch
+
+from naturalnets.brains import LstmNN, GruNN, ElmanNN
 from naturalnets.brains.i_layer_based_brain import ILayerBasedBrainCfg
 from tests.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
+
 
 class TestPyTorch:
 
