@@ -56,7 +56,7 @@ while True:
     optimizer_configuration["sigma"] = random.choice([0.5, 1.0, 2.0])
 
     configuration = dict()
-    configuration["number_generations"] = 2500
+    configuration["number_generations"] = 20000
     configuration["number_validation_runs"] = 50
     configuration["number_rounds"] = 5
     configuration["maximum_env_seed"] = 100000
