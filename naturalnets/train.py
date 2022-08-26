@@ -5,10 +5,10 @@ import os
 import random
 import time
 from datetime import datetime
-from cpuinfo import get_cpu_info
 
 import attr
 import numpy as np
+from cpuinfo import get_cpu_info
 
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
@@ -32,8 +32,7 @@ class TrainingCfg:
     experiment_id: int = -1
 
 
-def train(configuration, results_directory):
-
+def train(configuration, results_directory, debug: bool = False):
     pool = multiprocessing.Pool()
 
     config = TrainingCfg(**configuration)
@@ -95,10 +94,11 @@ def train(configuration, results_directory):
         for genome in genomes:
             evaluations.append([genome, env_seed, config.number_rounds])
 
-        rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
-
-        # Use this for debugging
-        # rewards_training = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+        if debug:
+            # Use this for debugging
+            rewards_training = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+        else:
+            rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
 
         # Tell optimizers new rewards
         opt.tell(rewards_training)
@@ -170,8 +170,8 @@ def train(configuration, results_directory):
     # Write log to JSON for better parsing
     with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
         json.dump(log, outfile, ensure_ascii=False, indent=4)
-        
-    # Write results to text file for better readibility
+
+    # Write results to text file for better readability
     write_results_to_textfile(path=os.path.join(results_subdirectory, 'Log.txt'),
                               configuration=configuration,
                               log=log,
