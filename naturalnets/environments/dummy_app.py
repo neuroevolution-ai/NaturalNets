@@ -1,11 +1,20 @@
+import math
 from cmath import inf
-from re import I
-import numpy as np
-import random
+from typing import Dict
+
 import attr
 import cv2
-import math
+import numpy as np
+
+from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+
+RED = (0, 0, 255)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
+GREY = (100, 100, 100)
+BLUE = (255, 0, 0)
+ORANGE = (0, 88, 255)
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -50,12 +59,6 @@ class DummyApp(IEnvironment):
                 self.gui_elements_rectangles[button, :] = [x, y, self.config.buttons_size_horizontal, self.config.buttons_size_vertical]
                 n += 1
 
-        self.action_x = 0
-        self.action_y = 0
-
-        self.random_number_x = 0
-        self.random_number_y = 0
-
         self.click_position_x = 0
         self.click_position_y = 0
 
@@ -67,7 +70,7 @@ class DummyApp(IEnvironment):
         return self.number_buttons
 
     def get_number_outputs(self):
-        return 4
+        return 2
 
     def reset(self, env_seed: int = None):
         return self.get_observation()
@@ -76,14 +79,16 @@ class DummyApp(IEnvironment):
         assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
                                                               "value range.")
 
-        action = np.tanh(action)
+        # Convert from [-1, 1] continuous values to pixel coordinates
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.config.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.config.screen_height)
 
-        random_number1 = action[2] * np.random.normal()
-        random_number2 = action[3] * np.random.normal()
-        self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height)
+        # random_number1 = action[2] * np.random.normal()
+        # random_number2 = action[3] * np.random.normal()
+        # self.click_position_x = int(0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width)
+        # self.click_position_y = int(0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height)
 
-        self.action = action
+        # self.action = action
 
         #self.click_position_x = random.randint(1, self.config.screen_width)
         #self.click_position_y = random.randint(1, self.config.screen_height)
@@ -137,16 +142,8 @@ class DummyApp(IEnvironment):
     def get_observation(self):
         return self.gui_elements_states
 
-    def render(self):
-
-        red = (0, 0, 255)
-        green = (0, 255, 0)
-        black = (0, 0, 0)
-        grey = (100, 100, 100)
-        blue = (255, 0, 0)
-        orange = (0, 88, 255)
-
-        image = cv2.imread('naturalnets/environments/dummy_app.png')
+    def render(self, enhancer_info: Dict = None):
+        image = cv2.imread("naturalnets/environments/dummy_app.png")
 
         # Buttons
         for i in range(self.number_buttons):
@@ -160,9 +157,9 @@ class DummyApp(IEnvironment):
             point2 = (rect_x + width, rect_y + height)
 
             if self.gui_elements_states[i] == 0:
-                color = red
+                color = RED
             else:
-                color = green
+                color = GREEN
 
             image = cv2.rectangle(image, point1, point2, color, 1)
 
@@ -189,17 +186,31 @@ class DummyApp(IEnvironment):
                 #    thickness=1
                 #)
 
-                image = cv2.rectangle(image, (x, y), (x + width, y + height), grey, 1)
+                image = cv2.rectangle(image, (x, y), (x + width, y + height), GREY, 1)
 
-        # Action distribution as ellipse
-        action_position_x = int(0.5 * (self.action[0] + 1.0) * self.config.screen_width)
-        action_position_y = int(0.5 * (self.action[1] + 1.0) * self.config.screen_height)
-        action_distribution_x = abs(int(0.5 * self.action[2] * self.config.screen_width))
-        action_distribution_y = abs(int(0.5 * self.action[3] * self.config.screen_height))
-        image = cv2.ellipse(image, (action_position_x, action_position_y),(action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
+        if enhancer_info is not None:
+            try:
+                random_enhancer_info = enhancer_info["random_enhancer_info"]
+            except KeyError:
+                # Enhancer info other than from the random enhancer is not (currently) visualized
+                pass
+            else:
+                RandomEnhancer.render_visualization_ellipses(
+                    image,
+                    random_enhancer_info,
+                    self.config.screen_width,
+                    self.config.screen_height,
+                    color=ORANGE
+                )
+                # # Action distribution as ellipse
+                # action_position_x = int(0.5 * (random_enhancer_info[0] + 1.0) * self.config.screen_width)
+                # action_position_y = int(0.5 * (random_enhancer_info[1] + 1.0) * self.config.screen_height)
+                # action_distribution_x = abs(int(0.5 * random_enhancer_info[2] * self.config.screen_width))
+                # action_distribution_y = abs(int(0.5 * random_enhancer_info[3] * self.config.screen_height))
+                # image = cv2.ellipse(image, (action_position_x, action_position_y),(action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
 
         # Click position
-        image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, blue, -1)
+        image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, BLUE, -1)
 
         cv2.imshow("Dummy App", image)
         cv2.waitKey(1)
@@ -217,4 +228,4 @@ class DummyApp(IEnvironment):
 
 
 # TODO: Do this registration via class decorator
-registered_environment_classes['DummyApp'] = DummyApp
+registered_environment_classes["DummyApp"] = DummyApp

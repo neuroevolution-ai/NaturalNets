@@ -1,4 +1,6 @@
 import abc
+from typing import Optional, Dict
+
 import numpy as np
 
 registered_environment_classes = {}
@@ -27,4 +29,8 @@ class IEnvironment(abc.ABC):
 
     @abc.abstractmethod
     def step(self, action: np.ndarray):
+        pass
+
+    @abc.abstractmethod
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
         pass

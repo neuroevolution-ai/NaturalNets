@@ -11,6 +11,7 @@ import attr
 import numpy as np
 
 from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
@@ -27,6 +28,7 @@ class TrainingCfg:
     environment: dict
     brain: dict
     optimizer: dict
+    enhancer: dict = None
     experiment_id: int = -1
 
 
@@ -37,16 +39,22 @@ def train(configuration, results_directory):
     config = TrainingCfg(**configuration)
 
     # Get environment class from configuration
-    environment_class = get_environment_class(config.environment['type'])
+    environment_class = get_environment_class(config.environment["type"])
 
     # Get brain class from configuration
-    brain_class = get_brain_class(config.brain['type'])
+    brain_class = get_brain_class(config.brain["type"])
+
+    if config.enhancer is not None:
+        enhancer_class = get_enhancer_class(config.enhancer["type"])
+    else:
+        enhancer_class = DummyEnhancer
 
     # Initialize episode runner
     ep_runner = EpisodeRunner(env_class=environment_class,
                               env_configuration=config.environment,
                               brain_class=brain_class,
-                              brain_configuration=config.brain)
+                              brain_configuration=config.brain,
+                              enhancer_class=enhancer_class)
 
     individual_size = ep_runner.get_individual_size()
 

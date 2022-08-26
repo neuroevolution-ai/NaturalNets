@@ -30,6 +30,7 @@ class Color(Enum):
     BLUE = (0, 0, 255)
     BLACK = (0, 0, 0)
     BROWN = (64, 37, 16)
+    ORANGE = (0, 88, 255)
 
 
 class Base(Enum):

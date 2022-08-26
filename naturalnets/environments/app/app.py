@@ -1,10 +1,12 @@
 import logging
 import time
+from typing import Optional, Dict
 
 import attr
 import cv2
 import numpy as np
 
+from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.enums import Color
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
@@ -75,8 +77,23 @@ class App(IEnvironment):
 
         return image
 
-    def render(self):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
         image = self._render_image()
+
+        if enhancer_info is not None:
+            try:
+                random_enhancer_info = enhancer_info["random_enhancer_info"]
+            except KeyError:
+                # Enhancer info other than from the random enhancer is not (currently) visualized
+                pass
+            else:
+                image = RandomEnhancer.render_visualization_ellipses(
+                    image,
+                    random_enhancer_info,
+                    self.config.screen_width,
+                    self.config.screen_height,
+                    color=Color.ORANGE)
+
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 

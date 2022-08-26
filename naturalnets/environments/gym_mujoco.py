@@ -1,3 +1,5 @@
+from typing import Optional, Dict
+
 import attr
 import gym
 import numpy as np
@@ -60,7 +62,7 @@ class GymMujoco(IEnvironment):
         # "Calculate" done to be True of either the environment ist terminated or truncated
         return ob, rew, terminated or truncated, info
 
-    def render(self):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         self.env.render()
 
 
