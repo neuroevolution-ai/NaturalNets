@@ -9,12 +9,17 @@ import numpy as np
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
 
+# Variables for rendering the DummyApp
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
 BLACK = (0, 0, 0)
 GREY = (100, 100, 100)
 BLUE = (255, 0, 0)
 ORANGE = (0, 88, 255)
+
+FONT = cv2.FONT_HERSHEY_PLAIN
+FONT_SCALE = 1
+THICKNESS = 1
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -143,7 +148,8 @@ class DummyApp(IEnvironment):
         return self.gui_elements_states
 
     def render(self, enhancer_info: Dict = None):
-        image = cv2.imread("naturalnets/environments/dummy_app/dummy_app.png")
+        image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
+        image[:, :, :] = 255
 
         # Buttons
         for i in range(self.number_buttons):
@@ -163,30 +169,27 @@ class DummyApp(IEnvironment):
 
             image = cv2.rectangle(image, point1, point2, color, 1)
 
+            button_text = str(i)
+            text_width, text_height = cv2.getTextSize(button_text, fontFace=FONT, fontScale=FONT_SCALE,
+                                                      thickness=THICKNESS)[0]
+
+            # Go from top left point of the button box to the middle of the box and then move back half of the text
+            # width, s.t. the text is centered in the button
+            text_point_x = int(rect_x + width / 2 - text_width / 2)
+            text_point_y = int(rect_y + height / 2 + text_height / 2)
+
+            image = cv2.putText(image, str(i), (text_point_x, text_point_y), cv2.FONT_HERSHEY_PLAIN, fontScale=1,
+                                color=BLACK, thickness=1, lineType=cv2.LINE_AA)
+
         # Click areas
-        n = 0
         for i in range(self.config.number_buttons_vertical):
             for j in range(self.config.number_buttons_horizontal):
-
                 x = int(self.grid_size_horizontal * i)
                 y = int(self.grid_size_vertical * j)
                 width = int(self.grid_size_horizontal)
                 height = int(self.grid_size_vertical)
 
-                button = self.buttons[n]
-                n += 1
-
-                #image = cv2.putText(
-                #    img=image,
-                #    text=str(button+1),
-                #    org=(x, int(y + height*0.5)),
-                #    fontFace=cv2.FONT_HERSHEY_DUPLEX,
-                #    fontScale=0.5,
-                #    color=black,
-                #    thickness=1
-                #)
-
-                image = cv2.rectangle(image, (x, y), (x + width, y + height), GREY, 1)
+                image = cv2.rectangle(image, (x, y), (x + width, y + height), GREY, thickness=1)
 
         if enhancer_info is not None:
             try:
@@ -202,15 +205,9 @@ class DummyApp(IEnvironment):
                     self.config.screen_height,
                     color=ORANGE
                 )
-                # # Action distribution as ellipse
-                # action_position_x = int(0.5 * (random_enhancer_info[0] + 1.0) * self.config.screen_width)
-                # action_position_y = int(0.5 * (random_enhancer_info[1] + 1.0) * self.config.screen_height)
-                # action_distribution_x = abs(int(0.5 * random_enhancer_info[2] * self.config.screen_width))
-                # action_distribution_y = abs(int(0.5 * random_enhancer_info[3] * self.config.screen_height))
-                # image = cv2.ellipse(image, (action_position_x, action_position_y),(action_distribution_x, action_distribution_y), 0, 0, 360, orange, 1)
 
         # Click position
-        image = cv2.circle(image, (self.click_position_x, self.click_position_y), 3, BLUE, -1)
+        image = cv2.circle(image, (self.click_position_x, self.click_position_y), radius=3, color=BLUE, thickness=-1)
 
         cv2.imshow("Dummy App", image)
         cv2.waitKey(1)
