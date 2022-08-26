@@ -143,7 +143,7 @@ class DummyApp(IEnvironment):
         return self.gui_elements_states
 
     def render(self, enhancer_info: Dict = None):
-        image = cv2.imread("naturalnets/environments/dummy_app.png")
+        image = cv2.imread("naturalnets/environments/dummy_app/dummy_app.png")
 
         # Buttons
         for i in range(self.number_buttons):
@@ -195,7 +195,7 @@ class DummyApp(IEnvironment):
                 # Enhancer info other than from the random enhancer is not (currently) visualized
                 pass
             else:
-                RandomEnhancer.render_visualization_ellipses(
+                image = RandomEnhancer.render_visualization_ellipses(
                     image,
                     random_enhancer_info,
                     self.config.screen_width,
