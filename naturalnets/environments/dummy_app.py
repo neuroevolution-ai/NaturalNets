@@ -22,7 +22,7 @@ class DummyAppCfg:
 
 class DummyApp(IEnvironment):
 
-    def __init__(self, env_seed: int, configuration: dict):
+    def __init__(self, configuration: dict):
 
         self.config = DummyAppCfg(**configuration)
         self.number_buttons = self.config.number_buttons_horizontal * self.config.number_buttons_vertical
