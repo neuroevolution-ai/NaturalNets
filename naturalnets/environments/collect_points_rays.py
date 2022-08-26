@@ -6,7 +6,7 @@ import numpy as np
 
 from naturalnets.environments.df_maze import Maze
 from naturalnets.environments.environment_utils import deprecate_environment
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -482,7 +482,3 @@ class CollectPointsRays(IEnvironment):
             self.config.maze_rows) * self.config.maze_cell_size
 
         return x, y
-
-
-# TODO: Do this registration via class decorator
-registered_environment_classes['CollectPointsRays'] = CollectPointsRays

@@ -10,7 +10,13 @@ def get_environment_class(environment_class_name: str):
     if environment_class_name in registered_environment_classes:
         return registered_environment_classes[environment_class_name]
     else:
-        raise RuntimeError("No valid environment")
+        raise RuntimeError(f"'{environment_class_name}' is not a valid environment. Please choose one from the\n"
+                           f"following list: {list(registered_environment_classes)!r}")
+
+
+def register_environment_class(environment_class):
+    registered_environment_classes[environment_class.__name__] = environment_class
+    return environment_class
 
 
 class IEnvironment(abc.ABC):

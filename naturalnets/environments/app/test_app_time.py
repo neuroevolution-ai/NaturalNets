@@ -2,7 +2,7 @@ from random import randrange
 import time
 import numpy as np
 
-from naturalnets.environments.app.app import App
+from naturalnets.environments.app.gui_app import GUIApp
 
 WIDTH = 448
 HEIGHT = 448
@@ -27,7 +27,7 @@ def calc_state_diff(curr_state, init_state, target):
 
 if __name__ == "__main__":
 
-    app = App(config)
+    app = GUIApp(config)
     time_sum = 0
     action = None
     initial_state = np.copy(app.get_state())

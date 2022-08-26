@@ -3,7 +3,7 @@ import gym
 import numpy as np
 
 from naturalnets.environments.environment_utils import deprecate_environment
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -61,7 +61,3 @@ class ReacherMemory(IEnvironment):
 
     def render(self):
         self.env.render()
-
-
-# TODO: Do this registration via class decorator
-registered_environment_classes["ReacherMemory"] = ReacherMemory

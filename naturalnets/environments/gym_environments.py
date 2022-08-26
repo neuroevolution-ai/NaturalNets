@@ -3,7 +3,7 @@ import numpy as np
 from gym.spaces.utils import flatdim
 
 from naturalnets.environments.environment_utils import deprecate_environment
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment
 
 
 class GeneralGymEnvironment(IEnvironment):
@@ -28,7 +28,3 @@ class GeneralGymEnvironment(IEnvironment):
 
     def render(self):
         self.env.render()
-
-
-# TODO: Do this registration via class decorator
-registered_environment_classes["GeneralGymEnv"] = GeneralGymEnvironment

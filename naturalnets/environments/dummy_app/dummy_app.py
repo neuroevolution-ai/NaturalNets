@@ -9,7 +9,7 @@ from attrs import field, validators
 from numpy.random import default_rng
 
 from naturalnets.enhancers import RandomEnhancer
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 
 # Variables for rendering the DummyApp
 RED = (0, 0, 255)
@@ -36,6 +36,7 @@ class DummyAppCfg:
     button_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
 
 
+@register_environment_class
 class DummyApp(IEnvironment):
 
     def __init__(self, configuration: dict):
@@ -235,7 +236,3 @@ class DummyApp(IEnvironment):
         dy = max(rect_y - point_y, 0, point_y - rect_y - height)
 
         return math.sqrt(dx * dx + dy * dy)
-
-
-# TODO: Do this registration via class decorator
-registered_environment_classes["DummyApp"] = DummyApp

@@ -9,7 +9,7 @@ import numpy as np
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.enums import Color
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -20,7 +20,8 @@ class AppCfg:
     screen_height: int
 
 
-class App(IEnvironment):
+@register_environment_class
+class GUIApp(IEnvironment):
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the GUIApp environment")
@@ -58,14 +59,9 @@ class App(IEnvironment):
         assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
                                                               "value range.")
 
-        random_number1 = action[2] * np.random.normal()
-        random_number2 = action[3] * np.random.normal()
-        self.click_position_x = int(
-            0.5 * (action[0] + 1.0 + random_number1) * self.config.screen_width
-        )
-        self.click_position_y = int(
-            0.5 * (action[1] + 1.0 + random_number2) * self.config.screen_height
-        )
+        # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.config.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.config.screen_height)
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
@@ -146,7 +142,7 @@ class App(IEnvironment):
         return self.app_controller.get_total_state_len()
 
     def get_number_outputs(self) -> int:
-        return 4
+        return 2
 
     def reset(self, env_seed: int = None) -> np.ndarray:
         self.get_state()[:] = self._initial_state
@@ -154,6 +150,3 @@ class App(IEnvironment):
 
     def get_observation(self):
         return self.get_state()
-
-
-registered_environment_classes["GUIApp"] = App

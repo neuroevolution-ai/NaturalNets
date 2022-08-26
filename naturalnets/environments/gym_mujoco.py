@@ -4,7 +4,7 @@ import attr
 import gym
 import numpy as np
 
-from naturalnets.environments.i_environment import IEnvironment, registered_environment_classes
+from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 from naturalnets.tools.utils import rescale_values
 
 
@@ -14,6 +14,7 @@ class GymMujocoCfg:
     name: str
 
 
+@register_environment_class
 class GymMujoco(IEnvironment):
 
     def __init__(self, configuration: dict):
@@ -64,7 +65,3 @@ class GymMujoco(IEnvironment):
 
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         self.env.render()
-
-
-# TODO: Do this registration via class decorator
-registered_environment_classes["GymMujoco"] = GymMujoco
