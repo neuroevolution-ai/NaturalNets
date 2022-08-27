@@ -113,12 +113,7 @@ class FigurePrinterSettings(Page):
             brown_rb: Color.BROWN
         }
 
-        rbg = RadioButtonGroup([black_rb])
-        rbg.add_radio_buttons([
-            green_rb,
-            blue_rb,
-            brown_rb,
-        ])
+        rbg = RadioButtonGroup([black_rb, green_rb, blue_rb, brown_rb])
 
         return rbg, button_to_color
 
