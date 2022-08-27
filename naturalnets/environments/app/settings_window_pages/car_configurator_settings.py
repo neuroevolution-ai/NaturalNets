@@ -94,6 +94,8 @@ class CarConfiguratorSettings(Page):
             self._car_configurator.prop_electric_b_ddi: self.electric_b.is_selected(),
         })
 
+        self._car_configurator.reset()
+
     def set_car_a_enabled(self, enabled: int) -> None:
         self.get_state()[0] = enabled
         self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_a_ddi, enabled)

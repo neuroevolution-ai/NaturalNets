@@ -70,7 +70,6 @@ class App(IEnvironment):
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
-        print(self.get_state())
 
     def click_event(self, event, x, y, flags, params):
         """Sets action when cv2 mouse-callback is detected. Only for interactive mode."""
