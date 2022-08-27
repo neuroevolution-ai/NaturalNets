@@ -36,7 +36,7 @@ class Widget(StateElement, Clickable):
 class Page(StateElement, Clickable, HasPopups):
     """Represents a Page of the app (used in main-window and settings-window). A page
     may contain widgets and popups (in addition to non-widget state-elements). Popups block
-    clicks to all other elements of the app. A page has it's own image that may be rendered
+    clicks to all other elements of the app. A page has its own image that will be rendered
     onto the base app image."""
 
     @abstractmethod

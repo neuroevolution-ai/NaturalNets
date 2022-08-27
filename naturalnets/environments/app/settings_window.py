@@ -90,6 +90,8 @@ class SettingsWindow(StateElement, Clickable):
 
     def handle_click(self, click_position: np.ndarray):
         # check if current page is blocking click or click in current page bounding-box
+        # (needs to be checked here since e.g. an opened dropdown should prevent a click
+        # on the close button of the settings window)
         if (self.current_tab.is_popup_open()
                 or self.current_tab.is_dropdown_open()
                 or self.PAGE_BB.is_point_inside(click_position)):

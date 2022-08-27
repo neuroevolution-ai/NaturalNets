@@ -114,6 +114,9 @@ class Calculator(Page):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click()
 
+    def set_operator_value(self, value: Operator):
+        self.operator_dd.set_selected_value(value)
+
     def is_popup_open(self) -> int:
         return self.popup.is_open()
 

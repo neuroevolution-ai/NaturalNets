@@ -163,7 +163,7 @@ class CalculatorSettingsPopup(Page):
             assert curr_dropdown_value is not None
             self.apply_button.handle_click()
             self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
-            self.calculator_settings.calculator.operator_dd.set_selected_value(curr_dropdown_value)
+            self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""
