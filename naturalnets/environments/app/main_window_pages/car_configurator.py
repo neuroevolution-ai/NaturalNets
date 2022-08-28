@@ -225,6 +225,10 @@ class CarConfigurator(Page):
         from the given index to the last dropdown."""
         for i in range(index, len(self.dropdowns)):
             dropdown = self.dropdowns[i]
+            visible_items = dropdown.get_visible_items()
+            if len(visible_items) == 0:
+                dropdown.set_selected_item(None)
+                return
             for item in dropdown.get_visible_items():
                 dropdown.set_selected_item(item)
                 break

@@ -96,7 +96,7 @@ class Dropdown(Widget):
         self._dropdown_button_bb = bounding_box
         self._all_items: List[DropdownItem] = items
         self.add_children(self._all_items)
-        self._selected_item = None
+        self._selected_item: DropdownItem = None
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -118,7 +118,7 @@ class Dropdown(Widget):
             click_position (np.ndarray): the position of the click.
         """
         if self.is_open():
-            for item in self.get_visible_items():
+            for item in self._update_item_bounding_boxes():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
             # any click action closes dropdown if it was open
@@ -130,36 +130,51 @@ class Dropdown(Widget):
         if not self.is_open():
             return self._dropdown_button_bb
 
-        return get_group_bounding_box(self.get_visible_items())
+        return get_group_bounding_box(self._update_item_bounding_boxes())
 
-    def get_visible_items(self):
+    def _update_item_bounding_boxes(self) -> List[DropdownItem]:
+        """Recalculates the bounding-boxes of the visible items in this Dropdown
+        (bounding-boxes/positions of the items depend on which items are shown)
+
+        Returns the visible items."""
         i: int = 0
         first_bb = self._dropdown_button_bb
-        available_items: List[DropdownItem] = []
+        visible_items: List[DropdownItem] = []
         for item in self._all_items:
-            # TODO: check if window bounds are surpassed by any item's next_bb (
-            # not necessary for this app)
-            next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height * i,
-                                  first_bb.width, first_bb.height)
             if item.is_visible():
+                # TODO: Depending on the position of the dropdown and the number of items,
+                # the bounding box of the dropdown may surpass the window size of the app.
+                # In the current state of the app no dropdown surpasses the window bounds.
+                # If new dropdowns are added to the app or the dropdown class is used in
+                # a different project, an automatic check should be implemented or all dropdowns
+                # checked manually.
+                next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height * i,
+                                    first_bb.width, first_bb.height)
                 item.set_bb(next_bb)
-                available_items.append(item)
+                visible_items.append(item)
                 i += 1
-        return available_items
+        return visible_items
+
+    def get_visible_items(self) -> List[DropdownItem]:
+        visible_items: List[DropdownItem] = []
+        for item in self._all_items:
+            if item.is_visible():
+                visible_items.append(item)
+        return visible_items
 
     def get_all_items(self):
         return self._all_items
 
     def set_selected_item(self, ddi: Optional[DropdownItem]):
+        if self._selected_item is not None:
+            self._selected_item.set_selected(0)
+
         if ddi is None:
             self._selected_item = None
+            return
 
-        for item in self._all_items:
-            if item == ddi:
-                item.set_selected(True)
-                self._selected_item = item
-            else:
-                item.set_selected(False)
+        ddi.set_selected(1)
+        self._selected_item = ddi
 
     def get_selected_item(self) -> DropdownItem:
         return self._selected_item
@@ -174,10 +189,11 @@ class Dropdown(Widget):
         for item in self.get_visible_items():
             if item.get_value() == value:
                 self.set_selected_item(item)
+                return
 
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_open():
-            for item in self.get_visible_items():
+            for item in self._update_item_bounding_boxes():
                 item.render(img)
         else:  # Render the selected item on the dropdown-button position if the dropdown is closed
             x, y, _, height = self.get_bb().get_as_tuple()

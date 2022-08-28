@@ -124,6 +124,8 @@ class RadioButtonGroup(Widget):
                 else:
                     self.set_selected_button(radio_button)
 
+                return
+
     def set_selected_button(self, selected_button: RadioButton):
         """Selects the given RadioButton and deselects all others.
 
