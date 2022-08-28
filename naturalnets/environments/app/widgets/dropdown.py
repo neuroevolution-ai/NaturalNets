@@ -43,11 +43,11 @@ class DropdownItem(Widget):
     def is_visible(self) -> int:
         return self._is_visible
 
-    def set_visible(self, active: int) -> None:
-        """Sets the visible-status (denoting if this item shows up in the dropdown) of this 
-        dropdown-item. Should only be accessed by the Dropdown-Class.
+    def set_visible(self, visible: int) -> None:
+        """Sets the visible-status (denoting if this item shows up in the dropdown) of this
+        dropdown-item.
         """
-        self._is_visible = active
+        self._is_visible = visible
 
     def handle_click(self, click_position: np.ndarray) -> None:
         """Currently unused method. May be used to perform on-click actions.
@@ -125,11 +125,6 @@ class Dropdown(Widget):
             self.close()
         else:
             self.open()
-
-    def set_visible(self, ddi: DropdownItem, visible: int):
-        index = self._all_items.index(ddi)
-        item = self._all_items[index]
-        item.set_visible(visible)
 
     def get_bb(self):
         if not self.is_open():

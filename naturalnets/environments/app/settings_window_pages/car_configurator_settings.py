@@ -98,15 +98,15 @@ class CarConfiguratorSettings(Page):
 
     def set_car_a_enabled(self, enabled: int) -> None:
         self.get_state()[0] = enabled
-        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_a_ddi, enabled)
+        self._car_configurator.car_a_ddi.set_visible(enabled)
 
     def set_car_b_enabled(self, enabled: int) -> None:
         self.get_state()[1] = enabled
-        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_b_ddi, enabled)
+        self._car_configurator.car_b_ddi.set_visible(enabled)
 
     def set_car_c_enabled(self, enabled: int) -> None:
         self.get_state()[2] = enabled
-        self._car_configurator.car_dropdown.set_visible(self._car_configurator.car_c_ddi, enabled)
+        self._car_configurator.car_c_ddi.set_visible(enabled)
 
     def is_car_a_enabled(self) -> int:
         return self.get_state()[0]
@@ -121,27 +121,19 @@ class CarConfiguratorSettings(Page):
         tire_checkboxes: List[CheckBox] = []
         self.tire_20_inch = CheckBox(
             self.TIRE_20_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
-                self._car_configurator.tire_20_ddi, is_checked
-            )
+            self._car_configurator.tire_20_ddi.set_visible
         )
         self.tire_22_inch = CheckBox(
             self.TIRE_22_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
-                self._car_configurator.tire_22_ddi, is_checked
-            )
+            self._car_configurator.tire_22_ddi.set_visible
         )
         self.tire_18_inch = CheckBox(
             self.TIRE_18_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
-                self._car_configurator.tire_18_ddi, is_checked
-            )
+            self._car_configurator.tire_18_ddi.set_visible
         )
         self.tire_19_inch = CheckBox(
             self.TIRE_19_INCH_BB,
-            lambda is_checked: self._car_configurator.tire_dropdown.set_visible(
-                self._car_configurator.tire_19_ddi, is_checked
-            )
+            self._car_configurator.tire_19_ddi.set_visible
         )
 
         tire_checkboxes.append(self.tire_20_inch)
@@ -155,21 +147,15 @@ class CarConfiguratorSettings(Page):
         interior_checkboxes = []
         self.interior_modern = CheckBox(
             self.INTERIOR_MODERN_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
-                self._car_configurator.interior_modern_ddi, is_checked
-            )
+            self._car_configurator.interior_modern_ddi.set_visible
         )
         self.interior_vintage = CheckBox(
             self.INTERIOR_VINTAGE_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
-                self._car_configurator.interior_vintage_ddi, is_checked
-            )
+            self._car_configurator.interior_vintage_ddi.set_visible
         )
         self.interior_sport = CheckBox(
             self.INTERIOR_SPORT_BB,
-            lambda is_checked: self._car_configurator.interior_dropdown.set_visible(
-                self._car_configurator.interior_sport_ddi, is_checked
-            )
+            self._car_configurator.interior_sport_ddi.set_visible
         )
 
         interior_checkboxes.append(self.interior_modern)
@@ -183,33 +169,23 @@ class CarConfiguratorSettings(Page):
 
         self.combustion_a = CheckBox(
             self.COMBUSTION_ENGINE_A_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
-                self._car_configurator.prop_combustion_a_ddi, is_checked
-            )
+            self._car_configurator.prop_combustion_a_ddi.set_visible
         )
         self.combustion_b = CheckBox(
             self.COMBUSTION_ENGINE_B_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
-                self._car_configurator.prop_combustion_b_ddi, is_checked
-            )
+            self._car_configurator.prop_combustion_b_ddi.set_visible
         )
         self.combustion_c = CheckBox(
             self.COMBUSTION_ENGINE_C_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
-                self._car_configurator.prop_combustion_c_ddi, is_checked
-            )
+            self._car_configurator.prop_combustion_c_ddi.set_visible
         )
         self.electric_a = CheckBox(
             self.ELECTRIC_MOTOR_A_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
-                self._car_configurator.prop_electric_a_ddi, is_checked
-            )
+            self._car_configurator.prop_electric_a_ddi.set_visible
         )
         self.electric_b = CheckBox(
             self.ELECTRIC_MOTOR_B_BB,
-            lambda is_checked: self._car_configurator.prop_dropdown.set_visible(
-                self._car_configurator.prop_electric_b_ddi, is_checked
-            )
+            self._car_configurator.prop_electric_b_ddi.set_visible
         )
 
         motor_checkboxes.append(self.combustion_a)

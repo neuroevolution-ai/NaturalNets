@@ -174,28 +174,28 @@ class CarConfigurator(Page):
         if car is None:
             return
         if car == Car.A:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
-            self.tire_dropdown.set_visible(self.tire_19_ddi, 0)
+            self.tire_18_ddi.set_visible(0)
+            self.tire_19_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_sport_ddi, 0)
+            self.interior_sport_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_electric_a_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_electric_b_ddi, 0)
+            self.prop_combustion_b_ddi.set_visible(0)
+            self.prop_electric_a_ddi.set_visible(0)
+            self.prop_electric_b_ddi.set_visible(0)
         elif car == Car.B:
-            self.tire_dropdown.set_visible(self.tire_22_ddi, 0)
+            self.tire_22_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_vintage_ddi, 0)
+            self.interior_vintage_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_combustion_c_ddi, 0)
+            self.prop_combustion_a_ddi.set_visible(0)
+            self.prop_combustion_b_ddi.set_visible(0)
+            self.prop_combustion_c_ddi.set_visible(0)
         elif car == Car.C:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
+            self.tire_18_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_modern_ddi, 0)
+            self.interior_modern_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
+            self.prop_combustion_a_ddi.set_visible(0)
 
         self._select_initial_dropdown_items(1)
 

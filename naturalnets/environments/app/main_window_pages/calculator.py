@@ -44,11 +44,11 @@ class Calculator(Page):
         ]
         self.operator_dd = Dropdown(self.OPERATOR_BB, operator_ddis)
         self.operator_dd.set_selected_item(self.addition_ddi)
-        # Set all operator dropdown items to invisible, 
+        # Set all operator dropdown items to invisible,
         # the default visible ones will be set when initializing
         # the calculator settings class
         for operator_ddi in operator_ddis:
-            self.operator_dd.set_visible(operator_ddi, 0)
+            operator_ddi.set_visible(0)
 
         # create operand dropdowns
         self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
@@ -64,7 +64,7 @@ class Calculator(Page):
     def set_operator_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given operator dropdown-item's visibility. Used by
         calculator-settings."""
-        self.operator_dd.set_visible(item, visible)
+        item.set_visible(visible)
         if visible:
             # update selected item when a new item becomes visible (always first item in dd list)
             self.operator_dd.set_selected_item(self.operator_dd.get_visible_items()[0])
