@@ -63,7 +63,7 @@ class TextPrinter(Page):
 
     def handle_click(self, click_position: np.ndarray = None):
         if self.button.is_clicked_by(click_position):
-            self.button.handle_click()
+            self.button.handle_click(click_position)
 
     def set_print_settings_changed(self):
         self.get_state()[1] = 1

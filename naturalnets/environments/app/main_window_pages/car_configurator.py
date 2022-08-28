@@ -125,7 +125,7 @@ class CarConfigurator(Page):
         # Show config button only clickable if a value has been selected in the last dropdown
         if (self.get_state()[len(self.dropdowns) - 1] != 0
                 and self.show_config_button.is_clicked_by(click_position)):
-            self.show_config_button.handle_click()
+            self.show_config_button.handle_click(click_position)
             return
 
         # handle dropdown-click if dropdown is shown (a value was selected in a previous dropdown)
@@ -293,7 +293,7 @@ class CarConfiguratorPopup(Page):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click()
+            self.ok_button.handle_click(click_position)
 
     def open(self) -> None:
         """Opens this popup."""

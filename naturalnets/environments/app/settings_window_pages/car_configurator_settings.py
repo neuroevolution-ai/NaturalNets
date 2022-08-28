@@ -372,7 +372,7 @@ class CarDisabledPopup(Page):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click()
+            self.ok_button.handle_click(click_position)
 
     def open(self, disabled_cars: List[Car]):
         """Opens this popup and adds the disabled cars to the list of cars to be

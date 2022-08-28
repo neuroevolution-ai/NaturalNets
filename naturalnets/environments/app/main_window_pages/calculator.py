@@ -112,7 +112,7 @@ class Calculator(Page):
 
         # needs to be called after dropdowns in case an opened dropdown occludes the button
         if self.button.is_clicked_by(click_position):
-            self.button.handle_click()
+            self.button.handle_click(click_position)
 
     def set_operator_value(self, value: Operator):
         self.operator_dd.set_selected_value(value)
@@ -173,7 +173,7 @@ class CalculatorPopup(Page):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.button.is_clicked_by(click_position):
-            self.button.handle_click()
+            self.button.handle_click(click_position)
 
     def open(self):
         """Opens this popup."""

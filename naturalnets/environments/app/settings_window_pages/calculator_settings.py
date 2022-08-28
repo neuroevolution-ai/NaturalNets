@@ -161,7 +161,7 @@ class CalculatorSettingsPopup(Page):
         if self.apply_button.is_clicked_by(click_position):
             curr_dropdown_value: Operator = self.dropdown.get_current_value()
             assert curr_dropdown_value is not None
-            self.apply_button.handle_click()
+            self.apply_button.handle_click(click_position)
             self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
             self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
 

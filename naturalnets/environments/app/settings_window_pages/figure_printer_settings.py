@@ -140,8 +140,8 @@ class FigurePrinterSettings(Page):
             return
 
         if self._show_fig_printer_checkbox.is_clicked_by(click_position):
-            self._show_fig_printer_checkbox.handle_click()
-            self.main_window.set_figure_printer_button_visible(self._show_fig_printer_checkbox.is_selected())
+            self._show_fig_printer_checkbox.handle_click(click_position)
+            self.main_window.enable_figure_printer(self._show_fig_printer_checkbox.is_selected())
 
             # change current main window page if it was the figure printer and the figure printer
             # has been deactivated
@@ -168,6 +168,9 @@ class FigurePrinterSettings(Page):
 
     def select_figure_checkbox(self, figure: Figure):
         self.figure_to_checkbox[figure].set_selected(1)
+
+    def set_figure_printer_dd_value(self, figure: Figure):
+        self.figure_printer.dropdown.set_selected_value(figure)
 
     def render(self, img: np.ndarray):
         img = super().render(img)
@@ -207,11 +210,11 @@ class FigureCheckboxesPopup(Page):
         if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
             self.dropdown.handle_click(click_position)
         elif self.apply_button.is_clicked_by(click_position):
-            self.apply_button.handle_click()
+            self.apply_button.handle_click(click_position)
             curr_dropdown_value: Figure = self.dropdown.get_current_value()
-            if curr_dropdown_value is not None:
-                self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
-                self.figure_printer_settings.figure_printer.dropdown.set_selected_value(curr_dropdown_value)
+            assert curr_dropdown_value is not None # popup dropdown value should never be None
+            self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
+            self.figure_printer_settings.set_figure_printer_dd_value(curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""
