@@ -3,7 +3,7 @@ import time
 import numpy as np
 import torch
 
-from naturalnets.brains import LstmNN, GruNN, ElmanNN
+from naturalnets.brains import LSTM, GRU, ElmanNN
 from naturalnets.brains.i_layer_based_brain import ILayerBasedBrainCfg
 from tests.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
 
@@ -25,7 +25,7 @@ class TestPyTorch:
         with torch.no_grad():
             gru_pytorch = GruPyTorch(input_size, output_size, individual_pytorch, torch_config, {})
 
-        gru_numpy = GruNN(input_size, output_size, individual_numpy, numpy_config, {})
+        gru_numpy = GRU(input_size, output_size, individual_numpy, numpy_config, {})
 
         # Also initialize the values for the hidden and cell states the same
         hidden_pytorch = np.random.randn(*gru_pytorch.hidden.size()).astype(np.float32)
@@ -127,7 +127,7 @@ class TestPyTorch:
         with torch.no_grad():
             lstm_pytorch = LstmPyTorch(input_size, output_size, individual_pytorch, torch_config, {})
 
-        lstm_numpy = LstmNN(input_size, output_size, individual_numpy, numpy_config, {})
+        lstm_numpy = LSTM(input_size, output_size, individual_numpy, numpy_config, {})
 
         # Also initialize the values for the hidden and cell states the same
         hidden_pytorch = np.random.randn(*lstm_pytorch.hidden[0].size()).astype(np.float32)

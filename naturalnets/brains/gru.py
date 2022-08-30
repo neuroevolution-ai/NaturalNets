@@ -1,8 +1,11 @@
 import numpy as np
-from naturalnets.brains.i_layer_based_brain import ILayerBasedBrain
-from naturalnets.brains.i_brain import registered_brain_classes
 
-class GruNN(ILayerBasedBrain):
+from naturalnets.brains.i_brain import register_brain_class
+from naturalnets.brains.i_layer_based_brain import ILayerBasedBrain
+
+
+@register_brain_class
+class GRU(ILayerBasedBrain):
 
     @staticmethod
     def get_number_hidden_values():
@@ -34,7 +37,3 @@ class GruNN(ILayerBasedBrain):
     @staticmethod
     def get_number_gates():
         return 3
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['GRUNN'] = GruNN

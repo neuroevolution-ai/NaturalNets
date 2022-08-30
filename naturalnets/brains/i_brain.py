@@ -1,7 +1,8 @@
 import abc
+from typing import Callable
+
 import attr
 import numpy as np
-from typing import Callable
 
 registered_brain_classes = {}
 
@@ -10,7 +11,13 @@ def get_brain_class(brain_class_name: str):
     if brain_class_name in registered_brain_classes:
         return registered_brain_classes[brain_class_name]
     else:
-        raise RuntimeError("No valid brain")
+        raise RuntimeError(f"'{brain_class_name}' is not a valid brain. Please choose one from the following "
+                           f"list: {list(registered_brain_classes)!r}")
+
+
+def register_brain_class(brain_class):
+    registered_brain_classes[brain_class.__name__] = brain_class
+    return brain_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True)

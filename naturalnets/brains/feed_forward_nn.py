@@ -1,8 +1,10 @@
-import attr
 import itertools
-import numpy as np
 from typing import List
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
+
+import attr
+import numpy as np
+
+from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -13,6 +15,7 @@ class FeedForwardCfg(IBrainCfg):
     use_bias: bool
 
 
+@register_brain_class
 class FeedForwardNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
@@ -125,8 +128,4 @@ class FeedForwardNN(IBrain):
         if config.use_bias:
             individual_size += sum(config.hidden_layers) + output_size
 
-        return {'individual_size': individual_size}
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['FFNN'] = FeedForwardNN
+        return {"individual_size": individual_size}

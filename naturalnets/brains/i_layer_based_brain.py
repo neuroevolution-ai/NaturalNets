@@ -1,7 +1,9 @@
 import abc
 from typing import List
-import numpy as np
+
 import attr
+import numpy as np
+
 from naturalnets.brains.i_brain import IBrain, IBrainCfg
 
 
@@ -115,7 +117,7 @@ class ILayerBasedBrain(IBrain, abc.ABC):
         ).reshape((output_size, hidden_layer_structure[len(hidden_layer_structure) - 1]))
         individual_index += number_elements
 
-        # Has all values been used and therefore does get_individual_size() provide the right number?
+        # If all values have been used, get_individual_size() should provide the correct number
         assert individual_index == len(individual)
 
     @classmethod
@@ -131,21 +133,21 @@ class ILayerBasedBrain(IBrain, abc.ABC):
             layer_dict = {
                 # Matrices for weighted input values
                 # The first Layer don't has an output from the previous layer, but the input values
-                'input_weight_matrix': number_gates * hidden_structure[layer] * (
+                "input_weight_matrix": number_gates * hidden_structure[layer] * (
                     input_size if layer == 0 else hidden_structure[layer - 1]),
                 # Matrices for weighted state values
-                'hidden_weight_matrix': number_gates * hidden_structure[layer] * (
+                "hidden_weight_matrix": number_gates * hidden_structure[layer] * (
                     1 if configuration.diagonal_hidden_to_hidden else hidden_structure[layer])
             }
             # initialize biases
             if configuration.use_bias:
-                layer_dict['bias'] = hidden_structure[layer] * number_gates
+                layer_dict["bias"] = hidden_structure[layer] * number_gates
 
-            individuals['layer ' + str(layer)] = layer_dict
+            individuals["layer " + str(layer)] = layer_dict
         # for end
 
         # Matrix for transforming output of last layer into output neurons
-        individuals['output_weight_matrix'] = hidden_structure[len(hidden_structure) - 1] * output_size
+        individuals["output_weight_matrix"] = hidden_structure[len(hidden_structure) - 1] * output_size
         return individuals
 
     def step(self, ob: np.ndarray):

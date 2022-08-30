@@ -1,8 +1,11 @@
 import numpy as np
-from naturalnets.brains.i_layer_based_brain import ILayerBasedBrain
-from naturalnets.brains.i_brain import registered_brain_classes
 
-class LstmNN(ILayerBasedBrain):
+from naturalnets.brains.i_brain import register_brain_class
+from naturalnets.brains.i_layer_based_brain import ILayerBasedBrain
+
+
+@register_brain_class
+class LSTM(ILayerBasedBrain):
 
     @staticmethod
     def get_number_hidden_values():
@@ -30,10 +33,8 @@ class LstmNN(ILayerBasedBrain):
         o_t = ILayerBasedBrain.sigmoid(np.dot(weight_ih[3], layer_input)
                                        + bias_h[3]
                                        + np.dot(weight_hh[3], hidden[0]))
+
         cell_state = np.multiply(f_t, hidden[1]) + np.multiply(i_t, g_t)
         hid = np.multiply(o_t, np.tanh(cell_state))
+
         return [[hid, cell_state], hid]
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['LSTMNN'] = LstmNN

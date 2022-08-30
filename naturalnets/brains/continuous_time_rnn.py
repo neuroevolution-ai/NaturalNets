@@ -1,7 +1,7 @@
 import attr
 import numpy as np
 
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
+from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -21,7 +21,8 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     optimize_x0: bool = False
 
 
-class ContinuousTimeRNN(IBrain):
+@register_brain_class
+class CTRNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
                  brain_state: dict):
@@ -169,7 +170,3 @@ class ContinuousTimeRNN(IBrain):
             free_parameters["x_0"] = configuration["number_neurons"]
 
         return free_parameters
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['CTRNN'] = ContinuousTimeRNN
