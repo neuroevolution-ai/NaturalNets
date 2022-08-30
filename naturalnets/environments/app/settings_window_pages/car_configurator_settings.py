@@ -49,22 +49,30 @@ class CarConfiguratorSettings(Page):
         self.add_child(self.car_disabled_popup)
 
         # configure checkboxes
-        self._tire_checkboxes = self._create_tire_checkboxes()
-        self.add_widgets(self._tire_checkboxes)
+        tire_checkboxes = self._create_tire_checkboxes()
+        self.add_widgets(tire_checkboxes)
 
-        self._interior_checkboxes = self._create_interior_checkboxes()
-        self.add_widgets(self._interior_checkboxes)
+        interior_checkboxes = self._create_interior_checkboxes()
+        self.add_widgets(interior_checkboxes)
 
-        self._motor_checkboxes = self._create_propulsion_system_checkboxes()
-        self.add_widgets(self._motor_checkboxes)
+        motor_checkboxes = self._create_propulsion_system_checkboxes()
+        self.add_widgets(motor_checkboxes)
 
         self._checkbox_groups = [
-            self._tire_checkboxes,
-            self._interior_checkboxes,
-            self._motor_checkboxes
+            tire_checkboxes,
+            interior_checkboxes,
+            motor_checkboxes
         ]
-        self._all_checkboxes = itertools.chain(*self._checkbox_groups)
-        for checkbox in self._all_checkboxes:
+
+        self._checkbox_group_bbs = [
+            get_group_bounding_box(tire_checkboxes),
+            get_group_bounding_box(interior_checkboxes),
+            get_group_bounding_box(motor_checkboxes)
+        ]
+
+        # all checkboxes are initially selected
+        all_checkboxes = itertools.chain(*self._checkbox_groups)
+        for checkbox in all_checkboxes:
             checkbox.set_selected(1)
 
         # all cars are initially enabled
@@ -200,8 +208,8 @@ class CarConfiguratorSettings(Page):
         if self.is_popup_open():
             self.car_disabled_popup.handle_click(click_position)
             return
-        for checkbox_group in self._checkbox_groups:
-            if get_group_bounding_box(checkbox_group).is_point_inside(click_position):
+        for i, checkbox_group in enumerate(self._checkbox_groups):
+            if self._checkbox_group_bbs[i].is_point_inside(click_position):
                 for checkbox in checkbox_group:
                     if checkbox.is_clicked_by(click_position):
                         checkbox.handle_click(click_position)
