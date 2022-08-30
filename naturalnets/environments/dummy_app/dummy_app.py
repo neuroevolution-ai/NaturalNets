@@ -187,8 +187,8 @@ class DummyApp(IEnvironment):
             text_point_x = int(rect_x + self.config.button_width / 2 - text_width / 2)
             text_point_y = int(rect_y + self.config.button_height / 2 + text_height / 2)
 
-            image = cv2.putText(image, str(i), (text_point_x, text_point_y), cv2.FONT_HERSHEY_PLAIN, fontScale=1,
-                                color=BLACK, thickness=1, lineType=cv2.LINE_AA)
+            image = cv2.putText(image, str(i), (text_point_x, text_point_y), cv2.FONT_HERSHEY_PLAIN,
+                                fontScale=FONT_SCALE, color=BLACK, thickness=THICKNESS, lineType=cv2.LINE_AA)
 
         # Draw click areas, i.e. cells of the grid in which the buttons reside
         for j in range(self.config.number_vertical_button_rows):
