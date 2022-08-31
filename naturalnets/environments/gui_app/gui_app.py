@@ -35,14 +35,7 @@ class GUIApp(IEnvironment):
         self.app_controller = AppController()
         self._initial_state = np.copy(self.app_controller.get_total_state())
 
-        self.action_x = 0
-        self.action_y = 0
-
-        self.random_number_x = 0
-        self.random_number_y = 0
-
-        self.click_position_x = 0
-        self.click_position_y = 0
+        self.t = 0
 
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
@@ -63,11 +56,21 @@ class GUIApp(IEnvironment):
                                                               "value range.")
 
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
+        click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+        click_coordinates = np.array([click_position_x, click_position_y])
         self.app_controller.handle_click(click_coordinates)
+
+        self.t += 1
+
+        done = False
+
+        if self.t >= self.config.number_time_steps:
+            done = True
+
+        # TODO calculate reward
+        return self.get_observation(), 0, done, {}
 
     def _render_image(self):
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -149,6 +152,9 @@ class GUIApp(IEnvironment):
 
     def reset(self, env_seed: int = None) -> np.ndarray:
         self.get_state()[:] = self._initial_state
+
+        self.t = 0
+
         return self.get_state()
 
     def get_observation(self):
