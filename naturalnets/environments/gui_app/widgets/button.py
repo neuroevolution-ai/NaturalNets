@@ -2,8 +2,8 @@ from typing import Callable
 
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.interfaces import Clickable
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable
 
 
 class Button(Clickable):

@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from naturalnets.environments.app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
 
 
 class Renderable(ABC):

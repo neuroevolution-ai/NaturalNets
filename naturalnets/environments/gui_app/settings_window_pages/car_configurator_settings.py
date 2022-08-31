@@ -5,14 +5,14 @@ from typing import List
 import numpy as np
 
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Car
-from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
-from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import get_group_bounding_box, put_text
-from naturalnets.environments.app.widgets.button import Button
-from naturalnets.environments.app.widgets.check_box import CheckBox
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.enums import Car
+from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
+from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 
 
 class CarConfiguratorSettings(Page):

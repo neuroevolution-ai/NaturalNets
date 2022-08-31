@@ -5,9 +5,9 @@ from typing import Callable
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color
-from naturalnets.environments.app.page import Widget
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.page import Widget
 
 
 class CheckBox(Widget):

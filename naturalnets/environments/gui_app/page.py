@@ -4,10 +4,10 @@ from typing import List
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.interfaces import Clickable, HasPopups
-from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.app.utils import render_onto_bb
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable, HasPopups
+from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.gui_app.utils import render_onto_bb
 
 
 class Widget(StateElement, Clickable):

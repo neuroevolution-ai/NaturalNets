@@ -3,17 +3,17 @@ from typing import Dict, List
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.interfaces import Clickable
-from naturalnets.environments.app.main_window import MainWindow
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.settings_window_pages.calculator_settings import CalculatorSettings
-from naturalnets.environments.app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
-from naturalnets.environments.app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
-from naturalnets.environments.app.settings_window_pages.text_printer_settings import TextPrinterSettings
-from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.app.utils import get_group_bounding_box, render_onto_bb
-from naturalnets.environments.app.widgets.button import Button
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.gui_app.main_window import MainWindow
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.settings_window_pages.calculator_settings import CalculatorSettings
+from naturalnets.environments.gui_app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
+from naturalnets.environments.gui_app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
+from naturalnets.environments.gui_app.settings_window_pages.text_printer_settings import TextPrinterSettings
+from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.gui_app.utils import get_group_bounding_box, render_onto_bb
+from naturalnets.environments.gui_app.widgets.button import Button
 
 
 class SettingsWindow(StateElement, Clickable):

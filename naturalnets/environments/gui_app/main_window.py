@@ -4,17 +4,17 @@ from typing import Dict, List
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.constants import IMAGES_PATH
-from naturalnets.environments.app.interfaces import Clickable
-from naturalnets.environments.app.main_window_pages.calculator import Calculator
-from naturalnets.environments.app.main_window_pages.car_configurator import CarConfigurator
-from naturalnets.environments.app.main_window_pages.figure_printer import FigurePrinter
-from naturalnets.environments.app.main_window_pages.text_printer import TextPrinter
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.app.utils import render_onto_bb
-from naturalnets.environments.app.widgets.button import Button
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import IMAGES_PATH
+from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator
+from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
+from naturalnets.environments.gui_app.main_window_pages.figure_printer import FigurePrinter
+from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.gui_app.widgets.button import Button
 
 
 class MainWindow(StateElement, Clickable):

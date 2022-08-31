@@ -1,4 +1,4 @@
-from naturalnets.environments.app.app import GUIApp
+from naturalnets.environments.gui_app.gui_app import GUIApp
 
 WIDTH = 448
 HEIGHT = 448

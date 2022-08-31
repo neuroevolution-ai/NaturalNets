@@ -3,16 +3,16 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
-from naturalnets.environments.app.enums import Color
-from naturalnets.environments.app.main_window import MainWindow
-from naturalnets.environments.app.main_window_pages.figure_printer import Figure
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.widgets.button import Button
-from naturalnets.environments.app.widgets.check_box import CheckBox
-from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
-from naturalnets.environments.app.widgets.radio_button_group import RadioButton, RadioButtonGroup
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.main_window import MainWindow
+from naturalnets.environments.gui_app.main_window_pages.figure_printer import Figure
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.gui_app.widgets.check_box import CheckBox
+from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
 class FigurePrinterSettings(Page):

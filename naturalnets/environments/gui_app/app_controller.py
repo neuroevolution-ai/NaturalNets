@@ -2,11 +2,11 @@
 
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.main_window import MainWindow
-from naturalnets.environments.app.settings_window import SettingsWindow
-from naturalnets.environments.app.state_element import StateElement
-from naturalnets.environments.app.widgets.button import Button
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.main_window import MainWindow
+from naturalnets.environments.gui_app.settings_window import SettingsWindow
+from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.gui_app.widgets.button import Button
 
 
 class AppController:

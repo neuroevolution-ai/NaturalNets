@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 
 from naturalnets.enhancers import RandomEnhancer
-from naturalnets.environments.app.app_controller import AppController
-from naturalnets.environments.app.enums import Color
+from naturalnets.environments.gui_app.app_controller import AppController
+from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 from naturalnets.tools.utils import rescale_values
 

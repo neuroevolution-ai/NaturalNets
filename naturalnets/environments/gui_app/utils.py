@@ -4,9 +4,9 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.enums import Color
-from naturalnets.environments.app.interfaces import HasBoundingBox
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import HasBoundingBox
 
 
 def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.ndarray) -> np.ndarray:

@@ -2,14 +2,14 @@ import os
 
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.constants import IMAGES_PATH, SETTINGS_AREA_BB
-from naturalnets.environments.app.enums import Base
-from naturalnets.environments.app.main_window_pages.calculator import Calculator, Operator
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.widgets.button import Button
-from naturalnets.environments.app.widgets.check_box import CheckBox
-from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.gui_app.enums import Base
+from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.gui_app.widgets.check_box import CheckBox
+from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
 class CalculatorSettings(Page):

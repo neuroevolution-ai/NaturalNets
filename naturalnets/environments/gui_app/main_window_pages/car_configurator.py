@@ -4,13 +4,13 @@ from typing import Dict
 import cv2
 import numpy as np
 
-from naturalnets.environments.app.bounding_box import BoundingBox
-from naturalnets.environments.app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
-from naturalnets.environments.app.enums import Car
-from naturalnets.environments.app.page import Page
-from naturalnets.environments.app.utils import put_text, render_onto_bb
-from naturalnets.environments.app.widgets.button import Button
-from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
+from naturalnets.environments.gui_app.enums import Car
+from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
 class CarConfigurator(Page):
