@@ -39,6 +39,7 @@ class TextPrinterSettings(Page):
 
         # init popup
         self.popup = TextPrinterSettingsPopup(self)
+        self.add_child(self.popup)
 
         # init font-style checkboxes
         self.bold = CheckBox(
@@ -100,9 +101,12 @@ class TextPrinterSettings(Page):
         # others when opened (important for iteration in handle_click)
         self.dropdowns: List[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
         self.dropdown_to_func = {
-            self.n_words_dd: lambda: self.text_printer.set_n_words(self.n_words_dd.get_current_value()),
-            self.font_size_dd: lambda: self.text_printer.set_font_size(self.font_size_dd.get_current_value()),
-            self.fonts_dd: lambda: self.text_printer.set_font(self.fonts_dd.get_current_value())
+            self.n_words_dd: lambda: self.text_printer
+                                         .set_n_words(self.n_words_dd.get_current_value()),
+            self.font_size_dd: lambda: self.text_printer
+                                           .set_font_size(self.font_size_dd.get_current_value()),
+            self.fonts_dd: lambda: self.text_printer
+                                       .set_font(self.fonts_dd.get_current_value())
         }
         self.add_widgets(self.dropdowns)
 
@@ -132,8 +136,8 @@ class TextPrinterSettings(Page):
     def is_dropdown_open(self) -> bool:
         return self._get_opened_dropdown() is not None
 
-    def _get_opened_dropdown(self) -> Dropdown:
-        for dropdown in self.dropdown_to_func:
+    def _get_opened_dropdown(self) -> Optional[Dropdown]:
+        for dropdown in self.dropdowns:
             if dropdown.is_open():
                 return dropdown
         return None
@@ -206,10 +210,11 @@ class TextPrinterSettingsPopup(Page):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
-            self.yes_button.handle_click()
+            self.yes_button.handle_click(click_position)
             return
-        elif self.no_button.is_clicked_by(click_position):
-            self.no_button.handle_click()
+
+        if self.no_button.is_clicked_by(click_position):
+            self.no_button.handle_click(click_position)
 
     def open(self):
         """Opens this popup."""

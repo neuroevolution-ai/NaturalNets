@@ -16,6 +16,7 @@ class StateElement(Renderable):
     its part of the app's total state vector directly, in order to save computation time."""
 
     def __init__(self, state_len: int):
+        self._state_len = state_len
         self._state: np.ndarray = np.zeros(state_len, dtype=int)
         self._children: List['StateElement'] = []
 
@@ -25,7 +26,7 @@ class StateElement(Renderable):
 
     def get_state_len(self) -> int:
         """Returns the state length of this state-element."""
-        return len(self.get_state())
+        return self._state_len
 
     def assign_state_sector(self, state_sector: np.ndarray):
         """Will assign the given state-sector to this state-element. This means
@@ -44,6 +45,10 @@ class StateElement(Renderable):
             # throw error to emphasize that state_sector state would be overwritten
             # i.e. state cannot be set with this method
             raise ArgumentError("Given state sector is not empty.")
+
+        if len(state_sector) != self.get_state_len():
+            raise ArgumentError(f"Given state sector length ({len(state_sector)}) does not \
+                                  match state element state length ({self._state_len}).")
 
         current_state = np.copy(self.get_state())
         self._state = state_sector

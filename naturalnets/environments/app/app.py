@@ -10,18 +10,21 @@ from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.app.app_controller import AppController
 from naturalnets.environments.app.enums import Color
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
+from naturalnets.tools.utils import rescale_values
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
     type: str
     number_time_steps: int
-    screen_width: int
-    screen_height: int
 
 
 @register_environment_class
 class GUIApp(IEnvironment):
+
+    screen_width: int = 448
+    screen_height: int = 448
+
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the GUIApp environment")
@@ -60,14 +63,14 @@ class GUIApp(IEnvironment):
                                                               "value range.")
 
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.config.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.config.screen_height)
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         self.app_controller.handle_click(click_coordinates)
 
     def _render_image(self):
-        img_shape = (self.config.screen_width, self.config.screen_height, 3)
+        img_shape = (self.screen_width, self.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
 
@@ -86,8 +89,8 @@ class GUIApp(IEnvironment):
                 image = RandomEnhancer.render_visualization_ellipses(
                     image,
                     random_enhancer_info,
-                    self.config.screen_width,
-                    self.config.screen_height,
+                    self.screen_width,
+                    self.screen_height,
                     color=Color.ORANGE)
 
         cv2.imshow(self.window_name, image)
@@ -109,7 +112,7 @@ class GUIApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                self.step(self.action)
+                self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1, new_high=1))
                 self.clicked = False
 
             image = self._render_image()

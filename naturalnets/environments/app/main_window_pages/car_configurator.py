@@ -15,9 +15,15 @@ from naturalnets.environments.app.widgets.dropdown import Dropdown, DropdownItem
 
 class CarConfigurator(Page):
     """The car-configurator page in the main-window.
+
+       State description:
+            state[i]: denotes if a value has been selected in the i-th dropdown, i.e.
+            the dropdown was opened and a value clicked after the last reset of that
+            dropdown. Dropdowns are reset when the car configuration is shown or when
+            a previous dropdown's value is selected.
     """
 
-    STATE_LEN = 0
+    STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator.png")
 
     CAR_DROPDOWN_BB = BoundingBox(252, 108, 166, 22)
@@ -90,34 +96,67 @@ class CarConfigurator(Page):
 
         # Add show configuration button and window
         self.popup = CarConfiguratorPopup(self)
+        self.add_child(self.popup)
         self.show_config_button = Button(self.BUTTON_BB, self.popup.open)
 
+    def get_opened_dropdown_index(self) -> int:
+        for index, dropdown in enumerate(self.dropdowns):
+            if dropdown.is_open():
+                return index
+        return None
+
     def handle_click(self, click_position: np.ndarray):
+        dropdown_value_clicked = False
+
         if self.is_popup_open():
             self.popup.handle_click(click_position)
             return
 
-        # Show config button only clickable if a value has been selected in the last dropdown
-        if (self.dropdowns[len(self.dropdowns) - 1].get_current_value() is not None
-                and self.show_config_button.is_clicked_by(click_position)):
-            self.show_config_button.handle_click()
+        opened_dd_index = self.get_opened_dropdown_index()
+        if opened_dd_index is not None:
+            dropdown = self.dropdowns[opened_dd_index]
+            if dropdown.is_clicked_by(click_position):
+                dropdown_value_clicked = True
+            dropdown.handle_click(click_position)
+            if dropdown_value_clicked:
+                self._update_dropdowns_on_dropdown_value_click(opened_dd_index)
             return
 
-        for index, dropdown in enumerate(self.dropdowns):
-            if dropdown.is_clicked_by(click_position) or dropdown.is_open():
-                old_value = dropdown.get_current_value()
-                if index == 0 or self.dropdowns[index - 1].get_selected_item() is not None:
-                    dropdown.handle_click(click_position)
+        # Show config button only clickable if a value has been selected in the last dropdown
+        if (self.get_state()[len(self.dropdowns) - 1] != 0
+                and self.show_config_button.is_clicked_by(click_position)):
+            self.show_config_button.handle_click(click_position)
+            return
 
-                # check if the click changed a dropdown-value to another
-                if old_value is not dropdown.get_current_value():
-                    if index == 0:  # car dropdown
-                        self._adjust_visible_dropdown_items_by_car(dropdown.get_current_value())
-                    # reset to dropdown if next dropdown(s) already have selected values
-                    if (index + 1 < len(self.dropdowns)
-                            and self.dropdowns[index + 1].get_selected_item() is not None):
-                        self._reset_to(index)
-                return
+        # handle dropdown-click if dropdown is shown (a value was selected in a previous dropdown)
+        for index, dropdown in enumerate(self.dropdowns):
+            if dropdown.is_clicked_by(click_position):
+                if index == 0 or self._is_dropdown_value_selected(index - 1):
+                    if dropdown.is_open():
+                        dropdown_value_clicked = True
+                    dropdown.handle_click(click_position)
+                    if dropdown_value_clicked:
+                        self._update_dropdowns_on_dropdown_value_click(index)
+                    return
+
+    def _update_dropdowns_on_dropdown_value_click(self, index: int) -> None:
+        """Updates all dropdowns (sets visibility and/or initial selected item) when a dropdown
+        value is clicked (i.e. dropdown.is_open() and dropdown.is_clicked_by(click_position))."""
+        dropdown = self.dropdowns[index]
+        # adjust shown dropdowns when a dropdown value is clicked
+        self.get_state()[index] = 1 # set dropdown-value selected to true
+        if index == 0:  # car dropdown
+            self._adjust_visible_dropdown_items_by_car(dropdown.get_current_value())
+        # reset to dropdown if next dropdown(s) already have selected values
+        if (index + 1 < len(self.dropdowns)
+                and self._is_dropdown_value_selected(index + 1)):
+            self._reset_to(index)
+
+    def _is_dropdown_value_selected(self, index: int) -> int:
+        if index < 0:
+            return 0
+        return self.get_state()[index]
+
 
     def set_ddi_state_from_settings(self, ddi_state: Dict[DropdownItem, int]) -> None:
         """Used by the car-configurator-settings page to set which checkboxes are currently enabled
@@ -135,28 +174,30 @@ class CarConfigurator(Page):
         if car is None:
             return
         if car == Car.A:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
-            self.tire_dropdown.set_visible(self.tire_19_ddi, 0)
+            self.tire_18_ddi.set_visible(0)
+            self.tire_19_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_sport_ddi, 0)
+            self.interior_sport_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_electric_a_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_electric_b_ddi, 0)
+            self.prop_combustion_b_ddi.set_visible(0)
+            self.prop_electric_a_ddi.set_visible(0)
+            self.prop_electric_b_ddi.set_visible(0)
         elif car == Car.B:
-            self.tire_dropdown.set_visible(self.tire_22_ddi, 0)
+            self.tire_22_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_vintage_ddi, 0)
+            self.interior_vintage_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_combustion_b_ddi, 0)
-            self.prop_dropdown.set_visible(self.prop_combustion_c_ddi, 0)
+            self.prop_combustion_a_ddi.set_visible(0)
+            self.prop_combustion_b_ddi.set_visible(0)
+            self.prop_combustion_c_ddi.set_visible(0)
         elif car == Car.C:
-            self.tire_dropdown.set_visible(self.tire_18_ddi, 0)
+            self.tire_18_ddi.set_visible(0)
 
-            self.interior_dropdown.set_visible(self.interior_modern_ddi, 0)
+            self.interior_modern_ddi.set_visible(0)
 
-            self.prop_dropdown.set_visible(self.prop_combustion_a_ddi, 0)
+            self.prop_combustion_a_ddi.set_visible(0)
+
+        self._select_initial_dropdown_items(1)
 
     def reset_ddi_visibility_to_settings_state(self):
         """Resets all dropdown items visibility state to the visibility state specified
@@ -166,16 +207,31 @@ class CarConfigurator(Page):
 
     def reset(self):
         """Resets all dropdowns/hides all dropdowns but the first."""
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
+        for i in range(len(self.dropdowns)):
+            self.get_state()[i] = 0
 
         self.reset_ddi_visibility_to_settings_state()
+        self._select_initial_dropdown_items(0)
 
     def _reset_to(self, dd_index: int):
         """Resets all dropdowns selection up to self.dropdowns[dd_index].
         """
         for i in range(dd_index + 1, len(self.dropdowns)):
-            self.dropdowns[i].set_selected_item(None)
+            self.get_state()[i] = 0
+        self._select_initial_dropdown_items(dd_index + 1)
+
+    def _select_initial_dropdown_items(self, index: int) -> None:
+        """Sets the initial dropdown items (first visible item in dropdown) for all dropdowns
+        from the given index to the last dropdown."""
+        for i in range(index, len(self.dropdowns)):
+            dropdown = self.dropdowns[i]
+            visible_items = dropdown.get_visible_items()
+            if len(visible_items) == 0:
+                dropdown.set_selected_item(None)
+                return
+            for item in dropdown.get_visible_items():
+                dropdown.set_selected_item(item)
+                break
 
     def is_dropdown_open(self) -> int:
         return (self.car_dropdown.is_open()
@@ -190,24 +246,30 @@ class CarConfigurator(Page):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
 
-        if self.car_dropdown.get_selected_item() is not None:
+        if self.get_state()[0]:
             frame = cv2.imread(self.TIRE_FRAME_IMG_PATH)
             render_onto_bb(img, self.TIRE_FRAME_BB, frame)
 
-        if self.tire_dropdown.get_selected_item() is not None:
+        if self.get_state()[1]:
             frame = cv2.imread(self.INTERIOR_FRAME_IMG_PATH)
             render_onto_bb(img, self.INTERIOR_FRAME_BB, frame)
 
-        if self.interior_dropdown.get_selected_item() is not None:
+        if self.get_state()[2]:
             frame = cv2.imread(self.PROP_FRAME_IMG_PATH)
             render_onto_bb(img, self.PROP_FRAME_BB, frame)
 
-        if self.prop_dropdown.get_selected_item() is not None:
+        if self.get_state()[3]:
             frame = cv2.imread(self.BUTTON_IMG_PATH)
             render_onto_bb(img, self.BUTTON_BB, frame)
 
-        for widget in self.get_widgets():
-            img = widget.render(img)
+        # only render dropdowns if the previous dropdown value was selected
+        # (replaces widget rendering, since all widgets of the car configurator
+        # are dropdowns)
+        for index, dropdown in enumerate(self.dropdowns):
+            if index == 0:
+                img = dropdown.render(img)
+            elif self._is_dropdown_value_selected(index - 1):
+                img = dropdown.render(img)
 
         if self.is_popup_open():
             img = self.popup.render(img)
@@ -235,7 +297,7 @@ class CarConfiguratorPopup(Page):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click()
+            self.ok_button.handle_click(click_position)
 
     def open(self) -> None:
         """Opens this popup."""

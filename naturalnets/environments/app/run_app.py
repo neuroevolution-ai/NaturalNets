@@ -5,9 +5,7 @@ HEIGHT = 448
 
 config = {
     "type": "GUIApp",
-    "number_time_steps": 100,
-    "screen_width": 448,
-    "screen_height": 448
+    "number_time_steps": 100
 }
 
 if __name__ == "__main__":

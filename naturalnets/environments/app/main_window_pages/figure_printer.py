@@ -27,7 +27,7 @@ class FigurePrinter(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self._figure_color_from_settings: Color = None  # color set in settings
+        self._figure_color_from_settings: Color = Color.BLACK
         self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
         self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
         self.guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
@@ -37,9 +37,9 @@ class FigurePrinter(Page):
 
         # set initial state
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
-        self.dropdown.set_visible(self.space_ship_ddi, 0)
-        self.dropdown.set_visible(self.guitar_ddi, 0)
-        self.dropdown.set_visible(self.house_ddi, 0)
+        self.space_ship_ddi.set_visible(0)
+        self.guitar_ddi.set_visible(0)
+        self.house_ddi.set_visible(0)
         self.current_figure = None
 
         self.add_widget(self.dropdown)
@@ -54,12 +54,12 @@ class FigurePrinter(Page):
         self.current_figure = figure
         self._show_figure(1)
 
-    def set_dd_item_visible(self, item, visible):
+    def set_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given dropdown-item's visibility. Used by
         text-printer settings."""
-        self.dropdown.set_visible(item, visible)
-        if visible:
-            # update selected item when a new item becomes visible
+        item.set_visible(visible)
+        # update selected item when a new item becomes visible
+        if len(self.dropdown.get_visible_items()) != 0:
             self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
 
     def _show_figure(self, show: int):

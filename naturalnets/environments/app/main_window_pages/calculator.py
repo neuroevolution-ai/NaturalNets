@@ -29,7 +29,8 @@ class Calculator(Page):
 
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        self.popup = CalculatorPopup(self)
+        self.popup = CalculatorPopup()
+        self.add_child(self.popup)
         # init operator dropdown
         self.addition_ddi = DropdownItem(Operator.ADDITION, "+")
         self.subtraction_ddi = DropdownItem(Operator.SUBTRACTION, "-")
@@ -43,11 +44,11 @@ class Calculator(Page):
         ]
         self.operator_dd = Dropdown(self.OPERATOR_BB, operator_ddis)
         self.operator_dd.set_selected_item(self.addition_ddi)
-        # Set all operator dropdown items to invisible, 
+        # Set all operator dropdown items to invisible,
         # the default visible ones will be set when initializing
         # the calculator settings class
         for operator_ddi in operator_ddis:
-            self.operator_dd.set_visible(operator_ddi, 0)
+            operator_ddi.set_visible(0)
 
         # create operand dropdowns
         self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
@@ -63,7 +64,7 @@ class Calculator(Page):
     def set_operator_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given operator dropdown-item's visibility. Used by
         calculator-settings."""
-        self.operator_dd.set_visible(item, visible)
+        item.set_visible(visible)
         if visible:
             # update selected item when a new item becomes visible (always first item in dd list)
             self.operator_dd.set_selected_item(self.operator_dd.get_visible_items()[0])
@@ -111,7 +112,10 @@ class Calculator(Page):
 
         # needs to be called after dropdowns in case an opened dropdown occludes the button
         if self.button.is_clicked_by(click_position):
-            self.button.handle_click()
+            self.button.handle_click(click_position)
+
+    def set_operator_value(self, value: Operator):
+        self.operator_dd.set_selected_value(value)
 
     def is_popup_open(self) -> int:
         return self.popup.is_open()
@@ -163,15 +167,13 @@ class CalculatorPopup(Page):
 
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 
-    def __init__(self, calculator: Calculator):
+    def __init__(self):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        self.settings = calculator
-
         self.button: Button = Button(self.BUTTON_BB, self.close)
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.button.is_clicked_by(click_position):
-            self.button.handle_click()
+            self.button.handle_click(click_position)
 
     def open(self):
         """Opens this popup."""
