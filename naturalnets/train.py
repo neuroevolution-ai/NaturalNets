@@ -5,6 +5,7 @@ import os
 import random
 import time
 from datetime import datetime
+from typing import Optional, Dict
 
 import attr
 import numpy as np
@@ -32,8 +33,12 @@ class TrainingCfg:
     experiment_id: int = -1
 
 
-def train(configuration, results_directory, debug: bool = False):
+def train(configuration: Optional[Dict] = None, results_directory: str = "results", debug: bool = False):
     pool = multiprocessing.Pool()
+
+    if configuration is None:
+        with open("naturalnets/configurations/Configuration.json", "r") as config_file:
+            configuration = json.load(config_file)
 
     config = TrainingCfg(**configuration)
 
@@ -43,8 +48,13 @@ def train(configuration, results_directory, debug: bool = False):
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
 
-    if config.enhancer is not None:
-        enhancer_class = get_enhancer_class(config.enhancer["type"])
+    try:
+        enhancer_type = config.enhancer["type"]
+    except TypeError:
+        raise RuntimeError("The configuration needs an 'enhancer' block.")
+
+    if enhancer_type is not None:
+        enhancer_class = get_enhancer_class(enhancer_type)
     else:
         enhancer_class = DummyEnhancer
 
@@ -183,3 +193,7 @@ def train(configuration, results_directory, debug: bool = False):
     # Error messages inside subprocesses could be shown once they are joined
     pool.close()
     pool.join()
+
+
+if __name__ == "__main__":
+    train()
