@@ -4,7 +4,7 @@ import subprocess
 
 
 def main():
-    with open("Stop_Optimization.json", "w") as outfile:
+    with open("naturalnets/Stop_Optimization.json", "w") as outfile:
         json.dump({"stop_optimization": False}, outfile)
 
     stop_optimization = False
