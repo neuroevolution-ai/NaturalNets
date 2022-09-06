@@ -138,9 +138,8 @@ class DummyApp(IEnvironment):
                 minimal_distance = distance
                 button = i
 
-            # TODO what does this check do?
-            if distance < 0.0001:
-                break
+                if distance == 0.0:
+                    break
 
         rew = 0.0
 
