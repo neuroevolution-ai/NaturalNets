@@ -23,6 +23,9 @@ FONT = cv2.FONT_HERSHEY_PLAIN
 FONT_SCALE = 1
 THICKNESS = 1
 
+# Variables concerning the inner workings of the environment
+FIXED_ENV_SEED = 0
+
 
 @attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class DummyAppCfg:
@@ -30,10 +33,11 @@ class DummyAppCfg:
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     screen_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     screen_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-    number_horizontal_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-    number_vertical_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_button_columns: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    fixed_env_seed: bool = field(validator=[validators.instance_of(bool)])
 
 
 @register_environment_class
@@ -41,14 +45,14 @@ class DummyApp(IEnvironment):
 
     def __init__(self, configuration: dict):
         self.config = DummyAppCfg(**configuration)
-        self.number_buttons = self.config.number_horizontal_button_rows * self.config.number_vertical_button_rows
+        self.number_buttons = self.config.number_button_columns * self.config.number_button_rows
 
         # Contains the x and y coordinates of the upper left point of the button's rectangle
         self.button_rectangle_positions = np.zeros((self.number_buttons, 2), dtype=np.uint32)
 
         # Width and height of one cell of the button grid
-        self.grid_cell_horizontal_size = self.config.screen_width // self.config.number_horizontal_button_rows
-        self.grid_cell_vertical_size = self.config.screen_height // self.config.number_vertical_button_rows
+        self.grid_cell_horizontal_size = self.config.screen_width // self.config.number_button_columns
+        self.grid_cell_vertical_size = self.config.screen_height // self.config.number_button_rows
 
         err = "Grid cells are less than 1 pixel large, increase screen width and/or height, or decrease button sizes."
         assert self.grid_cell_horizontal_size > 1 and self.grid_cell_vertical_size > 1, err
@@ -81,15 +85,18 @@ class DummyApp(IEnvironment):
         return 2
 
     def reset(self, env_seed: int = None):
-        self.rng = default_rng(seed=env_seed)
+        if self.config.fixed_env_seed:
+            self.rng = default_rng(seed=FIXED_ENV_SEED)
+        else:
+            self.rng = default_rng(seed=env_seed)
 
         self.buttons = np.arange(self.number_buttons)
         self.rng.shuffle(self.buttons)
 
         # Place the shuffled buttons on the grid
         n = 0
-        for j in range(self.config.number_vertical_button_rows):
-            for i in range(self.config.number_horizontal_button_rows):
+        for j in range(self.config.number_button_rows):
+            for i in range(self.config.number_button_columns):
                 x = self.grid_cell_horizontal_size * i + self.grid_cell_horizontal_offset
                 y = self.grid_cell_vertical_size * j + self.grid_cell_vertical_offset
 
@@ -191,8 +198,8 @@ class DummyApp(IEnvironment):
                                 fontScale=FONT_SCALE, color=BLACK, thickness=THICKNESS, lineType=cv2.LINE_AA)
 
         # Draw click areas, i.e. cells of the grid in which the buttons reside
-        for j in range(self.config.number_vertical_button_rows):
-            for i in range(self.config.number_horizontal_button_rows):
+        for j in range(self.config.number_button_rows):
+            for i in range(self.config.number_button_columns):
                 x = self.grid_cell_horizontal_size * i
                 y = self.grid_cell_vertical_size * j
 
