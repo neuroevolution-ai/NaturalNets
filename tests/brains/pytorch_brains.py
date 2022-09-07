@@ -119,7 +119,7 @@ class IPytorchBrain(nn.Module, IBrain, abc.ABC):
         with torch.no_grad():
             # Input requires the form (seq_len, batch, input_size)
             out, self.hidden = self.brain(torch.from_numpy(ob.astype(np.float32)).view(1, 1, -1), self.hidden)
-            return np.dot(self.weight_ho, out.flatten())
+            return np.tanh(np.dot(self.weight_ho, out.flatten()))
 
 
 class LstmPyTorch(IPytorchBrain):

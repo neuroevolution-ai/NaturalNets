@@ -5,7 +5,7 @@ import torch
 
 from naturalnets.brains import LSTM, GRU, ElmanNN
 from naturalnets.brains.i_layer_based_brain import ILayerBasedBrainCfg
-from tests.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
+from tests.brains.pytorch_brains import IPytorchBrainCfg, GruPyTorch, LstmPyTorch, ElmanPyTorch
 
 
 class TestPyTorch:
