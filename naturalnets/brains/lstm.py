@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Dict
 
 import attrs
 import numpy as np
@@ -17,9 +17,12 @@ class LSTMConfig:
 
 @register_brain_class
 class LSTM(IBrain):
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: LSTMConfig,
-                 brain_state: dict):
-        self.configuration = configuration
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray,
+                 configuration: Union[LSTMConfig, Dict], brain_state: dict):
+        if isinstance(configuration, dict):
+            self.configuration = LSTMConfig(**configuration)
+        else:
+            self.configuration = configuration
 
         brain_weights = assign_individual_to_brain_weights(
             individual,

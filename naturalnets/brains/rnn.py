@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Dict
 
 import attrs
 import numpy as np
@@ -17,9 +17,12 @@ class RNNConfig:
 
 @register_brain_class
 class RNN(IBrain):
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: RNNConfig,
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: Union[RNNConfig, Dict],
                  brain_state: dict):
-        self.configuration = configuration
+        if isinstance(configuration, dict):
+            self.configuration = RNNConfig(**configuration)
+        else:
+            self.configuration = configuration
 
         brain_weights = assign_individual_to_brain_weights(
             individual,
