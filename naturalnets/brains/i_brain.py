@@ -3,6 +3,7 @@ from typing import Callable
 
 import attr
 import numpy as np
+from scipy.special import expit
 
 registered_brain_classes = {}
 
@@ -113,4 +114,4 @@ class IBrain(abc.ABC):
 
     @staticmethod
     def sigmoid(x):
-        return 1 / (1 + np.exp(-x))
+        return expit(x)

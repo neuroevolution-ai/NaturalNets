@@ -1,29 +1,69 @@
-from typing import Dict
+from typing import Dict, List
 
 import pytest
 
-from naturalnets.brains.i_layer_based_brain import ILayerBasedBrainCfg
-from tests.brains.pytorch_brains import IPytorchBrainCfg
-
 
 @pytest.fixture
-def torch_config() -> IPytorchBrainCfg:
-    return IPytorchBrainCfg(type="GRU_PyTorch", num_layers=3,
-                            hidden_size=8,
-                            use_bias=False)
-
-
-@pytest.fixture
-def brain_config() -> Dict:
-    return {
-        "type": "LSTM",
-        "hidden_layer_structure": [2, 8, 16],
-        "diagonal_hidden_to_hidden": False,
-        "use_bias": False
-    }
-
-
-@pytest.fixture
-def numpy_config() -> ILayerBasedBrainCfg:
-    return ILayerBasedBrainCfg(type="GRULayered", hidden_layer_structure=[8, 8, 8], diagonal_hidden_to_hidden=False,
-                               use_bias=False)
+def tensorflow_cmp_configs() -> List[Dict]:
+    return [
+        {
+            "type": "RNN",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": False
+        },
+        {
+            "type": "RNN",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": True
+        },
+        {
+            "type": "RNN",
+            "hidden_layers": [16],
+            "use_bias": False
+        },
+        {
+            "type": "RNN",
+            "hidden_layers": [16],
+            "use_bias": True
+        },
+        {
+            "type": "LSTM",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": False
+        },
+        {
+            "type": "LSTM",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": True
+        },
+        {
+            "type": "LSTM",
+            "hidden_layers": [16],
+            "use_bias": False
+        },
+        {
+            "type": "LSTM",
+            "hidden_layers": [16],
+            "use_bias": True
+        },
+        {
+            "type": "GRU",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": False
+        },
+        {
+            "type": "GRU",
+            "hidden_layers": [2, 4, 8],
+            "use_bias": True
+        },
+        {
+            "type": "GRU",
+            "hidden_layers": [16],
+            "use_bias": False
+        },
+        {
+            "type": "GRU",
+            "hidden_layers": [16],
+            "use_bias": True
+        }
+    ]
