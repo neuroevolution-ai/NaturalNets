@@ -9,10 +9,11 @@
         "number_time_steps": 100,
         "screen_width": 400,
         "screen_height": 400,
-        "number_horizontal_button_rows": 5,
-        "number_vertical_button_rows": 5,
+        "number_button_columns": 5,
+        "number_button_rows": 5,
         "button_width": 50,
-        "button_height": 30
+        "button_height": 30,
+        "fixed_env_seed": true
     },
     "brain1": {
         "type": "CTRNN",
@@ -41,18 +42,18 @@
         "alpha": [0.0, 0.1, 0.01]
     },
     "brain3": {
-        "type": "ElmanNN",
-        "hidden_layer_structure": [[5], [10], [20]],
+        "type": "RNN",
+        "hidden_layers": [[5], [10], [20]],
         "use_bias": true
     },
     "brain4": {
         "type": "GRU",
-        "hidden_layer_structure": [[5], [10], [20]],
+        "hidden_layers": [[5], [10], [20]],
         "use_bias": true
     },
     "brain5": {
         "type": "LSTM",
-        "hidden_layer_structure": [[5], [10], [20]],
+        "hidden_layers": [[5], [10], [20]],
         "use_bias": true
     },
     "brain6": {
