@@ -163,6 +163,11 @@ class TestTensorflowComparison:
             assert len(tf_lstm_outputs) == len(our_lstm_outputs)
             assert tf_lstm_outputs.size == our_lstm_outputs.size
 
+            assert (np.max(tf_lstm_outputs) <= 1.0
+                    and np.max(our_lstm_outputs) <= 1.0
+                    and np.min(tf_lstm_outputs) >= -1.0
+                    and np.min(our_lstm_outputs) >= -1.0), "Outputs of the brains must be in the [-1, 1] range."
+
             close_percentage = np.count_nonzero(
                np.isclose(our_lstm_outputs, tf_lstm_outputs, atol=0.00001)) / tf_lstm_outputs.size
             assert close_percentage > 0.90
