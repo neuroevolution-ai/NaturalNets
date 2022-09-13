@@ -1,8 +1,10 @@
+import enum
 import logging
 import time
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
-import attr
+import attrs
+from attrs import field, validators
 import cv2
 import numpy as np
 
@@ -13,10 +15,23 @@ from naturalnets.environments.i_environment import IEnvironment, register_enviro
 from naturalnets.tools.utils import rescale_values
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class FakeBugOptions(enum.Enum):
+    pass
+
+
+@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
     type: str
     number_time_steps: int
+    include_fake_bug: bool = field(validator=validators.instance_of(bool))
+    fake_bugs: List[str] = field(default=None,
+                                 validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+
+    def __attrs_post_init__(self):
+        if self.include_fake_bug:
+            assert self.fake_bugs is not None and len(self.fake_bugs) > 0, ("'include_fake_bug' is set to True, please "
+                                                                            "provide a list of fake bugs using 'fake_"
+                                                                            "bugs'.")
 
 
 @register_environment_class
