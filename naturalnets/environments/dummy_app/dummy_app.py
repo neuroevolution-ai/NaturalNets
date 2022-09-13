@@ -115,9 +115,6 @@ class DummyApp(IEnvironment):
         return self.get_observation()
 
     def step(self, action: np.ndarray):
-        assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
-                                                              "value range.")
-
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.config.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.config.screen_height)
