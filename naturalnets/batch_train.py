@@ -1,6 +1,9 @@
 import json
+import os
 import random
 import subprocess
+
+TEMP_CONFIG_FILE = "naturalnets/configurations/temp-config.json"
 
 
 def main():
@@ -68,7 +71,7 @@ def main():
 
         configuration_out = sample_from_design_space(configuration)
 
-        with open('naturalnets/configurations/Configuration.json', 'w') as outfile:
+        with open(TEMP_CONFIG_FILE, "w") as outfile:
             json.dump(configuration_out, outfile, indent=4)
 
         with open("naturalnets/Stop_Optimization.json", "r") as readfile:
@@ -76,6 +79,11 @@ def main():
             stop_optimization = d["stop_optimization"]
 
         subprocess.run(["python3", "naturalnets/train.py"])
+
+    try:
+        os.remove(TEMP_CONFIG_FILE)
+    except FileNotFoundError:
+        pass
 
     print("Optimization finished")
 

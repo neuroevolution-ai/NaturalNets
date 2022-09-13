@@ -39,7 +39,7 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     pool = multiprocessing.Pool()
 
     if configuration is None:
-        with open("naturalnets/configurations/Configuration.json", "r") as config_file:
+        with open("naturalnets/configurations/temp-config.json", "r") as config_file:
             configuration = json.load(config_file)
 
     config = TrainingCfg(**configuration)
