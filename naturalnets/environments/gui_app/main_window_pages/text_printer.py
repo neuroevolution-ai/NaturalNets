@@ -65,9 +65,6 @@ class TextPrinter(Page):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
 
-    def set_print_settings_changed(self):
-        self.get_state()[1] = 1
-
     def update_display_dict(self):
         return {
             "n_words": self._n_words,
