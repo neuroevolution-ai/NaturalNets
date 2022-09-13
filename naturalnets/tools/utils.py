@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy as np
 
 
@@ -16,3 +18,22 @@ def rescale_values(values: np.ndarray, previous_low: int, previous_high: int, ne
     if round_to_int:
         return np.rint(rescaled_values)
     return rescaled_values
+
+
+def flatten_dict(config: Dict, prefix: str = "") -> Dict:
+    flattened_dict = {}
+
+    for k, v in config.items():
+        if isinstance(v, dict):
+            inner_flattened_dict = flatten_dict(v, prefix=k + "_")
+
+            # Check if the inner_flattened_dict has keys that are already present in the main dict. If so that is not
+            # desired and will trigger the assertion
+            old_length = len(flattened_dict)
+            flattened_dict.update(inner_flattened_dict)
+            assert old_length + len(inner_flattened_dict) == len(flattened_dict), ("Duplicate keys when flattening the "
+                                                                                   "config dict")
+        else:
+            flattened_dict[prefix + k] = v
+
+    return flattened_dict

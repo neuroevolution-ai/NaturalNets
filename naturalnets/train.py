@@ -10,12 +10,14 @@ from typing import Optional, Dict
 import attr
 import numpy as np
 from cpuinfo import get_cpu_info
+from tensorboardX import SummaryWriter
 
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
+from naturalnets.tools.utils import flatten_dict
 from naturalnets.tools.write_results import write_results_to_textfile
 
 
@@ -41,6 +43,10 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
             configuration = json.load(config_file)
 
     config = TrainingCfg(**configuration)
+
+    # Flatten the config already here (although it is only used at the end of training), to see if an assertion will
+    # be triggered
+    flattened_config = flatten_dict(configuration)
 
     # Get environment class from configuration
     environment_class = get_environment_class(config.environment["type"])
@@ -72,7 +78,7 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     print("Used CPU for training: " + get_cpu_info()["brand_raw"])
 
     # Get optimizer class from configuration
-    optimizer_class = get_optimizer_class(config.optimizer['type'])
+    optimizer_class = get_optimizer_class(config.optimizer["type"])
 
     opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
 
@@ -80,7 +86,7 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     best_reward_overall = -math.inf
 
     start_time_training = time.time()
-    start_date_training = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    start_date_training = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     log = []
 
@@ -129,6 +135,10 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
 
         elapsed_time_current_generation = time.time() - start_time_current_generation
 
+        min_reward_training = np.min(rewards_training)
+        mean_reward_training = np.mean(rewards_training)
+        max_reward_training = np.max(rewards_training)
+
         # Print info for current generation
         print("Generation: {}   "
               "Min: {:4.2f}   "
@@ -136,20 +146,20 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
               "Max: {:4.2f}   "
               "Best: {:4.2f}   "
               "Elapsed time:  {:4.2f}s ".format(generation,
-                                                np.min(rewards_training),
-                                                np.mean(rewards_training),
-                                                np.max(rewards_training),
+                                                min_reward_training,
+                                                mean_reward_training,
+                                                max_reward_training,
                                                 best_reward_overall,
                                                 elapsed_time_current_generation))
 
         # Write current generation to log
         log_line = dict()
-        log_line['gen'] = generation
-        log_line['min'] = np.min(rewards_training)
-        log_line['mean'] = np.mean(rewards_training)
-        log_line['max'] = np.max(rewards_training)
-        log_line['best'] = best_reward_overall
-        log_line['elapsed_time'] = elapsed_time_current_generation
+        log_line["gen"] = generation
+        log_line["min"] = min_reward_training
+        log_line["mean"] = mean_reward_training
+        log_line["max"] = max_reward_training
+        log_line["best"] = best_reward_overall
+        log_line["elapsed_time"] = elapsed_time_current_generation
         log.append(log_line)
 
     elapsed_time = time.time() - start_time_training
@@ -162,14 +172,14 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     print("Output directory: " + str(results_subdirectory))
 
     # Save configuration
-    with open(os.path.join(results_subdirectory, 'Configuration.json'), 'w') as outfile:
+    with open(os.path.join(results_subdirectory, "Configuration.json"), "w") as outfile:
         json.dump(configuration, outfile, ensure_ascii=False, indent=4)
 
     # Save best genome
-    np.save(os.path.join(results_subdirectory, 'Best_Genome'), best_genome_overall)
+    np.save(os.path.join(results_subdirectory, "Best_Genome"), best_genome_overall)
 
     # Save brain state (i.e. masks)
-    ep_runner.save_brain_state(os.path.join(results_subdirectory, 'Brain_State'))
+    ep_runner.save_brain_state(os.path.join(results_subdirectory, "Brain_State"))
 
     # Last element of log contains additional for training
     log_info = dict()
@@ -178,11 +188,11 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     log.append(log_info)
 
     # Write log to JSON for better parsing
-    with open(os.path.join(results_subdirectory, 'Log.json'), 'w') as outfile:
+    with open(os.path.join(results_subdirectory, "Log.json"), "w") as outfile:
         json.dump(log, outfile, ensure_ascii=False, indent=4)
 
     # Write results to text file for better readability
-    write_results_to_textfile(path=os.path.join(results_subdirectory, 'Log.txt'),
+    write_results_to_textfile(path=os.path.join(results_subdirectory, "Log.txt"),
                               configuration=configuration,
                               log=log,
                               input_size=ep_runner.get_input_size(),
@@ -190,7 +200,31 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
                               individual_size=individual_size,
                               free_parameter_usage=ep_runner.get_free_parameter_usage())
 
-    # Error messages inside subprocesses could be shown once they are joined
+    print("Adding data to TensorBoard...")
+    writer = SummaryWriter(
+        logdir=results_subdirectory
+    )
+
+    writer.add_hparams(
+        flattened_config,
+        {
+            "hparam/max_avg": max([x["mean"] for x in log]),
+            "hparam/max": max([x["max"] for x in log]),
+            "hparam/best": max([x["best"] for x in log]),
+        }
+    )
+
+    for log_entry in log:
+        writer.add_scalar("gen", log_entry["gen"], global_step=log_entry["gen"])
+        writer.add_scalar("min", log_entry["min"], global_step=log_entry["gen"])
+        writer.add_scalar("mean", log_entry["mean"], global_step=log_entry["gen"])
+        writer.add_scalar("max", log_entry["max"], global_step=log_entry["gen"])
+        writer.add_scalar("best", log_entry["best"], global_step=log_entry["gen"])
+
+    writer.close()
+
+    # If there were any error messages inside the subprocesses, they are shown once
+    # they are joined
     pool.close()
     pool.join()
 

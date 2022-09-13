@@ -13,3 +13,4 @@ pandas
 py-cpuinfo
 pytest
 tensorflow
+tensorboardX
