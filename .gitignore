@@ -16,6 +16,8 @@ naturalnets/configurations/temp-config.json
 checkpoints
 videos
 
+benchmarks/
+
 temp*.py
 test.py
 nohup.out
