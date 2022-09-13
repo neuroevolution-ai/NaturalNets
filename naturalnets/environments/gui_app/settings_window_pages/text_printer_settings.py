@@ -170,8 +170,12 @@ class TextPrinterSettings(Page):
                 return
 
         if self.rbg.is_clicked_by(click_position):
+            old_value = self.rbg.get_value()
+
             self.rbg.handle_click(click_position)
-            self.text_printer.set_color(self.rbg.get_value())
+
+            if old_value != self.rbg.get_value():
+                self.text_printer.set_color(self.rbg.get_value())
 
     def is_popup_open(self) -> int:
         return self.popup.is_open()
