@@ -17,27 +17,9 @@ while True:
     
 
     brain_configuration = dict()
-    brain_configuration["type"] = random.choice(["CTRNN", "CTRNN", "CTRNN", "CTRNN", "ELMANNN", "GRUNN", "LSTMNN", "FFNN"])
+    brain_configuration["type"] = random.choice(["ELMANNN", "GRUNN", "LSTMNN", "FFNN"])
 
-    if(brain_configuration["type"] == "CTRNN"):
-        brain_configuration["differential_equation"] = random.choice(["NaturalNet", "LiHoChow2005"])
-
-        if(brain_configuration["differential_equation"] == "NaturalNet"):
-            brain_configuration["set_principle_diagonal_elements_of_W_negative"] = random.choice([False, True])
-
-        elif(brain_configuration["differential_equation"] == "LiHoChow2005"):
-            brain_configuration["set_principle_diagonal_elements_of_W_negative"] = False
-            brain_configuration["alpha"] = random.choice([0.0, 0.1, 0.01])
-
-        else:
-            raise RuntimeError("No valid CTRNN differential equation")
-
-        brain_configuration["delta_t"] = 0.05
-        brain_configuration["number_neurons"] = random.choice([5, 10, 20, 50])
-        brain_configuration["clipping_range"] = random.choice([1.0, 3.0, float('inf'), float('inf')])
-        brain_configuration["optimize_x0"] = True
-
-    elif(brain_configuration["type"] == "ELMANNN" or brain_configuration["type"] == "GRUNN" or brain_configuration["type"] == "LSTMNN"):
+    if(brain_configuration["type"] == "ELMANNN" or brain_configuration["type"] == "GRUNN" or brain_configuration["type"] == "LSTMNN"):
         brain_configuration["hidden_layer_structure"] = random.choice([[5], [10], [20], [50]])
         brain_configuration["use_bias"] = True
 
@@ -56,9 +38,9 @@ while True:
     optimizer_configuration["sigma"] = random.choice([0.5, 1.0, 2.0])
 
     configuration = dict()
-    configuration["number_generations"] = 2500
+    configuration["number_generations"] = 5000
     configuration["number_validation_runs"] = 50
-    configuration["number_rounds"] = 5
+    configuration["number_rounds"] = random.choice([1, 3, 5, 10])
     configuration["maximum_env_seed"] = 100000
     configuration["environment"] = environment_configuration
     configuration["brain"] = brain_configuration
