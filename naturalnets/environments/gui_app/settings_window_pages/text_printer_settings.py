@@ -101,14 +101,20 @@ class TextPrinterSettings(Page):
         # others when opened (important for iteration in handle_click)
         self.dropdowns: List[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
         self.dropdown_to_func = {
-            self.n_words_dd: lambda: self.text_printer
-                                         .set_n_words(self.n_words_dd.get_current_value()),
-            self.font_size_dd: lambda: self.text_printer
-                                           .set_font_size(self.font_size_dd.get_current_value()),
-            self.fonts_dd: lambda: self.text_printer
-                                       .set_font(self.fonts_dd.get_current_value())
+            self.n_words_dd: lambda: self.text_printer.set_n_words(self.n_words_dd.get_current_value()),
+            self.font_size_dd: lambda: self.text_printer.set_font_size(self.font_size_dd.get_current_value()),
+            self.fonts_dd: lambda: self.text_printer.set_font(self.fonts_dd.get_current_value())
         }
+
+        self.dropdowns_to_str = {
+            self.n_words_dd: "word_count_dropdown_opened",
+            self.font_size_dd: "font_size_dropdown_opened",
+            self.fonts_dd: "font_dropdown_opened"
+        }
+
         self.add_widgets(self.dropdowns)
+
+        self.opened_dd = None
 
         # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
@@ -119,6 +125,9 @@ class TextPrinterSettings(Page):
         self.add_widget(self.rbg)
 
         self.reward_dict = {
+            "word_count_dropdown_opened": 0,
+            "font_size_dropdown_opened": 0,
+            "font_dropdown_opened": 0,
             self.popup.__class__.__name__: self.popup.reward_dict
         }
 
@@ -138,34 +147,25 @@ class TextPrinterSettings(Page):
         self.text_printer.set_color(radio_button.get_value())
 
     def is_dropdown_open(self) -> bool:
-        return self._get_opened_dropdown() is not None
-
-    def _get_opened_dropdown(self) -> Optional[Dropdown]:
-        for dropdown in self.dropdowns:
-            if dropdown.is_open():
-                return dropdown
-        return None
+        return self.opened_dd is not None
 
     def handle_click(self, click_position: np.ndarray = None):
         if self.is_popup_open():
             self.popup.handle_click(click_position)
             return
 
-        opened_dd = self._get_opened_dropdown()
-        if opened_dd is not None:
-            old_value = opened_dd.get_current_value()
-            opened_dd.handle_click(click_position)
-            if old_value != opened_dd.get_current_value():
-                self.dropdown_to_func[opened_dd]()
+        if self.opened_dd is not None:
+            self.opened_dd.handle_click(click_position)
+            self.dropdown_to_func[self.opened_dd]()
+            self.opened_dd = None
             return
 
-        # handle dropdown clicks first, as they may occlude other widgets if opened
-        for dropdown, func in self.dropdown_to_func.items():
+        # Register an opened dropdown
+        for dropdown in self.dropdowns:
             if dropdown.is_clicked_by(click_position):
-                old_value = dropdown.get_current_value()
                 dropdown.handle_click(click_position)
-                if old_value != dropdown.get_current_value():
-                    func()
+                self.opened_dd = dropdown
+                self.reward_dict[self.dropdowns_to_str[dropdown]] = 1
                 return
 
         for checkbox in self.font_style_checkboxes:
@@ -174,12 +174,10 @@ class TextPrinterSettings(Page):
                 return
 
         if self.rbg.is_clicked_by(click_position):
-            old_value = self.rbg.get_value()
-
+            # Clicked button in the button group may have an additional action (e.g. a popup is
+            # opened when this button is clicked)
             self.rbg.handle_click(click_position)
-
-            if old_value != self.rbg.get_value():
-                self.text_printer.set_color(self.rbg.get_value())
+            self.text_printer.set_color(self.rbg.get_value())
 
     def is_popup_open(self) -> int:
         return self.popup.is_open()
