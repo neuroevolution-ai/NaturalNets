@@ -31,10 +31,10 @@ def main(exp_dir: str, delay: float):
     environment_class = get_environment_class(configuration["environment"]["type"])
     env = environment_class(configuration=configuration["environment"])
 
-    if "enhancer" in configuration:
-        enhancer_class = get_enhancer_class(configuration["enhancer"]["type"])
-    else:
+    if configuration["enhancer"]["type"] is None:
         enhancer_class = DummyEnhancer
+    else:
+        enhancer_class = get_enhancer_class(configuration["enhancer"]["type"])
 
     enhancer = enhancer_class(env.get_number_outputs())
 
