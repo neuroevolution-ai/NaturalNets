@@ -1,5 +1,6 @@
-"""Contains the AppController."""
+from copy import deepcopy
 
+import dictdiffer
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -30,6 +31,11 @@ class AppController:
 
         self.assign_state(self.main_window)
         self.assign_state(self.settings_window)
+
+        self.reward_dict = {
+            self.main_window.text_printer.__class__.__name__: self.main_window.reward_dict,
+            self.settings_window.__class__.__name__: self.settings_window.reward_dict
+        }
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
@@ -85,6 +91,8 @@ class AppController:
     def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component.
         """
+        previous_reward_dict = deepcopy(self.reward_dict)
+
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
         elif (not self.main_window.current_page_blocks_click()
@@ -92,6 +100,11 @@ class AppController:
             self.settings_window.open()
         else:
             self.main_window.handle_click(click_position)
+
+        diff_result = list(dictdiffer.diff(previous_reward_dict, self.reward_dict))
+        reward = len(diff_result)
+
+        return reward
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """Calls the main window rendering method and the settings window rendering method,

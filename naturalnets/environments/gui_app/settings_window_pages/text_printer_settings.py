@@ -118,6 +118,10 @@ class TextPrinterSettings(Page):
         self.rbg = RadioButtonGroup([self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
         self.add_widget(self.rbg)
 
+        self.reward_dict = {
+            self.popup.__class__.__name__: self.popup.reward_dict
+        }
+
     def open_popup(self):
         """Opens the text-printer settings popup, if the green radio-button is not
         selected. Should only be called when the green radio button is clicked."""
@@ -207,10 +211,21 @@ class TextPrinterSettingsPopup(Page):
         self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
         self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
+        self.reward_dict = {
+            "popup_open": 0,
+            "popup_close": 0,
+            "popup_selection_button": {
+                False: 0,
+                True: 0
+            }
+        }
+
     def set_rb_and_close(self, selected: bool) -> None:
         if selected:
             self.settings.set_selected_rb(self.settings.green_rb)
         self.close()
+
+        self.reward_dict["popup_select_button"][selected] = 1
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
@@ -224,9 +239,13 @@ class TextPrinterSettingsPopup(Page):
         """Opens this popup."""
         self.get_state()[0] = 1
 
+        self.reward_dict["popup_open"] = 1
+
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
+
+        self.reward_dict["popup_close"] = 1
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

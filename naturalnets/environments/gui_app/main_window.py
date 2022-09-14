@@ -67,6 +67,10 @@ class MainWindow(StateElement, Clickable):
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
 
+        self.reward_dict = {
+            self.text_printer.__class__.__name__: self.text_printer.reward_dict
+        }
+
     def enable_figure_printer(self, visible: int) -> None:
         self.is_figure_printer_button_visible = visible
 

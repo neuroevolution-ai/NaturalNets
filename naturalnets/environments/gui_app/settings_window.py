@@ -66,9 +66,27 @@ class SettingsWindow(StateElement, Clickable):
         self.tabs_to_state_index: Dict[Page, int] = {
             tab: index + 1 for index, tab in enumerate(self.tabs)
         }
+
+        self.tabs_to_str: Dict[Page, str] = {
+            self.text_printer_settings: "text_printer_settings_opened",
+            self.calculator_settings: "calculator_settings_opened",
+            self.car_config_settings: "car_config_settings_opened",
+            self.figure_printer_settings: "figure_printer_settings_opened"
+        }
+
         self.current_tab = None
         self.set_current_tab(self.text_printer_settings)
         self.add_children(self.tabs)
+
+        self.reward_dict = {
+            "open_settings_window": 0,
+            "close_settings_window": 0,
+            "text_printer_settings_opened": 0,
+            "calculator_settings_opened": 0,
+            "car_config_settings_opened": 0,
+            "figure_printer_settings_opened": 0,
+            self.text_printer_settings.__class__.__name__: self.text_printer_settings.reward_dict
+        }
 
     def is_open(self) -> int:
         """Returns if the settings window is open."""
@@ -76,10 +94,12 @@ class SettingsWindow(StateElement, Clickable):
 
     def open(self):
         """Opens the settings window."""
+        self.reward_dict["open_settings_window"] = 1
         self.get_state()[0] = 1
 
     def close(self):
         """Closes the settings window."""
+        self.reward_dict["close_settings_window"] = 1
         self.get_state()[0] = 0
 
     def get_bb(self) -> BoundingBox:
@@ -89,7 +109,7 @@ class SettingsWindow(StateElement, Clickable):
         self._bounding_box = bounding_box
 
     def handle_click(self, click_position: np.ndarray):
-        # check if current page is blocking click or click in current page bounding-box
+        # Check if current page is blocking click or click in current page bounding-box
         # (needs to be checked here since e.g. an opened dropdown should prevent a click
         # on the close button of the settings window)
         if (self.current_tab.is_popup_open()
@@ -97,11 +117,13 @@ class SettingsWindow(StateElement, Clickable):
                 or self.PAGE_BB.is_point_inside(click_position)):
             self.current_tab.handle_click(click_position)
             return
-        # check if close button clicked
+
+        # Check if close button clicked
         if self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
             return
-        # check if menu (tab-buttons) are clicked
+
+        # Check if menu (tab-buttons) are clicked
         if self.tabs_bb.is_point_inside(click_position):
             self.handle_tabs_button_click(click_position)
             return
@@ -127,6 +149,11 @@ class SettingsWindow(StateElement, Clickable):
         """
         for tab, index in self.tabs_to_state_index.items():
             if tab == current_tab:
+                # If current_tab is None then this function is called on __init__ and we do not want
+                # to give reward for this (i.e. change the reward dict)
+                if self.current_tab is not None:
+                    self.reward_dict[self.tabs_to_str[current_tab]] = 1
+
                 self.get_state()[index] = 1
                 self.current_tab = current_tab
             else:

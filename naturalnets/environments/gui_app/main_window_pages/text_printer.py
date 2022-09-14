@@ -39,27 +39,129 @@ class TextPrinter(Page):
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
 
+        self.reward_dict = {
+            "word_count": {
+                50: 0,
+                100: 0,
+                200: 0,
+                400: 0
+            },
+            "word_count_setting": {
+                50: 0,
+                100: 0,
+                200: 0,
+                400: 0
+            },
+            "font_size": {
+                12: 0,
+                14: 0,
+                16: 0,
+                18: 0,
+                20: 0
+            },
+            "font_size_setting": {
+                12: 0,
+                14: 0,
+                16: 0,
+                18: 0,
+                20: 0
+            },
+            "font": {
+                Font.DEJAVU_SANS: 0,
+                Font.LIBERATION_MONO: 0,
+                Font.NIMBUS_ROMAN: 0,
+                Font.UBUNTU: 0
+            },
+            "font_setting": {
+                Font.DEJAVU_SANS: 0,
+                Font.LIBERATION_MONO: 0,
+                Font.NIMBUS_ROMAN: 0,
+                Font.UBUNTU: 0
+            },
+            "font_color": {
+                Color.RED: 0,
+                Color.GREEN: 0,
+                Color.BLUE: 0,
+                Color.BLACK: 0
+            },
+            "font_color_setting": {
+                Color.RED: 0,
+                Color.GREEN: 0,
+                Color.BLUE: 0,
+                Color.BLACK: 0
+            },
+            "font_style": {
+                FontStyle.BOLD: {
+                    False: 0,
+                    True: 0
+                },
+                FontStyle.ITALIC: {
+                    False: 0,
+                    True: 0
+                },
+                FontStyle.UNDERLINE: {
+                    False: 0,
+                    True: 0
+                }
+            },
+            "font_style_setting": {
+                FontStyle.BOLD: {
+                    False: 0,
+                    True: 0
+                },
+                FontStyle.ITALIC: {
+                    False: 0,
+                    True: 0
+                },
+                FontStyle.UNDERLINE: {
+                    False: 0,
+                    True: 0
+                }
+            }
+        }
+
     def set_font_style(self, style: FontStyle, enabled: int) -> None:
         if enabled:
             self._font_styles.append(style)
         else:
             self._font_styles.remove(style)
 
+        self.reward_dict["font_style_setting"][style][enabled] = 1
+
     def set_font(self, font: Font) -> None:
         self._font = font
+
+        self.reward_dict["font_setting"][font] = 1
 
     def set_font_size(self, size: int) -> None:
         self._font_size = size
 
+        self.reward_dict["font_size_setting"][size] = 1
+
     def set_color(self, color: Color) -> None:
         self._color = color
+
+        self.reward_dict["font_color_setting"][color] = 1
 
     def set_n_words(self, n: int) -> None:
         self._n_words = n
 
+        self.reward_dict["word_count_setting"][n] = 1
+
     def print_text(self):
         self.display_dict = self.update_display_dict()
         self.get_state()[0] = 1
+
+        for font_style in FontStyle:
+            if font_style in self._font_styles:
+                self.reward_dict["font_style"][font_style][True] = 1
+            else:
+                self.reward_dict["font_style"][font_style][False] = 1
+
+        self.reward_dict["font"][self._font] = 1
+        self.reward_dict["font_size"][self._font_size] = 1
+        self.reward_dict["font_color"][self._color] = 1
+        self.reward_dict["word_count"][self._n_words] = 1
 
     def handle_click(self, click_position: np.ndarray = None):
         if self.button.is_clicked_by(click_position):
