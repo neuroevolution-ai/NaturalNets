@@ -24,7 +24,7 @@ class Calculator(Page):
     OPERAND_2_BB = BoundingBox(331, 316, 97, 22)
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
-    # area adjusted to only show properties (bb does not match the grafical bb)
+    # Area adjusted to only show properties (bb does not match the graphical bb)
     RESULT_AREA_BB = BoundingBox(135, 48, 286, 183)
 
     def __init__(self):
@@ -71,10 +71,19 @@ class Calculator(Page):
         self.reset()
 
     def reset_reward_dict(self):
+        self.popup.reset_reward_dict()
+
         self.reward_dict = {
             "first_operand_dropdown": {
                 "opened": 0,
                 "selected": {
+                    0: 0,
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
+                },
+                "used_in_calculate": {
                     0: 0,
                     1: 0,
                     2: 0,
@@ -90,11 +99,24 @@ class Calculator(Page):
                     2: 0,
                     3: 0,
                     4: 0,
+                },
+                "used_in_calculate": {
+                    0: 0,
+                    1: 0,
+                    2: 0,
+                    3: 0,
+                    4: 0,
                 }
             },
             "operator_dropdown": {
                 "opened": 0,
                 "selected": {
+                    Operator.ADDITION: 0,
+                    Operator.SUBTRACTION: 0,
+                    Operator.MULTIPLICATION: 0,
+                    Operator.DIVISION: 0
+                },
+                "used_in_calculate": {
                     Operator.ADDITION: 0,
                     Operator.SUBTRACTION: 0,
                     Operator.MULTIPLICATION: 0,
@@ -142,7 +164,8 @@ class Calculator(Page):
                 Base.DECIMAL: 0,
                 Base.BINARY: 0,
                 Base.HEX: 0
-            }
+            },
+            self.popup.__class__.__name__: self.popup.reward_dict
         }
 
     def reset(self):
@@ -245,17 +268,24 @@ class Calculator(Page):
 
     # Adopted from master-thesis code this app is based on.
     def calculate(self):
-        operator: str = self.operator_dd.get_current_value().value
+        operator = self.operator_dd.get_current_value()
+        operator_str = operator.value
         a: int = self.operand_1_dd.get_current_value()
         b: int = self.operand_2_dd.get_current_value()
+
+        self.reward_dict["numeral_system"][self.base] = 1
+        self.reward_dict[self.dropdowns_to_str[self.operator_dd]]["used_in_calculate"][operator] = 1
+        self.reward_dict[self.dropdowns_to_str[self.operand_1_dd]]["used_in_calculate"][a] = 1
+        self.reward_dict[self.dropdowns_to_str[self.operand_2_dd]]["used_in_calculate"][b] = 1
+
         output = None
-        if operator == "+":
+        if operator_str == "+":
             output = a + b
-        elif operator == "-":
+        elif operator_str == "-":
             output = a - b
-        elif operator == "*":
+        elif operator_str == "*":
             output = a * b
-        elif operator == "/":
+        elif operator_str == "/":
             try:
                 output = a / b
             except ZeroDivisionError:
@@ -294,6 +324,15 @@ class CalculatorPopup(Page):
         super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         self.button: Button = Button(self.BUTTON_BB, self.close)
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.reward_dict = {
+            "popup_open": 0,
+            "popup_close": 0,
+        }
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
@@ -301,10 +340,12 @@ class CalculatorPopup(Page):
     def open(self):
         """Opens this popup."""
         self.get_state()[0] = 1
+        self.reward_dict["popup_open"] = 1
 
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
+        self.reward_dict["popup_close"] = 1
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
