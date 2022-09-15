@@ -78,6 +78,13 @@ class SettingsWindow(StateElement, Clickable):
         self.set_current_tab(self.text_printer_settings)
         self.add_children(self.tabs)
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.text_printer_settings.reset_reward_dict()
+        self.calculator_settings.reset_reward_dict()
+
         self.reward_dict = {
             "open_settings_window": 0,
             "close_settings_window": 0,
@@ -85,7 +92,8 @@ class SettingsWindow(StateElement, Clickable):
             "calculator_settings_opened": 0,
             "car_config_settings_opened": 0,
             "figure_printer_settings_opened": 0,
-            self.text_printer_settings.__class__.__name__: self.text_printer_settings.reward_dict
+            self.text_printer_settings.__class__.__name__: self.text_printer_settings.reward_dict,
+            self.calculator_settings.__class__.__name__: self.calculator_settings.reward_dict
         }
 
     def is_open(self) -> int:

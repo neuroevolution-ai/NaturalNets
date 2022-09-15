@@ -67,8 +67,16 @@ class MainWindow(StateElement, Clickable):
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.text_printer.reset_reward_dict()
+        self.calculator.reset_reward_dict()
+
         self.reward_dict = {
-            self.text_printer.__class__.__name__: self.text_printer.reward_dict
+            self.text_printer.__class__.__name__: self.text_printer.reward_dict,
+            self.calculator.__class__.__name__: self.calculator.reward_dict
         }
 
     def enable_figure_printer(self, visible: int) -> None:
@@ -144,3 +152,6 @@ class MainWindow(StateElement, Clickable):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
+
+    def reset(self):
+        pass

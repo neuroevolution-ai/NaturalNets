@@ -124,6 +124,12 @@ class TextPrinterSettings(Page):
         self.rbg = RadioButtonGroup([self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
         self.add_widget(self.rbg)
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.popup.reset_reward_dict()
+
         self.reward_dict = {
             "word_count_dropdown_opened": 0,
             "font_size_dropdown_opened": 0,
@@ -164,8 +170,10 @@ class TextPrinterSettings(Page):
         for dropdown in self.dropdowns:
             if dropdown.is_clicked_by(click_position):
                 dropdown.handle_click(click_position)
-                self.opened_dd = dropdown
-                self.reward_dict[self.dropdowns_to_str[dropdown]] = 1
+
+                if dropdown.is_open():
+                    self.opened_dd = dropdown
+                    self.reward_dict[self.dropdowns_to_str[dropdown]] = 1
                 return
 
         for checkbox in self.font_style_checkboxes:
@@ -209,6 +217,10 @@ class TextPrinterSettingsPopup(Page):
         self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
         self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
         self.reward_dict = {
             "popup_open": 0,
             "popup_close": 0,

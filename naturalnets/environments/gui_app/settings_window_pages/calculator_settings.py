@@ -76,30 +76,58 @@ class CalculatorSettings(Page):
                                                    self.base_16_ddi])
         self.add_widget(self.dropdown)
 
+        self.opened_dd = None
+
         self.popup = CalculatorSettingsPopup(self)
         self.add_child(self.popup)
 
-        # initial state
+        self.reward_dict = {}
+
+        self.reset()
+
+    def reset_reward_dict(self):
+        self.popup.reset_reward_dict()
+
+        self.reward_dict = {
+            "base_dropdown_opened": 0,
+            self.popup.__class__.__name__: self.popup.reward_dict
+        }
+
+    def reset(self):
         self.dropdown.set_selected_item(self.base_10_ddi)
         self.addition.set_selected(1)
         self.subtraction.set_selected(1)
+        self.multiplication.set_selected(0)
+        self.division.set_selected(0)
+
+        self.reset_reward_dict()
 
     def handle_click(self, click_position: np.ndarray):
-        # handle popup click
         if self.is_popup_open():
             self.popup.handle_click(click_position)
             return
-        # handle dropdown click/closing of any open dropdown
-        if self.dropdown.is_clicked_by(click_position) or self.is_dropdown_open():
-            self.dropdown.handle_click(click_position)
+
+        # Handle the case of an opened dropdown first
+        if self.opened_dd is not None:
+            self.opened_dd.handle_click(click_position)
             self.calculator.set_base(self.dropdown.get_current_value())
+            self.opened_dd = None
             return
-        # handle checkbox click
+
+        if self.dropdown.is_clicked_by(click_position):
+            self.dropdown.handle_click(click_position)
+
+            if self.dropdown.is_open():
+                self.opened_dd = self.dropdown
+                self.reward_dict["base_dropdown_opened"] = 1
+            return
+
         for checkbox in self.operator_checkboxes:
             if checkbox.is_clicked_by(click_position):
                 checkbox.handle_click(click_position)
                 break
-        # open popup if click deselected last selected checkbox
+
+        # Open popup if click deselected last selected checkbox
         if self.get_selected_checkboxes_count() == 0:
             self.popup.open()
 
@@ -107,11 +135,11 @@ class CalculatorSettings(Page):
         """Returns the number of selected checkboxes."""
         return sum(checkbox.is_selected() for checkbox in self.operator_checkboxes)
 
-    def is_popup_open(self) -> int:
-        return self.popup.is_open()
+    def is_popup_open(self) -> bool:
+        return bool(self.popup.is_open())
 
-    def is_dropdown_open(self) -> int:
-        return self.dropdown.is_open()
+    def is_dropdown_open(self) -> bool:
+        return self.opened_dd is not None
 
     def select_operator_checkbox(self, operator: Operator):
         """Selects the checkbox corresponding to the given operator (used by popup)."""
@@ -153,11 +181,40 @@ class CalculatorSettingsPopup(Page):
                                                     self.division_ddi])
         self.add_widget(self.dropdown)
 
+        self.dropdown_opened = False
+
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.reward_dict = {
+            "popup_open": 0,
+            "popup_close": 0,
+            "operator_dropdown_opened": 0,
+            "operator_selection": {
+                Operator.ADDITION: 0,
+                Operator.SUBTRACTION: 0,
+                Operator.MULTIPLICATION: 0,
+                Operator.DIVISION: 0,
+            }
+        }
+
     def handle_click(self, click_position: np.ndarray = None) -> None:
-        # check dropdown first, may obscure apply-button when opened
-        if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
+        # Check dropdown first, may obscure apply-button when opened
+        if self.dropdown_opened:
             self.dropdown.handle_click(click_position)
+            self.reward_dict["operator_selection"][self.dropdown.get_current_value()] = 1
+            self.dropdown_opened = False
             return
+
+        if self.dropdown.is_clicked_by(click_position):
+            self.dropdown.handle_click(click_position)
+
+            if self.dropdown.is_open():
+                self.dropdown_opened = True
+                self.reward_dict["operator_dropdown_opened"] = 1
+            return
+
         if self.apply_button.is_clicked_by(click_position):
             curr_dropdown_value: Operator = self.dropdown.get_current_value()
             assert curr_dropdown_value is not None
@@ -170,9 +227,13 @@ class CalculatorSettingsPopup(Page):
         self.get_state()[0] = 1
         self.dropdown.set_selected_item(self.addition_ddi)
 
+        self.reward_dict["popup_open"] = 1
+
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
+
+        self.reward_dict["popup_close"] = 1
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

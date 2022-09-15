@@ -39,6 +39,9 @@ class TextPrinter(Page):
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
 
+        self.reward_dict = {}
+
+    def reset_reward_dict(self):
         self.reward_dict = {
             "word_count": {
                 50: 0,
@@ -126,7 +129,7 @@ class TextPrinter(Page):
         else:
             self._font_styles.remove(style)
 
-        self.reward_dict["font_style_setting"][style][enabled] = 1
+        self.reward_dict["font_style_setting"][style][bool(enabled)] = 1
 
     def set_font(self, font: Font) -> None:
         self._font = font
@@ -195,3 +198,6 @@ class TextPrinter(Page):
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i * space)
             put_text(img, prop, bottom_left_corner, font_scale=0.4)
+
+    def reset(self):
+        pass

@@ -32,10 +32,30 @@ class AppController:
         self.assign_state(self.main_window)
         self.assign_state(self.settings_window)
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.main_window.reset_reward_dict()
+        self.settings_window.reset_reward_dict()
+
         self.reward_dict = {
             self.main_window.text_printer.__class__.__name__: self.main_window.reward_dict,
             self.settings_window.__class__.__name__: self.settings_window.reward_dict
         }
+
+    def reset(self):
+        # TODO these reset functions
+        self.main_window.reset()
+        self.settings_window.reset()
+
+        self.reset_reward_dict()
+
+        self._state = np.zeros(self._total_state_len, dtype=int)
+        self._last_allocated_state_index = 0
+
+        self.assign_state(self.main_window)
+        self.assign_state(self.settings_window)
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
