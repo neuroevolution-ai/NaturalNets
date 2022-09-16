@@ -1,5 +1,6 @@
 import itertools
 import os
+from functools import partial
 from typing import List
 
 import numpy as np
@@ -70,12 +71,24 @@ class CarConfiguratorSettings(Page):
             get_group_bounding_box(motor_checkboxes)
         ]
 
-        # all checkboxes are initially selected
+        self.reward_dict = {}
+        self.reset()
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.car_disabled_popup.reset_reward_dict()
+
+        self.reward_dict = {
+            self.car_disabled_popup.__class__.__name__: self.car_disabled_popup.reward_dict
+        }
+
+    def reset(self):
+        # All checkboxes are initially selected
         all_checkboxes = itertools.chain(*self._checkbox_groups)
         for checkbox in all_checkboxes:
             checkbox.set_selected(1)
 
-        # all cars are initially enabled
+        # All cars are initially enabled
         self.set_car_a_enabled(1)
         self.set_car_b_enabled(1)
         self.set_car_c_enabled(1)
@@ -129,19 +142,19 @@ class CarConfiguratorSettings(Page):
         tire_checkboxes: List[CheckBox] = []
         self.tire_20_inch = CheckBox(
             self.TIRE_20_INCH_BB,
-            self._car_configurator.tire_20_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.tire_20_ddi)
         )
         self.tire_22_inch = CheckBox(
             self.TIRE_22_INCH_BB,
-            self._car_configurator.tire_22_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.tire_22_ddi)
         )
         self.tire_18_inch = CheckBox(
             self.TIRE_18_INCH_BB,
-            self._car_configurator.tire_18_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.tire_18_ddi)
         )
         self.tire_19_inch = CheckBox(
             self.TIRE_19_INCH_BB,
-            self._car_configurator.tire_19_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.tire_19_ddi)
         )
 
         tire_checkboxes.append(self.tire_20_inch)
@@ -155,15 +168,15 @@ class CarConfiguratorSettings(Page):
         interior_checkboxes = []
         self.interior_modern = CheckBox(
             self.INTERIOR_MODERN_BB,
-            self._car_configurator.interior_modern_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.interior_modern_ddi)
         )
         self.interior_vintage = CheckBox(
             self.INTERIOR_VINTAGE_BB,
-            self._car_configurator.interior_vintage_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.interior_vintage_ddi)
         )
         self.interior_sport = CheckBox(
             self.INTERIOR_SPORT_BB,
-            self._car_configurator.interior_sport_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.interior_sport_ddi)
         )
 
         interior_checkboxes.append(self.interior_modern)
@@ -177,23 +190,23 @@ class CarConfiguratorSettings(Page):
 
         self.combustion_a = CheckBox(
             self.COMBUSTION_ENGINE_A_BB,
-            self._car_configurator.prop_combustion_a_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.prop_combustion_a_ddi)
         )
         self.combustion_b = CheckBox(
             self.COMBUSTION_ENGINE_B_BB,
-            self._car_configurator.prop_combustion_b_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.prop_combustion_b_ddi)
         )
         self.combustion_c = CheckBox(
             self.COMBUSTION_ENGINE_C_BB,
-            self._car_configurator.prop_combustion_c_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.prop_combustion_c_ddi)
         )
         self.electric_a = CheckBox(
             self.ELECTRIC_MOTOR_A_BB,
-            self._car_configurator.prop_electric_a_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.prop_electric_a_ddi)
         )
         self.electric_b = CheckBox(
             self.ELECTRIC_MOTOR_B_BB,
-            self._car_configurator.prop_electric_b_ddi.set_visible
+            partial(self._car_configurator.set_selectable_options, self._car_configurator.prop_electric_b_ddi)
         )
 
         motor_checkboxes.append(self.combustion_a)
@@ -208,6 +221,7 @@ class CarConfiguratorSettings(Page):
         if self.is_popup_open():
             self.car_disabled_popup.handle_click(click_position)
             return
+
         for i, checkbox_group in enumerate(self._checkbox_groups):
             if self._checkbox_group_bbs[i].is_point_inside(click_position):
                 for checkbox in checkbox_group:
@@ -216,7 +230,7 @@ class CarConfiguratorSettings(Page):
                         self.update_cars_enabled_status()
                         self.update_car_config_ddi_state()
                         self._car_configurator.reset()
-                        break
+                        return
 
     def is_popup_open(self) -> int:
         return self.car_disabled_popup.is_open()
@@ -348,6 +362,27 @@ class CarDisabledPopup(Page):
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
         self.disabled_cars: List[str] = []
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.reward_dict = {
+            "popup_open": 0,
+            "popup_close": 0,
+            Car.A: {
+                "disabled": 0,
+                "enabled": 0
+            },
+            Car.B: {
+                "disabled": 0,
+                "enabled": 0
+            },
+            Car.C: {
+                "disabled": 0,
+                "enabled": 0
+            }
+        }
+
     def _get_disabled_cars_str(self) -> str:
         disabled_cars_str = "Disabled "
         for car in self.disabled_cars:
@@ -363,17 +398,30 @@ class CarDisabledPopup(Page):
         shown in this popup."""
         if Car.A in disabled_cars:
             self.disabled_cars.append("Car A")
+            self.reward_dict[Car.A]["disabled"] = 1
+        else:
+            self.reward_dict[Car.A]["enabled"] = 1
+
         if Car.B in disabled_cars:
             self.disabled_cars.append("Car B")
+            self.reward_dict[Car.B]["disabled"] = 1
+        else:
+            self.reward_dict[Car.B]["enabled"] = 1
+
         if Car.C in disabled_cars:
             self.disabled_cars.append("Car C")
+            self.reward_dict[Car.C]["disabled"] = 1
+        else:
+            self.reward_dict[Car.C]["enabled"] = 1
 
-        self.get_state()[0] = 1  # open-state
+        self.get_state()[0] = 1  # Open State
+        self.reward_dict["popup_open"] = 1
 
     def close(self):
         """Closes this popup and empties its list of disabled cars."""
         self.disabled_cars = []
-        self.get_state()[0] = 0  # open-state
+        self.get_state()[0] = 0  # Close State
+        self.reward_dict["popup_close"] = 1
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
@@ -381,6 +429,6 @@ class CarDisabledPopup(Page):
 
     def render(self, img: np.ndarray):
         img = super().render(img)
-        bottom_left_corner = (107, 135)  # global position of text
+        bottom_left_corner = (107, 135)  # Global position of the text
         put_text(img, self._get_disabled_cars_str(), bottom_left_corner, 0.4)
         return img
