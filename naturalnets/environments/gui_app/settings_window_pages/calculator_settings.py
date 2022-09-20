@@ -82,7 +82,7 @@ class CalculatorSettings(Page):
         self.add_child(self.popup)
 
         self.reward_dict = {}
-
+        self.reset_reward_dict()
         self.reset()
 
     def reset_reward_dict(self):
@@ -94,13 +94,15 @@ class CalculatorSettings(Page):
         }
 
     def reset(self):
+        self.popup.close()
+        self.popup.reset()
+
+        self.dropdown.close()
         self.dropdown.set_selected_item(self.base_10_ddi)
         self.addition.set_selected(1)
         self.subtraction.set_selected(1)
         self.multiplication.set_selected(0)
         self.division.set_selected(0)
-
-        self.reset_reward_dict()
 
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
@@ -198,6 +200,12 @@ class CalculatorSettingsPopup(Page):
                 Operator.DIVISION: 0,
             }
         }
+
+    def reset(self):
+        self.dropdown.close()
+        self.dropdown_opened = False
+
+        self.dropdown.set_selected_item(self.addition_ddi)
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         # Check dropdown first, may obscure apply-button when opened
