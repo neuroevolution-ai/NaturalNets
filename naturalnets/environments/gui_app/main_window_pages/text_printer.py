@@ -31,15 +31,25 @@ class TextPrinter(Page):
     def __init__(self):
         super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
         self._font_styles: List[FontStyle] = []
-        self._font: Font = Font.DEJAVU_SANS
-        self._font_size = 12
-        self._color = Color.BLACK
-        self._n_words = 50
+        self._font = None
+        self._font_size = None
+        self._color = None
+        self._n_words = None
 
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
 
+        self.reset()
+
         self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset(self):
+        self.display_dict = None
+        self._font: Font = Font.DEJAVU_SANS
+        self._font_size = 12
+        self._color: Color = Color.BLACK
+        self._n_words = 50
 
     def reset_reward_dict(self):
         self.reward_dict = {
@@ -127,7 +137,11 @@ class TextPrinter(Page):
         if enabled:
             self._font_styles.append(style)
         else:
-            self._font_styles.remove(style)
+            try:
+                self._font_styles.remove(style)
+            except ValueError:
+                # Do nothing, the font is already removed
+                pass
 
         self.reward_dict["font_style_setting"][style][bool(enabled)] = 1
 
@@ -198,6 +212,3 @@ class TextPrinter(Page):
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i * space)
             put_text(img, prop, bottom_left_corner, font_scale=0.4)
-
-    def reset(self):
-        pass
