@@ -70,6 +70,22 @@ class FigurePrinterSettings(Page):
             self.popup.__class__.__name__: self.popup.reward_dict
         }
 
+    def reset(self):
+        self.popup.close()
+        self.popup.reset()
+
+        self._show_fig_printer_checkbox.set_selected(0)
+
+        for checkbox in self.figure_checkboxes:
+            if self.checkbox_to_figure[checkbox] == Figure.CHRISTMAS_TREE:
+                checkbox.set_selected(1)
+            else:
+                checkbox.set_selected(0)
+
+        for button in self._color_rbg.radio_buttons:
+            if self._button_to_color[button] == Color.BLACK:
+                self._color_rbg.set_selected_button(button)
+
     def _get_figure_checkboxes(self) -> Tuple[List[CheckBox], Dict[CheckBox, Figure]]:
         figure_checkboxes = []
         christmas_tree_checkbox = CheckBox(
@@ -243,8 +259,9 @@ class FigureCheckboxesPopup(Page):
         }
 
     def reset(self):
-        self.dropdown_opened = False
         self.dropdown.close()
+        self.dropdown_opened = False
+        self.dropdown.set_selected_item(self.christmas_tree_ddi)
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Check dropdown first, may obscure apply-button when opened
