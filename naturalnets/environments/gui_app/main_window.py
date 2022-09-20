@@ -50,8 +50,14 @@ class MainWindow(StateElement, Clickable):
                                   self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
 
+        self.pages_to_str = {
+            self.text_printer: "text_printer_page_selected",
+            self.calculator: "calculator_page_selected",
+            self.car_configurator: "car_configurator_page_selected",
+            self.figure_printer: "figure_printer_page_selected"
+        }
+
         self.current_page = None
-        self.set_current_page(self.text_printer)
 
         self.is_figure_printer_button_visible = 0
         self.figure_printer_button = Button(self.FIGURE_PRINTER_BUTTON_BB,
@@ -70,6 +76,8 @@ class MainWindow(StateElement, Clickable):
         self.reward_dict = {}
         self.reset_reward_dict()
 
+        self.set_current_page(self.text_printer)
+
     def reset_reward_dict(self):
         self.text_printer.reset_reward_dict()
         self.calculator.reset_reward_dict()
@@ -77,6 +85,10 @@ class MainWindow(StateElement, Clickable):
         self.figure_printer.reset_reward_dict()
 
         self.reward_dict = {
+            "text_printer_page_selected": 0,
+            "calculator_page_selected": 0,
+            "car_configurator_page_selected": 0,
+            "figure_printer_page_selected": 0,
             self.text_printer.__class__.__name__: self.text_printer.reward_dict,
             self.calculator.__class__.__name__: self.calculator.reward_dict,
             self.car_configurator.__class__.__name__: self.car_configurator.reward_dict,
@@ -100,6 +112,9 @@ class MainWindow(StateElement, Clickable):
         self.get_state()[:] = 0
         self.get_state()[self.pages.index(page)] = 1
         self.current_page = page
+
+        # noinspection PyTypeChecker
+        self.reward_dict[self.pages_to_str[self.current_page]] = 1
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
