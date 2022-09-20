@@ -57,6 +57,19 @@ class FigurePrinterSettings(Page):
 
         self.figure_printer.set_figure_color(self.get_figure_color())
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.popup.reset_reward_dict()
+        self.reward_dict = {
+            "activate_figure_printer": {
+                False: 0,
+                True: 0
+            },
+            self.popup.__class__.__name__: self.popup.reward_dict
+        }
+
     def _get_figure_checkboxes(self) -> Tuple[List[CheckBox], Dict[CheckBox, Figure]]:
         figure_checkboxes = []
         christmas_tree_checkbox = CheckBox(
@@ -141,9 +154,12 @@ class FigurePrinterSettings(Page):
 
         if self._show_fig_printer_checkbox.is_clicked_by(click_position):
             self._show_fig_printer_checkbox.handle_click(click_position)
-            self.main_window.enable_figure_printer(self._show_fig_printer_checkbox.is_selected())
+            figure_printer_activated = self._show_fig_printer_checkbox.is_selected()
+            self.main_window.enable_figure_printer(figure_printer_activated)
 
-            # change current main window page if it was the figure printer and the figure printer
+            self.reward_dict["activate_figure_printer"][bool(figure_printer_activated)] = 1
+
+            # Change current main window page if it was the figure printer and the figure printer
             # has been deactivated
             if (self.main_window.get_current_page() == self.main_window.figure_printer
                     and not self._show_fig_printer_checkbox.is_selected()):
@@ -205,14 +221,62 @@ class FigureCheckboxesPopup(Page):
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
         self.add_widget(self.dropdown)
 
+        self.dropdown_opened = False
+
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.reward_dict = {
+            "popup_open": 0,
+            "popup_close": 0,
+            "dropdown": {
+                "opened": 0,
+                "selected": {
+                    Figure.CHRISTMAS_TREE: 0,
+                    Figure.SPACE_SHIP: 0,
+                    Figure.GUITAR: 0,
+                    Figure.HOUSE: 0
+                }
+            }
+
+        }
+
+    def reset(self):
+        self.dropdown_opened = False
+        self.dropdown.close()
+
     def handle_click(self, click_position: np.ndarray) -> None:
-        # check dropdown first, may obscure apply-button when opened
-        if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
+        # Check dropdown first, may obscure apply-button when opened
+        if self.dropdown_opened:
+            dropdown_value_clicked = False
+            if self.dropdown.is_clicked_by(click_position):
+                dropdown_value_clicked = True
+
             self.dropdown.handle_click(click_position)
-        elif self.apply_button.is_clicked_by(click_position):
+
+            if dropdown_value_clicked:
+                selected_item = self.dropdown.get_current_value()
+                self.reward_dict["dropdown"]["selected"][selected_item] = 1
+
+            self.dropdown_opened = False
+            return
+
+        if self.dropdown.is_clicked_by(click_position):
+            self.dropdown.handle_click(click_position)
+
+            if self.dropdown.is_open():
+                self.dropdown_opened = True
+                self.reward_dict["dropdown"]["opened"] = 1
+
+            return
+
+        if self.apply_button.is_clicked_by(click_position):
             self.apply_button.handle_click(click_position)
             curr_dropdown_value: Figure = self.dropdown.get_current_value()
-            assert curr_dropdown_value is not None # popup dropdown value should never be None
+
+            assert curr_dropdown_value is not None  # Popup dropdown value should never be None
+
             self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
             self.figure_printer_settings.set_figure_printer_dd_value(curr_dropdown_value)
 
@@ -221,9 +285,13 @@ class FigureCheckboxesPopup(Page):
         self.get_state()[0] = 1
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
 
+        self.reward_dict["popup_open"] = 1
+
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
+
+        self.reward_dict["popup_close"] = 1
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

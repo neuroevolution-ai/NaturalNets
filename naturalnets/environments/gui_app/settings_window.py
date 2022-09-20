@@ -85,6 +85,7 @@ class SettingsWindow(StateElement, Clickable):
         self.text_printer_settings.reset_reward_dict()
         self.calculator_settings.reset_reward_dict()
         self.car_config_settings.reset_reward_dict()
+        self.figure_printer_settings.reset_reward_dict()
 
         self.reward_dict = {
             "open_settings_window": 0,
@@ -95,7 +96,8 @@ class SettingsWindow(StateElement, Clickable):
             "figure_printer_settings_opened": 0,
             self.text_printer_settings.__class__.__name__: self.text_printer_settings.reward_dict,
             self.calculator_settings.__class__.__name__: self.calculator_settings.reward_dict,
-            self.car_config_settings.__class__.__name__: self.car_config_settings.reward_dict
+            self.car_config_settings.__class__.__name__: self.car_config_settings.reward_dict,
+            self.figure_printer_settings.__class__.__name__: self.figure_printer_settings.reward_dict
         }
 
     def is_open(self) -> int:

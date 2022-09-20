@@ -35,7 +35,15 @@ class FigurePrinter(Page):
         ddis = [self.christmas_tree_ddi, self.space_ship_ddi, self.guitar_ddi, self.house_ddi]
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
 
-        # set initial state
+        self.dropdown_items_to_str = {
+            self.christmas_tree_ddi: "christmas_tree_setting",
+            self.space_ship_ddi: "space_ship_setting",
+            self.guitar_ddi: "guitar_setting",
+            self.house_ddi: "house_setting"
+        }
+
+        # Set initial state
+        self.dropdown_opened = False
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
         self.space_ship_ddi.set_visible(0)
         self.guitar_ddi.set_visible(0)
@@ -47,18 +55,78 @@ class FigurePrinter(Page):
         self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
         self._rendered_figure_color: Color = None  # color rendered onto the image
 
+        self.reward_dict = {}
+        self.reset_reward_dict()
+
+    def reset_reward_dict(self):
+        self.reward_dict = {
+            "christmas_tree_setting": {
+                False: 0,
+                True: 0
+            },
+            "guitar_setting": {
+                False: 0,
+                True: 0
+            },
+            "space_ship_setting": {
+                False: 0,
+                True: 0
+            },
+            "house_setting": {
+                False: 0,
+                True: 0
+            },
+            "figure_color": {
+                "setting": {
+                    Color.BLACK: 0,
+                    Color.GREEN: 0,
+                    Color.BLUE: 0,
+                    Color.BROWN: 0
+                },
+                "used_in_display": {
+                    Color.BLACK: 0,
+                    Color.GREEN: 0,
+                    Color.BLUE: 0,
+                    Color.BROWN: 0
+                }
+            },
+            "figure_dropdown": {
+                "opened": 0,
+                "selected": {
+                    Figure.CHRISTMAS_TREE: 0,
+                    Figure.SPACE_SHIP: 0,
+                    Figure.GUITAR: 0,
+                    Figure.HOUSE: 0
+                },
+                "used_in_display": {
+                    Figure.CHRISTMAS_TREE: 0,
+                    Figure.SPACE_SHIP: 0,
+                    Figure.GUITAR: 0,
+                    Figure.HOUSE: 0
+                }
+            }
+        }
+
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
         if figure is None:
             raise ValueError("Figure dropdown should have a value.")
         self.current_figure = figure
+        self._rendered_figure_color = self._figure_color_from_settings
+
+        self.reward_dict["figure_dropdown"]["used_in_display"][self.current_figure] = 1
+        self.reward_dict["figure_color"]["used_in_display"][self._rendered_figure_color] = 1
+
         self._show_figure(1)
 
     def set_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given dropdown-item's visibility. Used by
         text-printer settings."""
         item.set_visible(visible)
-        # update selected item when a new item becomes visible
+
+        self.reward_dict[self.dropdown_items_to_str[item]][bool(visible)] = 1
+
+        # Update the item that is shown on the closed dropdown, if the dropdown previously did not have any entries
         if len(self.dropdown.get_visible_items()) != 0:
             self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
 
@@ -71,14 +139,37 @@ class FigurePrinter(Page):
     def set_figure_color(self, color: Color):
         self._figure_color_from_settings = color
 
+        self.reward_dict["figure_color"]["setting"][color] = 1
+
     def is_dropdown_open(self) -> int:
         return self.dropdown.is_open()
 
     def handle_click(self, click_position):
-        if self.dropdown.is_clicked_by(click_position) or self.dropdown.is_open():
+        # Check dropdown first, may obscure apply-button when opened
+        if self.dropdown_opened:
+            dropdown_value_clicked = False
+            if self.dropdown.is_clicked_by(click_position):
+                dropdown_value_clicked = True
+
             self.dropdown.handle_click(click_position)
-        elif self._draw_figure_button.is_clicked_by(click_position):
-            self._rendered_figure_color = self._figure_color_from_settings
+
+            if dropdown_value_clicked:
+                selected_item = self.dropdown.get_current_value()
+                self.reward_dict["figure_dropdown"]["selected"][selected_item] = 1
+
+            self.dropdown_opened = False
+            return
+
+        if self.dropdown.is_clicked_by(click_position):
+            self.dropdown.handle_click(click_position)
+
+            if self.dropdown.is_open():
+                self.dropdown_opened = True
+                self.reward_dict["figure_dropdown"]["opened"] = 1
+
+            return
+
+        if self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()
 
     def render(self, img: np.ndarray):

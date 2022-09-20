@@ -74,11 +74,13 @@ class MainWindow(StateElement, Clickable):
         self.text_printer.reset_reward_dict()
         self.calculator.reset_reward_dict()
         self.car_configurator.reset_reward_dict()
+        self.figure_printer.reset_reward_dict()
 
         self.reward_dict = {
             self.text_printer.__class__.__name__: self.text_printer.reward_dict,
             self.calculator.__class__.__name__: self.calculator.reward_dict,
-            self.car_configurator.__class__.__name__: self.car_configurator.reward_dict
+            self.car_configurator.__class__.__name__: self.car_configurator.reward_dict,
+            self.figure_printer.__class__.__name__: self.figure_printer.reward_dict
         }
 
     def enable_figure_printer(self, visible: int) -> None:
