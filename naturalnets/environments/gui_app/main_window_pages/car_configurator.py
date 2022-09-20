@@ -251,6 +251,25 @@ class CarConfigurator(Page):
             }
         }
 
+    def reset(self):
+        self.popup.close()
+
+        all_items = (self.car_dropdown.get_all_items()
+                     + self.tire_dropdown.get_all_items()
+                     + self.interior_dropdown.get_all_items()
+                     + self.prop_dropdown.get_all_items())
+
+        for item in all_items:
+            item.set_visible(1)
+
+        self.car_dropdown.close()
+        self.tire_dropdown.close()
+        self.interior_dropdown.close()
+        self.prop_dropdown.close()
+
+        self.opened_dd_index = None
+        self.ddi_state_from_settings: Dict[DropdownItem, int] = {}
+
     def set_selectable_options(self, dropdown_item: DropdownItem, selected: int):
         dropdown_item.set_visible(selected)
 
@@ -373,7 +392,7 @@ class CarConfigurator(Page):
         for ddi, is_visible in self.ddi_state_from_settings.items():
             ddi.set_visible(is_visible)
 
-    def reset(self):
+    def reset_car_configurator_dropdowns(self):
         """Resets all dropdowns/hides all dropdowns but the first."""
         self.opened_dd_index = None
 
@@ -487,7 +506,7 @@ class CarConfiguratorPopup(Page):
         """Closes this popup."""
         self.get_state()[0] = 0
         self.reward_dict["popup_close"] = 1
-        self.car_configurator.reset()
+        self.car_configurator.reset_car_configurator_dropdowns()
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
