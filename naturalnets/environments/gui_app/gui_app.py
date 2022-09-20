@@ -72,7 +72,7 @@ class GUIApp(IEnvironment):
         click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         click_coordinates = np.array([click_position_x, click_position_y])
-        self.app_controller.handle_click(click_coordinates)
+        rew = self.app_controller.handle_click(click_coordinates)
 
         self.t += 1
 
@@ -81,8 +81,7 @@ class GUIApp(IEnvironment):
         if self.t >= self.config.number_time_steps:
             done = True
 
-        # TODO calculate reward
-        return self.get_observation(), 0, done, {}
+        return self.get_observation(), rew, done, {}
 
     def _render_image(self):
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -117,7 +116,7 @@ class GUIApp(IEnvironment):
             self.action = np.array([x, y])
             self.clicked = True
 
-    def interactive_mode(self):
+    def interactive_mode(self, print_reward: bool = False):
         # Create the window here first, so that the callback can be registered
         # The callback simply registers the clicks of a user
         cv2.namedWindow(self.window_name)
@@ -127,8 +126,12 @@ class GUIApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1, new_high=1))
+                _, rew, _, _ = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
+                                                        new_high=1))
                 self.clicked = False
+
+                if print_reward:
+                    print(f"Reward: {rew}")
 
             image = self._render_image()
 
