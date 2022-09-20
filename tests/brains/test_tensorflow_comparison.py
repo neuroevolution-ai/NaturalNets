@@ -170,7 +170,7 @@ class TestTensorflowComparison:
 
             close_percentage = np.count_nonzero(
                np.isclose(our_lstm_outputs, tf_lstm_outputs, atol=0.00001)) / tf_lstm_outputs.size
-            assert close_percentage > 0.90
+            assert close_percentage > 0.99
 
             print(f"Close predictions between the TensorFlow and NumPy implementations of the {config['type']}: "
                   f"{close_percentage * 100:.2f}% of {tf_lstm_outputs.size} predictions")
