@@ -42,14 +42,6 @@ class FigurePrinter(Page):
             self.house_ddi: "house_setting"
         }
 
-        # Set initial state
-        self.dropdown_opened = False
-        self.dropdown.set_selected_item(self.christmas_tree_ddi)
-        self.space_ship_ddi.set_visible(0)
-        self.guitar_ddi.set_visible(0)
-        self.house_ddi.set_visible(0)
-        self.current_figure = None
-
         self.add_widget(self.dropdown)
 
         self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
@@ -57,6 +49,12 @@ class FigurePrinter(Page):
 
         self.reward_dict = {}
         self.reset_reward_dict()
+
+        # Set initial state
+        self.dropdown_opened = False
+        self.current_figure = None
+
+        self.reset()
 
     def reset_reward_dict(self):
         self.reward_dict = {
@@ -106,6 +104,17 @@ class FigurePrinter(Page):
                 }
             }
         }
+
+    def reset(self):
+        self.dropdown.close()
+        self.dropdown.set_selected_item(self.christmas_tree_ddi)
+        self.dropdown_opened = False
+
+        self.space_ship_ddi.set_visible(0)
+        self.guitar_ddi.set_visible(0)
+        self.house_ddi.set_visible(0)
+
+        self.current_figure = None
 
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
