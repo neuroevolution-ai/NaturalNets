@@ -137,6 +137,24 @@ class TextPrinterSettings(Page):
             self.popup.__class__.__name__: self.popup.reward_dict
         }
 
+    def reset(self):
+        self.popup.close()
+
+        self.n_words_dd.close()
+        self.n_words_dd.set_selected_item(self.n_words_50_ddi)
+
+        self.font_size_dd.close()
+        self.font_size_dd.set_selected_item(self.font_size_12)
+
+        self.fonts_dd.close()
+        self.fonts_dd.set_selected_item(self.font_ds_ddi)
+
+        self.rbg.set_selected_button(self.black_rb)
+
+        self.bold.set_selected(0)
+        self.italic.set_selected(0)
+        self.underline.set_selected(0)
+
     def open_popup(self):
         """Opens the text-printer settings popup, if the green radio-button is not
         selected. Should only be called when the green radio button is clicked."""
