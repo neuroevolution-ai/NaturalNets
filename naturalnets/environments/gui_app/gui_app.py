@@ -48,7 +48,6 @@ class GUIApp(IEnvironment):
         self.config = AppCfg(**configuration)
 
         self.app_controller = AppController()
-        self._initial_state = np.copy(self.app_controller.get_total_state())
 
         self.t = 0
 
@@ -61,7 +60,7 @@ class GUIApp(IEnvironment):
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
-        logging.debug(f"Total app state length is {len(self._initial_state)}.")
+        logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
@@ -166,7 +165,7 @@ class GUIApp(IEnvironment):
         return 2
 
     def reset(self, env_seed: int = None) -> np.ndarray:
-        self.get_state()[:] = self._initial_state
+        self.app_controller.reset()
 
         self.t = 0
 

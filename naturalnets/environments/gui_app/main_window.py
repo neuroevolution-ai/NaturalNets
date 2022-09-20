@@ -95,6 +95,15 @@ class MainWindow(StateElement, Clickable):
             self.figure_printer.__class__.__name__: self.figure_printer.reward_dict
         }
 
+    def reset(self):
+        self.text_printer.reset()
+        self.calculator.reset()
+        self.car_configurator.reset()
+        self.figure_printer.reset()
+
+        self.is_figure_printer_button_visible = 0
+        self.set_current_page(self.text_printer)
+
     def enable_figure_printer(self, visible: int) -> None:
         self.is_figure_printer_button_visible = visible
 
@@ -171,6 +180,3 @@ class MainWindow(StateElement, Clickable):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
-
-    def reset(self):
-        pass

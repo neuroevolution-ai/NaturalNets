@@ -26,7 +26,7 @@ class AppController:
         self._total_state_len += self.get_element_state_len(self.main_window)
         self._total_state_len += self.get_element_state_len(self.settings_window)
 
-        self._state = np.zeros(self._total_state_len, dtype=int)
+        self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
         self.assign_state(self.main_window)
@@ -45,13 +45,14 @@ class AppController:
         }
 
     def reset(self):
-        # TODO these reset functions
         self.main_window.reset()
+
+        self.settings_window.close()
         self.settings_window.reset()
 
         self.reset_reward_dict()
 
-        self._state = np.zeros(self._total_state_len, dtype=int)
+        self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
         self.assign_state(self.main_window)

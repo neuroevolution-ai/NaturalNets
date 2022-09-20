@@ -100,6 +100,14 @@ class SettingsWindow(StateElement, Clickable):
             self.figure_printer_settings.__class__.__name__: self.figure_printer_settings.reward_dict
         }
 
+    def reset(self):
+        self.text_printer_settings.reset()
+        self.calculator_settings.reset()
+        self.car_config_settings.reset()
+        self.figure_printer_settings.reset()
+
+        self.set_current_tab(self.text_printer_settings)
+
     def is_open(self) -> int:
         """Returns if the settings window is open."""
         return self.get_state()[0]
