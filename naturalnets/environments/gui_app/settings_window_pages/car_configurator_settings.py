@@ -83,6 +83,9 @@ class CarConfiguratorSettings(Page):
         }
 
     def reset(self):
+        self.car_disabled_popup.close()
+        self.car_disabled_popup.reset()
+
         # All checkboxes are initially selected
         all_checkboxes = itertools.chain(*self._checkbox_groups)
         for checkbox in all_checkboxes:
@@ -115,7 +118,7 @@ class CarConfiguratorSettings(Page):
             self._car_configurator.prop_electric_b_ddi: self.electric_b.is_selected(),
         })
 
-        self._car_configurator.reset()
+        self._car_configurator.reset_car_configurator_dropdowns()
 
     def set_car_a_enabled(self, enabled: int) -> None:
         self.get_state()[0] = enabled
@@ -229,7 +232,7 @@ class CarConfiguratorSettings(Page):
                         checkbox.handle_click(click_position)
                         self.update_cars_enabled_status()
                         self.update_car_config_ddi_state()
-                        self._car_configurator.reset()
+                        self._car_configurator.reset_car_configurator_dropdowns()
                         return
 
     def is_popup_open(self) -> int:
@@ -382,6 +385,9 @@ class CarDisabledPopup(Page):
                 "enabled": 0
             }
         }
+
+    def reset(self):
+        self.disabled_cars: List[str] = []
 
     def _get_disabled_cars_str(self) -> str:
         disabled_cars_str = "Disabled "
