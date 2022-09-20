@@ -54,23 +54,33 @@ class Calculator(Page):
             self.division_ddi: "division_operator"
         }
 
-        # These attributes are populated in the reset() method
-        self.operand_1_dd = None
-        self.operand_2_dd = None
-        self.dropdowns = None
-        self.dropdowns_to_str = None
+        # Create operand dropdowns
+        self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
+        self.operand_2_dd = self.create_operand_dd(self.OPERAND_2_BB)
+
+        self.dropdowns: List[Dropdown] = [self.operator_dd, self.operand_1_dd, self.operand_2_dd]
+
+        self.add_widgets(self.dropdowns)
+
+        self.dropdowns_to_str = {
+            self.operand_1_dd: "first_operand_dropdown",
+            self.operand_2_dd: "second_operand_dropdown",
+            self.operator_dd: "operator_dropdown",
+        }
 
         # Does not need to be added as child, because buttons do not have a state
         self.button = Button(self.BUTTON_BB, self.calculate)
 
         self.opened_dd = None
-        self.base = Base.DECIMAL
-        self.current_result = 0
+        self.base = None
+        self.current_result = None
         self.reward_dict = {}
 
         self.reset()
+        self.reset_reward_dict()
 
     def reset_reward_dict(self):
+        self.popup.close()
         self.popup.reset_reward_dict()
 
         self.reward_dict = {
@@ -169,36 +179,20 @@ class Calculator(Page):
         }
 
     def reset(self):
-        if self.dropdowns is not None:
-            self.remove_widgets(self.dropdowns)
-
-        self.operator_dd.set_selected_item(self.addition_ddi)
-
-        # Set all operator dropdown items to invisible,
-        # the default visible ones will be set when initializing
-        # the calculator settings class
-        for operator_ddi in self.operator_ddis:
-            operator_ddi.set_visible(0)
-
-        # Create operand dropdowns
-        self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
-        self.operand_2_dd = self.create_operand_dd(self.OPERAND_2_BB)
-
-        self.dropdowns: List[Dropdown] = [self.operator_dd, self.operand_1_dd, self.operand_2_dd]
-
-        self.add_widgets(self.dropdowns)
-
-        self.dropdowns_to_str = {
-            self.operand_1_dd: "first_operand_dropdown",
-            self.operand_2_dd: "second_operand_dropdown",
-            self.operator_dd: "operator_dropdown",
-        }
+        self.operator_dd.close()
+        self.operand_1_dd.close()
+        self.operand_2_dd.close()
 
         self.opened_dd = None
         self.base = Base.DECIMAL
         self.current_result = 0
 
-        self.reset_reward_dict()
+        self.operator_dd.set_selected_item(self.addition_ddi)
+
+        self.addition_ddi.set_visible(1)
+        self.subtraction_ddi.set_visible(1)
+        self.multiplication_ddi.set_visible(0)
+        self.division_ddi.set_visible(0)
 
     def set_operator_dd_item_visible(self, item: DropdownItem, visible: int):
         """Sets the given operator dropdown-item's visibility. Used by
