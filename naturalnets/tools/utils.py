@@ -34,6 +34,10 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
             assert old_length + len(inner_flattened_dict) == len(flattened_dict), ("Duplicate keys when flattening the "
                                                                                    "config dict")
         else:
+            if v is None:
+                # Tensorboard does not display pure None values, therefore use a string (which it does
+                # display)
+                v = "None"
             flattened_dict[prefix + k] = v
 
     return flattened_dict
