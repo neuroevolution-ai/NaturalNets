@@ -38,6 +38,9 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
                 # Tensorboard does not display pure None values, therefore use a string (which it does
                 # display)
                 v = "None"
+            elif isinstance(v, list):
+                v = ", ".join(str(list_entry) for list_entry in v)
+
             flattened_dict[prefix + k] = v
 
     return flattened_dict
