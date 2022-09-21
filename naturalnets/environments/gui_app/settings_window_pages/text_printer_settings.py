@@ -253,7 +253,7 @@ class TextPrinterSettingsPopup(Page):
             self.settings.set_selected_rb(self.settings.green_rb)
         self.close()
 
-        self.reward_dict["popup_select_button"][selected] = 1
+        self.reward_dict["popup_selection_button"][selected] = 1
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
