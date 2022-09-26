@@ -1,8 +1,10 @@
-import attr
 import itertools
-import numpy as np
 from typing import List
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
+
+import attr
+import numpy as np
+
+from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -13,6 +15,7 @@ class FeedForwardCfg(IBrainCfg):
     use_bias: bool
 
 
+@register_brain_class
 class FeedForwardNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
@@ -27,6 +30,11 @@ class FeedForwardNN(IBrain):
 
         # Set activation functions for hidden layers and output layer based on config
         self.activation_hidden_layers = self.get_activation_function(self.config.neuron_activation)
+
+        assert self.config.neuron_activation_output == "tanh", ("The output activation function must be 'tanh', "
+                                                                "because we require that brains output values in the "
+                                                                "[-1, 1] range.")
+
         self.activation_output_layer = self.get_activation_function(self.config.neuron_activation_output)
 
         self.weights_hidden_layers: List[np.ndarray] = []
@@ -35,7 +43,7 @@ class FeedForwardNN(IBrain):
         index = 0
         previous_layer_size = self.input_size
 
-        # Read out weight matrizes and bias matrizes from genome for hidden layers
+        # Read out weight matrices and bias matrices from genome for hidden layers
         for hidden_layer in self.config.hidden_layers:
             current_weight, index = self.read_matrix_from_genome(individual, index, hidden_layer, previous_layer_size)
             self.weights_hidden_layers.append(current_weight)
@@ -120,8 +128,4 @@ class FeedForwardNN(IBrain):
         if config.use_bias:
             individual_size += sum(config.hidden_layers) + output_size
 
-        return {'individual_size': individual_size}
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['FFNN'] = FeedForwardNN
+        return {"individual_size": individual_size}

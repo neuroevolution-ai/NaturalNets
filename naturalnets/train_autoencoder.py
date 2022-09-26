@@ -7,7 +7,7 @@ import attr
 import numpy as np
 import math
 
-from naturalnets.brains.continuous_time_rnn import ContinuousTimeRNN
+from naturalnets.brains.continuous_time_rnn import CTRNN
 from naturalnets.optimizers.canonical_es import OptimizerCanonicalEs
 from naturalnets.optimizers.cma_es_deap import OptimizerCmaEsDeap
 from naturalnets.tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
@@ -25,9 +25,8 @@ class TrainingCfg:
     optimizer: dict
 
 
-# TODO: Do this registration via class decorators
 registered_optimizer_classes = {'CMA-ES-Deap': OptimizerCmaEsDeap, 'Canonical-ES': OptimizerCanonicalEs}
-registered_brain_classes = {'CTRNN': ContinuousTimeRNN}
+registered_brain_classes = {'CTRNN': CTRNN}
 
 # Load configuration file
 with open("configurations/CMA_ES_Deap_CTRNN_Sparse_AutoEncoder.json", "r") as read_file:

@@ -1,11 +1,22 @@
 import logging
 import os
+from typing import Dict, List
 
 import pandas as pd
 
-from naturalnets.tools.parse_experiments import read_simulations, parse_log
+from naturalnets.tools.parse_experiments import read_simulations
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+
+
+def parse_log(log: List[Dict]):
+    return {
+        "generations": [log_entry["gen"] for log_entry in log[:-1]],
+        "mean": [log_entry["mean"] for log_entry in log[:-1]],
+        "best": [log_entry["best"] for log_entry in log[:-1]],
+        "maximum": [log_entry["max"] for log_entry in log[:-1]],
+        "minimum": [log_entry["min"] for log_entry in log[:-1]]
+    }
 
 
 def gather_info_for_csv(simulation):
@@ -53,7 +64,7 @@ def gather_info_for_csv(simulation):
             "max": max(maximum),
             "best": max(best),
             "directory": simulation["dir"],
-            "plot": simulation["plot"],
+            # "plot": simulation["plot"],  TODO remove or add feature again
             **conf, **brain, **optimizer, **environment}
 
 
@@ -62,7 +73,7 @@ logging.basicConfig()
 dir_path = "spreadsheets"
 os.makedirs(dir_path, exist_ok=True)
 
-simulations_directory = "Simulation_Results"
+simulations_directory = "results"
 output_file_name = os.path.join(dir_path, "Simulation_Results.csv")
 
 data = []

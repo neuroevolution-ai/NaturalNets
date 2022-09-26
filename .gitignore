@@ -11,6 +11,8 @@ configurations/temp.json
 configurations/Configuration.json
 configurations/local_*
 
+naturalnets/configurations/temp-config.json
+
 checkpoints
 videos
 

@@ -4,5 +4,5 @@ from naturalnets.environments.gym_mujoco import GymMujoco
 from naturalnets.environments.reacher_memory import ReacherMemory
 from naturalnets.environments.gym_environments import GeneralGymEnvironment
 from naturalnets.environments.challenger_neural_network import ChallengerNeuralNetwork
-from naturalnets.environments.dummy_app import DummyApp
-from naturalnets.environments.app.app import App
+from naturalnets.environments.dummy_app.dummy_app import DummyApp
+from naturalnets.environments.gui_app.gui_app import GUIApp

@@ -1,9 +1,11 @@
+from typing import Union
+
 import attr
 import numpy as np
-from typing import Union
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, registered_brain_classes
+
+from naturalnets.brains.continuous_time_rnn import CTRNN
 from naturalnets.brains.feed_forward_nn import FeedForwardNN
-from naturalnets.brains.continuous_time_rnn import ContinuousTimeRNN
+from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -18,7 +20,8 @@ class IndirectEncodedCTRNNCfg(IBrainCfg):
     outputs_z: float = -0.5
 
 
-class IndirectEncodedCtrnn(IBrain):
+@register_brain_class
+class IndirectCTRNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
                  brain_state: dict):
@@ -35,10 +38,10 @@ class IndirectEncodedCtrnn(IBrain):
                                                       configuration=self.config.ffnn_config,
                                                       brain_state={})
 
-        v_mask = brain_state['v_mask']
-        w_mask = brain_state['w_mask']
-        t_mask = brain_state['t_mask']
-        cppn_inputs_w = brain_state['cppn_inputs_w']
+        v_mask = brain_state["v_mask"]
+        w_mask = brain_state["w_mask"]
+        t_mask = brain_state["t_mask"]
+        cppn_inputs_w = brain_state["cppn_inputs_w"]
 
         index = 0
         individual_v, index = self.read_matrix_from_genome(individual, index, np.count_nonzero(v_mask), 1)
@@ -57,10 +60,10 @@ class IndirectEncodedCtrnn(IBrain):
 
         individual_ctrnn = np.concatenate((individual_ctrnn_v, individual_ctrnn_w, individual_ctrnn_t))
 
-        brain_state_ctrnn = {'v_mask': v_mask, 'w_mask': w_mask, 't_mask': t_mask}
+        brain_state_ctrnn = {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
-        self.ctrnn = ContinuousTimeRNN(input_size, output_size, individual_ctrnn, self.config.ctrnn_config,
-                                       brain_state_ctrnn)
+        self.ctrnn = CTRNN(input_size, output_size, individual_ctrnn, self.config.ctrnn_config,
+                           brain_state_ctrnn)
 
     def step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
 
@@ -82,7 +85,7 @@ class IndirectEncodedCtrnn(IBrain):
 
         config = IndirectEncodedCTRNNCfg(**configuration)
 
-        ContinuousTimeRNN.generate_brain_state(input_size, output_size, config.ctrnn_config)
+        CTRNN.generate_brain_state(input_size, output_size, config.ctrnn_config)
 
         # TODO: This should later not be hard coded
         input_image_width = 64
@@ -98,7 +101,7 @@ class IndirectEncodedCtrnn(IBrain):
         neuron_positions = np.random.random((config.ctrnn_config['number_neurons'], config.number_dimensions))
         output_positions = cls.get_circle_positions(output_size, outputs_radius, outputs_z)
 
-        brain_state_ctrnn = ContinuousTimeRNN.generate_brain_state(input_size, output_size, config.ctrnn_config)
+        brain_state_ctrnn = CTRNN.generate_brain_state(input_size, output_size, config.ctrnn_config)
 
         # individual_size_ctrnn = ContinuousTimeRNN.get_individual_size(input_size, output_size, config.ctrnn_config,
         #                                                              brain_state_ctrnn)
@@ -285,7 +288,3 @@ class IndirectEncodedCtrnn(IBrain):
             individual_size += free_parameters
 
         return individual_size
-
-
-# TODO: Do this registration via class decorator
-registered_brain_classes['Indirect-CTRNN'] = IndirectEncodedCtrnn

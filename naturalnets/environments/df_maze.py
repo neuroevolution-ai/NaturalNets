@@ -4,6 +4,7 @@
 # https://scipython.com/blog/making-a-maze/
 # Christian Hill, April 2017.
 
+
 class Cell:
     """A cell in the maze.
 

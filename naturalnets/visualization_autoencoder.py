@@ -7,7 +7,7 @@ import gym3
 import numpy as np
 from procgen import ProcgenGym3Env
 
-from naturalnets.brains.continuous_time_rnn import ContinuousTimeRNN
+from naturalnets.brains.continuous_time_rnn import CTRNN
 from naturalnets.tools.episode_runner_autoencoder import EpisodeRunnerAutoEncoder
 
 
@@ -30,14 +30,14 @@ with open(os.path.join(directory, 'Configuration.json'), "r") as read_file:
 
 config = TrainingCfg(**configuration)
 
-brain_state = ContinuousTimeRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
+brain_state = CTRNN.load_brain_state(os.path.join(directory, 'Brain_State.npz'))
 
 individual = np.load(os.path.join(directory, 'Best_Genome.npy'), allow_pickle=True)
 
-brain = ContinuousTimeRNN(input_size=0, output_size=0, individual=individual, configuration=config.brain,
-                          brain_state=brain_state)
+brain = CTRNN(input_size=0, output_size=0, individual=individual, configuration=config.brain,
+              brain_state=brain_state)
 
-ep_runner = EpisodeRunnerAutoEncoder(environment=config.environment, brain_class=ContinuousTimeRNN,
+ep_runner = EpisodeRunnerAutoEncoder(environment=config.environment, brain_class=CTRNN,
                                      brain_configuration=config.brain, use_gpu=True)
 
 env_name = config.environment["name"]

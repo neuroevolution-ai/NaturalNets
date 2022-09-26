@@ -1,4 +1,5 @@
 attrs
+click
 deap
 numpy
 gym
@@ -10,3 +11,6 @@ cma
 matplotlib
 pandas
 py-cpuinfo
+pytest
+tensorflow
+tensorboardX
