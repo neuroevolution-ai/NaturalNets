@@ -128,9 +128,10 @@ def main(stop_mode: str, amount: int, monkey_type: str, random_click_prob: float
     concrete_directories = [f"{main_chosen_directory}-{i}" for i in range(sequences)]
 
     for _dir in concrete_directories:
-        # Create directories already here so that if an error is thrown it is done immediately and not after the
-        # monkey testing (which could take some time)
-        os.makedirs(_dir, exist_ok=False)
+        # Test if any directory already exists and raise an error if that is the case. We do not want
+        # to overwrite existing results.
+        if os.path.exists(_dir):
+            raise RuntimeError(f"'{_dir}' already exists, please choose another directory")
 
     logger = logging.getLogger("")
     formatter = logging.Formatter("[%(asctime)s] - %(funcName)s - %(message)s", datefmt="%a, %d %b %Y %H:%M:%S")
@@ -180,6 +181,8 @@ def main(stop_mode: str, amount: int, monkey_type: str, random_click_prob: float
     }
 
     for _dir, res, seed in zip(concrete_directories, results, random_seeds):
+        os.makedirs(_dir, exist_ok=False)
+
         monkey_tester_options = deepcopy(general_monkey_tester_options)
         monkey_tester_options["monkey_random_seed"] = int(seed)  # Must convert to standard Python type because of json
 
