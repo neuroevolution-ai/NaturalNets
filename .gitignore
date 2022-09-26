@@ -18,6 +18,7 @@ videos
 
 benchmarks/
 
+temp*.json
 temp*.py
 test.py
 nohup.out
