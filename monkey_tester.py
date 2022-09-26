@@ -67,7 +67,8 @@ def _iteration_mode_rollout(amount: int, env, monkey) -> Tuple[float, list, list
 
 
 def run_episode(env_config: dict, monkey_type: str, monkey_random_seed: int, amount: int,
-                stop_mode: str) -> Tuple[float, list, list]:
+                stop_mode: str) -> Tuple[float, list, list, str, str]:
+    time_started = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
     env_id = env_config["type"]
     env = get_environment_class(env_id)(env_config)
     env.reset()
@@ -82,7 +83,9 @@ def run_episode(env_config: dict, monkey_type: str, monkey_random_seed: int, amo
     else:
         reward_sum, rewards, actions = _iteration_mode_rollout(amount, env, monkey)
 
-    return reward_sum, rewards, actions
+    time_ended = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
+
+    return reward_sum, rewards, actions, time_started, time_ended
 
 
 @click.command()
@@ -156,7 +159,7 @@ def main(stop_mode: str, amount: int, monkey_type: str, random_click_prob: float
                                                                                 "supported in this script")
 
     if "number_time_steps" in env_config and env_config["number_time_steps"] is not None:
-        logging.warning("The chosen number of timesteps in the environment config are ignored. In this script,"
+        logging.warning("The chosen number of timesteps in the environment config are ignored. In this script, "
                         "the CLI parameter 'amount' overwrites the environment config's timesteps!")
 
     random_seeds = rng.integers(2**32, size=sequences)
@@ -180,13 +183,16 @@ def main(stop_mode: str, amount: int, monkey_type: str, random_click_prob: float
         "explicit-dir": directory
     }
 
-    for _dir, res, seed in zip(concrete_directories, results, random_seeds):
+    for i, (_dir, res, seed) in enumerate(zip(concrete_directories, results, random_seeds)):
         os.makedirs(_dir, exist_ok=False)
 
         monkey_tester_options = deepcopy(general_monkey_tester_options)
         monkey_tester_options["monkey_random_seed"] = int(seed)  # Must convert to standard Python type because of json
 
-        reward_sum, rewards, actions = res
+        reward_sum, rewards, actions, time_started, time_ended = res
+
+        monkey_tester_options["time_started"] = time_started
+        monkey_tester_options["time_ended"] = time_ended
 
         current_dir = os.path.join(_dir, "data.npz")
         np.savez(
@@ -195,7 +201,8 @@ def main(stop_mode: str, amount: int, monkey_type: str, random_click_prob: float
             actions=np.array(actions, dtype=np.float32)
         )
 
-        logging.info(f"Finished monkey testing with a summed up reward of {reward_sum} in directory: {current_dir}")
+        logging.info(f"Monkey Testing {i}: Reward {reward_sum} - Started {time_started} - Ended {time_ended} - "
+                     "Directory {current_dir}")
 
         with open(os.path.join(_dir, "monkey_tester_options.json"), "w", encoding="utf-8") as f:
             json.dump(monkey_tester_options, f, indent=4)
