@@ -2,8 +2,8 @@ from naturalnets.train import train
 
 configuration = {
     "number_generations": 5000,
-    "number_validation_runs": 5,
-    "number_rounds": 1,
+    "number_validation_runs": 50,
+    "number_rounds": 5,
     "maximum_env_seed": 100000,
     "environment": {
         "type": "DummyApp",
@@ -24,7 +24,7 @@ configuration = {
     "optimizer": {
         "type": "CMA-ES-Deap",
         "population_size": 200,
-        "sigma": 1.0
+        "sigma": 0.5
     },
     "enhancer": {
         "type": "RandomEnhancer"
