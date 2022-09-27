@@ -18,7 +18,7 @@ def main():
 
     while not stop_optimization:
 
-        with open("naturalnets/configurations/ID06_DummyApp_CMA-ES_Multiple_Brains_HP_Tuning.json", "r") as readfile:
+        with open("naturalnets/configurations/ID07_GUIApp_CMA-ES_Multiple_Brains_HP_Tuning.json", "r") as readfile:
             configuration = json.load(readfile)
 
         def sample_from_design_space(node):
