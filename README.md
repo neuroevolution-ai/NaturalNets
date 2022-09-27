@@ -113,3 +113,11 @@ while True:
 2. Run `pip install git+https://github.com/neuroevolution-ai/deap@eigenvalues-on-gpu` 
 3. Run `pip install cupy-cuda101` if you have a GPU with CUDA 10.1 (if you have another version check the [CuPy website](https://cupy.dev/))
 4. Then the eigenvalue calculation should happen on the GPU
+
+## Inspecting Logs using TensorBoard
+
+1. Make sure TensorBoard is installed with `pip install -U -r requirements.txt`
+2. On the Terminal run `tensorboard --logdir results/` to view all results of the experiments in Tensorboard
+    - Alternatively, run `tensorboard --logdir EXPLICIT_EXP_DIR`, to view the results of a specific experiment,
+    where `EXPLICIT_EXP_DIR` is the path to that experiment's logs
+3. In a browser, navigate to `http://localhost:6006/`
