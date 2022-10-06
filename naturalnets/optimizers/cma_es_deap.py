@@ -1,9 +1,10 @@
-from deap import base
-from deap import creator
-from deap import cma
-import numpy as np
 import attr
-from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+import numpy as np
+from deap import base
+from deap import cma
+from deap import creator
+
+from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -13,7 +14,8 @@ class OptimizerCmaEsDeapCfg:
     sigma: float = 1.0
 
 
-class OptimizerCmaEsDeap(IOptimizer):
+@register_optimizer_class
+class CmaEsDeap(IOptimizer):
 
     def __init__(self, individual_size: int, configuration: dict):
 
@@ -46,7 +48,3 @@ class OptimizerCmaEsDeap(IOptimizer):
 
         # Update the strategy with the evaluated individuals
         self.toolbox.update(self.population)
-
-
-# TODO: Do this registration via class decorator
-registered_optimizer_classes['CMA-ES-Deap'] = OptimizerCmaEsDeap

@@ -16,10 +16,12 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER I
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-import attr
 from collections import deque
+
+import attr
 import numpy as np
-from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+
+from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -59,7 +61,8 @@ class Adam:
         return step
 
 
-class OptimizerOpenAIES(IOptimizer):
+@register_optimizer_class
+class OpenAIEs(IOptimizer):
     def __init__(self, individual_size: int, configuration: dict):
         self.noise = []
         self.random_state = np.random.RandomState(seed=0)
@@ -150,7 +153,3 @@ class OptimizerOpenAIES(IOptimizer):
         self.current_individual = self.adam.update(self.current_individual, gradient=gradient)
 
         self.noise = []
-
-
-# TODO: Do this registration via class decorator
-registered_optimizer_classes["OpenAI-ES"] = OptimizerOpenAIES

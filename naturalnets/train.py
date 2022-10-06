@@ -16,6 +16,7 @@ from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
+from naturalnets.optimizers import DummyOptimizer
 from naturalnets.tools.episode_runner import EpisodeRunner
 from naturalnets.tools.utils import flatten_dict
 from naturalnets.tools.write_results import write_results_to_textfile
@@ -80,7 +81,10 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer["type"])
 
-    opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
+    if individual_size == 0:
+        opt = DummyOptimizer(configuration=config.optimizer)
+    else:
+        opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
 
     best_genome_overall = None
     best_reward_overall = -math.inf
@@ -126,7 +130,10 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
         for i in range(config.number_validation_runs):
             evaluations.append([best_genome_current_generation, i, 1])
 
-        rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
+        if debug:
+            rewards_validation = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+        else:
+            rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
 
         best_reward_current_generation = np.mean(rewards_validation)
         if best_reward_current_generation > best_reward_overall:

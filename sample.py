@@ -21,10 +21,10 @@ configuration = {
         "use_bias": True
     },
     "optimizer": {
-        "type": "CMA-ES-Deap",
+        "type": "CmaEsDeap",
         "population_size": 200,
         "sigma": 1.0
     }
 }
 
-train(configuration, results_directory='results')
+train(configuration, results_directory="results")

@@ -33,7 +33,7 @@ while True:
         raise RuntimeError("No valid brain type")
 
     optimizer_configuration = dict()
-    optimizer_configuration["type"] = "CMA-ES-Deap"
+    optimizer_configuration["type"] = "CmaEsDeap"
     optimizer_configuration["population_size"] = 200
     optimizer_configuration["sigma"] = random.choice([0.5, 1.0, 2.0])
 

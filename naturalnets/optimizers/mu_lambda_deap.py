@@ -6,7 +6,7 @@ from deap import base
 from deap import tools
 from deap.algorithms import varOr
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -30,7 +30,8 @@ class Individual(list):
         self.fitness = FitnessMax()
 
 
-class OptimizerMuLambda(IOptimizer):
+@register_optimizer_class
+class MuLambdaDeap(IOptimizer):
     def __init__(self, individual_size: int, configuration: dict) -> None:
         super().__init__()
 
@@ -78,7 +79,3 @@ class OptimizerMuLambda(IOptimizer):
             individual.fitness.values = tuple([individual_reward])
 
         self.population = self.select(self.offspring, self.configuration.mu)
-
-
-# TODO: Do this registration via class decorator
-registered_optimizer_classes["Mu+Lambda-DEAP"] = OptimizerMuLambda
