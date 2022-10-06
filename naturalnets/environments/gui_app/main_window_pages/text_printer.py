@@ -46,6 +46,7 @@ class TextPrinter(Page):
 
     def reset(self):
         self.display_dict = None
+        self._font_styles: List[FontStyle] = []
         self._font: Font = Font.DEJAVU_SANS
         self._font_size = 12
         self._color: Color = Color.BLACK

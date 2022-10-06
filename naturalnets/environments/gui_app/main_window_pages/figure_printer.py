@@ -110,6 +110,7 @@ class FigurePrinter(Page):
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
         self.dropdown_opened = False
 
+        self.christmas_tree_ddi.set_visible(1)
         self.space_ship_ddi.set_visible(0)
         self.guitar_ddi.set_visible(0)
         self.house_ddi.set_visible(0)
