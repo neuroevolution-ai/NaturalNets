@@ -8,12 +8,13 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Car, TireSize, Interior, PropulsionSystem
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class CarConfigurator(Page):
+class CarConfigurator(Page, RewardElement):
     """The car-configurator page in the main-window.
 
        State description:
@@ -44,7 +45,8 @@ class CarConfigurator(Page):
     BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_button_frame.png")
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
 
         # Car Dropdowns
         self.car_a_ddi = DropdownItem(Car.A, display_name="Car A")
@@ -135,119 +137,54 @@ class CarConfigurator(Page):
         self.add_child(self.popup)
         self.show_config_button = Button(self.BUTTON_BB, self.display_configuration)
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
+        self.set_reward_children([self.popup])
 
-    def reset_reward_dict(self):
-        self.popup.reset_reward_dict()
-
-        self.reward_dict = {
-            self.popup.__class__.__name__: self.popup.reward_dict,
-            "tire_20_setting": {
-                False: 0,
-                True: 0
-            },
-            "tire_22_setting": {
-                False: 0,
-                True: 0
-            },
-            "tire_18_setting": {
-                False: 0,
-                True: 0
-            },
-            "tire_19_setting": {
-                False: 0,
-                True: 0
-            },
-            "interior_modern_setting": {
-                False: 0,
-                True: 0
-            },
-            "interior_vintage_setting": {
-                False: 0,
-                True: 0
-            },
-            "interior_sport_setting": {
-                False: 0,
-                True: 0
-            },
-            "combustion_engine_a_setting": {
-                False: 0,
-                True: 0
-            },
-            "combustion_engine_b_setting": {
-                False: 0,
-                True: 0
-            },
-            "combustion_engine_c_setting": {
-                False: 0,
-                True: 0
-            },
-            "electric_motor_a_setting": {
-                False: 0,
-                True: 0
-            },
-            "electric_motor_b_setting": {
-                False: 0,
-                True: 0
-            },
+    @property
+    def reward_template(self):
+        return {
+            "tire_20_setting": [False, True],
+            "tire_22_setting": [False, True],
+            "tire_18_setting": [False, True],
+            "tire_19_setting": [False, True],
+            "interior_modern_setting": [False, True],
+            "interior_vintage_setting": [False, True],
+            "interior_sport_setting": [False, True],
+            "combustion_engine_a_setting": [False, True],
+            "combustion_engine_b_setting": [False, True],
+            "combustion_engine_c_setting": [False, True],
+            "electric_motor_a_setting": [False, True],
+            "electric_motor_b_setting": [False, True],
             "car_dropdown": {
                 "opened": 0,
-                "selected": {
-                    Car.A: 0,
-                    Car.B: 0,
-                    Car.C: 0,
-                },
-                "used_in_display": {
-                    Car.A: 0,
-                    Car.B: 0,
-                    Car.C: 0
-                }
+                "selected": [Car.A, Car.B, Car.C],
+                "used_in_display": [Car.A, Car.B, Car.C]
             },
             "tire_dropdown": {
                 "opened": 0,
-                "selected": {
-                    TireSize.TIRE_20: 0,
-                    TireSize.TIRE_22: 0,
-                    TireSize.TIRE_18: 0,
-                    TireSize.TIRE_19: 0
-                },
-                "used_in_display": {
-                    TireSize.TIRE_20: 0,
-                    TireSize.TIRE_22: 0,
-                    TireSize.TIRE_18: 0,
-                    TireSize.TIRE_19: 0
-                }
+                "selected": [TireSize.TIRE_20, TireSize.TIRE_22, TireSize.TIRE_18, TireSize.TIRE_19],
+                "used_in_display": [TireSize.TIRE_20, TireSize.TIRE_22, TireSize.TIRE_18, TireSize.TIRE_19]
             },
             "interior_dropdown": {
                 "opened": 0,
-                "selected": {
-                    Interior.MODERN: 0,
-                    Interior.VINTAGE: 0,
-                    Interior.SPORT: 0
-                },
-                "used_in_display": {
-                    Interior.MODERN: 0,
-                    Interior.VINTAGE: 0,
-                    Interior.SPORT: 0
-                }
+                "selected": [Interior.MODERN, Interior.VINTAGE, Interior.SPORT],
+                "used_in_display": [Interior.MODERN, Interior.VINTAGE, Interior.SPORT]
             },
             "propulsion_dropdown": {
                 "opened": 0,
-                "selected": {
-                    PropulsionSystem.COMBUSTION_ENGINE_A: 0,
-                    PropulsionSystem.COMBUSTION_ENGINE_B: 0,
-                    PropulsionSystem.COMBUSTION_ENGINE_C: 0,
-                    PropulsionSystem.ELECTRIC_MOTOR_A: 0,
-                    PropulsionSystem.ELECTRIC_MOTOR_B: 0
-                },
-                "used_in_display": {
-                    PropulsionSystem.COMBUSTION_ENGINE_A: 0,
-                    PropulsionSystem.COMBUSTION_ENGINE_B: 0,
-                    PropulsionSystem.COMBUSTION_ENGINE_C: 0,
-                    PropulsionSystem.ELECTRIC_MOTOR_A: 0,
-                    PropulsionSystem.ELECTRIC_MOTOR_B: 0
-                }
+                "selected": [
+                    PropulsionSystem.COMBUSTION_ENGINE_A,
+                    PropulsionSystem.COMBUSTION_ENGINE_B,
+                    PropulsionSystem.COMBUSTION_ENGINE_C,
+                    PropulsionSystem.ELECTRIC_MOTOR_A,
+                    PropulsionSystem.ELECTRIC_MOTOR_B
+                ],
+                "used_in_display": [
+                    PropulsionSystem.COMBUSTION_ENGINE_A,
+                    PropulsionSystem.COMBUSTION_ENGINE_B,
+                    PropulsionSystem.COMBUSTION_ENGINE_C,
+                    PropulsionSystem.ELECTRIC_MOTOR_A,
+                    PropulsionSystem.ELECTRIC_MOTOR_B
+                ]
             }
         }
 
@@ -273,7 +210,7 @@ class CarConfigurator(Page):
     def set_selectable_options(self, dropdown_item: DropdownItem, selected: int):
         dropdown_item.set_visible(selected)
 
-        self.reward_dict[self.dropdowns_and_items_to_str[dropdown_item]][bool(selected)] = 1
+        self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown_item], bool(selected)])
 
     def handle_click(self, click_position: np.ndarray):
         if self.is_popup_open():
@@ -292,7 +229,7 @@ class CarConfigurator(Page):
             if dropdown_value_clicked:
                 self._update_dropdowns_on_dropdown_value_click(self.opened_dd_index)
                 chosen_option = dropdown.get_current_value()
-                self.reward_dict[self.dropdowns_and_items_to_str[dropdown]]["selected"][chosen_option] = 1
+                self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "selected", chosen_option])
 
             self.opened_dd_index = None
             return
@@ -311,7 +248,7 @@ class CarConfigurator(Page):
                     dropdown.handle_click(click_position)
                     if dropdown.is_open():
                         self.opened_dd_index = index
-                        self.reward_dict[self.dropdowns_and_items_to_str[dropdown]]["opened"] = 1
+                        self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "opened"])
                     return
 
     def display_configuration(self):
@@ -320,10 +257,18 @@ class CarConfigurator(Page):
         interior = self.interior_dropdown.get_current_value()
         propulsion_system = self.prop_dropdown.get_current_value()
 
-        self.reward_dict[self.dropdowns_and_items_to_str[self.car_dropdown]]["used_in_display"][car] = 1
-        self.reward_dict[self.dropdowns_and_items_to_str[self.tire_dropdown]]["used_in_display"][tire_size] = 1
-        self.reward_dict[self.dropdowns_and_items_to_str[self.interior_dropdown]]["used_in_display"][interior] = 1
-        self.reward_dict[self.dropdowns_and_items_to_str[self.prop_dropdown]]["used_in_display"][propulsion_system] = 1
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.car_dropdown], "used_in_display", car
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.tire_dropdown], "used_in_display", tire_size
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.interior_dropdown], "used_in_display", interior
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.prop_dropdown], "used_in_display", propulsion_system
+        ])
 
         self.popup.open()
 
@@ -466,7 +411,7 @@ class CarConfigurator(Page):
         return img
 
 
-class CarConfiguratorPopup(Page):
+class CarConfiguratorPopup(Page, RewardElement):
     """Popup for the car-configurator (pops up when the "show configuration"-button is clicked).
 
        State description:
@@ -480,17 +425,16 @@ class CarConfiguratorPopup(Page):
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 
     def __init__(self, car_configurator: CarConfigurator):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
         self.car_configurator = car_configurator
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"]
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -500,12 +444,13 @@ class CarConfiguratorPopup(Page):
     def open(self) -> None:
         """Opens this popup."""
         self.get_state()[0] = 1
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self) -> None:
         """Closes this popup."""
         self.get_state()[0] = 0
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
+
         self.car_configurator.reset_car_configurator_dropdowns()
 
     def is_open(self) -> int:

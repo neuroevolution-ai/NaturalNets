@@ -7,12 +7,13 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color, Figure
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class FigurePrinter(Page):
+class FigurePrinter(Page, RewardElement):
     """The figure-printer page in the main-window.
 
        State description:
@@ -26,7 +27,9 @@ class FigurePrinter(Page):
     FIGURE_CANVAS_BB = BoundingBox(125, 39, 303, 303)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self._figure_color_from_settings: Color = Color.BLACK
         self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
         self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
@@ -47,61 +50,27 @@ class FigurePrinter(Page):
         self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
         self._rendered_figure_color: Color = None  # color rendered onto the image
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
         # Set initial state
         self.dropdown_opened = False
         self.current_figure = None
 
         self.reset()
 
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "christmas_tree_setting": {
-                False: 0,
-                True: 0
-            },
-            "guitar_setting": {
-                False: 0,
-                True: 0
-            },
-            "space_ship_setting": {
-                False: 0,
-                True: 0
-            },
-            "house_setting": {
-                False: 0,
-                True: 0
-            },
+    @property
+    def reward_template(self):
+        return {
+            "christmas_tree_setting": [False, True],
+            "guitar_setting": [False, True],
+            "space_ship_setting": [False, True],
+            "house_setting": [False, True],
             "figure_color": {
-                "setting": {
-                    Color.BLACK: 0,
-                    Color.GREEN: 0,
-                    Color.BLUE: 0,
-                    Color.BROWN: 0
-                },
-                "used_in_display": {
-                    Color.BLACK: 0,
-                    Color.GREEN: 0,
-                    Color.BLUE: 0,
-                    Color.BROWN: 0
-                }
+                "setting": [Color.BLACK, Color.GREEN, Color.BLUE, Color.BROWN],
+                "used_in_display": [Color.BLACK, Color.GREEN, Color.BLUE, Color.BROWN]
             },
             "figure_dropdown": {
                 "opened": 0,
-                "selected": {
-                    Figure.CHRISTMAS_TREE: 0,
-                    Figure.SPACE_SHIP: 0,
-                    Figure.GUITAR: 0,
-                    Figure.HOUSE: 0
-                },
-                "used_in_display": {
-                    Figure.CHRISTMAS_TREE: 0,
-                    Figure.SPACE_SHIP: 0,
-                    Figure.GUITAR: 0,
-                    Figure.HOUSE: 0
-                }
+                "selected": [Figure.CHRISTMAS_TREE, Figure.SPACE_SHIP, Figure.GUITAR, Figure.HOUSE],
+                "used_in_display": [Figure.CHRISTMAS_TREE, Figure.SPACE_SHIP, Figure.GUITAR, Figure.HOUSE]
             }
         }
 
@@ -117,6 +86,8 @@ class FigurePrinter(Page):
 
         self.current_figure = None
 
+        self._figure_color_from_settings: Color = Color.BLACK
+
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
         if figure is None:
@@ -124,8 +95,8 @@ class FigurePrinter(Page):
         self.current_figure = figure
         self._rendered_figure_color = self._figure_color_from_settings
 
-        self.reward_dict["figure_dropdown"]["used_in_display"][self.current_figure] = 1
-        self.reward_dict["figure_color"]["used_in_display"][self._rendered_figure_color] = 1
+        self.register_selected_reward(["figure_dropdown", "used_in_display", self.current_figure])
+        self.register_selected_reward(["figure_color", "used_in_display", self._rendered_figure_color])
 
         self._show_figure(1)
 
@@ -134,7 +105,7 @@ class FigurePrinter(Page):
         text-printer settings."""
         item.set_visible(visible)
 
-        self.reward_dict[self.dropdown_items_to_str[item]][bool(visible)] = 1
+        self.register_selected_reward([self.dropdown_items_to_str[item], bool(visible)])
 
         # Update the item that is shown on the closed dropdown, if the dropdown previously did not have any entries
         if len(self.dropdown.get_visible_items()) != 0:
@@ -149,7 +120,7 @@ class FigurePrinter(Page):
     def set_figure_color(self, color: Color):
         self._figure_color_from_settings = color
 
-        self.reward_dict["figure_color"]["setting"][color] = 1
+        self.register_selected_reward(["figure_color", "setting", color])
 
     def is_dropdown_open(self) -> int:
         return self.dropdown.is_open()
@@ -165,7 +136,7 @@ class FigurePrinter(Page):
 
             if dropdown_value_clicked:
                 selected_item = self.dropdown.get_current_value()
-                self.reward_dict["figure_dropdown"]["selected"][selected_item] = 1
+                self.register_selected_reward(["figure_dropdown", "selected", selected_item])
 
             self.dropdown_opened = False
             return
@@ -175,7 +146,7 @@ class FigurePrinter(Page):
 
             if self.dropdown.is_open():
                 self.dropdown_opened = True
-                self.reward_dict["figure_dropdown"]["opened"] = 1
+                self.register_selected_reward(["figure_dropdown", "opened"])
 
             return
 

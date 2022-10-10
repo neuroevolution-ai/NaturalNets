@@ -5,18 +5,18 @@ from typing import List
 
 import numpy as np
 
-
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.enums import Car
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
+from naturalnets.environments.gui_app.enums import Car
 from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 
 
-class CarConfiguratorSettings(Page):
+class CarConfiguratorSettings(Page, RewardElement):
     """The car-configurator settings page, manipulates the car-configurator page.
 
        State description:
@@ -42,7 +42,9 @@ class CarConfiguratorSettings(Page):
     ELECTRIC_MOTOR_B_BB = BoundingBox(270, 245, 106, 14)
 
     def __init__(self, car_configurator: CarConfigurator):
-        super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self._car_configurator = car_configurator
 
         # add popup window as child
@@ -71,16 +73,11 @@ class CarConfiguratorSettings(Page):
             get_group_bounding_box(motor_checkboxes)
         ]
 
-        self.reward_dict = {}
-        self.reset()
-        self.reset_reward_dict()
+        self.set_reward_children([self.car_disabled_popup])
 
-    def reset_reward_dict(self):
-        self.car_disabled_popup.reset_reward_dict()
-
-        self.reward_dict = {
-            self.car_disabled_popup.__class__.__name__: self.car_disabled_popup.reward_dict
-        }
+    @property
+    def reward_template(self):
+        return {}
 
     def reset(self):
         self.car_disabled_popup.close()
@@ -348,7 +345,7 @@ class CarConfiguratorSettings(Page):
         return img
 
 
-class CarDisabledPopup(Page):
+class CarDisabledPopup(Page, RewardElement):
     """Popup for the car-configurator settings (pops up when a car is disabled through the
     click of a checkbox).
 
@@ -361,29 +358,19 @@ class CarDisabledPopup(Page):
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
         self.disabled_cars: List[str] = []
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0,
-            Car.A: {
-                "disabled": 0,
-                "enabled": 0
-            },
-            Car.B: {
-                "disabled": 0,
-                "enabled": 0
-            },
-            Car.C: {
-                "disabled": 0,
-                "enabled": 0
-            }
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"],
+            Car.A: ["disabled", "enabled"],
+            Car.B: ["disabled", "enabled"],
+            Car.C: ["disabled", "enabled"]
         }
 
     def reset(self):
@@ -404,30 +391,30 @@ class CarDisabledPopup(Page):
         shown in this popup."""
         if Car.A in disabled_cars:
             self.disabled_cars.append("Car A")
-            self.reward_dict[Car.A]["disabled"] = 1
+            self.register_selected_reward([Car.A, "disabled"])
         else:
-            self.reward_dict[Car.A]["enabled"] = 1
+            self.register_selected_reward([Car.A, "enabled"])
 
         if Car.B in disabled_cars:
             self.disabled_cars.append("Car B")
-            self.reward_dict[Car.B]["disabled"] = 1
+            self.register_selected_reward([Car.B, "disabled"])
         else:
-            self.reward_dict[Car.B]["enabled"] = 1
+            self.register_selected_reward([Car.B, "enabled"])
 
         if Car.C in disabled_cars:
             self.disabled_cars.append("Car C")
-            self.reward_dict[Car.C]["disabled"] = 1
+            self.register_selected_reward([Car.C, "disabled"])
         else:
-            self.reward_dict[Car.C]["enabled"] = 1
+            self.register_selected_reward([Car.C, "enabled"])
 
         self.get_state()[0] = 1  # Open State
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self):
         """Closes this popup and empties its list of disabled cars."""
         self.disabled_cars = []
         self.get_state()[0] = 0  # Close State
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

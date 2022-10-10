@@ -9,13 +9,14 @@ from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
-class TextPrinterSettings(Page):
+class TextPrinterSettings(Page, RewardElement):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
@@ -34,7 +35,9 @@ class TextPrinterSettings(Page):
     UNDERLINE_BB = BoundingBox(38, 267, 75, 14)
 
     def __init__(self, text_printer: TextPrinter):
-        super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.text_printer = text_printer
 
         # init popup
@@ -107,9 +110,9 @@ class TextPrinterSettings(Page):
         }
 
         self.dropdowns_to_str = {
-            self.n_words_dd: "word_count_dropdown_opened",
-            self.font_size_dd: "font_size_dropdown_opened",
-            self.fonts_dd: "font_dropdown_opened"
+            self.n_words_dd: "word_count",
+            self.font_size_dd: "font_size",
+            self.fonts_dd: "font"
         }
 
         self.add_widgets(self.dropdowns)
@@ -124,17 +127,16 @@ class TextPrinterSettings(Page):
         self.rbg = RadioButtonGroup([self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
         self.add_widget(self.rbg)
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
+        self.set_reward_children([self.popup])
 
-    def reset_reward_dict(self):
-        self.popup.reset_reward_dict()
-
-        self.reward_dict = {
-            "word_count_dropdown_opened": 0,
-            "font_size_dropdown_opened": 0,
-            "font_dropdown_opened": 0,
-            self.popup.__class__.__name__: self.popup.reward_dict
+    @property
+    def reward_template(self):
+        return {
+            "dropdown_opened": [
+                "word_count",
+                "font_size",
+                "font"
+            ]
         }
 
     def reset(self):
@@ -191,7 +193,7 @@ class TextPrinterSettings(Page):
 
                 if dropdown.is_open():
                     self.opened_dd = dropdown
-                    self.reward_dict[self.dropdowns_to_str[dropdown]] = 1
+                    self.register_selected_reward(["dropdown_opened", self.dropdowns_to_str[dropdown]])
                 return
 
         for checkbox in self.font_style_checkboxes:
@@ -215,7 +217,7 @@ class TextPrinterSettings(Page):
         return img
 
 
-class TextPrinterSettingsPopup(Page):
+class TextPrinterSettingsPopup(Page, RewardElement):
     """Popup for the text-printer settings (pops up when the green radio-button is selected).
 
        State description:
@@ -229,23 +231,19 @@ class TextPrinterSettingsPopup(Page):
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)
 
     def __init__(self, text_printer_settings: TextPrinterSettings):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.settings = text_printer_settings
 
         self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
         self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0,
-            "popup_selection_button": {
-                False: 0,
-                True: 0
-            }
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"],
+            "popup_selection_button": [False, True]
         }
 
     def set_rb_and_close(self, selected: bool) -> None:
@@ -253,7 +251,7 @@ class TextPrinterSettingsPopup(Page):
             self.settings.set_selected_rb(self.settings.green_rb)
         self.close()
 
-        self.reward_dict["popup_selection_button"][selected] = 1
+        self.register_selected_reward(["popup_selection_button", selected])
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
@@ -267,13 +265,13 @@ class TextPrinterSettingsPopup(Page):
         """Opens this popup."""
         self.get_state()[0] = 1
 
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

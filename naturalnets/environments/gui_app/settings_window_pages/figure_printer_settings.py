@@ -9,13 +9,14 @@ from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import Figure
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
-class FigurePrinterSettings(Page):
+class FigurePrinterSettings(Page, RewardElement):
     """The figure-printer settings page, manipulates the figure-printer page."""
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_settings.png")
@@ -35,7 +36,9 @@ class FigurePrinterSettings(Page):
     BROWN_RB_BB = BoundingBox(217, 251, 57, 14)
 
     def __init__(self, main_window: MainWindow):
-        super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.main_window = main_window
         self.figure_printer = main_window.figure_printer
 
@@ -55,19 +58,12 @@ class FigurePrinterSettings(Page):
         self._color_rbg, self._button_to_color = self._get_color_rbg()
         self.add_widget(self._color_rbg)
 
-        self.figure_printer.set_figure_color(self.get_figure_color())
+        self.set_reward_children([self.popup])
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.popup.reset_reward_dict()
-        self.reward_dict = {
-            "activate_figure_printer": {
-                False: 0,
-                True: 0
-            },
-            self.popup.__class__.__name__: self.popup.reward_dict
+    @property
+    def reward_template(self):
+        return {
+            "activate_figure_printer": [False, True]
         }
 
     def reset(self):
@@ -125,8 +121,6 @@ class FigurePrinterSettings(Page):
             house_checkbox: Figure.HOUSE,
         }
 
-        christmas_tree_checkbox.set_selected(1)
-
         return figure_checkboxes, checkbox_to_figure
 
     def _get_color_rbg(self) -> Tuple[RadioButtonGroup, Dict[RadioButton, Color]]:
@@ -173,7 +167,7 @@ class FigurePrinterSettings(Page):
             figure_printer_activated = self._show_fig_printer_checkbox.is_selected()
             self.main_window.enable_figure_printer(figure_printer_activated)
 
-            self.reward_dict["activate_figure_printer"][bool(figure_printer_activated)] = 1
+            self.register_selected_reward(["activate_figure_printer", bool(figure_printer_activated)])
 
             # Change current main window page if it was the figure printer and the figure printer
             # has been deactivated
@@ -211,7 +205,7 @@ class FigurePrinterSettings(Page):
         return img
 
 
-class FigureCheckboxesPopup(Page):
+class FigureCheckboxesPopup(Page, RewardElement):
     """Popup for the figure-printer settings (pops up when no figure-checkbox is selected).
 
        State description:
@@ -225,7 +219,9 @@ class FigureCheckboxesPopup(Page):
     DROPDOWN_BB = BoundingBox(36, 129, 337, 22)
 
     def __init__(self, figure_printer_settings: FigurePrinterSettings):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.apply_button = Button(self.APPLY_BUTTON_BB, self.close)
         self.figure_printer_settings = figure_printer_settings
 
@@ -239,23 +235,19 @@ class FigureCheckboxesPopup(Page):
 
         self.dropdown_opened = False
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0,
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"],
             "dropdown": {
                 "opened": 0,
-                "selected": {
-                    Figure.CHRISTMAS_TREE: 0,
-                    Figure.SPACE_SHIP: 0,
-                    Figure.GUITAR: 0,
-                    Figure.HOUSE: 0
-                }
+                "selected": [
+                    Figure.CHRISTMAS_TREE,
+                    Figure.SPACE_SHIP,
+                    Figure.GUITAR,
+                    Figure.HOUSE
+                ]
             }
-
         }
 
     def reset(self):
@@ -274,7 +266,7 @@ class FigureCheckboxesPopup(Page):
 
             if dropdown_value_clicked:
                 selected_item = self.dropdown.get_current_value()
-                self.reward_dict["dropdown"]["selected"][selected_item] = 1
+                self.register_selected_reward(["dropdown", "selected", selected_item])
 
             self.dropdown_opened = False
             return
@@ -284,7 +276,7 @@ class FigureCheckboxesPopup(Page):
 
             if self.dropdown.is_open():
                 self.dropdown_opened = True
-                self.reward_dict["dropdown"]["opened"] = 1
+                self.register_selected_reward(["dropdown", "opened"])
 
             return
 
@@ -302,13 +294,13 @@ class FigureCheckboxesPopup(Page):
         self.get_state()[0] = 1
         self.dropdown.set_selected_item(self.christmas_tree_ddi)
 
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

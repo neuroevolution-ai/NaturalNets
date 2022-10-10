@@ -8,7 +8,7 @@ from naturalnets.environments.gui_app.interfaces import Renderable
 
 
 class StateElement(Renderable):
-    """Basic building block of the app. Represents the elements (in {0,1})
+    """Basic building block of the app. Represents the elements (in {0, 1})
     in the app's state vector.
     A StateElement may have children StateElements, which allows recursively traversing all
     state-elements in order to get the app's total state vector length, as well as assign
@@ -47,8 +47,8 @@ class StateElement(Renderable):
             raise ArgumentError("Given state sector is not empty.")
 
         if len(state_sector) != self.get_state_len():
-            raise ArgumentError(f"Given state sector length ({len(state_sector)}) does not \
-                                  match state element state length ({self._state_len}).")
+            raise ArgumentError(f"Given state sector length ({len(state_sector)}) does not "
+                                f"match state element state length ({self._state_len}).")
 
         current_state = np.copy(self.get_state())
         self._state = state_sector

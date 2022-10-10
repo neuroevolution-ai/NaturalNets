@@ -12,12 +12,13 @@ from naturalnets.environments.gui_app.main_window_pages.car_configurator import 
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import FigurePrinter
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
-class MainWindow(StateElement, Clickable):
+class MainWindow(StateElement, Clickable, RewardElement):
     """The main window of the app, containing the menu as well as the respective pages
     (text printer, calculator, car configurator and figure printer).
 
@@ -38,7 +39,9 @@ class MainWindow(StateElement, Clickable):
     FIGURE_PRINTER_BUTTON_BB = BoundingBox(9, 112, 99, 22)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN)
+        StateElement.__init__(self, self.STATE_LEN)
+        RewardElement.__init__(self)
+
         self._bounding_box = self.BOUNDING_BOX
 
         self.text_printer = TextPrinter()
@@ -49,13 +52,6 @@ class MainWindow(StateElement, Clickable):
         self.pages: List[Page] = [self.text_printer, self.calculator,
                                   self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
-
-        self.pages_to_str = {
-            self.text_printer: "text_printer_page_selected",
-            self.calculator: "calculator_page_selected",
-            self.car_configurator: "car_configurator_page_selected",
-            self.figure_printer: "figure_printer_page_selected"
-        }
 
         self.current_page = None
 
@@ -72,27 +68,19 @@ class MainWindow(StateElement, Clickable):
         ]
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
+        self.set_reward_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
+        self.pages_to_str = {
+            self.text_printer: "text_printer",
+            self.calculator: "calculator",
+            self.car_configurator: "car_configurator",
+            self.figure_printer: "figure_printer"
+        }
 
-        self.set_current_page(self.text_printer)
-
-    def reset_reward_dict(self):
-        self.text_printer.reset_reward_dict()
-        self.calculator.reset_reward_dict()
-        self.car_configurator.reset_reward_dict()
-        self.figure_printer.reset_reward_dict()
-
-        self.reward_dict = {
-            "text_printer_page_selected": 0,
-            "calculator_page_selected": 0,
-            "car_configurator_page_selected": 0,
-            "figure_printer_page_selected": 0,
-            self.text_printer.__class__.__name__: self.text_printer.reward_dict,
-            self.calculator.__class__.__name__: self.calculator.reward_dict,
-            self.car_configurator.__class__.__name__: self.car_configurator.reward_dict,
-            self.figure_printer.__class__.__name__: self.figure_printer.reward_dict
+    @property
+    def reward_template(self):
+        return {
+            "page_selected": ["text_printer", "calculator", "car_configurator", "figure_printer"]
         }
 
     def reset(self):
@@ -123,7 +111,7 @@ class MainWindow(StateElement, Clickable):
         self.current_page = page
 
         # noinspection PyTypeChecker
-        self.reward_dict[self.pages_to_str[self.current_page]] = 1
+        self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.

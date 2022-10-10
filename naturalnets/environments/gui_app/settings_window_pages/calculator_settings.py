@@ -7,12 +7,13 @@ from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_ARE
 from naturalnets.environments.gui_app.enums import Base
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class CalculatorSettings(Page):
+class CalculatorSettings(Page, RewardElement):
     """The calculator settings page, manipulates the calculator page."""
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings.png")
@@ -25,7 +26,9 @@ class CalculatorSettings(Page):
     BASE_DD_BB = BoundingBox(217, 220, 173, 22)
 
     def __init__(self, calculator: Calculator):
-        super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.calculator = calculator
 
         self.addition = CheckBox(
@@ -81,16 +84,12 @@ class CalculatorSettings(Page):
         self.popup = CalculatorSettingsPopup(self)
         self.add_child(self.popup)
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-        self.reset()
+        self.set_reward_children([self.popup])
 
-    def reset_reward_dict(self):
-        self.popup.reset_reward_dict()
-
-        self.reward_dict = {
-            "base_dropdown_opened": 0,
-            self.popup.__class__.__name__: self.popup.reward_dict
+    @property
+    def reward_template(self):
+        return {
+            "base_dropdown_opened": 0
         }
 
     def reset(self):
@@ -121,7 +120,8 @@ class CalculatorSettings(Page):
 
             if self.dropdown.is_open():
                 self.opened_dd = self.dropdown
-                self.reward_dict["base_dropdown_opened"] = 1
+
+                self.register_selected_reward(["base_dropdown_opened"])
             return
 
         for checkbox in self.operator_checkboxes:
@@ -155,7 +155,7 @@ class CalculatorSettings(Page):
         return img
 
 
-class CalculatorSettingsPopup(Page):
+class CalculatorSettingsPopup(Page, RewardElement):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
        State description:
@@ -169,7 +169,9 @@ class CalculatorSettingsPopup(Page):
     APPLY_BUTTON_BB = BoundingBox(123, 157, 163, 22)
 
     def __init__(self, calculator_settings: CalculatorSettings):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.apply_button = Button(self.APPLY_BUTTON_BB, self.close)
         self.calculator_settings = calculator_settings
 
@@ -185,20 +187,17 @@ class CalculatorSettingsPopup(Page):
 
         self.dropdown_opened = False
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0,
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"],
             "operator_dropdown_opened": 0,
-            "operator_selection": {
-                Operator.ADDITION: 0,
-                Operator.SUBTRACTION: 0,
-                Operator.MULTIPLICATION: 0,
-                Operator.DIVISION: 0,
-            }
+            "operator_selection": [
+                Operator.ADDITION,
+                Operator.SUBTRACTION,
+                Operator.MULTIPLICATION,
+                Operator.DIVISION
+            ]
         }
 
     def reset(self):
@@ -211,7 +210,9 @@ class CalculatorSettingsPopup(Page):
         # Check dropdown first, may obscure apply-button when opened
         if self.dropdown_opened:
             self.dropdown.handle_click(click_position)
-            self.reward_dict["operator_selection"][self.dropdown.get_current_value()] = 1
+
+            self.register_selected_reward(["operator_selection", self.dropdown.get_current_value()])
+
             self.dropdown_opened = False
             return
 
@@ -220,7 +221,7 @@ class CalculatorSettingsPopup(Page):
 
             if self.dropdown.is_open():
                 self.dropdown_opened = True
-                self.reward_dict["operator_dropdown_opened"] = 1
+                self.register_selected_reward(["operator_dropdown_opened"])
             return
 
         if self.apply_button.is_clicked_by(click_position):
@@ -235,13 +236,13 @@ class CalculatorSettingsPopup(Page):
         self.get_state()[0] = 1
         self.dropdown.set_selected_item(self.addition_ddi)
 
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
 
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

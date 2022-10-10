@@ -7,6 +7,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.settings_window_pages.calculator_settings import CalculatorSettings
 from naturalnets.environments.gui_app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
 from naturalnets.environments.gui_app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
@@ -16,7 +17,7 @@ from naturalnets.environments.gui_app.utils import get_group_bounding_box, rende
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
-class SettingsWindow(StateElement, Clickable):
+class SettingsWindow(StateElement, Clickable, RewardElement):
     """The settings window ot the app, containing the different settings-pages, one for
     each page of the main-window pages.
 
@@ -36,7 +37,9 @@ class SettingsWindow(StateElement, Clickable):
     FIGURE_PRINTER_TAB_BUTTON_BB = BoundingBox(277, 25, 97, 23)
 
     def __init__(self, main_window: MainWindow):
-        super().__init__(self.STATE_LEN)
+        StateElement.__init__(self, self.STATE_LEN)
+        RewardElement.__init__(self)
+
         self._bounding_box = self.BOUNDING_BOX
 
         self.text_printer_settings = TextPrinterSettings(main_window.text_printer)
@@ -68,36 +71,32 @@ class SettingsWindow(StateElement, Clickable):
         }
 
         self.tabs_to_str: Dict[Page, str] = {
-            self.text_printer_settings: "text_printer_settings_opened",
-            self.calculator_settings: "calculator_settings_opened",
-            self.car_config_settings: "car_config_settings_opened",
-            self.figure_printer_settings: "figure_printer_settings_opened"
+            self.text_printer_settings: "text_printer_settings",
+            self.calculator_settings: "calculator_settings",
+            self.car_config_settings: "car_config_settings",
+            self.figure_printer_settings: "figure_printer_settings"
         }
 
         self.current_tab = None
         self.set_current_tab(self.text_printer_settings)
         self.add_children(self.tabs)
+        self.set_reward_children([
+            self.text_printer_settings,
+            self.calculator_settings,
+            self.car_config_settings,
+            self.figure_printer_settings
+        ])
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.text_printer_settings.reset_reward_dict()
-        self.calculator_settings.reset_reward_dict()
-        self.car_config_settings.reset_reward_dict()
-        self.figure_printer_settings.reset_reward_dict()
-
-        self.reward_dict = {
-            "open_settings_window": 0,
-            "close_settings_window": 0,
-            "text_printer_settings_opened": 0,
-            "calculator_settings_opened": 0,
-            "car_config_settings_opened": 0,
-            "figure_printer_settings_opened": 0,
-            self.text_printer_settings.__class__.__name__: self.text_printer_settings.reward_dict,
-            self.calculator_settings.__class__.__name__: self.calculator_settings.reward_dict,
-            self.car_config_settings.__class__.__name__: self.car_config_settings.reward_dict,
-            self.figure_printer_settings.__class__.__name__: self.figure_printer_settings.reward_dict
+    @property
+    def reward_template(self):
+        return {
+            "settings_window": ["open", "close"],
+            "settings_tab_opened": [
+                "text_printer_settings",
+                "calculator_settings",
+                "car_config_settings",
+                "figure_printer_settings"
+            ]
         }
 
     def reset(self):
@@ -114,12 +113,14 @@ class SettingsWindow(StateElement, Clickable):
 
     def open(self):
         """Opens the settings window."""
-        self.reward_dict["open_settings_window"] = 1
+        self.register_selected_reward(["settings_window", "open"])
+
         self.get_state()[0] = 1
 
     def close(self):
         """Closes the settings window."""
-        self.reward_dict["close_settings_window"] = 1
+        self.register_selected_reward(["settings_window", "close"])
+
         self.get_state()[0] = 0
 
     def get_bb(self) -> BoundingBox:
@@ -172,7 +173,7 @@ class SettingsWindow(StateElement, Clickable):
                 # If current_tab is None then this function is called on __init__ and we do not want
                 # to give reward for this (i.e. change the reward dict)
                 if self.current_tab is not None:
-                    self.reward_dict[self.tabs_to_str[current_tab]] = 1
+                    self.register_selected_reward(["settings_tab_opened", self.tabs_to_str[current_tab]])
 
                 self.get_state()[index] = 1
                 self.current_tab = current_tab

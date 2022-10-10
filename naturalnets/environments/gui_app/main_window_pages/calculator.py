@@ -7,12 +7,13 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Base, Operator
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class Calculator(Page):
+class Calculator(Page, RewardElement):
     """The calculator page in the main-window. Always shows the last result.
     """
 
@@ -28,7 +29,8 @@ class Calculator(Page):
     RESULT_AREA_BB = BoundingBox(135, 48, 286, 183)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
 
         self.popup = CalculatorPopup()
         self.add_child(self.popup)
@@ -74,111 +76,42 @@ class Calculator(Page):
         self.opened_dd = None
         self.base = None
         self.current_result = None
-        self.reward_dict = {}
 
-        self.reset()
-        self.reset_reward_dict()
+        self.set_reward_children([self.popup])
 
-    def reset_reward_dict(self):
-        self.popup.close()
-        self.popup.reset_reward_dict()
-
-        self.reward_dict = {
+    @property
+    def reward_template(self):
+        return {
             "first_operand_dropdown": {
                 "opened": 0,
-                "selected": {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                },
-                "used_in_calculate": {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                }
+                "selected": [0, 1, 2, 3, 4],
+                "used_in_calculate": [0, 1, 2, 3, 4],
             },
             "second_operand_dropdown": {
                 "opened": 0,
-                "selected": {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                },
-                "used_in_calculate": {
-                    0: 0,
-                    1: 0,
-                    2: 0,
-                    3: 0,
-                    4: 0,
-                }
+                "selected": [0, 1, 2, 3, 4],
+                "used_in_calculate": [0, 1, 2, 3, 4]
             },
             "operator_dropdown": {
                 "opened": 0,
-                "selected": {
-                    Operator.ADDITION: 0,
-                    Operator.SUBTRACTION: 0,
-                    Operator.MULTIPLICATION: 0,
-                    Operator.DIVISION: 0
-                },
-                "used_in_calculate": {
-                    Operator.ADDITION: 0,
-                    Operator.SUBTRACTION: 0,
-                    Operator.MULTIPLICATION: 0,
-                    Operator.DIVISION: 0
-                }
+                "selected": [
+                    Operator.ADDITION, Operator.SUBTRACTION, Operator.MULTIPLICATION, Operator.DIVISION
+                ],
+                "used_in_calculate": [
+                    Operator.ADDITION, Operator.SUBTRACTION, Operator.MULTIPLICATION, Operator.DIVISION
+                ]
             },
-            "addition_operator": {
-                False: 0,
-                True: 0
-            },
-            "addition_operator_setting": {
-                False: 0,
-                True: 0
-            },
-            "subtraction_operator": {
-                False: 0,
-                True: 0
-            },
-            "subtraction_operator_setting": {
-                False: 0,
-                True: 0
-            },
-            "multiplication_operator": {
-                False: 0,
-                True: 0
-            },
-            "multiplication_operator_setting": {
-                False: 0,
-                True: 0
-            },
-            "division_operator": {
-                False: 0,
-                True: 0
-            },
-            "division_operator_setting": {
-                False: 0,
-                True: 0
-            },
-            "numeral_system": {
-                Base.DECIMAL: 0,
-                Base.BINARY: 0,
-                Base.HEX: 0
-            },
-            "numeral_system_setting": {
-                Base.DECIMAL: 0,
-                Base.BINARY: 0,
-                Base.HEX: 0
-            },
-            self.popup.__class__.__name__: self.popup.reward_dict
+            "addition_operator_setting": [False, True],
+            "subtraction_operator_setting": [False, True],
+            "multiplication_operator_setting": [False, True],
+            "division_operator_setting": [False, True],
+            "numeral_system": [Base.DECIMAL, Base.BINARY, Base.HEX],
+            "numeral_system_setting": [Base.DECIMAL, Base.BINARY, Base.HEX]
         }
 
     def reset(self):
+        self.popup.close()
+
         self.operator_dd.close()
         self.operand_1_dd.close()
         self.operand_2_dd.close()
@@ -199,7 +132,7 @@ class Calculator(Page):
         calculator-settings."""
         item.set_visible(visible)
 
-        self.reward_dict[self.operator_ddis_to_str[item] + "_setting"][bool(visible)] = 1
+        self.register_selected_reward([self.operator_ddis_to_str[item] + "_setting", bool(visible)])
 
         if visible:
             # update selected item when a new item becomes visible (always first item in dd list)
@@ -222,7 +155,7 @@ class Calculator(Page):
     def set_base(self, base: Base) -> None:
         self.base = base
 
-        self.reward_dict["numeral_system_setting"][base] = 1
+        self.register_selected_reward(["numeral_system_setting", base])
 
     def is_dropdown_open(self) -> bool:
         return self.opened_dd is not None
@@ -236,7 +169,7 @@ class Calculator(Page):
             self.opened_dd.handle_click(click_position)
 
             current_value = self.opened_dd.get_current_value()
-            self.reward_dict[self.dropdowns_to_str[self.opened_dd]]["selected"][current_value] = 1
+            self.register_selected_reward([self.dropdowns_to_str[self.opened_dd], "selected", current_value])
 
             self.opened_dd = None
             return
@@ -247,7 +180,7 @@ class Calculator(Page):
 
                 if dropdown.is_open():
                     self.opened_dd = dropdown
-                    self.reward_dict[self.dropdowns_to_str[dropdown]]["opened"] = 1
+                    self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
                 return
 
         # Needs to be called _after_ the dropdowns, in case an opened dropdown occludes the button
@@ -267,10 +200,10 @@ class Calculator(Page):
         a: int = self.operand_1_dd.get_current_value()
         b: int = self.operand_2_dd.get_current_value()
 
-        self.reward_dict["numeral_system"][self.base] = 1
-        self.reward_dict[self.dropdowns_to_str[self.operator_dd]]["used_in_calculate"][operator] = 1
-        self.reward_dict[self.dropdowns_to_str[self.operand_1_dd]]["used_in_calculate"][a] = 1
-        self.reward_dict[self.dropdowns_to_str[self.operand_2_dd]]["used_in_calculate"][b] = 1
+        self.register_selected_reward(["numeral_system", self.base])
+        self.register_selected_reward([self.dropdowns_to_str[self.operator_dd], "used_in_calculate", operator])
+        self.register_selected_reward([self.dropdowns_to_str[self.operand_1_dd], "used_in_calculate", a])
+        self.register_selected_reward([self.dropdowns_to_str[self.operand_2_dd], "used_in_calculate", b])
 
         output = None
         if operator_str == "+":
@@ -302,7 +235,7 @@ class Calculator(Page):
         return img
 
 
-class CalculatorPopup(Page):
+class CalculatorPopup(Page, RewardElement):
     """Popup for the calculator (pops up when a division by zero is attempted).
 
        State description:
@@ -315,16 +248,15 @@ class CalculatorPopup(Page):
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.button: Button = Button(self.BUTTON_BB, self.close)
 
-        self.reward_dict = {}
-        self.reset_reward_dict()
-
-    def reset_reward_dict(self):
-        self.reward_dict = {
-            "popup_open": 0,
-            "popup_close": 0,
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"]
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -334,12 +266,12 @@ class CalculatorPopup(Page):
     def open(self):
         """Opens this popup."""
         self.get_state()[0] = 1
-        self.reward_dict["popup_open"] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
-        self.reward_dict["popup_close"] = 1
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
