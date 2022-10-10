@@ -56,15 +56,17 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
 
         self.is_figure_printer_button_visible = 0
-        self.figure_printer_button = Button(self.FIGURE_PRINTER_BUTTON_BB,
-                                            lambda: self.set_current_page(self.figure_printer))
+        self.figure_printer_button = Button(
+            self.FIGURE_PRINTER_BUTTON_BB,
+            lambda: self.set_current_page(self.figure_printer)
+        )
 
         self.buttons = [
             Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer)),
             Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator)),
             Button(self.CAR_CONFIGURATOR_BUTTON_BB,
                    lambda: self.set_current_page(self.car_configurator)),
-            self.figure_printer_button,
+            self.figure_printer_button
         ]
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])

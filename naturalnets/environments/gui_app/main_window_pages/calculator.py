@@ -85,7 +85,7 @@ class Calculator(Page, RewardElement):
             "first_operand_dropdown": {
                 "opened": 0,
                 "selected": [0, 1, 2, 3, 4],
-                "used_in_calculate": [0, 1, 2, 3, 4],
+                "used_in_calculate": [0, 1, 2, 3, 4]
             },
             "second_operand_dropdown": {
                 "opened": 0,
