@@ -42,8 +42,6 @@ class TextPrinter(Page, RewardElement):
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
 
-        self.reset()
-
     @property
     def reward_template(self):
         return {
@@ -74,6 +72,9 @@ class TextPrinter(Page, RewardElement):
         self._font_size = 12
         self._color: Color = Color.BLACK
         self._n_words = 50
+
+        # Initially the output is not printed, thus set the state to 0
+        self.get_state()[0] = 0
 
     def set_font_style(self, style: FontStyle, enabled: int) -> None:
         if enabled:

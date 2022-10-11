@@ -207,6 +207,8 @@ class CarConfigurator(Page, RewardElement):
         self.opened_dd_index = None
         self.ddi_state_from_settings: Dict[DropdownItem, int] = {}
 
+        self.reset_car_configurator_dropdowns()
+
     def set_selectable_options(self, dropdown_item: DropdownItem, selected: int):
         dropdown_item.set_visible(selected)
 

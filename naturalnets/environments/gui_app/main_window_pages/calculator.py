@@ -135,7 +135,7 @@ class Calculator(Page, RewardElement):
         self.register_selected_reward([self.operator_ddis_to_str[item] + "_setting", bool(visible)])
 
         if visible:
-            # update selected item when a new item becomes visible (always first item in dd list)
+            # Update selected item when a new item becomes visible (always first item in dd list)
             self.operator_dd.set_selected_item(self.operator_dd.get_visible_items()[0])
 
     def create_operand_dd(self, bounding_box: BoundingBox) -> Dropdown:

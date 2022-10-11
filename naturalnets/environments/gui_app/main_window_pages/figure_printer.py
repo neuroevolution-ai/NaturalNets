@@ -88,6 +88,9 @@ class FigurePrinter(Page, RewardElement):
 
         self._figure_color_from_settings: Color = Color.BLACK
 
+        # Initially, the figure is not printed, thus reset the state using this function
+        self._show_figure(0)
+
     def _draw_figure(self):
         figure = self.dropdown.get_current_value()
         if figure is None:

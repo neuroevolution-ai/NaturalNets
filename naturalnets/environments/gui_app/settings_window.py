@@ -100,6 +100,8 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
         }
 
     def reset(self):
+        self.close()
+
         self.text_printer_settings.reset()
         self.calculator_settings.reset()
         self.car_config_settings.reset()
