@@ -89,7 +89,7 @@ class GUIApp(IEnvironment):
 
         return image
 
-    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         image = self._render_image()
 
         if enhancer_info is not None:
