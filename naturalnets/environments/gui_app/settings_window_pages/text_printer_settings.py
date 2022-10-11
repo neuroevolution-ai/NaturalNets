@@ -204,8 +204,16 @@ class TextPrinterSettings(Page, RewardElement):
         if self.rbg.is_clicked_by(click_position):
             # Clicked button in the button group may have an additional action (e.g. a popup is
             # opened when this button is clicked)
+            previous_color = self.rbg.get_value()
+
             self.rbg.handle_click(click_position)
-            self.text_printer.set_color(self.rbg.get_value())
+
+            new_color = self.rbg.get_value()
+
+            # Only change the selected color if a new color was selected. Important, otherwise a reward is
+            # given, even if no color has been changed
+            if previous_color != new_color:
+                self.text_printer.set_color(new_color)
 
     def is_popup_open(self) -> int:
         return self.popup.is_open()
