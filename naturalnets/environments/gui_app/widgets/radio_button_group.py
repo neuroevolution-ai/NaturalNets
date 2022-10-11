@@ -63,7 +63,7 @@ class RadioButton(Widget):
             radius = min(circle_width, circle_height) // 4
             color = Color.BLACK.value
             thickness = -1
-            cv2.circle(img, (c_x, c_y), radius, color, thickness)
+            cv2.circle(img, (c_x, c_y), radius, color, thickness, lineType=cv2.LINE_AA)
         return img
 
 

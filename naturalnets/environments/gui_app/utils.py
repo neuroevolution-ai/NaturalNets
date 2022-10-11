@@ -58,7 +58,7 @@ def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], fo
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = Color.BLACK.value
     thickness = 1
-    line_type = 2
+    line_type = cv2.LINE_AA
     cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)
 
 
