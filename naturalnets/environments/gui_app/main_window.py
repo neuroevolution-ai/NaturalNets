@@ -108,12 +108,13 @@ class MainWindow(StateElement, Clickable, RewardElement):
         Args:
             page (Page): the page to be selected.
         """
-        self.get_state()[:] = 0
-        self.get_state()[self.pages.index(page)] = 1
-        self.current_page = page
+        if self.current_page != page:
+            self.get_state()[:] = 0
+            self.get_state()[self.pages.index(page)] = 1
+            self.current_page = page
 
-        # noinspection PyTypeChecker
-        self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
+            # noinspection PyTypeChecker
+            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
