@@ -4,7 +4,6 @@ deap
 numpy
 gym
 scipy
-torch
 procgen
 opencv-python
 cma
@@ -14,4 +13,3 @@ py-cpuinfo
 pytest
 tensorflow
 tensorboardX
-dictdiffer
