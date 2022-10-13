@@ -13,3 +13,4 @@ py-cpuinfo
 pytest
 tensorflow
 tensorboardX
+wandb

@@ -5,12 +5,13 @@ import os
 import random
 import time
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 
-import attr
+import attrs
 import numpy as np
 from cpuinfo import get_cpu_info
 from tensorboardX import SummaryWriter
+import wandb
 
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
@@ -22,7 +23,7 @@ from naturalnets.tools.utils import flatten_dict
 from naturalnets.tools.write_results import write_results_to_textfile
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class TrainingCfg:
     number_generations: int
     number_validation_runs: int
@@ -36,12 +37,34 @@ class TrainingCfg:
     experiment_id: int = -1
 
 
-def train(configuration: Optional[Dict] = None, results_directory: str = "results", debug: bool = False):
+def train(configuration: Optional[Union[str, Dict]] = None, results_directory: str = "results", debug: bool = False,
+          w_and_b_log: bool = True):
+    start_time_training = time.time()
+    start_date_training = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
     pool = multiprocessing.Pool()
 
-    if configuration is None:
+    if w_and_b_log:
+        # Use the local folder name, where the results are stored as the WandB experiment name, to match them
+        # later
+        wandb.init(
+            entity="neuroevolution",
+            project="NaturalNets",
+            name=start_date_training,
+            config=configuration
+        )
+
+        if configuration is None:
+            # This case is usually called when a WandB Hyperparameter Sweep Agent calls the function.
+            # It gets a configuration from the Sweep Controller and populates the wandb.config attribute
+            configuration = wandb.config
+
+    if isinstance(configuration, str):
         with open("naturalnets/configurations/temp-config.json", "r") as config_file:
             configuration = json.load(config_file)
+
+    if configuration is None:
+        raise RuntimeError("No configuration provided!")
 
     config = TrainingCfg(**configuration)
 
@@ -88,9 +111,6 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
 
     best_genome_overall = None
     best_reward_overall = -math.inf
-
-    start_time_training = time.time()
-    start_date_training = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     log = []
 
@@ -169,6 +189,14 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
         log_line["elapsed_time"] = elapsed_time_current_generation
         log.append(log_line)
 
+        wandb.log({
+            "gen": generation,
+            "min": min_reward_training,
+            "mean": mean_reward_training,
+            "max": max_reward_training,
+            "best": best_reward_overall
+        })
+
     elapsed_time = time.time() - start_time_training
 
     print("Elapsed time for training: %.2f seconds" % elapsed_time)
@@ -180,7 +208,7 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
 
     # Save configuration
     with open(os.path.join(results_subdirectory, "Configuration.json"), "w") as outfile:
-        json.dump(configuration, outfile, ensure_ascii=False, indent=4)
+        json.dump(dict(configuration), outfile, ensure_ascii=False, indent=4)
 
     # Save best genome
     np.save(os.path.join(results_subdirectory, "Best_Genome"), best_genome_overall)
@@ -235,6 +263,73 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
     pool.close()
     pool.join()
 
+    wandb.finish()
+
+
+def initialize_sweep():
+    sweep_configuration = {
+        "method": "random",
+        "name": "sweep",
+        "metric": {
+            "goal": "maximize",
+            "name": "best"
+        },
+        "parameters": {
+            "experiment_id": {"value": 7},
+            "number_generations": {"value": 10},
+            "number_validation_runs": {"value": 1},
+            "number_rounds": {"value": 1},
+            "maximum_env_seed": {"value": 100000},
+            "environment": {
+                "parameters": {
+                    "type": {"value": "GUIApp"},
+                    "number_time_steps": {"value": 100},
+                    "include_fake_bug": {"value": False}
+                }
+            },
+            # "brain": {
+            #     "parameters": {
+            #         "type": {"value": "CTRNN"},
+            #         "delta_t": {"value": 0.05},
+            #         "number_neurons": {"values": [5, 10, 20]},
+            #         "differential_equation": {"value": "NaturalNet"},
+            #         "v_mask": {"value": "dense"},
+            #         "w_mask": {"value": "dense"},
+            #         "t_mask": {"value": "dense"},
+            #         "clipping_range": {"values": [1.0, 3.0]},
+            #         "set_principle_diagonal_elements_of_W_negative": {"values": [False, True]},
+            #         "optimize_x0": {"value": True},
+            #         "alpha": {"value": 0.0}
+            #     }
+            # },
+            "brain": {
+                "parameters": {
+                    "type": {"value": "RNN"},
+                    "hidden_layers": {"values": [[5], [10]]},
+                    "use_bias": {"values": [False, True]}
+                }
+            },
+            "optimizer": {
+                "parameters": {
+                    "type": {"value": "CmaEsDeap"},
+                    "population_size": {"value": 10},
+                    "sigma": {"values": [0.5, 1.0, 2.0]}
+                }
+            },
+            "enhancer": {
+                "parameters": {
+                    "type": {"values": [None, "RandomEnhancer"]}
+                }
+            }
+        }
+    }
+
+    sweep_id = wandb.sweep(sweep=sweep_configuration, project="natural-nets-test")
+
+    print(f"Initialized sweep with id: {sweep_id}")
+
 
 if __name__ == "__main__":
     train()
+    # initialize_sweep()
+    # wandb.agent(sweep_id="deubelp/natural-nets-test/b1810zcv", function=train, count=1)
