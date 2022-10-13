@@ -1,10 +1,10 @@
-import attr
+import attrs
 import numpy as np
 
 from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class ContinuousTimeRNNCfg(IBrainCfg):
     delta_t: float
     number_neurons: int
@@ -15,7 +15,7 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     w_mask_density: float = 1.0
     t_mask: str = 'dense'
     t_mask_density: float = 1.0
-    clipping_range: float = 1.0
+    clipping_range: float = attrs.field(default=1.0, converter=float)
     set_principle_diagonal_elements_of_W_negative: bool = False
     alpha: float = 0.0
     optimize_x0: bool = False
