@@ -189,13 +189,14 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         log_line["elapsed_time"] = elapsed_time_current_generation
         log.append(log_line)
 
-        wandb.log({
-            "gen": generation,
-            "min": min_reward_training,
-            "mean": mean_reward_training,
-            "max": max_reward_training,
-            "best": best_reward_overall
-        })
+        if w_and_b_log:
+            wandb.log({
+                "gen": generation,
+                "min": min_reward_training,
+                "mean": mean_reward_training,
+                "max": max_reward_training,
+                "best": best_reward_overall
+            })
 
     elapsed_time = time.time() - start_time_training
 
@@ -263,7 +264,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     pool.close()
     pool.join()
 
-    wandb.finish()
+    if w_and_b_log:
+        wandb.finish()
 
 
 def initialize_sweep():
