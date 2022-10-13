@@ -22,6 +22,13 @@ class CmaEsDeap(IOptimizer):
         self.individual_size = individual_size
         config = OptimizerCmaEsDeapCfg(**configuration)
 
+        try:
+            del creator.Individual
+            del creator.FitnessMax
+        except AttributeError:
+            # They do not exist, thus simply continue
+            pass
+
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, typecode='b', fitness=creator.FitnessMax)
 
