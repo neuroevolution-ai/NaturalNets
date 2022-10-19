@@ -104,7 +104,7 @@ class GUIApp(IEnvironment):
                     random_enhancer_info,
                     self.screen_width,
                     self.screen_height,
-                    color=Color.ORANGE)
+                    color=Color.ORANGE.value)
 
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
