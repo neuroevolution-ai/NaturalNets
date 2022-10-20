@@ -75,6 +75,9 @@ class GUIApp(IEnvironment):
 
         self.t += 1
 
+        # Give a negative reward of 1 for each timestep
+        rew -= 1
+
         done = False
 
         if self.t >= self.config.number_time_steps:
