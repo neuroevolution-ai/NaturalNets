@@ -14,30 +14,36 @@ configuration = {
     "number_validation_runs": 50,
     "number_rounds": 3,
     "maximum_env_seed": 100000,
+    "fixed_env_seed": False,
     "environment": {
         "type": "GymMujoco",
         "name": "InvertedDoublePendulum-v2"
     },
     "brain": {
         "type": "CTRNN",
-        "differential_equation": "NaturalNet",
-        "set_principle_diagonal_elements_of_W_negative": True,
         "delta_t": 0.05,
+        "differential_equation": "NaturalNet",
         "number_neurons": 5,
+        "v_mask": "dense",
+        "w_mask": "dense",
+        "t_mask": "dense",
         "clipping_range": 3.0,
-        "optimize_x0": True
+        "set_principle_diagonal_elements_of_W_negative": True,
+        "optimize_x0": True,
+        "alpha": 0.0
     },
     "optimizer": {
-        "type": "CMA-ES-Deap",
+        "type": "CmaEsDeap",
         "population_size": 200,
         "sigma": 1.0
     }
 }
 
-train(configuration, results_directory='results')
+train(configuration, results_directory="results")
 ```
 
-More complex example of a random hyper-parameter search. This experiment executes an indefinite number of training runs until it gets activly interupted:
+More complex example of a random hyperparameter search. This experiment executes an indefinite number of training runs
+until it gets actively interrupted:
 
 ```python
 from naturalnets.train import train
