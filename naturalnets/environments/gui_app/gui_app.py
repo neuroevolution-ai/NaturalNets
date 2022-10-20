@@ -51,6 +51,10 @@ class GUIApp(IEnvironment):
 
         self.t = 0
 
+        # Keep track of the last click position for rendering purposes
+        self.click_position_x = 0
+        self.click_position_y = 0
+
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
         self.window_name = "App"
@@ -67,10 +71,10 @@ class GUIApp(IEnvironment):
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([click_position_x, click_position_y])
+        click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
         self.t += 1
@@ -91,6 +95,13 @@ class GUIApp(IEnvironment):
 
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         image = self._render_image()
+
+        # Draw the click position
+        cv2.circle(
+            image,
+            (self.click_position_x, self.click_position_y),
+            radius=4, color=Color.BLACK.value, thickness=-1, lineType=cv2.LINE_AA
+        )
 
         if enhancer_info is not None:
             try:
