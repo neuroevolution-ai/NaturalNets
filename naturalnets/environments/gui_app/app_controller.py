@@ -128,6 +128,10 @@ class AppController:
         """
         return self._total_state_len
 
+    def get_total_reward_len(self) -> int:
+        """Returns the amount of reward, that is achievable."""
+        return len(self.reward_array)
+
     def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component.
         """

@@ -61,6 +61,9 @@ class GUIApp(IEnvironment):
         self.action = None
         self.clicked = False
 
+        self.running_reward = 0
+        self.max_reward = self.app_controller.get_total_reward_len()
+
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
@@ -77,18 +80,21 @@ class GUIApp(IEnvironment):
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
+        # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
+        self.running_reward += rew
+
         # Give a reward equal to the number of time steps at the beginning to avoid negative rewards
         if self.t == 0:
             rew += self.config.number_time_steps
 
-        # Give a negative reward of 1 for each timestep
+        # Give a negative reward of 1 for each time step
         rew -= 1
 
         done = False
 
         self.t += 1
 
-        if self.t >= self.config.number_time_steps:
+        if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
         return self.get_observation(), rew, done, {}
@@ -186,6 +192,15 @@ class GUIApp(IEnvironment):
         self.app_controller.reset()
 
         self.t = 0
+
+        self.click_position_x = 0
+        self.click_position_y = 0
+
+        self.action = None
+        self.clicked = False
+
+        self.running_reward = 0
+        self.max_reward = self.app_controller.get_total_reward_len()
 
         return self.get_state()
 
