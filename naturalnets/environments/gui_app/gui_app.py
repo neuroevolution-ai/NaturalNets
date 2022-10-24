@@ -77,12 +77,16 @@ class GUIApp(IEnvironment):
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
-        self.t += 1
+        # Give a reward equal to the number of time steps at the beginning to avoid negative rewards
+        if self.t == 0:
+            rew += self.config.number_time_steps
 
         # Give a negative reward of 1 for each timestep
         rew -= 1
 
         done = False
+
+        self.t += 1
 
         if self.t >= self.config.number_time_steps:
             done = True
