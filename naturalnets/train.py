@@ -3,6 +3,7 @@ import math
 import multiprocessing
 import os
 import random
+from socket import gethostname
 import time
 from datetime import datetime
 from typing import Optional, Dict, Union
@@ -50,7 +51,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         wandb.init(
             entity="neuroevolution",
             project="NaturalNets",
-            name=start_date_training,
+            name=f"{gethostname()}/{start_date_training}",
             config=configuration
         )
 
