@@ -308,6 +308,7 @@ def initialize_sweep(entity: str = "neuroevolution", project: str = "NaturalNets
             "number_validation_runs": {"value": 5},
             "number_rounds": {"value": 3},
             "maximum_env_seed": {"value": 100000},
+            "global_seed": {"value": 42},
             "environment": {
                 "parameters": {
                     "type": {"value": "GUIApp"},
