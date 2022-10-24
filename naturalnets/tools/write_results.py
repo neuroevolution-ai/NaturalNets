@@ -1,6 +1,6 @@
 
 
-def write_results_to_textfile(path, configuration, log, input_size, output_size, individual_size,
+def write_results_to_textfile(path, configuration, log, log_entry_keys, input_size, output_size, individual_size,
                               free_parameter_usage):
 
     def walk_dict(node, callback_node, depth=0):
@@ -11,7 +11,7 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
             else:
                 callback_node(key, item, depth, True)
 
-    with open(path, 'w') as write_file:
+    with open(path, "w") as write_file:
 
         def write(key, value, depth, is_leaf):
             pad = ""
@@ -21,35 +21,38 @@ def write_results_to_textfile(path, configuration, log, input_size, output_size,
                 write_file.write(pad + key + ": " + str(value))
             else:
                 write_file.write(pad + key)
-            write_file.write('\n')
+            write_file.write("\n")
 
         walk_dict(configuration, write)
 
         write_file.write("\n")
-        write_file.write("Genome Size: {:d}\n".format(individual_size))
-        write_file.write("Free Parameters: " + str(free_parameter_usage) + "\n")
-        write_file.write("Inputs: {:s}\n".format(str(input_size)))
-        write_file.write("Outputs: {:s}\n".format(str(output_size)))
-        write_file.write('\n')
-        dash = '-' * 90
-        write_file.write(dash + '\n')
-        write_file.write(
-            '{:<8s}{:<14s}{:<14s}{:<14s}{:<14s}{:<14s}\n'.format('gen', 'min',
-                                                                 'mean', 'max', 'best', 'elapsed time (s)'))
-        write_file.write(dash + '\n')
+        write_file.write(f"Genome Size: {individual_size}\n")
+        write_file.write(f"Free Parameters: {free_parameter_usage}\n")
+        write_file.write(f"Inputs: {input_size}\n")
+        write_file.write(f"Outputs: {output_size}\n")
+        write_file.write("\n")
+        dash = "-" * 150
+        write_file.write(dash + "\n")
+
+        heading_line = "".join([f"{x:<14s}" for x in log_entry_keys])
+        write_file.write(heading_line + "\n")
+
+        write_file.write(dash + "\n")
 
         # Last element of log contains additional info like elapsed time for training
         log_info = log.pop()
 
         # Write data for each episode (ignore last list index of log since it is the elapsed training time)
         for line in log:
-            write_file.write(
-                '{:<8d}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}{:<14.2f}\n'.format(line['gen'], line['min'], line['mean'],
-                                                                               line['max'], line['best'],
-                                                                               line['elapsed_time']))
+            log_line = ""
+
+            for _key in log_entry_keys:
+                log_line += f"{line[_key]:<14.2f}"
+
+            write_file.write(log_line + "\n")
 
         # Write elapsed time
-        write_file.write("\nElapsed time for training: %.2f seconds" % log_info["elapsed_time_training"])
+        write_file.write(f"Elapsed time for training: {log_info['elapsed_time_training']:.2f} seconds\n")
 
         # Write CPU info
-        write_file.write("\nCPU for training: " + log_info["cpu"])
+        write_file.write(f"CPU for training: {log_info['cpu']}")

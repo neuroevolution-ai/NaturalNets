@@ -24,6 +24,17 @@ from naturalnets.tools.utils import flatten_dict
 from naturalnets.tools.write_results import write_results_to_textfile
 
 
+GEN_KEY = "gen"
+MIN_TRAIN_KEY = "min_train"
+MEAN_TRAIN_KEY = "mean_train"
+MAX_TRAIN_KEY = "max_train"
+MIN_VAL_KEY = "min_val"
+MEAN_VAL_KEY = "mean_val"
+MAX_VAL_KEY = "max_val"
+BEST_KEY = "best"
+ELAPSED_KEY = "elapsed_time"
+
+
 @attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class TrainingCfg:
     number_generations: int
@@ -171,58 +182,43 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         mean_reward_training = np.mean(rewards_training)
         max_reward_training = np.max(rewards_training)
 
-        # Print info for current generation
-        print("Generation: {}   "
-              "Min: {:4.2f}   "
-              "Mean: {:4.2f}   "
-              "Max: {:4.2f}   "
-              "Min Val: {:4.2f}   "
-              "Mean Val: {:4.2f}   "
-              "Max Val: {:4.2f}   "
-              "Best: {:4.2f}   "
-              "Elapsed time:  {:4.2f}s ".format(generation,
-                                                min_reward_training,
-                                                mean_reward_training,
-                                                max_reward_training,
-                                                min_reward_validation,
-                                                mean_reward_validation,
-                                                max_reward_validation,
-                                                best_reward_overall,
-                                                elapsed_time_current_generation))
+        log_line = {
+            GEN_KEY: generation,
+            MIN_TRAIN_KEY: min_reward_training,
+            MEAN_TRAIN_KEY: mean_reward_training,
+            MAX_TRAIN_KEY: max_reward_training,
+            MIN_VAL_KEY: min_reward_validation,
+            MEAN_VAL_KEY: mean_reward_validation,
+            MAX_VAL_KEY: max_reward_validation,
+            BEST_KEY: best_reward_overall,
+            ELAPSED_KEY: elapsed_time_current_generation
+        }
 
-        # Write current generation to log
-        log_line = dict()
-        log_line["gen"] = generation
-        log_line["min_train"] = min_reward_training
-        log_line["mean_train"] = mean_reward_training
-        log_line["max_train"] = max_reward_training
-        log_line["min_val"] = min_reward_validation
-        log_line["mean_val"] = mean_reward_validation
-        log_line["max_val"] = max_reward_validation
-        log_line["best"] = best_reward_overall
-        log_line["elapsed_time"] = elapsed_time_current_generation
+        # Print info for current generation
+        print(f"Generation: {generation}   "
+              f"Min: {min_reward_training:4.2f}   "
+              f"Mean: {mean_reward_training:4.2f}   "
+              f"Max: {max_reward_training:4.2f}   "
+              f"Min Val: {min_reward_validation:4.2f}   "
+              f"Mean Val: {mean_reward_validation:4.2f}   "
+              f"Max Val: {max_reward_validation:4.2f}   "
+              f"Best: {best_reward_overall:4.2f}   "
+              f"Elapsed time:  {elapsed_time_current_generation:4.2f}s ")
+
+        # Append current generation to log
         log.append(log_line)
 
         if w_and_b_log:
-            wandb.log({
-                "gen": generation,
-                "min_train": min_reward_training,
-                "mean_train": mean_reward_training,
-                "max_train": max_reward_training,
-                "min_val": min_reward_validation,
-                "mean_val": mean_reward_validation,
-                "max_val": max_reward_validation,
-                "best": best_reward_overall
-            })
+            wandb.log(log_line)
 
     elapsed_time = time.time() - start_time_training
 
-    print("Elapsed time for training: %.2f seconds" % elapsed_time)
+    print(f"Elapsed time for training: {elapsed_time:.2f} seconds")
 
     # Create new directory to store data of current training run
     results_subdirectory = os.path.join(results_directory, start_date_training)
     os.makedirs(results_subdirectory)
-    print("Output directory: " + str(results_subdirectory))
+    print(f"Output directory: {results_subdirectory}")
 
     # Save configuration
     with open(os.path.join(results_subdirectory, "Configuration.json"), "w") as outfile:
@@ -235,10 +231,10 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     ep_runner.save_brain_state(os.path.join(results_subdirectory, "Brain_State"))
 
     # Last element of log contains additional for training
-    log_info = dict()
-    log_info["elapsed_time_training"] = elapsed_time
-    log_info["cpu"] = get_cpu_info()["brand_raw"]
-    log.append(log_info)
+    log.append({
+        "elapsed_time_training": elapsed_time,
+        "cpu": get_cpu_info()["brand_raw"]
+    })
 
     # Write log to JSON for better parsing
     with open(os.path.join(results_subdirectory, "Log.json"), "w") as outfile:
@@ -248,6 +244,12 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     write_results_to_textfile(path=os.path.join(results_subdirectory, "Log.txt"),
                               configuration=configuration,
                               log=log,
+                              log_entry_keys=[
+                                  GEN_KEY,
+                                  MIN_TRAIN_KEY, MEAN_TRAIN_KEY, MAX_TRAIN_KEY,
+                                  MIN_VAL_KEY, MEAN_VAL_KEY, MAX_VAL_KEY,
+                                  BEST_KEY, ELAPSED_KEY
+                              ],
                               input_size=ep_runner.get_input_size(),
                               output_size=ep_runner.get_output_size(),
                               individual_size=individual_size,
@@ -261,18 +263,21 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     writer.add_hparams(
         flattened_config,
         {
-            "hparam/max_avg": max([x["mean"] for x in log]),
-            "hparam/max": max([x["max"] for x in log]),
-            "hparam/best": max([x["best"] for x in log]),
+            "hparam/max_of_mean_train": max([x[MEAN_TRAIN_KEY] for x in log]),
+            "hparam/max_train": max([x[MAX_TRAIN_KEY] for x in log]),
+            "hparam/best": best_reward_overall,
         }
     )
 
     for log_entry in log:
-        writer.add_scalar("gen", log_entry["gen"], global_step=log_entry["gen"])
-        writer.add_scalar("min", log_entry["min"], global_step=log_entry["gen"])
-        writer.add_scalar("mean", log_entry["mean"], global_step=log_entry["gen"])
-        writer.add_scalar("max", log_entry["max"], global_step=log_entry["gen"])
-        writer.add_scalar("best", log_entry["best"], global_step=log_entry["gen"])
+        writer.add_scalar(GEN_KEY, log_entry[GEN_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MIN_TRAIN_KEY, log_entry[MIN_TRAIN_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MEAN_TRAIN_KEY, log_entry[MEAN_TRAIN_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MAX_TRAIN_KEY, log_entry[MAX_TRAIN_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MIN_VAL_KEY, log_entry[MIN_VAL_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MEAN_VAL_KEY, log_entry[MEAN_VAL_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(MAX_VAL_KEY, log_entry[MAX_VAL_KEY], global_step=log_entry[GEN_KEY])
+        writer.add_scalar(BEST_KEY, log_entry[BEST_KEY], global_step=log_entry[GEN_KEY])
 
     writer.close()
 
