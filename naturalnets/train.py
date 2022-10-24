@@ -290,9 +290,9 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         wandb.finish()
 
 
-def initialize_sweep():
+def initialize_sweep(entity: str = "neuroevolution", project: str = "NaturalNets"):
     sweep_configuration = {
-        "method": "random",
+        "method": "grid",
         "name": "sweep",
         "metric": {
             "goal": "maximize",
@@ -300,9 +300,9 @@ def initialize_sweep():
         },
         "parameters": {
             "experiment_id": {"value": 7},
-            "number_generations": {"value": 10},
-            "number_validation_runs": {"value": 1},
-            "number_rounds": {"value": 1},
+            "number_generations": {"value": 1500},
+            "number_validation_runs": {"value": 5},
+            "number_rounds": {"value": 3},
             "maximum_env_seed": {"value": 100000},
             "environment": {
                 "parameters": {
@@ -311,32 +311,32 @@ def initialize_sweep():
                     "include_fake_bug": {"value": False}
                 }
             },
-            # "brain": {
-            #     "parameters": {
-            #         "type": {"value": "CTRNN"},
-            #         "delta_t": {"value": 0.05},
-            #         "number_neurons": {"values": [5, 10, 20]},
-            #         "differential_equation": {"value": "NaturalNet"},
-            #         "v_mask": {"value": "dense"},
-            #         "w_mask": {"value": "dense"},
-            #         "t_mask": {"value": "dense"},
-            #         "clipping_range": {"values": [1.0, 3.0]},
-            #         "set_principle_diagonal_elements_of_W_negative": {"values": [False, True]},
-            #         "optimize_x0": {"value": True},
-            #         "alpha": {"value": 0.0}
-            #     }
-            # },
             "brain": {
                 "parameters": {
-                    "type": {"value": "RNN"},
-                    "hidden_layers": {"values": [[5], [10]]},
-                    "use_bias": {"values": [False, True]}
+                    "type": {"value": "CTRNN"},
+                    "delta_t": {"value": 0.05},
+                    "number_neurons": {"values": [5, 10, 20]},
+                    "differential_equation": {"value": "NaturalNet"},
+                    "v_mask": {"value": "dense"},
+                    "w_mask": {"value": "dense"},
+                    "t_mask": {"value": "dense"},
+                    "clipping_range": {"values": [1.0, 3.0]},
+                    "set_principle_diagonal_elements_of_W_negative": {"values": [False, True]},
+                    "optimize_x0": {"value": True},
+                    "alpha": {"value": 0.0}
                 }
             },
+            # "brain": {
+            #     "parameters": {
+            #         "type": {"value": "RNN"},
+            #         "hidden_layers": {"values": [[5], [10]]},
+            #         "use_bias": {"values": [False, True]}
+            #     }
+            # },
             "optimizer": {
                 "parameters": {
                     "type": {"value": "CmaEsDeap"},
-                    "population_size": {"value": 10},
+                    "population_size": {"value": 200},
                     "sigma": {"values": [0.5, 1.0, 2.0]}
                 }
             },
@@ -348,7 +348,7 @@ def initialize_sweep():
         }
     }
 
-    sweep_id = wandb.sweep(sweep=sweep_configuration, project="natural-nets-test")
+    sweep_id = wandb.sweep(sweep=sweep_configuration, entity=entity, project=project)
 
     print(f"Initialized sweep with id: {sweep_id}")
 
