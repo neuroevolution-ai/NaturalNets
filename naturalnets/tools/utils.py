@@ -1,3 +1,4 @@
+import random
 from typing import Dict
 
 import numpy as np
@@ -44,3 +45,8 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
             flattened_dict[prefix + k] = v
 
     return flattened_dict
+
+
+def set_seeds(seed: int):
+    np.random.seed(seed)
+    random.seed(seed)

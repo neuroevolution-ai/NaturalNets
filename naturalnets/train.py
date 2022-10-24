@@ -18,7 +18,7 @@ from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.optimizers import DummyOptimizer
 from naturalnets.tools.episode_runner import EpisodeRunner
-from naturalnets.tools.utils import flatten_dict
+from naturalnets.tools.utils import flatten_dict, set_seeds
 from naturalnets.tools.write_results import write_results_to_textfile
 
 
@@ -34,6 +34,7 @@ class TrainingCfg:
     optimizer: dict
     enhancer: dict = None
     experiment_id: int = -1
+    global_seed: int
 
 
 def train(configuration: Optional[Dict] = None, results_directory: str = "results", debug: bool = False):
@@ -44,6 +45,9 @@ def train(configuration: Optional[Dict] = None, results_directory: str = "result
             configuration = json.load(config_file)
 
     config = TrainingCfg(**configuration)
+
+    # For reproducibility, set the global random seeds
+    set_seeds(config.global_seed)
 
     # Flatten the config already here (although it is only used at the end of training), to see if an assertion will
     # be triggered
