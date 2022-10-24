@@ -18,6 +18,9 @@ videos
 
 benchmarks/
 
+# Ignore the results folder
+results/
+
 temp*.json
 temp*.py
 test.py
