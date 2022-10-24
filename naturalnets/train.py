@@ -156,7 +156,11 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         else:
             rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
 
-        best_reward_current_generation = np.mean(rewards_validation)
+        min_reward_validation = np.min(rewards_validation)
+        mean_reward_validation = np.mean(rewards_validation)
+        max_reward_validation = np.max(rewards_validation)
+
+        best_reward_current_generation = mean_reward_validation
         if best_reward_current_generation > best_reward_overall:
             best_genome_overall = best_genome_current_generation
             best_reward_overall = best_reward_current_generation
@@ -172,20 +176,29 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
               "Min: {:4.2f}   "
               "Mean: {:4.2f}   "
               "Max: {:4.2f}   "
+              "Min Val: {:4.2f}   "
+              "Mean Val: {:4.2f}   "
+              "Max Val: {:4.2f}   "
               "Best: {:4.2f}   "
               "Elapsed time:  {:4.2f}s ".format(generation,
                                                 min_reward_training,
                                                 mean_reward_training,
                                                 max_reward_training,
+                                                min_reward_validation,
+                                                mean_reward_validation,
+                                                max_reward_validation,
                                                 best_reward_overall,
                                                 elapsed_time_current_generation))
 
         # Write current generation to log
         log_line = dict()
         log_line["gen"] = generation
-        log_line["min"] = min_reward_training
-        log_line["mean"] = mean_reward_training
-        log_line["max"] = max_reward_training
+        log_line["min_train"] = min_reward_training
+        log_line["mean_train"] = mean_reward_training
+        log_line["max_train"] = max_reward_training
+        log_line["min_val"] = min_reward_validation
+        log_line["mean_val"] = mean_reward_validation
+        log_line["max_val"] = max_reward_validation
         log_line["best"] = best_reward_overall
         log_line["elapsed_time"] = elapsed_time_current_generation
         log.append(log_line)
@@ -193,9 +206,12 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         if w_and_b_log:
             wandb.log({
                 "gen": generation,
-                "min": min_reward_training,
-                "mean": mean_reward_training,
-                "max": max_reward_training,
+                "min_train": min_reward_training,
+                "mean_train": mean_reward_training,
+                "max_train": max_reward_training,
+                "min_val": min_reward_validation,
+                "mean_val": mean_reward_validation,
+                "max_val": max_reward_validation,
                 "best": best_reward_overall
             })
 
