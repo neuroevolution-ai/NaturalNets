@@ -50,7 +50,7 @@ class TrainingCfg:
 
 
 def train(configuration: Optional[Union[str, Dict]] = None, results_directory: str = "results", debug: bool = False,
-          w_and_b_log: bool = True):
+          w_and_b_log: bool = True, w_and_b_entity: str = "neuroevolution", w_and_b_project: str = "NaturalNets"):
     start_time_training = time.time()
     start_date_training = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -60,8 +60,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Use the local folder name, where the results are stored as the WandB experiment name, to match them
         # later
         wandb.init(
-            entity="neuroevolution",
-            project="NaturalNets",
+            entity=w_and_b_entity,
+            project=w_and_b_project,
             name=f"{gethostname()}/{start_date_training}",
             config=configuration
         )
