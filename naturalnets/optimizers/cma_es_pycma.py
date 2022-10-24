@@ -1,6 +1,7 @@
-import cma
 import attr
-from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+import cma
+
+from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -9,7 +10,8 @@ class OptimizerCmaEsPycmaCfg:
     sigma: float = 1.0
 
 
-class OptimizerCmaEsPycma(IOptimizer):
+@register_optimizer_class
+class CmaEsPyCma(IOptimizer):
 
     def __init__(self, individual_size: int, configuration: dict):
 
@@ -26,7 +28,3 @@ class OptimizerCmaEsPycma(IOptimizer):
 
     def tell(self, rewards):
         self.es.tell(self.solutions, rewards)
-
-
-# TODO: Do this registration via class decorator
-registered_optimizer_classes['CMA-ES-Pycma'] = OptimizerCmaEsPycma

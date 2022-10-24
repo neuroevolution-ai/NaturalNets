@@ -1,7 +1,9 @@
-import numpy as np
 import math
+
 import attr
-from naturalnets.optimizers.i_optimizer import IOptimizer, registered_optimizer_classes
+import numpy as np
+
+from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -12,12 +14,13 @@ class OptimizerCanonicalEsCfg:
     mutation_step_size: float
 
 
-class OptimizerCanonicalEs(IOptimizer):
+@register_optimizer_class
+class CanonicalEs(IOptimizer):
 
     def __init__(self, individual_size: int, configuration: dict):
 
         self.config = OptimizerCanonicalEsCfg(**configuration)
-        self.individual_size= individual_size
+        self.individual_size = individual_size
         self.policy = np.zeros(individual_size)
 
         self.w = self.get_reward_weights(self.config.parent_population_size)
@@ -51,7 +54,3 @@ class OptimizerCanonicalEs(IOptimizer):
         w = np.asarray([(math.log(mu + 0.5) - math.log(i + 1)) / w_denominator for i in range(mu)])
 
         return w
-
-
-# TODO: Do this registration via class decorator
-registered_optimizer_classes['Canonical-ES'] = OptimizerCanonicalEs

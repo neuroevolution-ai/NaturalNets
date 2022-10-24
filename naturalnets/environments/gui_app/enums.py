@@ -23,6 +23,27 @@ class Car(Enum):
     C = 3
 
 
+class TireSize(Enum):
+    TIRE_20 = "Tire 20"
+    TIRE_22 = "Tire 22"
+    TIRE_18 = "Tire 18"
+    TIRE_19 = "Tire 19"
+
+
+class Interior(Enum):
+    MODERN = "Modern"
+    VINTAGE = "Vintage"
+    SPORT = "Sport"
+
+
+class PropulsionSystem(Enum):
+    COMBUSTION_ENGINE_A = "Combustion A"
+    COMBUSTION_ENGINE_B = "Combustion B"
+    COMBUSTION_ENGINE_C = "Combustion C"
+    ELECTRIC_MOTOR_A = "Electric A"
+    ELECTRIC_MOTOR_B = "Electric B"
+
+
 class Color(Enum):
     """Represents a color. The value is a (R,G,B) tuple."""
     RED = (255, 0, 0)

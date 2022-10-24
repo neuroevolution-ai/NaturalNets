@@ -1,5 +1,5 @@
 from cmath import inf
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import cv2
 import numpy as np
@@ -58,5 +58,35 @@ def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], fo
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_color = Color.BLACK.value
     thickness = 1
-    line_type = 2
+    line_type = cv2.LINE_AA
     cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)
+
+
+def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0):
+    """
+    Creates a mapping from strings, indicating a specific reward, to an index that can be used to index a NumPy array.
+
+    We use a NumPy array for the reward, where a 0 indicates a reward has not been given, and a 1, that a reward has
+    been given. To index that array we use the reward_mapping dict to have a better overview of the array. Previously
+    using a reward dict, and making diffs between that dict did not work, as it is computationally inefficient, compared
+    to comparing NumPy arrays.
+
+    :param reward_template: The reward_template of the RewardElement, see more in the RewardElement class
+    :param reward_mapping: An already created reward_mapping, because the function is also used recursively
+    :param running_index: Currently free index in the array, will be incremented each time an index is mapped
+    :return: The finished reward_mapping, a dict that maps reward strings to indices in the reward_array NumPy array
+    """
+    for k, v in reward_template.items():
+        if isinstance(v, dict):
+            reward_mapping[k] = {}
+            _, running_index = generate_reward_mapping_from_template(v, reward_mapping[k], running_index)
+        elif isinstance(v, list):
+            reward_mapping[k] = {}
+            for list_entry in v:
+                reward_mapping[k][list_entry] = running_index
+                running_index += 1
+        else:
+            reward_mapping[k] = running_index
+            running_index += 1
+
+    return reward_mapping, running_index

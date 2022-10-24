@@ -6,14 +6,15 @@ import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
-from naturalnets.environments.gui_app.enums import Car
+from naturalnets.environments.gui_app.enums import Car, TireSize, Interior, PropulsionSystem
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class CarConfigurator(Page):
+class CarConfigurator(Page, RewardElement):
     """The car-configurator page in the main-window.
 
        State description:
@@ -44,8 +45,10 @@ class CarConfigurator(Page):
     BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_button_frame.png")
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
-        # add car dropdown
+        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
+        # Car Dropdowns
         self.car_a_ddi = DropdownItem(Car.A, display_name="Car A")
         self.car_b_ddi = DropdownItem(Car.B, display_name="Car B")
         self.car_c_ddi = DropdownItem(Car.C, display_name="Car C")
@@ -54,32 +57,47 @@ class CarConfigurator(Page):
                                                             self.car_c_ddi])
         self.add_widget(self.car_dropdown)
 
-        # add tire dropdown
-        self.tire_20_ddi = DropdownItem("Tire 20", "Tire 20")
-        self.tire_22_ddi = DropdownItem("Tire 22", "Tire 22")
-        self.tire_18_ddi = DropdownItem("Tire 18", "Tire 18")
-        self.tire_19_ddi = DropdownItem("Tire 19", "Tire 19")
+        # Tire Dropdowns
+        self.tire_20_ddi = DropdownItem(TireSize.TIRE_20, str(TireSize.TIRE_20.value))
+        self.tire_22_ddi = DropdownItem(TireSize.TIRE_22, str(TireSize.TIRE_22.value))
+        self.tire_18_ddi = DropdownItem(TireSize.TIRE_18, str(TireSize.TIRE_18.value))
+        self.tire_19_ddi = DropdownItem(TireSize.TIRE_19, str(TireSize.TIRE_19.value))
         self.tire_dropdown = Dropdown(self.TIRE_DROPDOWN_BB, [self.tire_18_ddi,
                                                               self.tire_19_ddi,
                                                               self.tire_20_ddi,
                                                               self.tire_22_ddi])
         self.add_widget(self.tire_dropdown)
 
-        # add interior dropdown
-        self.interior_modern_ddi = DropdownItem("Modern", "Modern")
-        self.interior_vintage_ddi = DropdownItem("Vintage", "Vintage")
-        self.interior_sport_ddi = DropdownItem("Sport", "Sport")
+        # Interior Dropdowns
+        self.interior_modern_ddi = DropdownItem(Interior.MODERN, str(Interior.MODERN.value))
+        self.interior_vintage_ddi = DropdownItem(Interior.VINTAGE, str(Interior.VINTAGE.value))
+        self.interior_sport_ddi = DropdownItem(Interior.SPORT, str(Interior.SPORT.value))
         self.interior_dropdown = Dropdown(self.INTERIOR_DROPDOWN_BB, [self.interior_modern_ddi,
                                                                       self.interior_vintage_ddi,
                                                                       self.interior_sport_ddi])
         self.add_widget(self.interior_dropdown)
 
-        # add propulsion system dropdown
-        self.prop_combustion_a_ddi = DropdownItem("Combustion A", "Combustion A")
-        self.prop_combustion_b_ddi = DropdownItem("Combustion B", "Combustion B")
-        self.prop_combustion_c_ddi = DropdownItem("Combustion C", "Combustion C")
-        self.prop_electric_a_ddi = DropdownItem("Electric A", "Electric A")
-        self.prop_electric_b_ddi = DropdownItem("Electric B", "Electric B")
+        # Propulsion System Dropdowns
+        self.prop_combustion_a_ddi = DropdownItem(
+            PropulsionSystem.COMBUSTION_ENGINE_A,
+            str(PropulsionSystem.COMBUSTION_ENGINE_A.value)
+        )
+        self.prop_combustion_b_ddi = DropdownItem(
+            PropulsionSystem.COMBUSTION_ENGINE_B,
+            str(PropulsionSystem.COMBUSTION_ENGINE_B.value)
+        )
+        self.prop_combustion_c_ddi = DropdownItem(
+            PropulsionSystem.COMBUSTION_ENGINE_C,
+            str(PropulsionSystem.COMBUSTION_ENGINE_C.value)
+        )
+        self.prop_electric_a_ddi = DropdownItem(
+            PropulsionSystem.ELECTRIC_MOTOR_A,
+            str(PropulsionSystem.ELECTRIC_MOTOR_A.value)
+        )
+        self.prop_electric_b_ddi = DropdownItem(
+            PropulsionSystem.ELECTRIC_MOTOR_B,
+            str(PropulsionSystem.ELECTRIC_MOTOR_B.value)
+        )
         self.prop_dropdown = Dropdown(self.PROPULSION_DROPDOWN_BB, [self.prop_combustion_a_ddi,
                                                                     self.prop_combustion_b_ddi,
                                                                     self.prop_combustion_c_ddi,
@@ -87,64 +105,181 @@ class CarConfigurator(Page):
                                                                     self.prop_electric_b_ddi])
         self.add_widget(self.prop_dropdown)
 
-        # setup data structures
+        self.dropdowns_and_items_to_str = {
+            self.tire_20_ddi: "tire_20_setting",
+            self.tire_22_ddi: "tire_22_setting",
+            self.tire_18_ddi: "tire_18_setting",
+            self.tire_19_ddi: "tire_19_setting",
+            self.interior_modern_ddi: "interior_modern_setting",
+            self.interior_vintage_ddi: "interior_vintage_setting",
+            self.interior_sport_ddi: "interior_sport_setting",
+            self.prop_combustion_a_ddi: "combustion_engine_a_setting",
+            self.prop_combustion_b_ddi: "combustion_engine_b_setting",
+            self.prop_combustion_c_ddi: "combustion_engine_c_setting",
+            self.prop_electric_a_ddi: "electric_motor_a_setting",
+            self.prop_electric_b_ddi: "electric_motor_b_setting",
+            self.car_dropdown: "car_dropdown",
+            self.tire_dropdown: "tire_dropdown",
+            self.interior_dropdown: "interior_dropdown",
+            self.prop_dropdown: "propulsion_dropdown"
+        }
+
+        # Setup data structures
         self.dropdowns = [self.car_dropdown,
                           self.tire_dropdown,
                           self.interior_dropdown,
                           self.prop_dropdown]
+        self.opened_dd_index = None
         self.ddi_state_from_settings: Dict[DropdownItem, int] = {}
 
         # Add show configuration button and window
         self.popup = CarConfiguratorPopup(self)
         self.add_child(self.popup)
-        self.show_config_button = Button(self.BUTTON_BB, self.popup.open)
+        self.show_config_button = Button(self.BUTTON_BB, self.display_configuration)
 
-    def get_opened_dropdown_index(self) -> int:
-        for index, dropdown in enumerate(self.dropdowns):
-            if dropdown.is_open():
-                return index
-        return None
+        self.set_reward_children([self.popup])
+
+    @property
+    def reward_template(self):
+        return {
+            "tire_20_setting": [False, True],
+            "tire_22_setting": [False, True],
+            "tire_18_setting": [False, True],
+            "tire_19_setting": [False, True],
+            "interior_modern_setting": [False, True],
+            "interior_vintage_setting": [False, True],
+            "interior_sport_setting": [False, True],
+            "combustion_engine_a_setting": [False, True],
+            "combustion_engine_b_setting": [False, True],
+            "combustion_engine_c_setting": [False, True],
+            "electric_motor_a_setting": [False, True],
+            "electric_motor_b_setting": [False, True],
+            "car_dropdown": {
+                "opened": 0,
+                "selected": [Car.A, Car.B, Car.C],
+                "used_in_display": [Car.A, Car.B, Car.C]
+            },
+            "tire_dropdown": {
+                "opened": 0,
+                "selected": [TireSize.TIRE_20, TireSize.TIRE_22, TireSize.TIRE_18, TireSize.TIRE_19],
+                "used_in_display": [TireSize.TIRE_20, TireSize.TIRE_22, TireSize.TIRE_18, TireSize.TIRE_19]
+            },
+            "interior_dropdown": {
+                "opened": 0,
+                "selected": [Interior.MODERN, Interior.VINTAGE, Interior.SPORT],
+                "used_in_display": [Interior.MODERN, Interior.VINTAGE, Interior.SPORT]
+            },
+            "propulsion_dropdown": {
+                "opened": 0,
+                "selected": [
+                    PropulsionSystem.COMBUSTION_ENGINE_A,
+                    PropulsionSystem.COMBUSTION_ENGINE_B,
+                    PropulsionSystem.COMBUSTION_ENGINE_C,
+                    PropulsionSystem.ELECTRIC_MOTOR_A,
+                    PropulsionSystem.ELECTRIC_MOTOR_B
+                ],
+                "used_in_display": [
+                    PropulsionSystem.COMBUSTION_ENGINE_A,
+                    PropulsionSystem.COMBUSTION_ENGINE_B,
+                    PropulsionSystem.COMBUSTION_ENGINE_C,
+                    PropulsionSystem.ELECTRIC_MOTOR_A,
+                    PropulsionSystem.ELECTRIC_MOTOR_B
+                ]
+            }
+        }
+
+    def reset(self):
+        self.popup.close()
+
+        all_items = (self.car_dropdown.get_all_items()
+                     + self.tire_dropdown.get_all_items()
+                     + self.interior_dropdown.get_all_items()
+                     + self.prop_dropdown.get_all_items())
+
+        for item in all_items:
+            item.set_visible(1)
+
+        self.car_dropdown.close()
+        self.tire_dropdown.close()
+        self.interior_dropdown.close()
+        self.prop_dropdown.close()
+
+        self.opened_dd_index = None
+        self.ddi_state_from_settings: Dict[DropdownItem, int] = {}
+
+        self.reset_car_configurator_dropdowns()
+
+    def set_selectable_options(self, dropdown_item: DropdownItem, selected: int):
+        dropdown_item.set_visible(selected)
+
+        self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown_item], bool(selected)])
 
     def handle_click(self, click_position: np.ndarray):
-        dropdown_value_clicked = False
-
         if self.is_popup_open():
             self.popup.handle_click(click_position)
             return
 
-        opened_dd_index = self.get_opened_dropdown_index()
-        if opened_dd_index is not None:
-            dropdown = self.dropdowns[opened_dd_index]
+        if self.opened_dd_index is not None:
+            dropdown = self.dropdowns[self.opened_dd_index]
+
+            dropdown_value_clicked = False
             if dropdown.is_clicked_by(click_position):
                 dropdown_value_clicked = True
+
             dropdown.handle_click(click_position)
+
             if dropdown_value_clicked:
-                self._update_dropdowns_on_dropdown_value_click(opened_dd_index)
+                self._update_dropdowns_on_dropdown_value_click(self.opened_dd_index)
+                chosen_option = dropdown.get_current_value()
+                self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "selected", chosen_option])
+
+            self.opened_dd_index = None
             return
 
-        # Show config button only clickable if a value has been selected in the last dropdown
+        # Show configuration button is only visible, if a value has been selected
+        # in the last dropdown (i.e. the state of that dropdown is 1 and not 0)
         if (self.get_state()[len(self.dropdowns) - 1] != 0
                 and self.show_config_button.is_clicked_by(click_position)):
             self.show_config_button.handle_click(click_position)
             return
 
-        # handle dropdown-click if dropdown is shown (a value was selected in a previous dropdown)
+        # Open a dropdown, if it is visible and was clicked
         for index, dropdown in enumerate(self.dropdowns):
             if dropdown.is_clicked_by(click_position):
                 if index == 0 or self._is_dropdown_value_selected(index - 1):
-                    if dropdown.is_open():
-                        dropdown_value_clicked = True
                     dropdown.handle_click(click_position)
-                    if dropdown_value_clicked:
-                        self._update_dropdowns_on_dropdown_value_click(index)
+                    if dropdown.is_open():
+                        self.opened_dd_index = index
+                        self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "opened"])
                     return
+
+    def display_configuration(self):
+        car = self.car_dropdown.get_current_value()
+        tire_size = self.tire_dropdown.get_current_value()
+        interior = self.interior_dropdown.get_current_value()
+        propulsion_system = self.prop_dropdown.get_current_value()
+
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.car_dropdown], "used_in_display", car
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.tire_dropdown], "used_in_display", tire_size
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.interior_dropdown], "used_in_display", interior
+        ])
+        self.register_selected_reward([
+            self.dropdowns_and_items_to_str[self.prop_dropdown], "used_in_display", propulsion_system
+        ])
+
+        self.popup.open()
 
     def _update_dropdowns_on_dropdown_value_click(self, index: int) -> None:
         """Updates all dropdowns (sets visibility and/or initial selected item) when a dropdown
         value is clicked (i.e. dropdown.is_open() and dropdown.is_clicked_by(click_position))."""
         dropdown = self.dropdowns[index]
         # adjust shown dropdowns when a dropdown value is clicked
-        self.get_state()[index] = 1 # set dropdown-value selected to true
+        self.get_state()[index] = 1  # set dropdown-value selected to true
         if index == 0:  # car dropdown
             self._adjust_visible_dropdown_items_by_car(dropdown.get_current_value())
         # reset to dropdown if next dropdown(s) already have selected values
@@ -156,7 +291,6 @@ class CarConfigurator(Page):
         if index < 0:
             return 0
         return self.get_state()[index]
-
 
     def set_ddi_state_from_settings(self, ddi_state: Dict[DropdownItem, int]) -> None:
         """Used by the car-configurator-settings page to set which checkboxes are currently enabled
@@ -205,8 +339,10 @@ class CarConfigurator(Page):
         for ddi, is_visible in self.ddi_state_from_settings.items():
             ddi.set_visible(is_visible)
 
-    def reset(self):
+    def reset_car_configurator_dropdowns(self):
         """Resets all dropdowns/hides all dropdowns but the first."""
+        self.opened_dd_index = None
+
         for i in range(len(self.dropdowns)):
             self.get_state()[i] = 0
 
@@ -277,7 +413,7 @@ class CarConfigurator(Page):
         return img
 
 
-class CarConfiguratorPopup(Page):
+class CarConfiguratorPopup(Page, RewardElement):
     """Popup for the car-configurator (pops up when the "show configuration"-button is clicked).
 
        State description:
@@ -291,9 +427,17 @@ class CarConfiguratorPopup(Page):
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 
     def __init__(self, car_configurator: CarConfigurator):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
         self.car_configurator = car_configurator
+
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"]
+        }
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -302,11 +446,14 @@ class CarConfiguratorPopup(Page):
     def open(self) -> None:
         """Opens this popup."""
         self.get_state()[0] = 1
+        self.register_selected_reward(["popup", "open"])
 
     def close(self) -> None:
         """Closes this popup."""
         self.get_state()[0] = 0
-        self.car_configurator.reset()
+        self.register_selected_reward(["popup", "close"])
+
+        self.car_configurator.reset_car_configurator_dropdowns()
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
@@ -316,10 +463,10 @@ class CarConfiguratorPopup(Page):
         img = super().render(img)
         x, y, _, height = self.CONFIGURATION_TEXT_BB.get_as_tuple()
         props = [
-            f"Propulsion System: {self.car_configurator.prop_dropdown.get_current_value()}",
-            f"Interior: {self.car_configurator.interior_dropdown.get_current_value()}",
-            f"Tires: {self.car_configurator.tire_dropdown.get_current_value()}",
-            f"Car: {self.car_configurator.car_dropdown.get_current_value()}"
+            f"Propulsion System: {self.car_configurator.prop_dropdown.get_current_value().value}",
+            f"Interior: {self.car_configurator.interior_dropdown.get_current_value().value}",
+            f"Tires: {self.car_configurator.tire_dropdown.get_current_value().value}",
+            f"Car: {self.car_configurator.car_dropdown.get_current_value().value}"
         ]
 
         space = 16

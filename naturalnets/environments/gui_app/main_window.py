@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List
+from typing import List
 
 import cv2
 import numpy as np
@@ -12,12 +12,13 @@ from naturalnets.environments.gui_app.main_window_pages.car_configurator import 
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import FigurePrinter
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
-class MainWindow(StateElement, Clickable):
+class MainWindow(StateElement, Clickable, RewardElement):
     """The main window of the app, containing the menu as well as the respective pages
     (text printer, calculator, car configurator and figure printer).
 
@@ -38,7 +39,9 @@ class MainWindow(StateElement, Clickable):
     FIGURE_PRINTER_BUTTON_BB = BoundingBox(9, 112, 99, 22)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN)
+        StateElement.__init__(self, self.STATE_LEN)
+        RewardElement.__init__(self)
+
         self._bounding_box = self.BOUNDING_BOX
 
         self.text_printer = TextPrinter()
@@ -51,21 +54,45 @@ class MainWindow(StateElement, Clickable):
         assert len(self.pages) == self.get_state_len()
 
         self.current_page = None
-        self.set_current_page(self.text_printer)
 
         self.is_figure_printer_button_visible = 0
-        self.figure_printer_button = Button(self.FIGURE_PRINTER_BUTTON_BB,
-                                            lambda: self.set_current_page(self.figure_printer))
+        self.figure_printer_button = Button(
+            self.FIGURE_PRINTER_BUTTON_BB,
+            lambda: self.set_current_page(self.figure_printer)
+        )
 
         self.buttons = [
             Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer)),
             Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator)),
             Button(self.CAR_CONFIGURATOR_BUTTON_BB,
                    lambda: self.set_current_page(self.car_configurator)),
-            self.figure_printer_button,
+            self.figure_printer_button
         ]
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
+        self.set_reward_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
+
+        self.pages_to_str = {
+            self.text_printer: "text_printer",
+            self.calculator: "calculator",
+            self.car_configurator: "car_configurator",
+            self.figure_printer: "figure_printer"
+        }
+
+    @property
+    def reward_template(self):
+        return {
+            "page_selected": ["text_printer", "calculator", "car_configurator", "figure_printer"]
+        }
+
+    def reset(self):
+        self.text_printer.reset()
+        self.calculator.reset()
+        self.car_configurator.reset()
+        self.figure_printer.reset()
+
+        self.is_figure_printer_button_visible = 0
+        self.set_current_page(self.text_printer)
 
     def enable_figure_printer(self, visible: int) -> None:
         self.is_figure_printer_button_visible = visible
@@ -81,9 +108,13 @@ class MainWindow(StateElement, Clickable):
         Args:
             page (Page): the page to be selected.
         """
-        self.get_state()[:] = 0
-        self.get_state()[self.pages.index(page)] = 1
-        self.current_page = page
+        if self.current_page != page:
+            self.get_state()[:] = 0
+            self.get_state()[self.pages.index(page)] = 1
+            self.current_page = page
+
+            # noinspection PyTypeChecker
+            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.

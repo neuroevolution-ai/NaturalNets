@@ -63,6 +63,17 @@ class Page(StateElement, Clickable, HasPopups):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
+    def remove_widget(self, widget: Widget):
+        try:
+            self.widgets.remove(widget)
+        except ValueError:
+            # Will be triggered if widget was not part of the widgets list
+            pass
+
+    def remove_widgets(self, widgets: List[Widget]):
+        for widget in widgets:
+            self.remove_widget(widget)
+
     def add_widget(self, widget: Widget):
         """Adds the given widget to this Page. This will also add the widget to the
         pages' StateElement-children."""

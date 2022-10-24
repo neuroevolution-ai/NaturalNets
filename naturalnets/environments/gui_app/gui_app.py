@@ -1,8 +1,10 @@
+import enum
 import logging
 import time
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
-import attr
+import attrs
+from attrs import field, validators
 import cv2
 import numpy as np
 
@@ -13,10 +15,23 @@ from naturalnets.environments.i_environment import IEnvironment, register_enviro
 from naturalnets.tools.utils import rescale_values
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class FakeBugOptions(enum.Enum):
+    pass
+
+
+@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
     type: str
     number_time_steps: int
+    include_fake_bug: bool = field(validator=validators.instance_of(bool))
+    fake_bugs: List[str] = field(default=None,
+                                 validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+
+    def __attrs_post_init__(self):
+        if self.include_fake_bug:
+            assert self.fake_bugs is not None and len(self.fake_bugs) > 0, ("'include_fake_bug' is set to True, please "
+                                                                            "provide a list of fake bugs using 'fake_"
+                                                                            "bugs'.")
 
 
 @register_environment_class
@@ -33,7 +48,6 @@ class GUIApp(IEnvironment):
         self.config = AppCfg(**configuration)
 
         self.app_controller = AppController()
-        self._initial_state = np.copy(self.app_controller.get_total_state())
 
         self.t = 0
 
@@ -46,31 +60,30 @@ class GUIApp(IEnvironment):
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
-        logging.debug(f"Total app state length is {len(self._initial_state)}.")
+        logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
-        assert np.min(action) >= -1 and np.max(action) <= 1, ("Action coming from the brain is not in the [-1, 1] "
-                                                              "value range.")
-
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         click_coordinates = np.array([click_position_x, click_position_y])
-        self.app_controller.handle_click(click_coordinates)
+        rew = self.app_controller.handle_click(click_coordinates)
 
         self.t += 1
+
+        # Give a negative reward of 1 for each timestep
+        rew -= 1
 
         done = False
 
         if self.t >= self.config.number_time_steps:
             done = True
 
-        # TODO calculate reward
-        return self.get_observation(), 0, done, {}
+        return self.get_observation(), rew, done, {}
 
     def _render_image(self):
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -79,7 +92,7 @@ class GUIApp(IEnvironment):
 
         return image
 
-    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         image = self._render_image()
 
         if enhancer_info is not None:
@@ -105,7 +118,7 @@ class GUIApp(IEnvironment):
             self.action = np.array([x, y])
             self.clicked = True
 
-    def interactive_mode(self):
+    def interactive_mode(self, print_reward: bool = False):
         # Create the window here first, so that the callback can be registered
         # The callback simply registers the clicks of a user
         cv2.namedWindow(self.window_name)
@@ -115,8 +128,12 @@ class GUIApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1, new_high=1))
+                _, rew, _, _ = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
+                                                        new_high=1))
                 self.clicked = False
+
+                if print_reward:
+                    print(f"Reward: {rew}")
 
             image = self._render_image()
 
@@ -151,7 +168,7 @@ class GUIApp(IEnvironment):
         return 2
 
     def reset(self, env_seed: int = None) -> np.ndarray:
-        self.get_state()[:] = self._initial_state
+        self.app_controller.reset()
 
         self.t = 0
 

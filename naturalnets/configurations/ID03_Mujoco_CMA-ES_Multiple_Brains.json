@@ -22,7 +22,7 @@
 		"optimize_x0": true
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	    }
@@ -45,7 +45,7 @@
 		"optimize_x0": true
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -68,7 +68,7 @@
 		"optimize_x0": true
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -92,7 +92,7 @@
 		"alpha": 0.1
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	    }
@@ -116,7 +116,7 @@
 		"alpha": 0.01
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 1.0
     	    }
@@ -140,7 +140,7 @@
 		"alpha": 0.01
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -163,7 +163,7 @@
 		"optimize_x0": true
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	    }
@@ -186,7 +186,7 @@
 		"optimize_x0": true
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	    }
@@ -209,7 +209,7 @@
 		"optimize_x0": false
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -233,7 +233,7 @@
 		"alpha": 0.1
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 1.0
     	    }
@@ -257,7 +257,7 @@
 		"alpha": 0.1
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -281,7 +281,7 @@
 		"alpha": 0.1
 	    },
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -297,7 +297,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 1.0
     	    }
@@ -313,7 +313,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -329,7 +329,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	}
@@ -345,7 +345,7 @@
 			"use_bias": true
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -361,7 +361,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 2.0
     	    }
@@ -377,7 +377,7 @@
 			"use_bias": true
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	}
@@ -393,7 +393,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 1.0
     	    }
@@ -409,7 +409,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -425,7 +425,7 @@
 			"use_bias": false
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	}
@@ -443,7 +443,7 @@
 			"use_bias": true
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -461,7 +461,7 @@
 			"use_bias": true
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	    }
@@ -479,7 +479,7 @@
 			"use_bias": true
 		},
 	    "optimizer": {
-		"type": "CMA-ES-Deap",
+		"type": "CmaEsDeap",
 		"population_size": 200,
 		"sigma": 0.5
     	}

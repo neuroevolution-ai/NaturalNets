@@ -9,13 +9,14 @@ from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
-class TextPrinterSettings(Page):
+class TextPrinterSettings(Page, RewardElement):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
@@ -34,7 +35,9 @@ class TextPrinterSettings(Page):
     UNDERLINE_BB = BoundingBox(38, 267, 75, 14)
 
     def __init__(self, text_printer: TextPrinter):
-        super().__init__(self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, SETTINGS_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.text_printer = text_printer
 
         # init popup
@@ -101,14 +104,20 @@ class TextPrinterSettings(Page):
         # others when opened (important for iteration in handle_click)
         self.dropdowns: List[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
         self.dropdown_to_func = {
-            self.n_words_dd: lambda: self.text_printer
-                                         .set_n_words(self.n_words_dd.get_current_value()),
-            self.font_size_dd: lambda: self.text_printer
-                                           .set_font_size(self.font_size_dd.get_current_value()),
-            self.fonts_dd: lambda: self.text_printer
-                                       .set_font(self.fonts_dd.get_current_value())
+            self.n_words_dd: lambda: self.text_printer.set_n_words(self.n_words_dd.get_current_value()),
+            self.font_size_dd: lambda: self.text_printer.set_font_size(self.font_size_dd.get_current_value()),
+            self.fonts_dd: lambda: self.text_printer.set_font(self.fonts_dd.get_current_value())
         }
+
+        self.dropdowns_to_str = {
+            self.n_words_dd: "word_count",
+            self.font_size_dd: "font_size",
+            self.fonts_dd: "font"
+        }
+
         self.add_widgets(self.dropdowns)
+
+        self.opened_dd = None
 
         # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
@@ -117,6 +126,36 @@ class TextPrinterSettings(Page):
         self.black_rb = RadioButton(self.BLACK_RB_BB, value=Color.BLACK)
         self.rbg = RadioButtonGroup([self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
         self.add_widget(self.rbg)
+
+        self.set_reward_children([self.popup])
+
+    @property
+    def reward_template(self):
+        return {
+            "dropdown_opened": [
+                "word_count",
+                "font_size",
+                "font"
+            ]
+        }
+
+    def reset(self):
+        self.popup.close()
+
+        self.n_words_dd.close()
+        self.n_words_dd.set_selected_item(self.n_words_50_ddi)
+
+        self.font_size_dd.close()
+        self.font_size_dd.set_selected_item(self.font_size_12)
+
+        self.fonts_dd.close()
+        self.fonts_dd.set_selected_item(self.font_ds_ddi)
+
+        self.rbg.set_selected_button(self.black_rb)
+
+        self.bold.set_selected(0)
+        self.italic.set_selected(0)
+        self.underline.set_selected(0)
 
     def open_popup(self):
         """Opens the text-printer settings popup, if the green radio-button is not
@@ -134,34 +173,27 @@ class TextPrinterSettings(Page):
         self.text_printer.set_color(radio_button.get_value())
 
     def is_dropdown_open(self) -> bool:
-        return self._get_opened_dropdown() is not None
-
-    def _get_opened_dropdown(self) -> Optional[Dropdown]:
-        for dropdown in self.dropdowns:
-            if dropdown.is_open():
-                return dropdown
-        return None
+        return self.opened_dd is not None
 
     def handle_click(self, click_position: np.ndarray = None):
         if self.is_popup_open():
             self.popup.handle_click(click_position)
             return
 
-        opened_dd = self._get_opened_dropdown()
-        if opened_dd is not None:
-            old_value = opened_dd.get_current_value()
-            opened_dd.handle_click(click_position)
-            if old_value != opened_dd.get_current_value():
-                self.dropdown_to_func[opened_dd]()
+        if self.opened_dd is not None:
+            self.opened_dd.handle_click(click_position)
+            self.dropdown_to_func[self.opened_dd]()
+            self.opened_dd = None
             return
 
-        # handle dropdown clicks first, as they may occlude other widgets if opened
-        for dropdown, func in self.dropdown_to_func.items():
+        # Register an opened dropdown
+        for dropdown in self.dropdowns:
             if dropdown.is_clicked_by(click_position):
-                old_value = dropdown.get_current_value()
                 dropdown.handle_click(click_position)
-                if old_value != dropdown.get_current_value():
-                    func()
+
+                if dropdown.is_open():
+                    self.opened_dd = dropdown
+                    self.register_selected_reward(["dropdown_opened", self.dropdowns_to_str[dropdown]])
                 return
 
         for checkbox in self.font_style_checkboxes:
@@ -170,8 +202,18 @@ class TextPrinterSettings(Page):
                 return
 
         if self.rbg.is_clicked_by(click_position):
+            # Clicked button in the button group may have an additional action (e.g. a popup is
+            # opened when this button is clicked)
+            previous_color = self.rbg.get_value()
+
             self.rbg.handle_click(click_position)
-            self.text_printer.set_color(self.rbg.get_value())
+
+            new_color = self.rbg.get_value()
+
+            # Only change the selected color if a new color was selected. Important, otherwise a reward is
+            # given, even if no color has been changed
+            if previous_color != new_color:
+                self.text_printer.set_color(new_color)
 
     def is_popup_open(self) -> int:
         return self.popup.is_open()
@@ -183,7 +225,7 @@ class TextPrinterSettings(Page):
         return img
 
 
-class TextPrinterSettingsPopup(Page):
+class TextPrinterSettingsPopup(Page, RewardElement):
     """Popup for the text-printer settings (pops up when the green radio-button is selected).
 
        State description:
@@ -197,16 +239,27 @@ class TextPrinterSettingsPopup(Page):
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)
 
     def __init__(self, text_printer_settings: TextPrinterSettings):
-        super().__init__(self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self.settings = text_printer_settings
 
         self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
         self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
+    @property
+    def reward_template(self):
+        return {
+            "popup": ["open", "close"],
+            "popup_selection_button": [False, True]
+        }
+
     def set_rb_and_close(self, selected: bool) -> None:
         if selected:
             self.settings.set_selected_rb(self.settings.green_rb)
         self.close()
+
+        self.register_selected_reward(["popup_selection_button", selected])
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
@@ -220,9 +273,13 @@ class TextPrinterSettingsPopup(Page):
         """Opens this popup."""
         self.get_state()[0] = 1
 
+        self.register_selected_reward(["popup", "open"])
+
     def close(self):
         """Closes this popup."""
         self.get_state()[0] = 0
+
+        self.register_selected_reward(["popup", "close"])
 
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""

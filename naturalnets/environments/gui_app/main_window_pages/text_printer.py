@@ -8,11 +8,12 @@ from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AR
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
 from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
-class TextPrinter(Page):
+class TextPrinter(Page, RewardElement):
     """The text-printer page in the main-window.
 
        State description:
@@ -29,44 +30,102 @@ class TextPrinter(Page):
     TEXT_AREA_BB = BoundingBox(135, 48, 286, 183)
 
     def __init__(self):
-        super().__init__(self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        RewardElement.__init__(self)
+
         self._font_styles: List[FontStyle] = []
-        self._font: Font = Font.DEJAVU_SANS
-        self._font_size = 12
-        self._color = Color.BLACK
-        self._n_words = 50
+        self._font = None
+        self._font_size = None
+        self._color = None
+        self._n_words = None
 
         self.button = Button(self.BUTTON_BB, self.print_text)
         self.display_dict = None
+
+    @property
+    def reward_template(self):
+        return {
+            "word_count": [50, 100, 200, 400],
+            "word_count_setting": [50, 100, 200, 400],
+            "font_size": [12, 14, 16, 18, 20],
+            "font_size_setting": [12, 14, 16, 18, 20],
+            "font": [Font.DEJAVU_SANS, Font.LIBERATION_MONO, Font.NIMBUS_ROMAN, Font.UBUNTU],
+            "font_setting": [Font.DEJAVU_SANS, Font.LIBERATION_MONO, Font.NIMBUS_ROMAN, Font.UBUNTU],
+            "font_color": [Color.RED, Color.GREEN, Color.BLUE, Color.BLACK],
+            "font_color_setting": [Color.RED, Color.GREEN, Color.BLUE, Color.BLACK],
+            "font_style": {
+                FontStyle.BOLD: [False, True],
+                FontStyle.ITALIC: [False, True],
+                FontStyle.UNDERLINE: [False, True]
+            },
+            "font_style_setting": {
+                FontStyle.BOLD: [False, True],
+                FontStyle.ITALIC: [False, True],
+                FontStyle.UNDERLINE: [False, True]
+            }
+        }
+
+    def reset(self):
+        self.display_dict = None
+        self._font_styles: List[FontStyle] = []
+        self._font: Font = Font.DEJAVU_SANS
+        self._font_size = 12
+        self._color: Color = Color.BLACK
+        self._n_words = 50
+
+        # Initially the output is not printed, thus set the state to 0
+        self.get_state()[0] = 0
 
     def set_font_style(self, style: FontStyle, enabled: int) -> None:
         if enabled:
             self._font_styles.append(style)
         else:
-            self._font_styles.remove(style)
+            try:
+                self._font_styles.remove(style)
+            except ValueError:
+                # Do nothing, the font is already removed
+                pass
+
+        self.register_selected_reward(["font_style_setting", style, bool(enabled)])
 
     def set_font(self, font: Font) -> None:
         self._font = font
 
+        self.register_selected_reward(["font_setting", font])
+
     def set_font_size(self, size: int) -> None:
         self._font_size = size
+
+        self.register_selected_reward(["font_size_setting", size])
 
     def set_color(self, color: Color) -> None:
         self._color = color
 
+        self.register_selected_reward(["font_color_setting", color])
+
     def set_n_words(self, n: int) -> None:
         self._n_words = n
+
+        self.register_selected_reward(["word_count_setting", n])
 
     def print_text(self):
         self.display_dict = self.update_display_dict()
         self.get_state()[0] = 1
 
+        for font_style in FontStyle:
+            if font_style in self._font_styles:
+                self.register_selected_reward(["font_style", font_style, True])
+            else:
+                self.register_selected_reward(["font_style", font_style, False])
+
+        self.register_selected_reward(["font", self._font])
+        self.register_selected_reward(["font_size", self._font_size])
+        self.register_selected_reward(["font_color", self._color])
+        self.register_selected_reward(["word_count", self._n_words])
+
     def handle_click(self, click_position: np.ndarray = None):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
-
-    def set_print_settings_changed(self):
-        self.get_state()[1] = 1
 
     def update_display_dict(self):
         return {

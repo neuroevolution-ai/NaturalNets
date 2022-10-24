@@ -81,7 +81,7 @@
         "use_bias": [false, true]
     },
     "optimizer": {
-        "type": "CMA-ES-Deap",
+        "type": "CmaEsDeap",
         "population_size": 200,
         "sigma": [0.5, 1.0, 2.0]
     }

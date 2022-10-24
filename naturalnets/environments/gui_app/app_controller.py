@@ -1,9 +1,10 @@
-"""Contains the AppController."""
+from copy import copy
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.main_window import MainWindow
+from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.settings_window import SettingsWindow
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -25,7 +26,52 @@ class AppController:
         self._total_state_len += self.get_element_state_len(self.main_window)
         self._total_state_len += self.get_element_state_len(self.settings_window)
 
-        self._state = np.zeros(self._total_state_len, dtype=int)
+        self._state = np.zeros(self._total_state_len, dtype=np.int8)
+        self._last_allocated_state_index = 0
+
+        self.assign_state(self.main_window)
+        self.assign_state(self.settings_window)
+
+        self.reward_array = None
+        self.reset_reward_array()
+
+    def calculate_reward_count(self, reward_count, reward_element: RewardElement):
+        reward_count += reward_element.get_reward_count()
+
+        for child in reward_element.get_reward_children():
+            reward_count = self.calculate_reward_count(reward_count, child)
+
+        return reward_count
+
+    def reset_reward_array(self):
+        reward_count = self.calculate_reward_count(0, self.main_window)
+        reward_count = self.calculate_reward_count(reward_count, self.settings_window)
+
+        self.reward_array = np.zeros(reward_count, dtype=np.uint8)
+
+        last_reward_index = self.assign_reward(0, self.main_window)
+        last_reward_index = self.assign_reward(last_reward_index, self.settings_window)
+        assert last_reward_index == reward_count
+
+    def assign_reward(self, current_index, reward_element: RewardElement):
+        reward_count = reward_element.get_reward_count()
+        reward_element.assign_reward_slice(self.reward_array[current_index:current_index + reward_count])
+        current_index += reward_count
+
+        for reward_child in reward_element.get_reward_children():
+            current_index = self.assign_reward(current_index, reward_child)
+
+        return current_index
+
+    def reset(self):
+        self.main_window.reset()
+
+        self.settings_window.close()
+        self.settings_window.reset()
+
+        self.reset_reward_array()
+
+        self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
         self.assign_state(self.main_window)
@@ -85,6 +131,8 @@ class AppController:
     def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component.
         """
+        previous_reward_array = copy(self.reward_array)
+
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
         elif (not self.main_window.current_page_blocks_click()
@@ -92,6 +140,10 @@ class AppController:
             self.settings_window.open()
         else:
             self.main_window.handle_click(click_position)
+
+        reward = np.count_nonzero(previous_reward_array != self.reward_array)
+
+        return reward
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """Calls the main window rendering method and the settings window rendering method,
