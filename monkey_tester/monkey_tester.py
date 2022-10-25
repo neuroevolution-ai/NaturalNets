@@ -82,7 +82,16 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
                  f"Directory {directory}")
 
     with open(os.path.join(directory, "monkey_tester_options.json"), "w", encoding="utf-8") as f:
-        json.dump(monkey_tester_options, f, indent=4)
+        json.dump(asdict(configuration), f, indent=4)
+
+    with open(os.path.join(directory, "monkey_tester_details.json"), "w", encoding="utf-8") as f:
+        monkey_tester_details = {
+            "monkey_random_seed": monkey_random_seed,
+            "time_started": time_started,
+            "time_ended": time_ended
+        }
+
+        json.dump(monkey_tester_details, f, indent=4)
 
 
 def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: int):
