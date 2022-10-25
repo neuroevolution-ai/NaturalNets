@@ -18,6 +18,9 @@ videos
 
 benchmarks/
 
+# Ignore the results folder
+results/
+
 temp*.json
 temp*.py
 test.py
@@ -57,3 +60,6 @@ spreadsheets/
 
 # Local History for Visual Studio Code
 .history/
+
+# Weights and Biases Temporary Files
+wandb/

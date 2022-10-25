@@ -10,25 +10,27 @@ while True:
     environment_configuration["number_time_steps"] = 100
     environment_configuration["screen_width"] = 400
     environment_configuration["screen_height"] = 400
-    environment_configuration["number_buttons_horizontal"] = 5
-    environment_configuration["number_buttons_vertical"] = 5
-    environment_configuration["buttons_size_horizontal"] = 50
-    environment_configuration["buttons_size_vertical"] = 30
+    environment_configuration["number_button_columns"] = 5
+    environment_configuration["number_button_rows"] = 5
+    environment_configuration["button_width"] = 50
+    environment_configuration["button_height"] = 30
+    environment_configuration["fixed_env_seed"] = True
     
 
     brain_configuration = dict()
-    brain_configuration["type"] = random.choice(["ELMANNN", "GRUNN", "LSTMNN", "FFNN"])
+    brain_configuration["type"] = random.choice(["RNN", "GRU", "LSTM", "FeedForwardNN"])
 
-    if(brain_configuration["type"] == "ELMANNN" or brain_configuration["type"] == "GRUNN" or brain_configuration["type"] == "LSTMNN"):
-        brain_configuration["hidden_layer_structure"] = random.choice([[5], [10], [20], [50]])
+    if (brain_configuration["type"] == "RNN"
+            or brain_configuration["type"] == "GRU"
+            or brain_configuration["type"] == "LSTM"):
+        brain_configuration["hidden_layers"] = random.choice([[5], [10], [20], [50]])
         brain_configuration["use_bias"] = True
 
-    elif(brain_configuration["type"] == "FFNN"):
+    elif brain_configuration["type"] == "FeedForwardNN":
         brain_configuration["hidden_layers"] = random.choice([[5, 5], [10, 10], [20, 20], [50, 50]])
         brain_configuration["neuron_activation"] = "tanh"
         brain_configuration["neuron_activation_output"] = "tanh"
         brain_configuration["use_bias"] = True
-
     else:
         raise RuntimeError("No valid brain type")
 
@@ -45,6 +47,9 @@ while True:
     configuration["environment"] = environment_configuration
     configuration["brain"] = brain_configuration
     configuration["optimizer"] = optimizer_configuration
+    configuration["enhancer"] = {
+        "type": [None, "RandomEnhancer"]
+    }
 
     print(configuration)
 

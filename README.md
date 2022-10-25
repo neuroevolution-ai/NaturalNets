@@ -127,3 +127,12 @@ while True:
     - Alternatively, run `tensorboard --logdir EXPLICIT_EXP_DIR`, to view the results of a specific experiment,
     where `EXPLICIT_EXP_DIR` is the path to that experiment's logs
 3. In a browser, navigate to `http://localhost:6006/`
+
+## Logging to Weights & Biases
+
+- Create a Weights and Biases account
+- Install it with `pip install wandb` (it is also in our `requirements.txt`)
+- Log in by running `wandb login`, and paste your API key from [https://wandb.ai/authorize](https://wandb.ai/authorize)
+- Optional: Edit the `entity` and `project` parameters for the `wandb.init()` call in `train.py`
+  - These specify where the values are logged, where `entity` is your WandB username or organization and `project`
+  is the name of the project in that entity

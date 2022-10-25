@@ -23,7 +23,7 @@ class GymMujoco(IEnvironment):
 
         # The new step API returns two booleans, terminated and truncated, to indicate if an environment is either
         # done (terminated) or met a truncation condition (truncated), e.g. a time limit
-        self.env = gym.make(self.config.name, new_step_api=True)
+        self.env = gym.make(self.config.name)
 
         assert isinstance(self.env.action_space, gym.spaces.Box), ("Only environments with a Box action space "
                                                                    "(continuous values) are supported.")
@@ -46,7 +46,7 @@ class GymMujoco(IEnvironment):
         return self.env.action_space.shape[0]
 
     def reset(self, env_seed: int):
-        return self.env.reset(seed=env_seed)
+        return self.env.reset(seed=env_seed)[0]
 
     def step(self, action: np.ndarray):
         # We settled on the fact that every brain outputs values between [-1, 1]. If this particular Gym MuJoCo

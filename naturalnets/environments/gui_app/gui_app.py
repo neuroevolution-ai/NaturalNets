@@ -51,11 +51,18 @@ class GUIApp(IEnvironment):
 
         self.t = 0
 
+        # Keep track of the last click position for rendering purposes
+        self.click_position_x = 0
+        self.click_position_y = 0
+
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
         self.window_name = "App"
         self.action = None
         self.clicked = False
+
+        self.running_reward = 0
+        self.max_reward = self.app_controller.get_total_reward_len()
 
         t1 = time.time()
 
@@ -67,24 +74,27 @@ class GUIApp(IEnvironment):
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([click_position_x, click_position_y])
+        click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
+
+        # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
+        self.running_reward += rew
 
         # Give a reward equal to the number of time steps at the beginning to avoid negative rewards
         if self.t == 0:
             rew += self.config.number_time_steps
 
-        # Give a negative reward of 1 for each timestep
+        # Give a negative reward of 1 for each time step
         rew -= 1
 
         done = False
 
         self.t += 1
 
-        if self.t >= self.config.number_time_steps:
+        if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
         return self.get_observation(), rew, done, {}
@@ -99,6 +109,13 @@ class GUIApp(IEnvironment):
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         image = self._render_image()
 
+        # Draw the click position
+        cv2.circle(
+            image,
+            (self.click_position_x, self.click_position_y),
+            radius=4, color=Color.BLACK.value, thickness=-1, lineType=cv2.LINE_AA
+        )
+
         if enhancer_info is not None:
             try:
                 random_enhancer_info = enhancer_info["random_enhancer_info"]
@@ -111,7 +128,7 @@ class GUIApp(IEnvironment):
                     random_enhancer_info,
                     self.screen_width,
                     self.screen_height,
-                    color=Color.ORANGE)
+                    color=Color.ORANGE.value)
 
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
@@ -175,6 +192,15 @@ class GUIApp(IEnvironment):
         self.app_controller.reset()
 
         self.t = 0
+
+        self.click_position_x = 0
+        self.click_position_y = 0
+
+        self.action = None
+        self.clicked = False
+
+        self.running_reward = 0
+        self.max_reward = self.app_controller.get_total_reward_len()
 
         return self.get_state()
 
