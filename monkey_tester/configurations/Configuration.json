@@ -1,0 +1,15 @@
+{
+    "num_monkeys": 200,
+    "num_processes": 8,
+    "monkey_tester_type": "random-clicks",
+    "environment": {
+        "type": "GUIApp",
+        "number_time_steps": 100,
+        "include_fake_bug": false
+    },
+    "results_dir": "results_monkey/",
+    "store_monkey_tester_data": false,
+    "wandb_logging": false,
+    "wandb_entity": "neuroevolution",
+    "wandb_project": "NaturalNets"
+}
