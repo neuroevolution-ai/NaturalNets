@@ -88,11 +88,14 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
 def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: int):
 
     if configuration.wandb_logging:
+        monkey_config = asdict(configuration)
+        monkey_config["monkey_random_seed"] = monkey_random_seed
+
         wandb.init(
             entity=configuration.wandb_entity,
             project=configuration.wandb_project,
             name=f"{gethostname()}/{configuration.monkey_tester_type}/{os.path.basename(directory)}",
-            config=asdict(configuration),
+            config=monkey_config,
             tags=["monkey"]
         )
 
