@@ -3,26 +3,25 @@ import math
 import multiprocessing
 import os
 import random
-from socket import gethostname
 import time
 from datetime import datetime
+from socket import gethostname
 from typing import Optional, Dict, Union
 
 import attrs
 import numpy as np
+import wandb
 from cpuinfo import get_cpu_info
 from tensorboardX import SummaryWriter
-import wandb
 
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
-from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.optimizers import DummyOptimizer
+from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
 from naturalnets.tools.utils import flatten_dict, set_seeds
 from naturalnets.tools.write_results import write_results_to_textfile
-
 
 GEN_KEY = "gen"
 MIN_TRAIN_KEY = "min_train"
