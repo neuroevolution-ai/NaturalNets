@@ -1,0 +1,115 @@
+{
+    "method": "grid",
+    "name": "sweep",
+    "metric": {
+        "goal": "maximize",
+        "name": "best"
+    },
+    "parameters": {
+        "experiment_id": {
+            "value": 7
+        },
+        "number_generations": {
+            "value": 1500
+        },
+        "number_validation_runs": {
+            "value": 5
+        },
+        "number_rounds": {
+            "value": 3
+        },
+        "maximum_env_seed": {
+            "value": 100000
+        },
+        "global_seed": {
+            "value": 42
+        },
+        "environment": {
+            "parameters": {
+                "type": {
+                    "value": "GUIApp"
+                },
+                "number_time_steps": {
+                    "value": 200
+                },
+                "include_fake_bug": {
+                    "value": false
+                }
+            }
+        },
+        "brain": {
+            "parameters": {
+                "type": {
+                    "value": "CTRNN"
+                },
+                "delta_t": {
+                    "value": 0.05
+                },
+                "number_neurons": {
+                    "values": [
+                        5,
+                        10,
+                        20
+                    ]
+                },
+                "differential_equation": {
+                    "value": "NaturalNet"
+                },
+                "v_mask": {
+                    "value": "dense"
+                },
+                "w_mask": {
+                    "value": "dense"
+                },
+                "t_mask": {
+                    "value": "dense"
+                },
+                "clipping_range": {
+                    "values": [
+                        1.0,
+                        3.0
+                    ]
+                },
+                "set_principle_diagonal_elements_of_W_negative": {
+                    "values": [
+                        false,
+                        true
+                    ]
+                },
+                "optimize_x0": {
+                    "value": true
+                },
+                "alpha": {
+                    "value": 0.0
+                }
+            }
+        },
+        "optimizer": {
+            "parameters": {
+                "type": {
+                    "value": "CmaEsDeap"
+                },
+                "population_size": {
+                    "value": 200
+                },
+                "sigma": {
+                    "values": [
+                        0.5,
+                        1.0,
+                        2.0
+                    ]
+                }
+            }
+        },
+        "enhancer": {
+            "parameters": {
+                "type": {
+                    "values": [
+                        null,
+                        "RandomEnhancer"
+                    ]
+                }
+            }
+        }
+    }
+}
