@@ -6,7 +6,7 @@ import random
 import time
 from datetime import datetime
 from socket import gethostname
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, Tuple
 
 import attrs
 import click
@@ -291,8 +291,9 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
 
 @click.command()
-@click.option("-s", "--sweep", type=str,
-              help="WandB hyperparameter sweep ID. If provided, all other parameters are ignored")
+@click.option("-s", "--sweep", type=str, multiple=True,
+              help="WandB hyperparameter sweep ID. If provided, all other parameters are ignored. It is also possible "
+                   "to provide multiple sweeps which are executed one after another.")
 @click.option("-sc", "--sweep-count", type=int)
 @click.option("-c", "--config", type=str, help="Path to a configuration for a monkey tester")
 @click.option("-d", "--directory", type=str, default="results")
@@ -300,10 +301,11 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 @click.option("--wandb/--no-wandb", "w_and_b_log", type=bool, default=True)
 @click.option("-we", "--wandb-entity", "w_and_b_entity", type=str, default="neuroevolution-fzi")
 @click.option("-wp", "--wandb-project", "w_and_b_project", type=str, default="NaturalNets")
-def train_cli(sweep: str, sweep_count: int, config: str, directory: str, debug: bool,
+def train_cli(sweep: Tuple[str], sweep_count: int, config: str, directory: str, debug: bool,
               w_and_b_log: bool, w_and_b_entity: str, w_and_b_project: str):
-    if sweep is not None:
-        wandb.agent(sweep_id=sweep, function=train, count=sweep_count)
+    if len(sweep) > 0:
+        for concrete_sweep in sweep:
+            wandb.agent(sweep_id=concrete_sweep, function=train, count=sweep_count)
     else:
         train(
             configuration=config,
