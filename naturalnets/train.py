@@ -49,7 +49,7 @@ class TrainingCfg:
 
 
 def train(configuration: Optional[Union[str, Dict]] = None, results_directory: str = "results", debug: bool = False,
-          w_and_b_log: bool = True, w_and_b_entity: str = "neuroevolution", w_and_b_project: str = "NaturalNets"):
+          w_and_b_log: bool = True, w_and_b_entity: str = "neuroevolution-fzi", w_and_b_project: str = "NaturalNets"):
     start_time_training = time.time()
     start_date_training = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
@@ -289,7 +289,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         wandb.finish()
 
 
-def initialize_sweep(entity: str = "neuroevolution", project: str = "NaturalNets"):
+def initialize_sweep(entity: str = "neuroevolution-fzi", project: str = "NaturalNets"):
     sweep_configuration = {
         "method": "grid",
         "name": "sweep",

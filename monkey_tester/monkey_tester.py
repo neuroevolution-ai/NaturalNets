@@ -63,7 +63,7 @@ class MonkeyTesterCfg:
     wandb_logging: bool = field(default=True, validator=validators.instance_of(bool))
 
     # Weights & Biases Entity and Project, if the Weights & Biases logging is used
-    wandb_entity: str = field(default="neuroevolution", validator=validators.instance_of(str))
+    wandb_entity: str = field(default="neuroevolution-fzi", validator=validators.instance_of(str))
     wandb_project: str = field(default="NaturalNets", validator=validators.instance_of(str))
 
 
