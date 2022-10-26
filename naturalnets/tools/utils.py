@@ -32,8 +32,8 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
             # desired and will trigger the assertion
             old_length = len(flattened_dict)
             flattened_dict.update(inner_flattened_dict)
-            assert old_length + len(inner_flattened_dict) == len(flattened_dict), ("Duplicate keys when flattening the "
-                                                                                   "config dict")
+            # assert old_length + len(inner_flattened_dict) == len(flattened_dict), ("Duplicate keys when flattening the config dict")
+
         else:
             if v is None:
                 # Tensorboard does not display pure None values, therefore use a string (which it does

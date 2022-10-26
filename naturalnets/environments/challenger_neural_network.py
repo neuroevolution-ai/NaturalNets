@@ -2,7 +2,7 @@ import attr
 import numpy as np
 
 from naturalnets.brains.i_brain import get_brain_class
-from naturalnets.environments.environment_utils import deprecate_environment
+from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 from naturalnets.environments.i_environment import IEnvironment
 
 
@@ -16,13 +16,19 @@ class ChallengerNeuralNetworkCfg:
     brain: dict
 
 
+@register_environment_class
 class ChallengerNeuralNetwork(IEnvironment):
 
-    def __init__(self, env_seed: int, configuration: dict):
-
-        deprecate_environment("ChallengerNeuralNetwork")
-
+    def __init__(self, configuration: dict):
         self.config = ChallengerNeuralNetworkCfg(**configuration)
+
+    def get_number_inputs(self):
+        return self.config.number_inputs
+
+    def get_number_outputs(self):
+        return self.config.number_outputs
+
+    def reset(self, env_seed: int):
 
         rs = np.random.RandomState(env_seed)
 
@@ -49,13 +55,6 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         self.t = 0
 
-    def get_number_inputs(self):
-        return self.config.number_inputs
-
-    def get_number_outputs(self):
-        return self.config.number_outputs
-
-    def reset(self):
         return np.zeros(self.config.number_inputs)
 
     def step(self, action: np.ndarray):
@@ -77,3 +76,6 @@ class ChallengerNeuralNetwork(IEnvironment):
         info = dict()
 
         return ob, rew, done, info
+
+    def render(self):
+        pass
