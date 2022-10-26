@@ -26,7 +26,7 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
 
     for k, v in config.items():
         if isinstance(v, dict):
-            inner_flattened_dict = flatten_dict(v, prefix=k + "_")
+            inner_flattened_dict = flatten_dict(v, prefix=f"{prefix}{k}_")
 
             # Check if the inner_flattened_dict has keys that are already present in the main dict. If so that is not
             # desired and will trigger the assertion
@@ -34,6 +34,7 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
             flattened_dict.update(inner_flattened_dict)
             assert old_length + len(inner_flattened_dict) == len(flattened_dict), ("Duplicate keys when flattening the "
                                                                                    "config dict")
+
         else:
             if v is None:
                 # Tensorboard does not display pure None values, therefore use a string (which it does

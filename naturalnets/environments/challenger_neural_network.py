@@ -1,12 +1,13 @@
-import attr
+from typing import Optional, Dict
+
 import numpy as np
+from attrs import define
 
 from naturalnets.brains.i_brain import get_brain_class
-from naturalnets.environments.environment_utils import deprecate_environment
-from naturalnets.environments.i_environment import IEnvironment
+from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class ChallengerNeuralNetworkCfg:
     type: str
     number_inputs: int
@@ -16,18 +17,26 @@ class ChallengerNeuralNetworkCfg:
     brain: dict
 
 
+@register_environment_class
 class ChallengerNeuralNetwork(IEnvironment):
 
-    def __init__(self, env_seed: int, configuration: dict):
-
-        deprecate_environment("ChallengerNeuralNetwork")
-
+    def __init__(self, configuration: dict):
         self.config = ChallengerNeuralNetworkCfg(**configuration)
 
-        rs = np.random.RandomState(env_seed)
+        self.brain = None
+        self.t = 0
+
+    def get_number_inputs(self):
+        return self.config.number_inputs
+
+    def get_number_outputs(self):
+        return self.config.number_outputs
+
+    def reset(self, env_seed: int):
+        rng = np.random.default_rng(seed=env_seed)
 
         # Get brain class from configuration
-        brain_class = get_brain_class(self.config.brain['type'])
+        brain_class = get_brain_class(self.config.brain["type"])
         brain_configuration = self.config.brain
 
         number_inputs_challenger_nn = self.config.number_outputs
@@ -39,7 +48,7 @@ class ChallengerNeuralNetwork(IEnvironment):
         individual_size = brain_class.get_individual_size(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration, brain_state)
 
-        individual = rs.randn(individual_size).astype(np.float32)
+        individual = rng.standard_normal(individual_size, dtype=np.float32)
 
         self.brain = brain_class(input_size=number_inputs_challenger_nn,
                                  output_size=number_outputs_challenger_nn,
@@ -49,13 +58,6 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         self.t = 0
 
-    def get_number_inputs(self):
-        return self.config.number_inputs
-
-    def get_number_outputs(self):
-        return self.config.number_outputs
-
-    def reset(self):
         return np.zeros(self.config.number_inputs)
 
     def step(self, action: np.ndarray):
@@ -74,6 +76,7 @@ class ChallengerNeuralNetwork(IEnvironment):
         else:
             done = True
 
-        info = dict()
+        return ob, rew, done, {}
 
-        return ob, rew, done, info
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
+        raise NotImplementedError("Rendering is not implemented for this environment")
