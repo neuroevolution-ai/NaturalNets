@@ -136,3 +136,10 @@ while True:
 - Optional: Edit the `entity` and `project` parameters for the `wandb.init()` call in `train.py`
   - These specify where the values are logged, where `entity` is your WandB username or organization and `project`
   is the name of the project in that entity
+
+## Monkey Testing
+
+- Run `PYTHONPATH=$(pwd) python monkey_tester/monkey_tester.py -c PATH_TO_MONKEY_CONFIG` to start the monkey
+tester
+- A default configuration is found in `monkey_tester/configurations/Configuration.json`. Details for the parameters
+are found in the `MonkeyTesterCfg` class in `monkey_tester/monkey_tester.py`

@@ -29,24 +29,40 @@ def check_categorical(possible_arguments: List[str], instance, attribute, value)
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class MonkeyTesterCfg:
+    # Number of monkey testers to start
     num_monkeys: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+
+    # Number of processes to use, for parallel execution. Omitting this parameter will use all available
+    # threads of that processor
     num_processes: int = field(default=mp.cpu_count(), validator=[validators.instance_of(int), validators.gt(0)])
 
+    # Currently only `"random-clicks"` supported, which simply clicks randomly at each step
     monkey_tester_type: str = field(validator=[
         validators.instance_of(str),
         partial(check_categorical, [RANDOM_CLICK_MONKEY_TYPE, RANDOM_WIDGET_MONKEY_TYPE])]
     )
+
+    # For future use, if the random-widgets type monkey tester is used, decide the percentage of clicks that shall be
+    # completely random
     random_click_prob: float = field(
         default=None,
         validator=validators.optional([validators.instance_of(float), validators.ge(0)])
     )
 
+    # Configuration of an environment, like in a normal training experiment
     environment: dict
 
+    # Where to store the monkey tester results
     results_dir: str = field(default="results_monkey/", validator=validators.instance_of(str))
+
+    # Whether to store the chosen actions and rewards in a zipped NumPy archive. Should not be necessary, because the
+    # monkey testers are seeded and therefore always produce the same results
     store_monkey_tester_data: bool = field(default=False, validator=validators.instance_of(bool))
 
+    # Whether to use Weights & Biases logging
     wandb_logging: bool = field(default=True, validator=validators.instance_of(bool))
+
+    # Weights & Biases Entity and Project, if the Weights & Biases logging is used
     wandb_entity: str = field(default="neuroevolution", validator=validators.instance_of(str))
     wandb_project: str = field(default="NaturalNets", validator=validators.instance_of(str))
 
