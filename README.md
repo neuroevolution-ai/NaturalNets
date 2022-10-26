@@ -137,6 +137,41 @@ while True:
   - These specify where the values are logged, where `entity` is your WandB username or organization and `project`
   is the name of the project in that entity
 
+### Using Hyperparameter Sweeps
+
+- Quick way to initialize hyperparameter searches
+- Copy `naturalnets/configurations/sweep_configurations/DefaultSweep.json` and edit the new file to confiure the sweep
+  - Use the `parameters` key to configure the training configuration
+  - Each key under `parameters` maps to a key of our training configuration
+  - Nested dicts, for example for the environment, brain etc., need to have another `parameters` key, for example:
+  ```json
+    {
+        "parameters": {
+            ...
+            "number_rounds": {"value":  3},
+            ...
+            "environment": {
+                "parameters": {
+                    "type": {"value": "GUIApp"},
+                    ...
+                }
+            }
+        }
+    }
+  ```
+  - Each parameter can be configured to have a specific value (`"value": SPECIFIC_VALUE`),
+  multiple values (`"values": [VALUE1, VALUE2, ...]` (note the plural `values` as the key)), or more
+  advanced mathematical distributions, etc. Read more on this in the
+  [WandB Documentation](https://docs.wandb.ai/guides/sweeps/define-sweep-configuration#parameters)
+- Create the sweep by running
+`wandb sweep naturalnets/configurations/sweep_configurations/YOUR-SWEEP-CONFIG.json`
+- Copy the **full** sweep path of the form `ENTITY/PROJECT/SWEEP_ID`
+- Run the sweep agent to start experiments
+  - Run `PYTHONPATH=$(pwd) python naturalnets/train.py -s ENTITY/PROJECT/SWEEP_ID`
+  - If you use a grid search, the agent runs experiments until the grid search is finished
+  - If you use a random search and want to limit the number of experiments, use `-sc NUM_EXPERIMENTS`,
+  i.e. `PYTHONPATH=$(pwd) python naturalnets/train.py -s ENTITY/PROJECT/SWEEP_ID -sc NUM_EXPERIMENTS`
+
 ## Monkey Testing
 
 - Run `PYTHONPATH=$(pwd) python monkey_tester/monkey_tester.py -c PATH_TO_MONKEY_CONFIG` to start the monkey

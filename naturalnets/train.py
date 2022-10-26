@@ -9,6 +9,7 @@ from socket import gethostname
 from typing import Optional, Dict, Union
 
 import attrs
+import click
 import numpy as np
 import wandb
 from cpuinfo import get_cpu_info
@@ -289,6 +290,30 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         wandb.finish()
 
 
+@click.command()
+@click.option("-s", "--sweep", type=str,
+              help="WandB hyperparameter sweep ID. If provided, all other parameters are ignored")
+@click.option("-sc", "--sweep-count", type=int)
+@click.option("-c", "--config", type=str, help="Path to a configuration for a monkey tester")
+@click.option("-d", "--directory", type=str, default="results")
+@click.option("--debug/--no-debug", type=bool, default=False)
+@click.option("--wandb/--no-wandb", "w_and_b_log", type=bool, default=True)
+@click.option("-we", "--wandb-entity", "w_and_b_entity", type=str, default="neuroevolution-fzi")
+@click.option("-wp", "--wandb-project", "w_and_b_project", type=str, default="NaturalNets")
+def train_cli(sweep: str, sweep_count: int, config: str, directory: str, debug: bool,
+              w_and_b_log: bool, w_and_b_entity: str, w_and_b_project: str):
+    if sweep is not None:
+        wandb.agent(sweep_id=sweep, function=train, count=sweep_count)
+    else:
+        train(
+            configuration=config,
+            results_directory=directory,
+            debug=debug,
+            w_and_b_log=w_and_b_log,
+            w_and_b_entity=w_and_b_entity,
+            w_and_b_project=w_and_b_project
+        )
+
+
 if __name__ == "__main__":
-    train()
-    # wandb.agent(sweep_id="deubelp/natural-nets-test/b1810zcv", function=train, count=1)
+    train_cli()
