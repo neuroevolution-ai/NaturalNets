@@ -10,6 +10,6 @@
     "results_dir": "results_monkey/",
     "store_monkey_tester_data": false,
     "wandb_logging": false,
-    "wandb_entity": "neuroevolution",
+    "wandb_entity": "neuroevolution-fzi",
     "wandb_project": "NaturalNets"
 }
