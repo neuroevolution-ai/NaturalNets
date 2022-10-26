@@ -170,6 +170,7 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
     )
 
     if configuration.wandb_logging:
+        wandb.run.summary["final_rew"] = reward_sum
         wandb.finish()
 
 
