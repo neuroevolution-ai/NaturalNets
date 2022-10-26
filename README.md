@@ -163,6 +163,9 @@ while True:
   multiple values (`"values": [VALUE1, VALUE2, ...]` (note the plural `values` as the key)), or more
   advanced mathematical distributions, etc. Read more on this in the
   [WandB Documentation](https://docs.wandb.ai/guides/sweeps/define-sweep-configuration#parameters)
+  - Limitation: No conditional configurations can be created, i.e. saying we use BrainX, which requires using ParameterY
+  with a specific value. All parameters are mixed, see also
+  [this WandB GitHub issue](https://github.com/wandb/wandb/issues/1487)
 - Create the sweep by running
 `wandb sweep naturalnets/configurations/sweep_configurations/YOUR-SWEEP-CONFIG.json`
 - Copy the **full** sweep path of the form `ENTITY/PROJECT/SWEEP_ID`
