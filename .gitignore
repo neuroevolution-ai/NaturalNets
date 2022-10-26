@@ -20,6 +20,7 @@ benchmarks/
 
 # Ignore the results folder
 results/
+results_monkey/
 
 temp*.json
 temp*.py
