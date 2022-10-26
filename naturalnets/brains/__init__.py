@@ -5,4 +5,3 @@ from naturalnets.brains.indirect_encoded_ctrnn import IndirectCTRNN
 from naturalnets.brains.rnn import RNN
 from naturalnets.brains.gru import GRU
 from naturalnets.brains.lstm import LSTM
-from naturalnets.brains.random_brain import RandomBrain
