@@ -8,10 +8,10 @@ from datetime import datetime
 from socket import gethostname
 from typing import Optional, Dict, Union, Tuple
 
-import attrs
 import click
 import numpy as np
 import wandb
+from attrs import define, field, validators
 from cpuinfo import get_cpu_info
 from tensorboardX import SummaryWriter
 
@@ -34,19 +34,19 @@ BEST_KEY = "best"
 ELAPSED_KEY = "elapsed_time"
 
 
-@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class TrainingCfg:
-    number_generations: int
-    number_validation_runs: int
-    number_rounds: int
-    maximum_env_seed: int
-    fixed_env_seed: int = -1
+    number_generations: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_rounds: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_validation_runs: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    maximum_env_seed: int = field(validator=[validators.instance_of(int), validators.ge(0)])
+    fixed_env_seed: int = field(default=-1, validator=[validators.instance_of(int), validators.ge(-1)])
     environment: dict
     brain: dict
     optimizer: dict
-    enhancer: dict = None
-    experiment_id: int = -1
-    global_seed: int
+    enhancer: dict
+    experiment_id: int = field(default=-1, validator=[validators.instance_of(int), validators.ge(-1)])
+    global_seed: int = field(validator=[validators.instance_of(int), validators.ge(0)])
 
 
 def train(configuration: Optional[Union[str, Dict]] = None, results_directory: str = "results", debug: bool = False,
