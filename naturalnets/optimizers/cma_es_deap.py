@@ -1,17 +1,19 @@
-import attr
+from typing import Union
+
 import numpy as np
+from attrs import define, field, validators
 from deap import base
 from deap import cma
 from deap import creator
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
+from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerCmaEsDeapCfg:
-    type: str
-    population_size: int
-    sigma: float = 1.0
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class OptimizerCmaEsDeapCfg(IOptimizerCfg):
+    # population_size must be >= 3, otherwise PyCMA will raise a warning that an additional individual is injected
+    population_size: int = field(validator=[validators.instance_of(int), validators.ge(3)])
+    sigma: Union[int, float] = field(validator=[validators.instance_of((int, float))])
 
 
 @register_optimizer_class
@@ -30,7 +32,7 @@ class CmaEsDeap(IOptimizer):
             pass
 
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-        creator.create("Individual", list, typecode='b', fitness=creator.FitnessMax)
+        creator.create("Individual", list, typecode="b", fitness=creator.FitnessMax)
 
         strategy = cma.Strategy(centroid=[0.0] * individual_size, sigma=config.sigma, lambda_=config.population_size)
 

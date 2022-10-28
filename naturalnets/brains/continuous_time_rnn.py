@@ -1,24 +1,44 @@
-import attrs
+from attrs import define, field, validators
 import numpy as np
 
 from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
+DENSE_MASK = "dense"
+RANDOM_MASK = "random"
 
-@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+NATURAL_NET_DIFF_EQ = "NaturalNet"
+LI_HO_CHOW_DIFF_EQ = "LiHoChow2005"
+
+
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class ContinuousTimeRNNCfg(IBrainCfg):
-    delta_t: float
-    number_neurons: int
-    differential_equation: str
-    v_mask: str = 'dense'
-    v_mask_density: float = 1.0
-    w_mask: str = 'dense'
-    w_mask_density: float = 1.0
-    t_mask: str = 'dense'
-    t_mask_density: float = 1.0
-    clipping_range: float = attrs.field(default=1.0, converter=float)
-    set_principle_diagonal_elements_of_W_negative: bool = False
-    alpha: float = 0.0
-    optimize_x0: bool = False
+    # TODO should delta_t be gt 0, or ge 0, or sth else?
+    delta_t: float = field(validator=validators.instance_of(float))
+    number_neurons: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    differential_equation: str = field(
+        validator=[validators.instance_of(str), validators.in_([NATURAL_NET_DIFF_EQ, LI_HO_CHOW_DIFF_EQ])]
+    )
+    v_mask: str = field(
+        default=DENSE_MASK,
+        validator=[validators.instance_of(str), validators.in_([DENSE_MASK, RANDOM_MASK])]
+    )
+    # TODO can this be negative?
+    v_mask_density: float = field(default=1.0, validator=validators.instance_of(float))
+    w_mask: str = field(
+        default=DENSE_MASK,
+        validator=[validators.instance_of(str), validators.in_([DENSE_MASK, RANDOM_MASK])]
+    )
+    w_mask_density: float = field(default=1.0, validator=validators.instance_of(float))
+    t_mask: str = field(
+        default=DENSE_MASK,
+        validator=[validators.instance_of(str), validators.in_([DENSE_MASK, RANDOM_MASK])]
+    )
+    t_mask_density: float = field(default=1.0, validator=validators.instance_of(float))
+    clipping_range: float = field(default=1.0, converter=float, validator=validators.gt(0))
+    set_principle_diagonal_elements_of_W_negative: bool = field(default=False, validator=validators.instance_of(bool))
+    # TODO can this be negative (probably not)?
+    alpha: float = field(default=0.0, validator=validators.instance_of(float))
+    optimize_x0: bool = field(default=False, validator=validators.instance_of(bool))
 
 
 @register_brain_class
@@ -33,13 +53,13 @@ class CTRNN(IBrain):
 
         v_mask, w_mask, t_mask = self.get_masks_from_brain_state(brain_state)
 
-        # insert weights-values into weight-masks to receive weight-matrices
+        # Insert weights-values into weight-masks to receive weight-matrices
         # explanation here: https://stackoverflow.com/a/61968524/5132456
         v_size: int = np.count_nonzero(v_mask)
         w_size: int = np.count_nonzero(w_mask)
         t_size: int = np.count_nonzero(t_mask)
 
-        # Get weight matrizes of current individual
+        # Get weight matrices of current individual
         self.V = np.array([[element] for element in individual[0:v_size]])
         self.W = np.array([[element] for element in individual[v_size:v_size + w_size]])
         self.T = np.array([[element] for element in individual[v_size + w_size:v_size + w_size + t_size]])
@@ -69,12 +89,12 @@ class CTRNN(IBrain):
         assert u.ndim == 1
 
         # Differential equation
-        if self.config.differential_equation == 'NaturalNet':
+        if self.config.differential_equation == NATURAL_NET_DIFF_EQ:
             dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x)) + self.V.dot(u)
-        elif self.config.differential_equation == 'LiHoChow2005':
+        elif self.config.differential_equation == LI_HO_CHOW_DIFF_EQ:
             dx_dt = -self.config.alpha * self.x + self.W.dot(np.tanh(self.x + self.V.dot(u)))
         else:
-            raise RuntimeError("No valid differential equation")
+            raise RuntimeError(f"'{self.config.differential_equation}' is no valid differential equation")
 
         # Euler forward discretization
         self.x = self.x + self.config.delta_t * dx_dt
@@ -107,12 +127,12 @@ class CTRNN(IBrain):
     @staticmethod
     def _generate_mask(mask_type, n, m, mask_density, keep_main_diagonal=False):
 
-        if mask_type == "random":
+        if mask_type == RANDOM_MASK:
             mask = np.random.rand(n, m) < mask_density
-        elif mask_type == "dense":
+        elif mask_type == DENSE_MASK:
             mask = np.ones((n, m), dtype=bool)
         else:
-            raise RuntimeError("Unknown mask_type: " + str(mask_type))
+            raise RuntimeError(f"Unknown mask_type: {mask_type}")
 
         if keep_main_diagonal:
             assert n == m
@@ -132,18 +152,18 @@ class CTRNN(IBrain):
 
         file_data = np.load(path)
 
-        v_mask = file_data['v_mask']
-        w_mask = file_data['w_mask']
-        t_mask = file_data['t_mask']
+        v_mask = file_data["v_mask"]
+        w_mask = file_data["w_mask"]
+        t_mask = file_data["t_mask"]
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 
     @staticmethod
     def get_masks_from_brain_state(brain_state):
 
-        v_mask = brain_state['v_mask']
-        w_mask = brain_state['w_mask']
-        t_mask = brain_state['t_mask']
+        v_mask = brain_state["v_mask"]
+        w_mask = brain_state["w_mask"]
+        t_mask = brain_state["t_mask"]
 
         return v_mask, w_mask, t_mask
 
@@ -161,9 +181,9 @@ class CTRNN(IBrain):
         free_parameters_t = np.count_nonzero(t_mask)
 
         free_parameters = {
-            'V': free_parameters_v,
-            'W': free_parameters_w,
-            'T': free_parameters_t
+            "V": free_parameters_v,
+            "W": free_parameters_w,
+            "T": free_parameters_t
         }
 
         if configuration["optimize_x0"]:

@@ -1,5 +1,7 @@
 import abc
 
+from attrs import define, field, validators
+
 registered_optimizer_classes = {}
 
 
@@ -14,6 +16,11 @@ def get_optimizer_class(optimizer_class_name: str):
 def register_optimizer_class(optimizer_class):
     registered_optimizer_classes[optimizer_class.__name__] = optimizer_class
     return optimizer_class
+
+
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class IOptimizerCfg:
+    type: str = field(validator=validators.instance_of(str))
 
 
 class IOptimizer(abc.ABC):

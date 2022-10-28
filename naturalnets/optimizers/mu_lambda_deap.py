@@ -1,21 +1,24 @@
 from functools import partial
+from typing import Union
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 from deap import base
 from deap import tools
 from deap.algorithms import varOr
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
+from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerMuLambdaCfg:
-    type: str
-    mu: int
-    lambda_: int
-    initial_gene_range: int
-    mutpb: float  # Probability that an offspring is produced by mutation; (1-mutpb) probability that crossover is used
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class OptimizerMuLambdaCfg(IOptimizerCfg):
+    # mu and lambda_ must be greater or equal to 2, as per the DEAP implementation
+    mu: int = field(validator=[validators.instance_of(int), validators.ge(2)])
+    lambda_: int = field(validator=[validators.instance_of(int), validators.ge(2)])
+    initial_gene_range: Union[int, float] = field(validator=[validators.instance_of((int, float)), validators.gt(0)])
+
+    # Probability that an offspring is produced by mutation; (1-mutpb) probability that crossover is used
+    mutpb: float = field(validator=[validators.instance_of(float), validators.ge(0.0), validators.le(1.0)])
 
 
 class FitnessMax(base.Fitness):
@@ -72,7 +75,12 @@ class MuLambdaDeap(IOptimizer):
     def ask(self):
         self.offspring = varOr(self.population, self.toolbox, self.configuration.lambda_, 1 - self.configuration.mutpb,
                                self.configuration.mutpb)
-        return self.offspring
+
+        genomes = []
+        for individual in self.offspring:
+            genomes.append(np.array(individual))
+
+        return genomes
 
     def tell(self, rewards):
         for individual, individual_reward in zip(self.offspring, rewards):

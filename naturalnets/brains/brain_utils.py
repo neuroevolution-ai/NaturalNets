@@ -56,3 +56,16 @@ def assign_individual_to_brain_weights(individual: np.ndarray, input_size: int, 
     assert current_index == len(individual)
 
     return weights_input_to_hidden, weights_hidden_to_hidden, biases, weights_hidden_to_output, output_bias
+
+
+def validate_list_of_ints_larger_zero(instance, attribute, value):
+    """
+    A custom attrs validator, to validate that value is a list of integers
+    """
+    if isinstance(value, list):
+        validate_failed = not all(isinstance(x, int) and x > 0 for x in value)
+    else:
+        validate_failed = True
+
+    if validate_failed:
+        raise ValueError(f"'{attribute.name}' must be a list of integers larger than 0")

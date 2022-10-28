@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, Dict, Optional
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 
 registered_enhancers = {}
 
@@ -20,9 +20,9 @@ def register_enhancer_class(enhancer_class):
     return enhancer_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True)
-class IEnhancerCfg(ABC, dict):
-    type: str
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class IEnhancerCfg:
+    type: str = field(validator=validators.instance_of(str))
 
 
 class IEnhancer(ABC):

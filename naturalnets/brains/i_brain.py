@@ -1,9 +1,14 @@
 import abc
 from typing import Callable
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 from scipy.special import expit
+
+RELU_ACTIVATION = "relu"
+TANH_ACTIVATION = "tanh"
+LINEAR_ACTIVATION = "linear"
+
 
 registered_brain_classes = {}
 
@@ -21,9 +26,9 @@ def register_brain_class(brain_class):
     return brain_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True)
-class IBrainCfg(abc.ABC, dict):
-    type: str
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class IBrainCfg:
+    type: str = field(validator=validators.instance_of(str))
 
 
 class IBrain(abc.ABC):
@@ -74,11 +79,11 @@ class IBrain(abc.ABC):
     @classmethod
     def get_activation_function(cls, activation: str) -> Callable[[np.ndarray], np.ndarray]:
 
-        if activation == "relu":
+        if activation == RELU_ACTIVATION:
             return cls.relu
-        elif activation == "linear":
+        elif activation == LINEAR_ACTIVATION:
             return cls.linear
-        elif activation == "tanh":
+        elif activation == TANH_ACTIVATION:
             return cls.tanh
         else:
             raise RuntimeError("The chosen activation function '{}' is not implemented".format(activation))
