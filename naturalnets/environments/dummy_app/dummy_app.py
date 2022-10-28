@@ -2,10 +2,9 @@ import math
 from cmath import inf
 from typing import Dict
 
-import attrs
 import cv2
 import numpy as np
-from attrs import field, validators
+from attrs import define, field, validators
 from numpy.random import default_rng
 
 from naturalnets.enhancers import RandomEnhancer
@@ -27,9 +26,9 @@ THICKNESS = 1
 FIXED_ENV_SEED = 0
 
 
-@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class DummyAppCfg:
-    type: str
+    type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     screen_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     screen_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
