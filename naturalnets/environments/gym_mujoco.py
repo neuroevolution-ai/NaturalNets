@@ -1,17 +1,17 @@
 from typing import Optional, Dict
 
-import attr
 import gym
 import numpy as np
+from attrs import define, field, validators
 
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 from naturalnets.tools.utils import rescale_values
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class GymMujocoCfg:
-    type: str
-    name: str
+    type: str = field(validator=validators.instance_of(str))
+    name: str = field(validator=validators.instance_of(str))
 
 
 @register_environment_class
