@@ -18,20 +18,22 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 
 from collections import deque
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
+from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerOpenAIESCfg:
-    type: str
-    population_size: int
-    learning_rate: np.float32
-    l2coeff: np.float32
-    noise_stdev: np.float32
-    use_centered_ranks: bool = True
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class OptimizerOpenAIESCfg(IOptimizerCfg):
+    # Theoretically, population_size could be 1, but the individual is NaN in the first generation. Thus, assert >= 2
+    population_size: int = field(validator=[validators.instance_of(int), validators.ge(2)])
+    learning_rate: float = field(validator=[validators.instance_of(float), validators.gt(0)])
+
+    # TODO add constraints for l2coeff and noise_stdev
+    l2coeff: float = field(validator=validators.instance_of(float))
+    noise_stdev: float = field(validator=validators.instance_of(float))
+    use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
 
 class Adam:
