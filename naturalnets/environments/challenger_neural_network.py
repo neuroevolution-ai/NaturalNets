@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 
 import numpy as np
-from attrs import define
+from attrs import define, field, validators
 
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
@@ -9,11 +9,11 @@ from naturalnets.environments.i_environment import IEnvironment, register_enviro
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class ChallengerNeuralNetworkCfg:
-    type: str
-    number_inputs: int
-    number_outputs: int
-    exclude_reward_from_observation: bool
-    number_time_steps: int
+    type: str = field(validator=validators.instance_of(str))
+    number_inputs: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_outputs: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    exclude_reward_from_observation: bool = field(validator=validators.instance_of(bool))
+    number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     brain: dict
 
 
