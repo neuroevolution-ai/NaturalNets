@@ -3,8 +3,7 @@ import logging
 import time
 from typing import Optional, Dict, List
 
-import attrs
-from attrs import field, validators
+from attrs import define, field, validators
 import cv2
 import numpy as np
 
@@ -19,10 +18,10 @@ class FakeBugOptions(enum.Enum):
     pass
 
 
-@attrs.define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
-    type: str
-    number_time_steps: int
+    type: str = field(validator=validators.instance_of(str))
+    number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
