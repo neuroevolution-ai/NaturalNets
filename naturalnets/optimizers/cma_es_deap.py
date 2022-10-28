@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from attrs import define, field, validators
 from deap import base
@@ -9,9 +11,9 @@ from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, regist
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class OptimizerCmaEsDeapCfg(IOptimizerCfg):
-    # population_size must be >= 2, because \mu is calculated as int(population_size / 2), and \mu cannot be 0
-    population_size: int = field(validator=[validators.instance_of(int), validators.ge(2)])
-    sigma: float = field(validator=[validators.instance_of(float), validators.gt(0)])
+    # population_size must be >= 3, otherwise PyCMA will raise a warning that an additional individual is injected
+    population_size: int = field(validator=[validators.instance_of(int), validators.ge(3)])
+    sigma: Union[int, float] = field(validator=[validators.instance_of((int, float))])
 
 
 @register_optimizer_class
