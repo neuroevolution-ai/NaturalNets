@@ -1,18 +1,24 @@
 import itertools
 from typing import List
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
+from naturalnets.brains.brain_utils import validate_list_of_ints
+from naturalnets.brains.i_brain import (IBrain, IBrainCfg, register_brain_class, LINEAR_ACTIVATION, RELU_ACTIVATION,
+                                        TANH_ACTIVATION)
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class FeedForwardCfg(IBrainCfg):
-    hidden_layers: List[int]
-    neuron_activation: str
-    neuron_activation_output: str
-    use_bias: bool
+    hidden_layers: List[int] = field(validator=validate_list_of_ints)
+    neuron_activation: str = field(
+        validator=[validators.instance_of(str), validators.in_([LINEAR_ACTIVATION, TANH_ACTIVATION, RELU_ACTIVATION])]
+    )
+    neuron_activation_output: str = field(
+        validator=[validators.instance_of(str), validators.in_([TANH_ACTIVATION])]
+    )
+    use_bias: bool = field(validator=validators.instance_of(bool))
 
 
 @register_brain_class
