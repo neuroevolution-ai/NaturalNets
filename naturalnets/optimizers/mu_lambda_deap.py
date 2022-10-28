@@ -72,7 +72,12 @@ class MuLambdaDeap(IOptimizer):
     def ask(self):
         self.offspring = varOr(self.population, self.toolbox, self.configuration.lambda_, 1 - self.configuration.mutpb,
                                self.configuration.mutpb)
-        return self.offspring
+
+        genomes = []
+        for individual in self.offspring:
+            genomes.append(np.array(individual))
+
+        return genomes
 
     def tell(self, rewards):
         for individual, individual_reward in zip(self.offspring, rewards):
