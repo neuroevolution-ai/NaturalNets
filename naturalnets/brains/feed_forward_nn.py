@@ -4,14 +4,14 @@ from typing import List
 import numpy as np
 from attrs import define, field, validators
 
-from naturalnets.brains.brain_utils import validate_list_of_ints
+from naturalnets.brains.brain_utils import validate_list_of_ints_larger_zero
 from naturalnets.brains.i_brain import (IBrain, IBrainCfg, register_brain_class, LINEAR_ACTIVATION, RELU_ACTIVATION,
                                         TANH_ACTIVATION)
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class FeedForwardCfg(IBrainCfg):
-    hidden_layers: List[int] = field(validator=validate_list_of_ints)
+    hidden_layers: List[int] = field(validator=validate_list_of_ints_larger_zero)
     neuron_activation: str = field(
         validator=[validators.instance_of(str), validators.in_([LINEAR_ACTIVATION, TANH_ACTIVATION, RELU_ACTIVATION])]
     )

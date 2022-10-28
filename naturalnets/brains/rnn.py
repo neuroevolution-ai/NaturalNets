@@ -3,13 +3,13 @@ from typing import List, Union, Dict
 import numpy as np
 from attrs import define, field, validators
 
-from naturalnets.brains.brain_utils import assign_individual_to_brain_weights, validate_list_of_ints
+from naturalnets.brains.brain_utils import assign_individual_to_brain_weights, validate_list_of_ints_larger_zero
 from naturalnets.brains.i_brain import register_brain_class, IBrain, IBrainCfg
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class RNNConfig(IBrainCfg):
-    hidden_layers: List[int] = field(validator=validate_list_of_ints)
+    hidden_layers: List[int] = field(validator=validate_list_of_ints_larger_zero)
     use_bias: bool = field(validator=validators.instance_of(bool))
 
 
