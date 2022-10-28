@@ -1,17 +1,17 @@
 import math
 
-import attr
 import numpy as np
+from attrs import define, field, validators
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
+from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
 
 
-@attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerCanonicalEsCfg:
-    type: str
-    offspring_population_size: int
-    parent_population_size: int
-    mutation_step_size: float
+@define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
+class OptimizerCanonicalEsCfg(IOptimizerCfg):
+    # TODO update the validators once the optimizer is fixed
+    offspring_population_size: int = field(validator=validators.instance_of(int))
+    parent_population_size: int = field(validator=validators.instance_of(int))
+    mutation_step_size: float = field(validator=validators.instance_of(float))
 
 
 @register_optimizer_class
@@ -38,6 +38,7 @@ class CanonicalEs(IOptimizer):
         # Sort rewards in descending order
         sorted_rewards = np.flip(np.argsort(rewards)).flatten()
 
+        # TODO fix the optimizer: currently it only works if both population sizes are equal
         # Update policy
         for i in range(self.config.parent_population_size):
             j = sorted_rewards[i]
