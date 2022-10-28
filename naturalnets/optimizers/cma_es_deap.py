@@ -4,12 +4,11 @@ from deap import base
 from deap import cma
 from deap import creator
 
-from naturalnets.optimizers.i_optimizer import IOptimizer, register_optimizer_class
+from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class OptimizerCmaEsDeapCfg:
-    type: str = field(validator=validators.instance_of(str))
+class OptimizerCmaEsDeapCfg(IOptimizerCfg):
     # population_size must be >= 2, because \mu is calculated as int(population_size / 2), and \mu cannot be 0
     population_size: int = field(validator=[validators.instance_of(int), validators.ge(2)])
     sigma: float = field(validator=[validators.instance_of(float), validators.gt(0)])
