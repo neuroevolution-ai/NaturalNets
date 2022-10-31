@@ -19,13 +19,9 @@ while True:
     environment_configuration["brain"] = challenger_network_configuration
 
     brain_configuration = dict()
-    brain_configuration["type"] = "CTRNN"
-    brain_configuration["differential_equation"] = "NaturalNet"
-    brain_configuration["set_principle_diagonal_elements_of_W_negative"] = False
-    brain_configuration["delta_t"] = 0.05
-    brain_configuration["number_neurons"] = 20
-    brain_configuration["clipping_range"] = 1.0
-    brain_configuration["optimize_x0"] = False
+    brain_configuration["type"] = "LSTM"
+    brain_configuration["hidden_layers"] = [50]
+    brain_configuration["use_bias"] = True
 
     optimizer_configuration = dict()
     optimizer_configuration["type"] = "CmaEsDeap"

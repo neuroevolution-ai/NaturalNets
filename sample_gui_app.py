@@ -5,14 +5,15 @@ configuration = {
     "number_validation_runs": 50,
     "number_rounds": 5,
     "maximum_env_seed": 100000,
+    "global_seed": 0,
     "environment": {
         "type": "GUIApp",
-        "number_time_steps": 100,
+        "number_time_steps": 200,
         "include_fake_bug": False
     },
     "brain": {
         "type": "LSTM",
-        "hidden_layers": [20],
+        "hidden_layers": [30],
         "use_bias": True
     },
     "optimizer": {
