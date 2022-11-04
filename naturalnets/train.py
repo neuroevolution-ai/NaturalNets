@@ -18,6 +18,7 @@ from tensorboardX import SummaryWriter
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
+from naturalnets.optimizers import OpenAIEs
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
 from naturalnets.tools.utils import flatten_dict, set_seeds
@@ -156,7 +157,12 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Tell optimizers new rewards
         opt.tell(rewards_training)
 
-        best_genome_current_generation = genomes[np.argmax(rewards_training)]
+        # TODO remove this and improve how the current individual is taken. Other optimizers simply take one individual
+        #  but OpenAI-ES uses all individuals of a generation combined to build the new individual
+        if isinstance(opt, OpenAIEs):
+            best_genome_current_generation = opt.current_individual
+        else:
+            best_genome_current_generation = genomes[np.argmax(rewards_training)]
 
         # Validation runs for best individual
         evaluations = []
