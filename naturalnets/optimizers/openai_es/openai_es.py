@@ -29,17 +29,26 @@ from naturalnets.optimizers.openai_es.openai_es_utils import Adam, compute_cente
 class OptimizerOpenAIESCfg(IOptimizerCfg):
     # Theoretically, population_size could be 1, but the individual is NaN in the first generation. Thus, assert >= 2
     population_size: int = field(validator=[validators.instance_of(int), validators.ge(2)])
+
+    # Initial learning rate for the Adam optimizer
     learning_rate: float = field(validator=[validators.instance_of(float), validators.gt(0)])
 
-    # TODO add constraints for l2coeff and noise_stdev
-    l2coeff: float = field(validator=validators.instance_of(float))
+    # Controls how much of the noise is added to the individual, i.e. this value is multiplied with the
+    # sampled noise
+    noise_stddev: float = field(validator=[validators.instance_of(float), validators.gt(0.0), validators.le(1.0)])
 
-    # Controls how much of the noise is added to the individual
-    noise_stddev: float = field(validator=validators.instance_of(float))
+    # Controls the amount of weight decay, which is also called L2 regularization
+    l2_regularization_coefficient: float = field(
+        validator=[validators.instance_of(float), validators.ge(0.0), validators.le(1.0)]
+    )
+
+    # Mirrored sampling uses sampled noise twice, by adding and subtracting it to the current individual.
+    # Note, that this does not double the population_size, because each added and subtracted perturbed individual
+    # counts towards the population
     mirrored_sampling: bool = field(default=True, validator=validators.instance_of(bool))
-    use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
-    initializer_std: float = 1.0
+    # Does not use the rewards directly, but ranks them and centers the ranked rewards between -0.5 and 0.5
+    use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
 
 @register_optimizer_class
@@ -58,7 +67,7 @@ class OpenAIEs(IOptimizer):
         #  A bit tricky to implement here, as we use also other brains instead of only feed forward.
         #  Specifically, std=1.0 is used for all hidden layers, and std=0.01 is used for the last layer which maps
         #  the previous calculations to the output
-        self.current_individual = self.initialize_individual(std=self.configuration.initializer_std)
+        self.current_individual = self.initialize_individual(std=1.0)
 
         self.population_size = self.configuration.population_size
         self.learning_rate = self.configuration.learning_rate
@@ -150,7 +159,7 @@ class OpenAIEs(IOptimizer):
         # decay
         self.current_individual = self.adam.update(
             theta=self.current_individual,
-            gradient=-g + self.configuration.l2coeff * self.current_individual
+            gradient=-g + self.configuration.l2_regularization_coefficient * self.current_individual
         )
 
         self.noise = []
