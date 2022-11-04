@@ -75,9 +75,9 @@ def experiment_visualization(exp_dir: str, lag: float):
 
     for env_seed in range(number_validation_runs):
 
-        env = environment_class(configuration=configuration["environment"])
+        env = environment_class(configuration=configuration["environment"], render_mode="human")
 
-        ob = env.reset()
+        ob = env.reset(env_seed=env_seed)
         brain.reset()
 
         fitness_current = 0

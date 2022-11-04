@@ -17,13 +17,13 @@ class GymMujocoCfg:
 @register_environment_class
 class GymMujoco(IEnvironment):
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict, *, render_mode: str = None, **kwargs):
 
         self.config = GymMujocoCfg(**configuration)
 
         # The new step API returns two booleans, terminated and truncated, to indicate if an environment is either
         # done (terminated) or met a truncation condition (truncated), e.g. a time limit
-        self.env = gym.make(self.config.name)
+        self.env = gym.make(self.config.name, render_mode=render_mode)
 
         assert isinstance(self.env.action_space, gym.spaces.Box), ("Only environments with a Box action space "
                                                                    "(continuous values) are supported.")

@@ -20,7 +20,7 @@ class ChallengerNeuralNetworkCfg:
 @register_environment_class
 class ChallengerNeuralNetwork(IEnvironment):
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict, **kwargs):
         self.config = ChallengerNeuralNetworkCfg(**configuration)
 
         self.brain = None
