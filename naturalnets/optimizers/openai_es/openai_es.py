@@ -22,6 +22,7 @@ import numpy as np
 from attrs import define, field, validators
 
 from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
+from naturalnets.optimizers.openai_es.openai_es_utils import Adam, compute_centered_ranks, batched_weighted_sum
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -32,45 +33,32 @@ class OptimizerOpenAIESCfg(IOptimizerCfg):
 
     # TODO add constraints for l2coeff and noise_stdev
     l2coeff: float = field(validator=validators.instance_of(float))
-    noise_stdev: float = field(validator=validators.instance_of(float))
+
+    # Controls how much of the noise is added to the individual
+    noise_stddev: float = field(validator=validators.instance_of(float))
+    mirrored_sampling: bool = field(default=True, validator=validators.instance_of(bool))
     use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
-
-class Adam:
-    def __init__(self, num_params, stepsize, beta1=0.9, beta2=0.999, epsilon=1e-08):
-        self.dim = num_params
-        self.t = 0
-
-        self.stepsize = stepsize
-        self.beta1 = beta1
-        self.beta2 = beta2
-        self.epsilon = epsilon
-        self.m = np.zeros(self.dim, dtype=np.float32)
-        self.v = np.zeros(self.dim, dtype=np.float32)
-
-    def update(self, theta, gradient):
-        self.t += 1
-        step = self._compute_step(gradient)
-        # ratio = np.linalg.norm(step) / np.linalg.norm(theta)
-        theta_new = theta + step
-        return theta_new  # , ratio
-
-    def _compute_step(self, gradient):
-        a = self.stepsize * np.sqrt(1 - self.beta2 ** self.t) / (1 - self.beta1 ** self.t)
-        self.m = self.beta1 * self.m + (1 - self.beta1) * gradient
-        self.v = self.beta2 * self.v + (1 - self.beta2) * (gradient * gradient)
-        step = -a * self.m / (np.sqrt(self.v) + self.epsilon)
-        return step
+    initializer_std: float = 1.0
 
 
 @register_optimizer_class
 class OpenAIEs(IOptimizer):
     def __init__(self, individual_size: int, configuration: dict):
         self.noise = []
-        self.random_state = np.random.RandomState(seed=0)
+
+        # TODO use global_seed from main config
+        self.rng = np.random.default_rng(seed=0)
+
         self.individual_size = individual_size
         self.configuration = OptimizerOpenAIESCfg(**configuration)
-        self.current_individual = np.random.randn(self.individual_size).astype(np.float32)
+        # self.current_individual = np.random.randn(self.individual_size).astype(np.float32)
+
+        # TODO technically different std values are used for different hidden layers in the original implementation.
+        #  A bit tricky to implement here, as we use also other brains instead of only feed forward.
+        #  Specifically, std=1.0 is used for all hidden layers, and std=0.01 is used for the last layer which maps
+        #  the previous calculations to the output
+        self.current_individual = self.initialize_individual(std=self.configuration.initializer_std)
 
         self.population_size = self.configuration.population_size
         self.learning_rate = self.configuration.learning_rate
@@ -79,37 +67,20 @@ class OpenAIEs(IOptimizer):
         self.reward_history = deque(maxlen=10)
         self.last_mean_reward = 0
 
-    def initialize_individual(self, std=1.0):
+    def initialize_individual(self, std: float = 1.0):
         """
         This initializes the individual when first starting the optimizers. OpenAI used this in their implementation
-        and Experiments showed that this could be a factor for the performance of the algorithm.
+        and experiments showed that this could be a factor for the performance of the algorithm.
 
         Source: https://github.com/openai/evolution-strategies-starter
 
         :param std:
         :return:
         """
-        out = np.random.randn(self.individual_size).astype(np.float32)
-        out *= std / np.sqrt(np.square(out).sum(axis=0, keepdims=True))
+        individual = self.rng.standard_normal(self.individual_size, dtype=np.float32)
+        individual *= std / np.sqrt(np.square(individual).sum(axis=0, keepdims=True))
 
-        return out
-
-    @staticmethod
-    def compute_ranks(x):
-        """
-        Returns ranks in [0, len(x))
-        Note: This is different from scipy.stats.rankdata, which returns ranks in [1, len(x)].
-        """
-        assert x.ndim == 1
-        ranks = np.empty(len(x), dtype=int)
-        ranks[x.argsort()] = np.arange(len(x))
-        return ranks
-
-    def compute_centered_ranks(self, x):
-        y = self.compute_ranks(x.ravel()).reshape(x.shape).astype(np.float32)
-        y /= (x.size - 1)
-        y -= .5
-        return y
+        return individual
 
     def adjust_learning_rate(self):
         if self.last_mean_reward is None:
@@ -127,13 +98,26 @@ class OpenAIEs(IOptimizer):
 
     def ask(self):
         individuals = []
-        for i in range(self.population_size):
-            # noinspection PyArgumentList
-            noise_for_individual = self.random_state.randn(self.individual_size)
-            noisy_individual = self.current_individual + noise_for_individual
 
+        number_of_individuals = self.population_size
+
+        if self.configuration.mirrored_sampling:
+            # Half the population size, as we add two individuals per sampled noise, when using mirrored_sampling
+            number_of_individuals //= 2
+
+        for i in range(number_of_individuals):
+            noise_for_individual = self.rng.standard_normal(size=self.individual_size, dtype=np.float32)
             self.noise.append(noise_for_individual)
-            individuals.append(noisy_individual)
+
+            # noise_stddev is only used for perturbing the individuals, later, when calculating the new individual,
+            # the "original" noise is used, i.e. no multiplication with noise_stddev
+            noise_with_stddev = self.configuration.noise_stddev * noise_for_individual
+
+            individuals.append(self.current_individual + noise_with_stddev)
+
+            # Mirrored sampling: Add _and_ subtract the noise to the individual
+            if self.configuration.mirrored_sampling:
+                individuals.append(self.current_individual - noise_with_stddev)
 
         return individuals
 
@@ -143,15 +127,30 @@ class OpenAIEs(IOptimizer):
         # if self.adam.t % 5 == 0:
         #     self.adjust_learning_rate()
 
+        processed_rewards = np.array(rewards, dtype=np.float32)
+
         if self.configuration.use_centered_ranks:
-            rewards = self.compute_centered_ranks(np.array(rewards, dtype=np.float32))
+            processed_rewards = compute_centered_ranks(processed_rewards)
 
-        # TODO maybe improve the calculation using numpy function
-        weighted_noise = np.sum([n * r for (n, r) in zip(self.noise, rewards)], axis=0, dtype=np.float32)
+        if self.configuration.mirrored_sampling:
+            processed_rewards = processed_rewards[::2] - processed_rewards[1::2]
 
-        weighted_noise /= len(weighted_noise)
+        g, count = batched_weighted_sum(
+            processed_rewards,
+            self.noise,
+            batch_size=500
+        )
 
-        gradient = -weighted_noise + self.configuration.l2coeff * self.current_individual
-        self.current_individual = self.adam.update(self.current_individual, gradient=gradient)
+        g /= len(rewards)
+
+        assert g.shape == (self.individual_size,) and g.dtype == np.float32 and count == len(self.noise)
+
+        # gradient explanation: -g probably because the Adam implementation does gradient descent, but we want
+        # to do gradient ascent since we want to maximize the reward, and the second part of the equation is weight
+        # decay
+        self.current_individual = self.adam.update(
+            theta=self.current_individual,
+            gradient=-g + self.configuration.l2coeff * self.current_individual
+        )
 
         self.noise = []
