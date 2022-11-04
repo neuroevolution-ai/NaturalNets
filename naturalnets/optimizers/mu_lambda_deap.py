@@ -35,14 +35,13 @@ class Individual(list):
 
 @register_optimizer_class
 class MuLambdaDeap(IOptimizer):
-    def __init__(self, individual_size: int, configuration: dict) -> None:
-        super().__init__()
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict) -> None:
+        super().__init__(individual_size, global_seed, configuration)
 
-        self.individual_size = individual_size
-        self.configuration = OptimizerMuLambdaCfg(**configuration)
+        self.configuration = OptimizerMuLambdaCfg(**self.config_dict)
 
         self.indices = partial(np.random.uniform, -self.configuration.initial_gene_range,
-                               self.configuration.initial_gene_range, individual_size)
+                               self.configuration.initial_gene_range, self.individual_size)
         self.individual = partial(tools.initIterate, Individual, self.indices)
         self.population = tools.initRepeat(list, self.individual, n=self.configuration.mu)
         self.offspring = None

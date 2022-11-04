@@ -15,13 +15,16 @@ class OptimizerCmaEsPyCmaCfg(IOptimizerCfg):
 @register_optimizer_class
 class CmaEsPyCma(IOptimizer):
 
-    def __init__(self, individual_size: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+        super().__init__(individual_size, global_seed, configuration)
 
-        self.individual_size = individual_size
-        config = OptimizerCmaEsPyCmaCfg(**configuration)
+        config = OptimizerCmaEsPyCmaCfg(**self.config_dict)
 
-        self.es = cma.CMAEvolutionStrategy(x0=[0.0] * individual_size, sigma0=config.sigma,
-                                           inopts={"popsize": config.population_size})
+        self.es = cma.CMAEvolutionStrategy(
+            x0=[0.0] * self.individual_size,
+            sigma0=config.sigma,
+            inopts={"popsize": config.population_size}
+        )
 
         self.solutions = None
 

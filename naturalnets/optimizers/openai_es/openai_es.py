@@ -53,15 +53,12 @@ class OptimizerOpenAIESCfg(IOptimizerCfg):
 
 @register_optimizer_class
 class OpenAIEs(IOptimizer):
-    def __init__(self, individual_size: int, configuration: dict):
-        self.noise = []
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+        super().__init__(individual_size, global_seed, configuration)
 
-        # TODO use global_seed from main config
-        self.rng = np.random.default_rng(seed=0)
+        self.rng = np.random.default_rng(seed=self.global_seed)
 
-        self.individual_size = individual_size
-        self.configuration = OptimizerOpenAIESCfg(**configuration)
-        # self.current_individual = np.random.randn(self.individual_size).astype(np.float32)
+        self.configuration = OptimizerOpenAIESCfg(**self.config_dict)
 
         # TODO technically different std values are used for different hidden layers in the original implementation.
         #  A bit tricky to implement here, as we use also other brains instead of only feed forward.
@@ -73,6 +70,7 @@ class OpenAIEs(IOptimizer):
         self.learning_rate = self.configuration.learning_rate
         self.adam = Adam(num_params=self.individual_size, stepsize=self.learning_rate)
 
+        self.noise = []
         self.reward_history = deque(maxlen=10)
         self.last_mean_reward = 0
 

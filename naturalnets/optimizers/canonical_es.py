@@ -17,11 +17,11 @@ class OptimizerCanonicalEsCfg(IOptimizerCfg):
 @register_optimizer_class
 class CanonicalEs(IOptimizer):
 
-    def __init__(self, individual_size: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+        super().__init__(individual_size, global_seed, configuration)
 
-        self.config = OptimizerCanonicalEsCfg(**configuration)
-        self.individual_size = individual_size
-        self.policy = np.zeros(individual_size)
+        self.config = OptimizerCanonicalEsCfg(**self.config_dict)
+        self.policy = np.zeros(self.individual_size)
 
         self.w = self.get_reward_weights(self.config.parent_population_size)
         self.genomes = []

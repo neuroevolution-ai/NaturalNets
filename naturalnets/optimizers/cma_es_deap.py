@@ -19,10 +19,10 @@ class OptimizerCmaEsDeapCfg(IOptimizerCfg):
 @register_optimizer_class
 class CmaEsDeap(IOptimizer):
 
-    def __init__(self, individual_size: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+        super().__init__(individual_size, global_seed, configuration)
 
-        self.individual_size = individual_size
-        config = OptimizerCmaEsDeapCfg(**configuration)
+        config = OptimizerCmaEsDeapCfg(**self.config_dict)
 
         try:
             del creator.Individual

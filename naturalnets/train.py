@@ -112,14 +112,15 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
     individual_size = ep_runner.get_individual_size()
 
-    print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
-    print("Individual size: {}".format(individual_size))
-    print("Used CPU for training: " + get_cpu_info()["brand_raw"])
+    print(f"Free parameters: {ep_runner.get_free_parameter_usage()}")
+    print(f"Individual size: {individual_size}")
+    print(f"Used CPU for training: {get_cpu_info()['brand_raw']}")
 
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer["type"])
 
-    opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
+    opt = optimizer_class(individual_size=individual_size, global_seed=config.global_seed,
+                          configuration=config.optimizer)
 
     best_genome_overall = None
     best_reward_overall = -math.inf
