@@ -1,4 +1,5 @@
 import math
+from typing import List
 
 import numpy as np
 from attrs import define, field, validators
@@ -34,7 +35,9 @@ class CanonicalEs(IOptimizer):
 
         return self.genomes
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = self.genomes[np.argmax(rewards)]
+
         # Sort rewards in descending order
         sorted_rewards = np.flip(np.argsort(rewards)).flatten()
 
@@ -43,6 +46,8 @@ class CanonicalEs(IOptimizer):
         for i in range(self.config.parent_population_size):
             j = sorted_rewards[i]
             self.policy += self.config.mutation_step_size * self.w[i] * self.genomes[j]
+
+        return best_genome_current_generation
 
     @staticmethod
     def get_reward_weights(population_size):

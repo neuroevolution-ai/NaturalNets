@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 from attrs import define, field, validators
@@ -81,8 +81,12 @@ class MuLambdaDeap(IOptimizer):
 
         return genomes
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = np.array(self.offspring[np.argmax(rewards)])
+
         for individual, individual_reward in zip(self.offspring, rewards):
             individual.fitness.values = tuple([individual_reward])
 
         self.population = self.select(self.offspring, self.configuration.mu)
+
+        return best_genome_current_generation

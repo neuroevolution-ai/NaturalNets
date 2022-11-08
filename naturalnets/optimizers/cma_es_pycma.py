@@ -1,6 +1,7 @@
-from typing import Union
+from typing import Union, List
 
 import cma
+import numpy as np
 from attrs import define, field, validators
 
 from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
@@ -32,5 +33,9 @@ class CmaEsPyCma(IOptimizer):
         self.solutions = self.es.ask()
         return self.solutions
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = self.solutions[np.argmax(rewards)]
+
         self.es.tell(self.solutions, rewards)
+
+        return best_genome_current_generation

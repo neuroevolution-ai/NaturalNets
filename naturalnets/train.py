@@ -155,14 +155,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
             rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
 
         # Tell optimizers new rewards
-        opt.tell(rewards_training)
-
-        # TODO remove this and improve how the current individual is taken. Other optimizers simply take one individual
-        #  but OpenAI-ES uses all individuals of a generation combined to build the new individual
-        if isinstance(opt, OpenAIEs):
-            best_genome_current_generation = opt.current_individual
-        else:
-            best_genome_current_generation = genomes[np.argmax(rewards_training)]
+        best_genome_current_generation = opt.tell(rewards_training)
 
         # Validation runs for best individual
         evaluations = []

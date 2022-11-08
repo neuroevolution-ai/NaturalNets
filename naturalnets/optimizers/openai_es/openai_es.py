@@ -17,6 +17,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 """
 
 from collections import deque
+from typing import List
 
 import numpy as np
 from attrs import define, field, validators
@@ -128,7 +129,8 @@ class OpenAIEs(IOptimizer):
 
         return individuals
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = self.current_individual
         # self.reward_history.append(np.mean(rewards))
 
         # if self.adam.t % 5 == 0:
@@ -161,3 +163,5 @@ class OpenAIEs(IOptimizer):
         )
 
         self.noise = []
+
+        return best_genome_current_generation

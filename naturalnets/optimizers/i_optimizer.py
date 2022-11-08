@@ -1,5 +1,7 @@
 import abc
+from typing import List
 
+import numpy as np
 from attrs import define, field, validators
 
 registered_optimizer_classes = {}
@@ -35,5 +37,5 @@ class IOptimizer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
         pass
