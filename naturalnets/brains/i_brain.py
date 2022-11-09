@@ -29,6 +29,11 @@ def register_brain_class(brain_class):
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class IBrainCfg:
     type: str = field(validator=validators.instance_of(str))
+    observation_standardization: bool = field(default=False, validator=validators.instance_of(bool))
+    calc_ob_stat_prob: float = field(
+        default=0.0,
+        validator=[validators.instance_of(float), validators.ge(0.0), validators.le(1.0)]
+    )
 
 
 class IBrain(abc.ABC):

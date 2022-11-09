@@ -7,6 +7,7 @@ SHARED_MEMORY_NAME = "shared_noise_table"
 
 class SharedNoiseTable:
     def __init__(self):
+        # TODO clean up the constructor or delete the class I think it is not useful
         import ctypes
 
         seed = 123
@@ -64,6 +65,31 @@ class Adam:
         self.v = self.beta2 * self.v + (1 - self.beta2) * (gradient * gradient)
         step = -a * self.m / (np.sqrt(self.v) + self.epsilon)
         return step
+
+
+class RunningStat(object):
+    def __init__(self, shape, eps):
+        self.sum = np.zeros(shape, dtype=np.float32)
+        self.sumsq = np.full(shape, eps, dtype=np.float32)
+        self.count = eps
+
+    def increment(self, s, ssq, c):
+        self.sum += s
+        self.sumsq += ssq
+        self.count += c
+
+    @property
+    def mean(self):
+        return self.sum / self.count
+
+    @property
+    def std(self):
+        return np.sqrt(np.maximum(self.sumsq / self.count - np.square(self.mean), 1e-2))
+
+    def set_from_init(self, init_mean, init_std, init_count):
+        self.sum[:] = init_mean * init_count
+        self.sumsq[:] = (np.square(init_mean) + np.square(init_std)) * init_count
+        self.count = init_count
 
 
 def compute_ranks(x):

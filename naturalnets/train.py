@@ -18,8 +18,8 @@ from tensorboardX import SummaryWriter
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
-from naturalnets.optimizers import OpenAIEs
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
+from naturalnets.optimizers.openai_es.openai_es_utils import RunningStat
 from naturalnets.tools.episode_runner import EpisodeRunner
 from naturalnets.tools.utils import flatten_dict, set_seeds
 from naturalnets.tools.write_results import write_results_to_textfile
@@ -93,6 +93,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
+    observation_standardization: bool = config.brain["observation_standardization"]
 
     try:
         enhancer_type = config.enhancer["type"]
@@ -128,6 +129,16 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
     log = []
 
+    ob_stat, calc_ob_stat_prob = None, None
+    if observation_standardization:
+        # TODO remove once testing is done
+        ob_stat = RunningStat(
+            shape=(ep_runner.get_input_size(),),
+            eps=1e-2  # eps to prevent dividing by zero at the beginning when computing mean/stdev
+        )
+
+        calc_ob_stat_prob = config.brain["calc_ob_stat_prob"]
+
     # Run evolutionary training for given number of generations
     for generation in range(config.number_generations):
 
@@ -146,13 +157,31 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Training runs for candidates
         evaluations = []
         for genome in genomes:
-            evaluations.append([genome, env_seed, config.number_rounds])
+            if observation_standardization:
+                evaluations.append(
+                    [genome, env_seed, config.number_rounds, ob_stat.mean, ob_stat.std, calc_ob_stat_prob]
+                )
+            else:
+                evaluations.append([genome, env_seed, config.number_rounds])
 
         if debug:
             # Use this for debugging
-            rewards_training = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+            training_results = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
         else:
-            rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
+            training_results = pool.map(ep_runner.eval_fitness, evaluations)
+
+        rewards_training = training_results
+        recorded_observations = None
+
+        if observation_standardization:
+            rewards_training = []
+            recorded_observations = []
+            for result in training_results:
+                if isinstance(result, tuple):
+                    rewards_training.append(result[0])
+                    recorded_observations.extend(result[1])
+                else:
+                    rewards_training.append(result)
 
         # Tell optimizers new rewards
         best_genome_current_generation = opt.tell(rewards_training)
@@ -160,7 +189,10 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Validation runs for best individual
         evaluations = []
         for i in range(config.number_validation_runs):
-            evaluations.append([best_genome_current_generation, i, 1])
+            if observation_standardization:
+                evaluations.append([best_genome_current_generation, i, 1, ob_stat.mean, ob_stat.std, 0.0])
+            else:
+                evaluations.append([best_genome_current_generation, i, 1])
 
         if debug:
             rewards_validation = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
@@ -175,6 +207,14 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         if best_reward_current_generation > best_reward_overall:
             best_genome_overall = best_genome_current_generation
             best_reward_overall = best_reward_current_generation
+
+        if observation_standardization and len(recorded_observations) > 0:
+            recorded_observations = np.array(recorded_observations, dtype=np.float32)
+            ob_stat.increment(
+                recorded_observations.sum(axis=(0, 1)),
+                np.square(recorded_observations).sum(axis=(0, 1)),
+                recorded_observations.shape[0] * recorded_observations.shape[1]
+            )
 
         elapsed_time_current_generation = time.time() - start_time_current_generation
 

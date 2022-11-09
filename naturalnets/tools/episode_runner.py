@@ -1,5 +1,7 @@
 from typing import Type
 
+import numpy as np
+
 from naturalnets.enhancers.i_enhancer import IEnhancer
 
 
@@ -21,6 +23,8 @@ class EpisodeRunner:
 
         self.brain_class = brain_class
         self.brain_configuration = brain_configuration
+
+        self.observation_standardization = self.brain_configuration["observation_standardization"]
 
         self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
                                                             output_size=self.output_size,
@@ -51,6 +55,12 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
+        ob_mean, ob_std, calc_ob_stat_prob = None, None, None
+        if self.observation_standardization:
+            ob_mean = evaluation[3]
+            ob_std = evaluation[4]
+            calc_ob_stat_prob = evaluation[5]
+
         brain = self.brain_class(input_size=self.input_size,
                                  output_size=self.output_size,
                                  individual=individual,
@@ -59,7 +69,13 @@ class EpisodeRunner:
 
         fitness_total = 0
 
+        total_obs = []
+
         for i in range(number_of_rounds):
+            save_obs, obs = False, []
+            if self.observation_standardization:
+                save_obs = np.random.rand() < calc_ob_stat_prob
+
             env = self.env_class(configuration=self.env_configuration)
             ob = env.reset(env_seed=env_seed+i)
             brain.reset()
@@ -68,12 +84,28 @@ class EpisodeRunner:
             fitness_current = 0
             done = False
 
+            if save_obs:
+                obs.append(ob)
+
             while not done:
-                action = brain.step(ob)
+                processed_ob = ob
+                if self.observation_standardization:
+                    processed_ob = np.clip((ob - ob_mean) / ob_std, -5.0, 5.0)
+
+                action = brain.step(processed_ob)
                 action, _ = self.enhancer.step(action)
                 ob, rew, done, info = env.step(action)
                 fitness_current += rew
 
+                if save_obs:
+                    obs.append(ob)
+
             fitness_total += fitness_current
+
+            if save_obs:
+                total_obs.append(np.array(obs, dtype=np.float32))
+
+        if self.observation_standardization and len(total_obs) > 0:
+            return fitness_total / number_of_rounds, total_obs
 
         return fitness_total / number_of_rounds
