@@ -51,10 +51,13 @@ class OptimizerOpenAIESCfg(IOptimizerCfg):
     # Does not use the rewards directly, but ranks them and centers the ranked rewards between -0.5 and 0.5
     use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
+    # TODO delete this when finished testing
+    initialize_last_layer_different: bool = field(default=False, validator=validators.instance_of(bool))
+
 
 @register_optimizer_class
 class OpenAIEs(IOptimizer):
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, output_layer_num_individuals: int):
         super().__init__(individual_size, global_seed, configuration)
 
         self.rng = np.random.default_rng(seed=self.global_seed)
@@ -65,7 +68,18 @@ class OpenAIEs(IOptimizer):
         #  A bit tricky to implement here, as we use also other brains instead of only feed forward.
         #  Specifically, std=1.0 is used for all hidden layers, and std=0.01 is used for the last layer which maps
         #  the previous calculations to the output
-        self.current_individual = self.initialize_individual(std=1.0)
+
+        if output_layer_num_individuals > 0:
+            individual_hidden_layers = self.initialize_individual(
+                individual_size=individual_size-output_layer_num_individuals, std=1.0)
+            individual_output_layer = self.initialize_individual(
+                individual_size=output_layer_num_individuals, std=0.01
+            )
+
+            self.current_individual = np.r_[individual_hidden_layers, individual_output_layer]
+            assert len(self.current_individual) == self.individual_size
+        else:
+            self.current_individual = self.initialize_individual(self.individual_size, std=1.0)
 
         self.population_size = self.configuration.population_size
         self.learning_rate = self.configuration.learning_rate
@@ -75,7 +89,7 @@ class OpenAIEs(IOptimizer):
         self.reward_history = deque(maxlen=10)
         self.last_mean_reward = 0
 
-    def initialize_individual(self, std: float = 1.0):
+    def initialize_individual(self, individual_size: int, std: float = 1.0):
         """
         This initializes the individual when first starting the optimizers. OpenAI used this in their implementation
         and experiments showed that this could be a factor for the performance of the algorithm.
@@ -85,7 +99,7 @@ class OpenAIEs(IOptimizer):
         :param std:
         :return:
         """
-        individual = self.rng.standard_normal(self.individual_size, dtype=np.float32)
+        individual = self.rng.standard_normal(individual_size, dtype=np.float32)
         individual *= std / np.sqrt(np.square(individual).sum(axis=0, keepdims=True))
 
         return individual
