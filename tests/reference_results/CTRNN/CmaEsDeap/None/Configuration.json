@@ -1,0 +1,35 @@
+{
+    "number_generations": 3,
+    "number_validation_runs": 5,
+    "number_rounds": 3,
+    "maximum_env_seed": 100000,
+    "global_seed": 0,
+    "environment": {
+        "type": "GymMujoco",
+        "name": "InvertedPendulum-v4"
+    },
+    "brain": {
+        "type": "CTRNN",
+        "delta_t": 0.05,
+        "differential_equation": "NaturalNet",
+        "number_neurons": 2,
+        "v_mask": "dense",
+        "w_mask": "dense",
+        "t_mask": "dense",
+        "v_mask_density": 1.0,
+        "w_mask_density": 1.0,
+        "t_mask_density": 1.0,
+        "clipping_range": 1.0,
+        "set_principle_diagonal_elements_of_W_negative": true,
+        "alpha": 0.0,
+        "optimize_x0": true
+    },
+    "optimizer": {
+        "type": "CmaEsDeap",
+        "population_size": 20,
+        "sigma": 1.0
+    },
+    "enhancer": {
+        "type": null
+    }
+}
