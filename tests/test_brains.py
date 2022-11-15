@@ -48,4 +48,4 @@ class TestBrains:
             actions.append(action)
 
         assert np.array_equal(np.array(obs, dtype=np.float32), reference_observations)
-        assert np.array_equal(np.array(actions, dtype=np.float32), reference_actions)
+        assert np.allclose(np.array(actions, dtype=np.float32), reference_actions)
