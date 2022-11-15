@@ -31,21 +31,26 @@ class TestBrains:
             brain_state=brain_state
         )
 
+        brain.reset()
+
         reference_observations = reference_results["observations"]
         reference_actions = reference_results["actions"]
         number_of_interactions = reference_observations.shape[0]
 
         assert number_of_interactions == reference_actions.shape[0]
 
-        obs = []
+        observations = []
         actions = []
 
         for i in range(number_of_interactions):
             ob = reference_observations[i]
-            obs.append(ob)
+            observations.append(ob)
 
             action = brain.step(ob)
             actions.append(action)
 
-        assert np.array_equal(np.array(obs, dtype=np.float32), reference_observations)
-        assert np.allclose(np.array(actions, dtype=np.float32), reference_actions)
+        observations = np.array(observations)
+        actions = np.array(actions)
+
+        assert np.array_equal(observations, reference_observations)
+        assert np.array_equal(actions, reference_actions)
