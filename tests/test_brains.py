@@ -1,12 +1,9 @@
 import numpy as np
 
-REFERENCE_RESULTS_DIR = "tests/reference_results"
-REFERENCE_RESULTS_FILE_NAME = "reference_results.npz"
-
 
 class TestBrains:
 
-    def test_brains(self, brain_test_config):
+    def test_brains(self, brain_test_config, reference_results_dir: str, reference_results_file_name: str):
         input_size = brain_test_config[0]
         output_size = brain_test_config[1]
         brain_config = brain_test_config[2]
@@ -18,7 +15,7 @@ class TestBrains:
             configuration=brain_config
         )
 
-        reference_results = np.load(f"{REFERENCE_RESULTS_DIR}/{brain_config['type']}-{REFERENCE_RESULTS_FILE_NAME}")
+        reference_results = np.load(f"{reference_results_dir}/{brain_config['type']}-{reference_results_file_name}")
 
         individual = reference_results["individual"]
 
