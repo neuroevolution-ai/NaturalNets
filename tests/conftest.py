@@ -1,56 +1,34 @@
-import itertools
 from typing import Tuple
 
 import pytest
+
+from naturalnets.brains import IBrain
+from naturalnets.brains.i_brain import get_brain_class
 
 CTRNN_BRAIN = "CTRNN"
 RNN_BRAIN = "RNN"
 LSTM_BRAIN = "LSTM"
 GRU_BRAIN = "GRU"
+FF_BRAIN = "FeedForwardNN"
 
-CMA_ES_OPTIMIZER = "CmaEsDeap"
-
-NO_ENHANCER = None
-RANDOM_ENHANCER = "RandomEnhancer"
+INPUT_SIZE = 30
+OUTPUT_SIZE = 10
 
 
-# Pair-match all brains and optimizer, so that each possible pair is tested
 @pytest.fixture(
     params=[
-        {
-            "brain": brain,
-            "optimizer": optimizer,
-            "enhancer": enhancer
-        } for (brain, optimizer, enhancer) in itertools.product(
-            [CTRNN_BRAIN, RNN_BRAIN, LSTM_BRAIN, GRU_BRAIN],
-            [CMA_ES_OPTIMIZER],
-            [NO_ENHANCER, RANDOM_ENHANCER]
-        )
+        {"brain": brain} for brain in [CTRNN_BRAIN, RNN_BRAIN, LSTM_BRAIN, GRU_BRAIN, FF_BRAIN]
     ]
 )
-def train_config(request) -> Tuple[dict, str, str, str]:
+def brain_test_config(request) -> Tuple[int, int, dict, IBrain]:
     chosen_brain = request.param["brain"]
-    chosen_optimizer = request.param["optimizer"]
-    chosen_enhancer = request.param["enhancer"]
-
-    train_config = {
-        "number_generations": 3,
-        "number_validation_runs": 5,
-        "number_rounds": 3,
-        "maximum_env_seed": 100000,
-        "global_seed": 0,
-        "environment": {
-            "type": "GymMujoco",
-            "name": "InvertedPendulum-v4"
-        }
-    }
 
     if chosen_brain == CTRNN_BRAIN:
-        train_config["brain"] = {
-            "type": CTRNN_BRAIN,
+        brain_config = {
+            "type": chosen_brain,
             "delta_t": 0.05,
             "differential_equation": "NaturalNet",
-            "number_neurons": 2,
+            "number_neurons": 5,
             "v_mask": "dense",
             "w_mask": "dense",
             "t_mask": "dense",
@@ -63,29 +41,22 @@ def train_config(request) -> Tuple[dict, str, str, str]:
             "optimize_x0": True
         }
     elif chosen_brain == RNN_BRAIN or chosen_brain == LSTM_BRAIN or chosen_brain == GRU_BRAIN:
-        train_config["brain"] = {
+        brain_config = {
             "type": chosen_brain,
-            "hidden_layers": [2],
+            "hidden_layers": [3, 5],
+            "use_bias": True
+        }
+    elif chosen_brain == FF_BRAIN:
+        brain_config = {
+            "type": chosen_brain,
+            "hidden_layers": [3, 5],
+            "neuron_activation": "tanh",
+            "neuron_activation_output": "tanh",
             "use_bias": True
         }
     else:
-        raise AttributeError(f"Brain '{chosen_brain}' cannot be used to configure the training config")
+        raise AttributeError(f"Testing of '{chosen_brain}' is currently not implemented")
 
-    if chosen_optimizer == CMA_ES_OPTIMIZER:
-        train_config["optimizer"] = {
-            "type": "CmaEsDeap",
-            "population_size": 20,
-            "sigma": 1.0
-        }
-    else:
-        raise AttributeError(f"Optimizer '{chosen_optimizer}' cannot be used to configure the training config")
+    brain_class = get_brain_class(chosen_brain)
 
-    if chosen_enhancer != NO_ENHANCER and chosen_enhancer != RANDOM_ENHANCER:
-        raise AttributeError(f"Enhancer '{chosen_enhancer}' cannot be used to configure the training config")
-
-    # Currently the enhancers do not have any additional parameters, so we can simply do this:
-    train_config["enhancer"] = {
-        "type": chosen_enhancer
-    }
-
-    return train_config, chosen_brain, chosen_optimizer, str(chosen_enhancer)
+    return INPUT_SIZE, OUTPUT_SIZE, brain_config, brain_class
