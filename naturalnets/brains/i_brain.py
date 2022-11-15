@@ -1,5 +1,5 @@
 import abc
-from typing import Callable
+from typing import Callable, Type
 
 import numpy as np
 from attrs import define, field, validators
@@ -13,7 +13,7 @@ LINEAR_ACTIVATION = "linear"
 registered_brain_classes = {}
 
 
-def get_brain_class(brain_class_name: str):
+def get_brain_class(brain_class_name: str) -> Type["IBrain"]:
     if brain_class_name in registered_brain_classes:
         return registered_brain_classes[brain_class_name]
     else:

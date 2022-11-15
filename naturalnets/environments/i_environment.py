@@ -1,12 +1,12 @@
 import abc
-from typing import Optional, Dict
+from typing import Optional, Dict, Type
 
 import numpy as np
 
 registered_environment_classes = {}
 
 
-def get_environment_class(environment_class_name: str):
+def get_environment_class(environment_class_name: str) -> Type["IEnvironment"]:
     if environment_class_name in registered_environment_classes:
         return registered_environment_classes[environment_class_name]
     else:
