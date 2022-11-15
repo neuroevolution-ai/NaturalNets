@@ -217,12 +217,12 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
             best_reward_overall = best_reward_current_generation
 
         if observation_standardization and len(recorded_observations) > 0:
-            recorded_observations = np.array(recorded_observations, dtype=np.float32)
-            ob_stat.increment(
-                recorded_observations.sum(axis=(0, 1)),
-                np.square(recorded_observations).sum(axis=(0, 1)),
-                recorded_observations.shape[0] * recorded_observations.shape[1]
-            )
+            for recorded_ob in recorded_observations:
+                ob_stat.increment(
+                    recorded_ob.sum(axis=0),
+                    np.square(recorded_ob).sum(axis=0),
+                    recorded_ob.shape[0]
+                )
 
         elapsed_time_current_generation = time.time() - start_time_current_generation
 
