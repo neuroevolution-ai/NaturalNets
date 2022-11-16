@@ -16,11 +16,10 @@ from cpuinfo import get_cpu_info
 from tensorboardX import SummaryWriter
 
 from naturalnets.brains.i_brain import get_brain_class
-from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
-from naturalnets.tools.utils import flatten_dict, set_seeds
+from naturalnets.tools.utils import flatten_dict, set_seeds, parse_potentially_old_config
 from naturalnets.tools.write_results import write_results_to_textfile
 
 GEN_KEY = "gen"
@@ -44,7 +43,6 @@ class TrainingCfg:
     environment: dict
     brain: dict
     optimizer: dict
-    enhancer: dict
     experiment_id: int = field(default=-1, validator=[validators.instance_of(int), validators.ge(-1)])
     global_seed: int = field(validator=[validators.instance_of(int), validators.ge(0)])
 
@@ -78,6 +76,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     if configuration is None:
         raise RuntimeError("No configuration provided!")
 
+    configuration = parse_potentially_old_config(configuration)
+
     config = TrainingCfg(**configuration)
 
     # For reproducibility, set the global random seeds
@@ -93,28 +93,19 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
 
-    try:
-        enhancer_type = config.enhancer["type"]
-    except TypeError:
-        raise RuntimeError("The configuration needs an 'enhancer' block.")
-
-    if enhancer_type is not None:
-        enhancer_class = get_enhancer_class(enhancer_type)
-    else:
-        enhancer_class = DummyEnhancer
-
     # Initialize episode runner
-    ep_runner = EpisodeRunner(env_class=environment_class,
-                              env_configuration=config.environment,
-                              brain_class=brain_class,
-                              brain_configuration=config.brain,
-                              enhancer_class=enhancer_class)
+    ep_runner = EpisodeRunner(
+        env_class=environment_class,
+        env_configuration=config.environment,
+        brain_class=brain_class,
+        brain_configuration=config.brain
+    )
 
     individual_size = ep_runner.get_individual_size()
 
-    print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
-    print("Individual size: {}".format(individual_size))
-    print("Used CPU for training: " + get_cpu_info()["brand_raw"])
+    print(f"Free parameters: {ep_runner.get_free_parameter_usage()}")
+    print(f"Individual size: {individual_size}")
+    print(f"Used CPU for training: {get_cpu_info()['brand_raw']}")
 
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer["type"])

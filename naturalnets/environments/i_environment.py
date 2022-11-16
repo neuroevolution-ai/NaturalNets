@@ -22,6 +22,10 @@ def register_environment_class(environment_class):
 class IEnvironment(abc.ABC):
 
     @abc.abstractmethod
+    def __init__(self, configuration: dict):
+        pass
+
+    @abc.abstractmethod
     def get_number_inputs(self):
         pass
 
@@ -38,5 +42,5 @@ class IEnvironment(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         pass

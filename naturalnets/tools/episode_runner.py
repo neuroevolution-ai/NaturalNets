@@ -1,30 +1,33 @@
 from typing import Type
 
-from naturalnets.enhancers.i_enhancer import IEnhancer
+from naturalnets.brains import IBrain
 
 
 class EpisodeRunner:
 
-    def __init__(self, env_class, env_configuration: dict, brain_class, brain_configuration: dict,
-                 enhancer_class: Type[IEnhancer]):
+    def __init__(self, env_class, env_configuration: dict, brain_class: Type[IBrain], brain_configuration: dict):
 
         self.env_class = env_class
         self.env_configuration = env_configuration
         env = self.env_class(configuration=self.env_configuration)
 
-        env_output_size = env.get_number_outputs()
+        self.env_observation_size = env.get_number_inputs()
+        self.env_action_size = env.get_number_outputs()
 
-        self.enhancer = enhancer_class(env_output_size=env_output_size)
-
-        self.input_size = env.get_number_inputs()
-        self.output_size = env_output_size + self.enhancer.get_number_outputs()
-
-        self.brain_class = brain_class
         self.brain_configuration = brain_configuration
+        self.brain_class = brain_class
 
-        self.brain_state = brain_class.generate_brain_state(input_size=self.input_size,
-                                                            output_size=self.output_size,
-                                                            configuration=self.brain_configuration)
+        self.input_size, self.output_size = self.brain_class.get_input_and_output_size(
+            configuration=self.brain_configuration,
+            env_observation_size=self.env_observation_size,
+            env_action_size=self.env_action_size
+        )
+
+        self.brain_state = brain_class.generate_brain_state(
+            input_size=self.input_size,
+            output_size=self.output_size,
+            configuration=self.brain_configuration
+        )
 
     def get_individual_size(self):
         return self.brain_class.get_individual_size(self.input_size, self.output_size, self.brain_configuration,
@@ -51,26 +54,26 @@ class EpisodeRunner:
         env_seed = evaluation[1]
         number_of_rounds = evaluation[2]
 
-        brain = self.brain_class(input_size=self.input_size,
-                                 output_size=self.output_size,
-                                 individual=individual,
-                                 configuration=self.brain_configuration,
-                                 brain_state=self.brain_state)
+        brain = self.brain_class(
+            individual=individual,
+            configuration=self.brain_configuration,
+            brain_state=self.brain_state,
+            env_observation_size=self.env_observation_size,
+            env_action_size=self.env_action_size
+        )
 
         fitness_total = 0
 
         for i in range(number_of_rounds):
             env = self.env_class(configuration=self.env_configuration)
             ob = env.reset(env_seed=env_seed+i)
-            brain.reset()
-            self.enhancer.reset(rng_seed=env_seed+i)
+            brain.reset(rng_seed=env_seed+i)
 
             fitness_current = 0
             done = False
 
             while not done:
-                action = brain.step(ob)
-                action, _ = self.enhancer.step(action)
+                action, _ = brain.step(ob)
                 ob, rew, done, info = env.step(action)
                 fitness_current += rew
 

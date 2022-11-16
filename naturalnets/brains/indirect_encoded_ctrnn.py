@@ -23,15 +23,13 @@ class IndirectEncodedCTRNNCfg(IBrainCfg):
 @register_brain_class
 class IndirectCTRNN(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
-                 brain_state: dict):
+    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
+                 env_observation_size: int, env_action_size: int):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
 
         self.config = IndirectEncodedCTRNNCfg(**configuration)
 
-        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
-
-        self.input_size: int = input_size
-        self.output_size: int = output_size
+        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
 
         cppn_size = FeedForwardNN.get_individual_size(input_size=2*self.config.number_dimensions,
                                                       output_size=1,
@@ -62,10 +60,13 @@ class IndirectCTRNN(IBrain):
 
         brain_state_ctrnn = {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
-        self.ctrnn = CTRNN(input_size, output_size, individual_ctrnn, self.config.ctrnn_config,
-                           brain_state_ctrnn)
+        # TODO check if this works regarding env_observation_size and env_action_size. I guess the CTRNN config
+        #   needs to be careful with which enhancer they use, if any, since when creating the CTRNN here an enhancer
+        #   is created if this is provided in the config.
+        self.ctrnn = CTRNN(individual_ctrnn, self.config.ctrnn_config, brain_state_ctrnn, env_observation_size,
+                           env_action_size)
 
-    def step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
+    def internal_step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
 
         # assert ob.ndim == 3
         # assert ob.shape == self.input_size
@@ -75,10 +76,16 @@ class IndirectCTRNN(IBrain):
 
         # assert ob.ndim == 1
 
-        return self.ctrnn.step(ob)
+        # TODO enhancer_info is thrown away here, since IBrain expects one output from internal_step. If this brain is
+        #  used in the future, IBrain.step() should maybe be extended to also accept the enhancer_info from this brain
+        ctrnn_action, _ = self.ctrnn.step(ob)
 
-    def reset(self):
-        self.ctrnn.reset()
+        return ctrnn_action
+
+    def reset(self, rng_seed: int):
+        super().reset(rng_seed)
+
+        self.ctrnn.reset(rng_seed)
 
     @classmethod
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
