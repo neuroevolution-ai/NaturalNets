@@ -119,68 +119,67 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
 
 class TestTensorflowComparison:
 
-    def test_tensorflow_comparison(self, tensorflow_cmp_configs: List[Dict]):
-        for config in tensorflow_cmp_configs:
-            tf_impl, our_impl = get_rnn_implementations(config, ENV_OBSERVATION_SIZE, ENV_ACTION_SIZE)
+    def test_tensorflow_comparison(self, tensorflow_cmp_config: dict):
+        tf_impl, our_impl = get_rnn_implementations(tensorflow_cmp_config, ENV_OBSERVATION_SIZE, ENV_ACTION_SIZE)
 
-            inputs = np.random.randn(NUMBER_INPUTS, ENV_OBSERVATION_SIZE).astype(np.float32)
+        inputs = np.random.randn(NUMBER_INPUTS, ENV_OBSERVATION_SIZE).astype(np.float32)
 
-            tf_lstm_outputs = []
-            our_lstm_outputs = []
+        tf_lstm_outputs = []
+        our_lstm_outputs = []
 
-            new_lstm_times = []
-            tf_times = []
+        new_lstm_times = []
+        tf_times = []
 
-            # Go through each input, compute the output of both implementations and compare them in the end
-            for i, curr_input in enumerate(inputs):
-                time_s_tf = time.time()
-                tf_lstm_output, _ = tf_impl.step(curr_input)
-                time_e_tf = time.time()
-                tf_times.append(time_e_tf - time_s_tf)
+        # Go through each input, compute the output of both implementations and compare them in the end
+        for i, curr_input in enumerate(inputs):
+            time_s_tf = time.time()
+            tf_lstm_output, _ = tf_impl.step(curr_input)
+            time_e_tf = time.time()
+            tf_times.append(time_e_tf - time_s_tf)
 
-                tf_lstm_outputs.append(tf_lstm_output)
+            tf_lstm_outputs.append(tf_lstm_output)
 
-                time_s = time.time()
-                our_lstm_output, _ = our_impl.step(curr_input)
-                time_e = time.time()
-                new_lstm_times.append(time_e - time_s)
+            time_s = time.time()
+            our_lstm_output, _ = our_impl.step(curr_input)
+            time_e = time.time()
+            new_lstm_times.append(time_e - time_s)
 
-                our_lstm_outputs.append(our_lstm_output)
+            our_lstm_outputs.append(our_lstm_output)
 
-                # Set the hidden state to be equal after each computation to avoid build up of numerical errors.
-                # Not doing this would result in different computations between the implementations although they might
-                # be correct.
-                for j, hidden_layer in enumerate(tf_impl.hidden):
-                    if config["type"] == "LSTM":
-                        our_impl.hidden[j] = [hidden_layer[0].numpy().flatten(), hidden_layer[1].numpy().flatten()]
-                    elif config["type"] == "GRU" or config["type"] == "RNN":
-                        our_impl.hidden[j] = hidden_layer[0].numpy().flatten()
-                    else:
-                        raise RuntimeError(f"Unsupported rnn_type '{config['type']}'")
+            # Set the hidden state to be equal after each computation to avoid build up of numerical errors.
+            # Not doing this would result in different computations between the implementations although they might
+            # be correct.
+            for j, hidden_layer in enumerate(tf_impl.hidden):
+                if tensorflow_cmp_config["type"] == "LSTM":
+                    our_impl.hidden[j] = [hidden_layer[0].numpy().flatten(), hidden_layer[1].numpy().flatten()]
+                elif tensorflow_cmp_config["type"] == "GRU" or tensorflow_cmp_config["type"] == "RNN":
+                    our_impl.hidden[j] = hidden_layer[0].numpy().flatten()
+                else:
+                    raise RuntimeError(f"Unsupported rnn_type '{tensorflow_cmp_config['type']}'")
 
-            tf_lstm_outputs = np.array(tf_lstm_outputs)
-            our_lstm_outputs = np.array(our_lstm_outputs)
+        tf_lstm_outputs = np.array(tf_lstm_outputs)
+        our_lstm_outputs = np.array(our_lstm_outputs)
 
-            assert len(tf_lstm_outputs) == len(our_lstm_outputs)
-            assert tf_lstm_outputs.size == our_lstm_outputs.size
+        assert len(tf_lstm_outputs) == len(our_lstm_outputs)
+        assert tf_lstm_outputs.size == our_lstm_outputs.size
 
-            assert (np.max(tf_lstm_outputs) <= 1.0
-                    and np.max(our_lstm_outputs) <= 1.0
-                    and np.min(tf_lstm_outputs) >= -1.0
-                    and np.min(our_lstm_outputs) >= -1.0), "Outputs of the brains must be in the [-1, 1] range."
+        assert (np.max(tf_lstm_outputs) <= 1.0
+                and np.max(our_lstm_outputs) <= 1.0
+                and np.min(tf_lstm_outputs) >= -1.0
+                and np.min(our_lstm_outputs) >= -1.0), "Outputs of the brains must be in the [-1, 1] range."
 
-            close_percentage = np.count_nonzero(
-               np.isclose(our_lstm_outputs, tf_lstm_outputs, atol=0.00001)) / tf_lstm_outputs.size
-            assert close_percentage > 0.99
+        close_percentage = np.count_nonzero(
+           np.isclose(our_lstm_outputs, tf_lstm_outputs, atol=0.00001)) / tf_lstm_outputs.size
+        assert close_percentage > 0.99
 
-            print(f"Close predictions between the TensorFlow and NumPy implementations of the {config['type']}: "
-                  f"{close_percentage * 100:.2f}% of {tf_lstm_outputs.size} predictions")
+        print(f"Close predictions between the TensorFlow and NumPy implementations of the {tensorflow_cmp_config['type']}: "
+              f"{close_percentage * 100:.2f}% of {tf_lstm_outputs.size} predictions")
 
-            new_lstm_times = np.array(new_lstm_times)
-            tf_times = np.array(tf_times)
+        new_lstm_times = np.array(new_lstm_times)
+        tf_times = np.array(tf_times)
 
-            print(f"Our {config['type']} times: Mean {np.mean(new_lstm_times)} - Std {np.std(new_lstm_times)} - "
-                  f"min {np.min(new_lstm_times)} - max {np.max(new_lstm_times)}")
-            print(f"TensorFlow {config['type']} times: Mean {np.mean(tf_times)} - Std {np.std(tf_times)} - "
-                  f"min {np.min(tf_times)} - max {np.max(tf_times)}")
-            print("---")
+        print(f"Our {tensorflow_cmp_config['type']} times: Mean {np.mean(new_lstm_times)} - Std {np.std(new_lstm_times)} - "
+              f"min {np.min(new_lstm_times)} - max {np.max(new_lstm_times)}")
+        print(f"TensorFlow {tensorflow_cmp_config['type']} times: Mean {np.mean(tf_times)} - Std {np.std(tf_times)} - "
+              f"min {np.min(tf_times)} - max {np.max(tf_times)}")
+        print("---")
