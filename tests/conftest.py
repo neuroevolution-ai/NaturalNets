@@ -1,12 +1,11 @@
 import itertools
-from typing import Tuple, Type
+from typing import Tuple, Type, Optional
 
 import pytest
 
 from naturalnets.brains import IBrain
 from naturalnets.brains.i_brain import get_brain_class
-from naturalnets.enhancers import RandomEnhancer
-from naturalnets.enhancers.i_enhancer import DummyEnhancer, IEnhancer
+from naturalnets.enhancers.i_enhancer import IEnhancer
 from naturalnets.environments.i_environment import get_environment_class, IEnvironment
 
 CTRNN_BRAIN = "CTRNN"
@@ -42,7 +41,7 @@ def reference_results_file_name() -> str:
 )
 def brain_test_config(request) -> Tuple[int, int, dict, Type[IBrain]]:
     chosen_brain = request.param["brain"]
-    brain_config, brain_class = _get_brain_config_and_class(chosen_brain)
+    brain_config, brain_class = _get_brain_config_and_class(chosen_brain, chosen_enhancer=None)
 
     return INPUT_SIZE, OUTPUT_SIZE, brain_config, brain_class
 
@@ -65,14 +64,13 @@ def ep_runner_test_config(request) -> Tuple[dict, Type[IBrain], dict, Type[IEnvi
     chosen_env = request.param["env"]
     chosen_enhancer = request.param["enhancer"]
 
-    brain_config, brain_class = _get_brain_config_and_class(chosen_brain)
+    brain_config, brain_class = _get_brain_config_and_class(chosen_brain, chosen_enhancer=chosen_enhancer)
     env_config, env_class = _get_env_config_and_class(chosen_env)
-    enhancer_class = _get_enhancer_class(chosen_enhancer)
 
-    return brain_config, brain_class, env_config, env_class, enhancer_class
+    return brain_config, brain_class, env_config, env_class, chosen_enhancer
 
 
-def _get_brain_config_and_class(chosen_brain: str) -> Tuple[dict, Type[IBrain]]:
+def _get_brain_config_and_class(chosen_brain: str, chosen_enhancer: Optional[str]) -> Tuple[dict, Type[IBrain]]:
     if chosen_brain == CTRNN_BRAIN:
         brain_config = {
             "type": chosen_brain,
@@ -107,6 +105,10 @@ def _get_brain_config_and_class(chosen_brain: str) -> Tuple[dict, Type[IBrain]]:
     else:
         raise AttributeError(f"Testing of '{chosen_brain}' is currently not implemented")
 
+    brain_config["enhancer"] = {
+        "type": chosen_enhancer
+    }
+
     brain_class = get_brain_class(chosen_brain)
 
     return brain_config, brain_class
@@ -130,14 +132,3 @@ def _get_env_config_and_class(chosen_env: str) -> Tuple[dict, Type[IEnvironment]
     env_class = get_environment_class(chosen_env)
 
     return env_config, env_class
-
-
-def _get_enhancer_class(chosen_enhancer: str) -> Type[IEnhancer]:
-    if chosen_enhancer is None:
-        enhancer_class = DummyEnhancer
-    elif chosen_enhancer == RANDOM_ENHANCER:
-        enhancer_class = RandomEnhancer
-    else:
-        raise AttributeError(f"Testing of '{chosen_enhancer}' is currently not implemented")
-
-    return enhancer_class

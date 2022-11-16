@@ -1,69 +1,33 @@
-from typing import Dict, List
+import itertools
 
 import pytest
 
 
-@pytest.fixture
-def tensorflow_cmp_configs() -> List[Dict]:
-    return [
+@pytest.fixture(
+    params=[
         {
-            "type": "RNN",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": False
-        },
-        {
-            "type": "RNN",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": True
-        },
-        {
-            "type": "RNN",
-            "hidden_layers": [16],
-            "use_bias": False
-        },
-        {
-            "type": "RNN",
-            "hidden_layers": [16],
-            "use_bias": True
-        },
-        {
-            "type": "LSTM",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": False
-        },
-        {
-            "type": "LSTM",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": True
-        },
-        {
-            "type": "LSTM",
-            "hidden_layers": [16],
-            "use_bias": False
-        },
-        {
-            "type": "LSTM",
-            "hidden_layers": [16],
-            "use_bias": True
-        },
-        {
-            "type": "GRU",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": False
-        },
-        {
-            "type": "GRU",
-            "hidden_layers": [2, 4, 8],
-            "use_bias": True
-        },
-        {
-            "type": "GRU",
-            "hidden_layers": [16],
-            "use_bias": False
-        },
-        {
-            "type": "GRU",
-            "hidden_layers": [16],
-            "use_bias": True
-        }
+            "brain": brain,
+            "hidden_layers": hidden_layers,
+            "use_bias": use_bias
+        } for (brain, hidden_layers, use_bias) in itertools.product(
+            ["RNN", "LSTM", "GRU"],
+            [[2, 4, 8], [16]],
+            [True, False]
+        )
     ]
+)
+def tensorflow_cmp_config(request) -> dict:
+    chosen_brain = request.param["brain"]
+    chosen_hidden_layers = request.param["hidden_layers"]
+    chosen_use_bias = request.param["use_bias"]
+
+    config = {
+        "type": chosen_brain,
+        "hidden_layers": chosen_hidden_layers,
+        "use_bias": chosen_use_bias,
+        "enhancer": {
+            "type": None
+        }
+    }
+
+    return config

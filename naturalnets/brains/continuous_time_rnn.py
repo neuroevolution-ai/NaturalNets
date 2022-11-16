@@ -44,10 +44,11 @@ class ContinuousTimeRNNCfg(IBrainCfg):
 @register_brain_class
 class CTRNN(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
-                 brain_state: dict):
+    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
+                 env_observation_size: int, env_action_size: int):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
 
-        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
+        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
 
         self.config = ContinuousTimeRNNCfg(**configuration)
 
@@ -64,9 +65,9 @@ class CTRNN(IBrain):
         self.W = np.array([[element] for element in individual[v_size:v_size + w_size]])
         self.T = np.array([[element] for element in individual[v_size + w_size:v_size + w_size + t_size]])
 
-        self.V = self.V.reshape([self.config.number_neurons, input_size])
+        self.V = self.V.reshape([self.config.number_neurons, self.input_size])
         self.W = self.W.reshape([self.config.number_neurons, self.config.number_neurons])
-        self.T = self.T.reshape([output_size, self.config.number_neurons])
+        self.T = self.T.reshape([self.output_size, self.config.number_neurons])
 
         # Set elements of main diagonal to less than 0
         if self.config.set_principle_diagonal_elements_of_W_negative:
@@ -84,7 +85,7 @@ class CTRNN(IBrain):
 
         self.x = self.x0
 
-    def step(self, u):
+    def internal_step(self, u: np.ndarray) -> np.ndarray:
 
         assert u.ndim == 1
 
@@ -109,7 +110,9 @@ class CTRNN(IBrain):
 
         return y
 
-    def reset(self):
+    def reset(self, rng_seed: int):
+        super().reset(rng_seed)
+
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Dict, Optional
+from typing import Tuple, Dict, Optional, Type
 
 import numpy as np
 from attrs import define, field, validators
@@ -7,7 +7,10 @@ from attrs import define, field, validators
 registered_enhancers = {}
 
 
-def get_enhancer_class(enhancer_class_name: str):
+def get_enhancer_class(enhancer_class_name: Optional[str]) -> Type["IEnhancer"]:
+    if enhancer_class_name is None:
+        return DummyEnhancer
+
     if enhancer_class_name in registered_enhancers:
         return registered_enhancers[enhancer_class_name]
     else:

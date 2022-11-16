@@ -24,15 +24,13 @@ class FeedForwardCfg(IBrainCfg):
 @register_brain_class
 class FeedForwardNN(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
-                 brain_state: dict):
+    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
+                 env_observation_size: int, env_action_size: int):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
 
         self.config = FeedForwardCfg(**configuration)
 
-        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
-
-        self.input_size: int = input_size
-        self.output_size: int = output_size
+        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
 
         # Set activation functions for hidden layers and output layer based on config
         self.activation_hidden_layers = self.get_activation_function(self.config.neuron_activation)
@@ -68,7 +66,7 @@ class FeedForwardNN(IBrain):
         if self.config.use_bias:
             self.biases_output_layer, index = self.read_matrix_from_genome(individual, index, self.output_size, 1)
 
-    def step(self, ob: np.ndarray) -> np.ndarray:
+    def internal_step(self, ob: np.ndarray) -> np.ndarray:
 
         assert ob.ndim == 1
         assert ob.size == self.input_size
@@ -77,8 +75,8 @@ class FeedForwardNN(IBrain):
 
         return x.flatten()
 
-    def reset(self):
-        pass
+    def reset(self, rng_seed: int):
+        super().reset(rng_seed)
 
     def predict(self, ob: np.ndarray) -> np.ndarray:
 
@@ -111,10 +109,6 @@ class FeedForwardNN(IBrain):
 
     @classmethod
     def save_brain_state(cls, path, brain_state):
-        pass
-
-    @classmethod
-    def load_brain_state(cls, path):
         pass
 
     @classmethod
