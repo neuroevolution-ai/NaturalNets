@@ -13,54 +13,55 @@ from tests.brains.tf_brain_implementations.tf_gru import TensorflowGRU
 from tests.brains.tf_brain_implementations.tf_lstm import TensorflowLSTM
 from tests.brains.tf_brain_implementations.tf_rnn import TensorflowRNN
 
-INPUT_SIZE = 28
-OUTPUT_SIZE = 8
+ENV_OBSERVATION_SIZE = 28
+ENV_ACTION_SIZE = 8
 NUMBER_INPUTS = 1000
 
 
 def get_rnn_implementations(brain_configuration, input_size, output_size):
     if brain_configuration["type"] == "LSTM":
-        individual_size = LSTM.get_individual_size(input_size, output_size, brain_configuration, {})
-
-        config = LSTMConfig(**brain_configuration)
-
+        config_class = LSTMConfig
         our_implementation_class = LSTM
         tf_implementation_class = TensorflowLSTM
     elif brain_configuration["type"] == "GRU":
-        individual_size = GRU.get_individual_size(input_size, output_size, brain_configuration, {})
-
-        config = GRUConfig(**brain_configuration)
-
+        config_class = GRUConfig
         our_implementation_class = GRU
         tf_implementation_class = TensorflowGRU
     elif brain_configuration["type"] == "RNN":
-        individual_size = RNN.get_individual_size(input_size, output_size, brain_configuration, {})
-
-        config = RNNConfig(**brain_configuration)
-
+        config_class = RNNConfig
         our_implementation_class = RNN
         tf_implementation_class = TensorflowRNN
     else:
         raise RuntimeError(f"Unsupported rnn_type '{brain_configuration['type']}'")
+
+    input_size, output_size = our_implementation_class.get_input_and_output_size(
+        configuration=brain_configuration,
+        env_observation_size=input_size,
+        env_action_size=output_size
+    )
+
+    individual_size = our_implementation_class.get_individual_size(input_size, output_size, brain_configuration, {})
+
+    config = config_class(**brain_configuration)
 
     # Make two copies to avoid possible errors due to TensorFlow reusing data from the same memory address
     individual_tensorflow = np.random.randn(individual_size).astype(np.float32)
     individual_ours = np.copy(individual_tensorflow)
 
     tf_implementation = tf_implementation_class(
-        input_size,
-        output_size,
         individual=individual_tensorflow,
-        configuration=config,
-        brain_state={}
+        configuration=brain_configuration,
+        brain_state={},
+        env_observation_size=input_size,
+        env_action_size=output_size
     )
 
     our_implementation = our_implementation_class(
-        input_size,
-        output_size,
         individual=individual_ours,
-        configuration=config,
-        brain_state={}
+        configuration=brain_configuration,
+        brain_state={},
+        env_observation_size=input_size,
+        env_action_size=output_size
     )
 
     tf_hidden_state = np.random.randn(np.sum(config.hidden_layers)).astype(np.float32)
@@ -120,9 +121,9 @@ class TestTensorflowComparison:
 
     def test_tensorflow_comparison(self, tensorflow_cmp_configs: List[Dict]):
         for config in tensorflow_cmp_configs:
-            tf_impl, our_impl = get_rnn_implementations(config, INPUT_SIZE, OUTPUT_SIZE)
+            tf_impl, our_impl = get_rnn_implementations(config, ENV_OBSERVATION_SIZE, ENV_ACTION_SIZE)
 
-            inputs = np.random.randn(NUMBER_INPUTS, INPUT_SIZE).astype(np.float32)
+            inputs = np.random.randn(NUMBER_INPUTS, ENV_OBSERVATION_SIZE).astype(np.float32)
 
             tf_lstm_outputs = []
             our_lstm_outputs = []
@@ -133,14 +134,14 @@ class TestTensorflowComparison:
             # Go through each input, compute the output of both implementations and compare them in the end
             for i, curr_input in enumerate(inputs):
                 time_s_tf = time.time()
-                tf_lstm_output = tf_impl.step(curr_input)
+                tf_lstm_output, _ = tf_impl.step(curr_input)
                 time_e_tf = time.time()
                 tf_times.append(time_e_tf - time_s_tf)
 
                 tf_lstm_outputs.append(tf_lstm_output)
 
                 time_s = time.time()
-                our_lstm_output = our_impl.step(curr_input)
+                our_lstm_output, _ = our_impl.step(curr_input)
                 time_e = time.time()
                 new_lstm_times.append(time_e - time_s)
 
