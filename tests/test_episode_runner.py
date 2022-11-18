@@ -28,7 +28,8 @@ class TestEpisodeRunner:
             env_class=env_class,
             env_configuration=env_config,
             brain_class=brain_class,
-            brain_configuration=brain_config
+            brain_configuration=brain_config,
+            global_seed=0
         )
 
         results = list(map(ep_runner.eval_fitness, genomes))
