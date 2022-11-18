@@ -8,7 +8,8 @@ from naturalnets.optimizers.openai_es.openai_es_utils import RunningStat
 
 class EpisodeRunner:
 
-    def __init__(self, env_class, env_configuration: dict, brain_class: Type[IBrain], brain_configuration: dict):
+    def __init__(self, env_class, env_configuration: dict, brain_class: Type[IBrain], brain_configuration: dict,
+                 global_seed: int):
 
         self.env_class = env_class
         self.env_configuration = env_configuration
@@ -39,8 +40,7 @@ class EpisodeRunner:
         self.calc_ob_stat_prob = self.brain_configuration["preprocessing"]["calc_ob_stat_prob"]
 
         if self.observation_standardization:
-            # TODO use global seed from training cfg here?
-            self.obs_rng = np.random.default_rng()
+            self.obs_rng = np.random.default_rng(global_seed)
 
             self.ob_stat = RunningStat(
                 shape=(self.env_observation_size,),

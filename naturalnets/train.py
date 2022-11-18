@@ -99,7 +99,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         env_class=environment_class,
         env_configuration=config.environment,
         brain_class=brain_class,
-        brain_configuration=config.brain
+        brain_configuration=config.brain,
+        global_seed=config.global_seed
     )
 
     individual_size = ep_runner.get_individual_size()
