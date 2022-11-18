@@ -51,8 +51,6 @@ class CTRNN(IBrain):
                  ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
         super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size, ob_mean, ob_std)
 
-        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
-
         self.config = ContinuousTimeRNNCfg(**configuration)
 
         v_mask, w_mask, t_mask = self.get_masks_from_brain_state(brain_state)

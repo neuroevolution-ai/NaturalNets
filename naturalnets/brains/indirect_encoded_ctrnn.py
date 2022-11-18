@@ -33,8 +33,6 @@ class IndirectCTRNN(IBrain):
 
         self.config = IndirectEncodedCTRNNCfg(**configuration)
 
-        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
-
         cppn_size = FeedForwardNN.get_individual_size(input_size=2*self.config.number_dimensions,
                                                       output_size=1,
                                                       configuration=self.config.ffnn_config,

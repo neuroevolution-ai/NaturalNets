@@ -32,8 +32,6 @@ class FeedForwardNN(IBrain):
 
         self.config = FeedForwardCfg(**configuration)
 
-        assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
-
         # Set activation functions for hidden layers and output layer based on config
         self.activation_hidden_layers = self.get_activation_function(self.config.neuron_activation)
 
