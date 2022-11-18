@@ -25,7 +25,9 @@ class TestBrains:
             configuration=brain_config,
             brain_state=brain_state,
             env_observation_size=input_size,
-            env_action_size=output_size
+            env_action_size=output_size,
+            ob_mean=None,
+            ob_std=None
         )
 
         brain.reset(rng_seed=0)

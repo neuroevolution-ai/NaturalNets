@@ -3,10 +3,9 @@ import os
 import time
 
 import click
-import numpy as np
 
 from monkey_tester.monkey_tester import MonkeyTesterCfg, RandomMonkeyTester
-from naturalnets.brains.i_brain import get_brain_class
+from naturalnets.brains.i_brain import get_brain_class, MODEL_FILE_NAME
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.tools.utils import parse_potentially_old_config
 
@@ -50,8 +49,6 @@ def experiment_visualization(exp_dir: str, lag: float):
 
     configuration = parse_potentially_old_config(configuration)
 
-    individual = np.load(os.path.join(exp_dir, "Best_Genome.npy"), allow_pickle=True)
-
     environment_class = get_environment_class(configuration["environment"]["type"])
     env = environment_class(configuration=configuration["environment"])
 
@@ -59,14 +56,17 @@ def experiment_visualization(exp_dir: str, lag: float):
     env_action_size = env.get_number_outputs()
 
     brain_class = get_brain_class(configuration["brain"]["type"])
-    brain_state = brain_class.load_brain_state(os.path.join(exp_dir, "Brain_State.npz"))
+
+    individual, brain_state, ob_mean, ob_std = brain_class.load_brain(os.path.join(exp_dir, MODEL_FILE_NAME))
 
     brain = brain_class(
         individual=individual,
         configuration=configuration["brain"],
         brain_state=brain_state,
         env_observation_size=env_observation_size,
-        env_action_size=env_action_size
+        env_action_size=env_action_size,
+        ob_mean=ob_mean,
+        ob_std=ob_std
     )
 
     number_validation_runs = configuration["number_validation_runs"]

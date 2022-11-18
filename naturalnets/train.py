@@ -93,7 +93,6 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
-    observation_standardization: bool = config.brain["observation_standardization"]
 
     # Initialize episode runner
     ep_runner = EpisodeRunner(
@@ -128,16 +127,6 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
     log = []
 
-    ob_stat, calc_ob_stat_prob = None, None
-    if observation_standardization:
-        # TODO remove once testing is done
-        ob_stat = RunningStat(
-            shape=(ep_runner.get_input_size(),),
-            eps=1e-2  # eps to prevent dividing by zero at the beginning when computing mean/stdev
-        )
-
-        calc_ob_stat_prob = config.brain["calc_ob_stat_prob"]
-
     # Run evolutionary training for given number of generations
     for generation in range(config.number_generations):
 
@@ -156,12 +145,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Training runs for candidates
         evaluations = []
         for genome in genomes:
-            if observation_standardization:
-                evaluations.append(
-                    [genome, env_seed, config.number_rounds, ob_stat.mean, ob_stat.std, calc_ob_stat_prob]
-                )
-            else:
-                evaluations.append([genome, env_seed, config.number_rounds])
+            evaluations.append([genome, env_seed, config.number_rounds, True])
 
         if debug:
             # Use this for debugging
@@ -169,18 +153,14 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         else:
             training_results = pool.map(ep_runner.eval_fitness, evaluations)
 
-        rewards_training = training_results
-        recorded_observations = None
-
-        if observation_standardization:
-            rewards_training = []
-            recorded_observations = []
-            for result in training_results:
-                if isinstance(result, tuple):
-                    rewards_training.append(result[0])
-                    recorded_observations.extend(result[1])
-                else:
-                    rewards_training.append(result)
+        rewards_training = []
+        recorded_observations = []
+        for result in training_results:
+            if isinstance(result, tuple):
+                rewards_training.append(result[0])
+                recorded_observations.extend(result[1])
+            else:
+                rewards_training.append(result)
 
         # Tell optimizers new rewards
         best_genome_current_generation = opt.tell(rewards_training)
@@ -188,10 +168,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Validation runs for best individual
         evaluations = []
         for i in range(config.number_validation_runs):
-            if observation_standardization:
-                evaluations.append([best_genome_current_generation, i, 1, ob_stat.mean, ob_stat.std, 0.0])
-            else:
-                evaluations.append([best_genome_current_generation, i, 1])
+            evaluations.append([best_genome_current_generation, i, 1, False])
 
         if debug:
             rewards_validation = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
@@ -207,13 +184,11 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
             best_genome_overall = best_genome_current_generation
             best_reward_overall = best_reward_current_generation
 
-        if observation_standardization and len(recorded_observations) > 0:
-            for recorded_ob in recorded_observations:
-                ob_stat.increment(
-                    recorded_ob.sum(axis=0),
-                    np.square(recorded_ob).sum(axis=0),
-                    recorded_ob.shape[0]
-                )
+        # Update the statistics used for standardizing the observations, so that in the new generation the updated ones
+        # can be used (if this preprocessing is not selected for the training, nothing is done, and
+        # len(recorded_observations) is zero anyway
+        # Important to do this here at the end, otherwise the validation episodes would use the updated statistics
+        ep_runner.update_ob_mean_std(recorded_observations)
 
         elapsed_time_current_generation = time.time() - start_time_current_generation
 
@@ -263,11 +238,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     with open(os.path.join(results_subdirectory, "Configuration.json"), "w") as outfile:
         json.dump(dict(configuration), outfile, ensure_ascii=False, indent=4)
 
-    # Save best genome
-    np.save(os.path.join(results_subdirectory, "Best_Genome"), best_genome_overall)
-
-    # Save brain state (i.e. masks)
-    ep_runner.save_brain_state(os.path.join(results_subdirectory, "Brain_State"))
+    # Save best genome and current brain statistics (such as the brain_mask, current ob_mean and ob_std, etc.)
+    ep_runner.save_brain(results_subdirectory, best_genome_overall)
 
     # Last element of log contains additional for training
     log.append({

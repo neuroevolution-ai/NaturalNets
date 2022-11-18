@@ -27,6 +27,12 @@ def tensorflow_cmp_config(request) -> dict:
         "use_bias": chosen_use_bias,
         "enhancer": {
             "type": None
+        },
+        "preprocessing": {
+            "observation_standardization": False,
+            "calc_ob_stat_prob": 0.0,
+            "observation_clipping": False,
+            "ob_clipping_value": 0.0
         }
     }
 

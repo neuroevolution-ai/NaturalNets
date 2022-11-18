@@ -1,4 +1,4 @@
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Optional
 
 import numpy as np
 from attrs import define, field, validators
@@ -16,8 +16,12 @@ class GRUConfig(IBrainCfg):
 @register_brain_class
 class GRU(IBrain):
     def __init__(self, individual: np.ndarray, configuration: Union[GRUConfig, Dict], brain_state: dict,
-                 env_observation_size: int, env_action_size: int):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(
+            individual, configuration, brain_state, env_observation_size, env_action_size,
+            ob_mean, ob_std
+        )
 
         if isinstance(configuration, dict):
             self.configuration = GRUConfig(**configuration)
@@ -123,11 +127,3 @@ class GRU(IBrain):
         parameter_dict["output_layer"] = output_layer_dict
 
         return parameter_dict
-
-    @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        pass
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
-        pass

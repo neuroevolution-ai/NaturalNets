@@ -109,6 +109,13 @@ def _get_brain_config_and_class(chosen_brain: str, chosen_enhancer: Optional[str
         "type": chosen_enhancer
     }
 
+    brain_config["preprocessing"] = {
+        "observation_standardization": False,
+        "calc_ob_stat_prob": 0.0,
+        "observation_clipping": False,
+        "ob_clipping_value": 0.0
+    }
+
     brain_class = get_brain_class(chosen_brain)
 
     return brain_config, brain_class

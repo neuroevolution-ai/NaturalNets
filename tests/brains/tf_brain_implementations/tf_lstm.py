@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -10,8 +12,10 @@ from tests.brains.tf_brain_implementations.tf_brain_utils import assign_individu
 class TensorflowLSTM(IBrain):
 
     def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size,
+                         ob_mean, ob_std)
 
         self.configuration = LSTMConfig(**configuration)
 
@@ -68,15 +72,5 @@ class TensorflowLSTM(IBrain):
 
     @classmethod
     def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
-        raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
-                                  "do not use it.")
-
-    @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
-                                  "do not use it.")
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
         raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
                                   "do not use it.")

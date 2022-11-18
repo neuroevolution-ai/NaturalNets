@@ -53,7 +53,9 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
         configuration=brain_configuration,
         brain_state={},
         env_observation_size=input_size,
-        env_action_size=output_size
+        env_action_size=output_size,
+        ob_mean=None,
+        ob_std=None
     )
 
     our_implementation = our_implementation_class(
@@ -61,7 +63,9 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
         configuration=brain_configuration,
         brain_state={},
         env_observation_size=input_size,
-        env_action_size=output_size
+        env_action_size=output_size,
+        ob_mean=None,
+        ob_std=None
     )
 
     tf_hidden_state = np.random.randn(np.sum(config.hidden_layers)).astype(np.float32)

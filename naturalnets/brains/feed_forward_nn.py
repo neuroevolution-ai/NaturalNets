@@ -1,5 +1,5 @@
 import itertools
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 from attrs import define, field, validators
@@ -25,8 +25,10 @@ class FeedForwardCfg(IBrainCfg):
 class FeedForwardNN(IBrain):
 
     def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size,
+                         ob_mean, ob_std)
 
         self.config = FeedForwardCfg(**configuration)
 
@@ -102,14 +104,6 @@ class FeedForwardNN(IBrain):
         x = self.activation_output_layer(x)
 
         return x
-
-    @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        return None
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
-        pass
 
     @classmethod
     def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):

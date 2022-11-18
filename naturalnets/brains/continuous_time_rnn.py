@@ -1,3 +1,5 @@
+from typing import Dict, Tuple, Optional
+
 from attrs import define, field, validators
 import numpy as np
 
@@ -45,8 +47,9 @@ class ContinuousTimeRNNCfg(IBrainCfg):
 class CTRNN(IBrain):
 
     def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size, ob_mean, ob_std)
 
         assert len(individual) == self.get_individual_size(self.input_size, self.output_size, configuration, brain_state)
 
@@ -116,7 +119,7 @@ class CTRNN(IBrain):
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
+    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict) -> Dict[str, np.ndarray]:
 
         config = ContinuousTimeRNNCfg(**configuration)
 
@@ -145,24 +148,25 @@ class CTRNN(IBrain):
         return mask
 
     @classmethod
-    def save_brain_state(cls, path, brain_state):
+    def register_brain_state_for_saving(cls, model_contents: dict, brain_state: Dict[str, np.ndarray]) -> dict:
         v_mask, w_mask, t_mask = cls.get_masks_from_brain_state(brain_state)
 
-        np.savez(path, v_mask=v_mask, w_mask=w_mask, t_mask=t_mask)
+        model_contents["brain_state_v_mask"] = v_mask
+        model_contents["brain_state_w_mask"] = w_mask
+        model_contents["brain_state_t_mask"] = t_mask
+
+        return model_contents
 
     @classmethod
-    def load_brain_state(cls, path):
-
-        file_data = np.load(path)
-
-        v_mask = file_data["v_mask"]
-        w_mask = file_data["w_mask"]
-        t_mask = file_data["t_mask"]
+    def load_brain_state(cls, brain_data) -> Dict[str, np.ndarray]:
+        v_mask = brain_data["brain_state_v_mask"]
+        w_mask = brain_data["brain_state_w_mask"]
+        t_mask = brain_data["brain_state_t_mask"]
 
         return cls.get_brain_state_from_masks(v_mask, w_mask, t_mask)
 
     @staticmethod
-    def get_masks_from_brain_state(brain_state):
+    def get_masks_from_brain_state(brain_state: Dict[str, np.ndarray]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         v_mask = brain_state["v_mask"]
         w_mask = brain_state["w_mask"]
@@ -171,7 +175,7 @@ class CTRNN(IBrain):
         return v_mask, w_mask, t_mask
 
     @staticmethod
-    def get_brain_state_from_masks(v_mask, w_mask, t_mask):
+    def get_brain_state_from_masks(v_mask: np.ndarray, w_mask: np.ndarray, t_mask: np.ndarray) -> Dict[str, np.ndarray]:
         return {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
     @classmethod

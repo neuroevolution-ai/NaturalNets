@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict, Optional
 
 import attr
 import numpy as np
@@ -24,8 +24,12 @@ class IndirectEncodedCTRNNCfg(IBrainCfg):
 class IndirectCTRNN(IBrain):
 
     def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size)
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(
+            individual, configuration, brain_state, env_observation_size, env_action_size,
+            ob_mean, ob_std
+        )
 
         self.config = IndirectEncodedCTRNNCfg(**configuration)
 
@@ -156,8 +160,7 @@ class IndirectCTRNN(IBrain):
                                                cppn_inputs_v, cppn_inputs_w, cppn_inputs_t)
 
     @classmethod
-    def save_brain_state(cls, path, brain_state):
-
+    def register_brain_state_for_saving(cls, model_contents: dict, brain_state: Dict[str, np.ndarray]):
         v_mask = brain_state['v_mask']
         w_mask = brain_state['w_mask']
         t_mask = brain_state['t_mask']
@@ -168,24 +171,33 @@ class IndirectCTRNN(IBrain):
         cppn_inputs_w = brain_state['cppn_inputs_w']
         cppn_inputs_t = brain_state['cppn_inputs_t']
 
-        np.savez(path, v_mask=v_mask, w_mask=w_mask, t_mask=t_mask, input_positions=input_positions,
-                 neuron_positions=neuron_positions, output_positions=output_positions, cppn_inputs_v=cppn_inputs_v,
-                 cppn_inputs_w=cppn_inputs_w, cppn_inputs_t=cppn_inputs_t)
+        model_contents["brain_state_v_mask"] = v_mask
+        model_contents["brain_state_w_mask"] = w_mask
+        model_contents["brain_state_t_mask"] = t_mask
+
+        model_contents["brain_state_input_positions"] = input_positions
+        model_contents["brain_state_neuron_positions"] = neuron_positions
+        model_contents["brain_state_output_positions"] = output_positions
+
+        model_contents["brain_state_cppn_inputs_v"] = cppn_inputs_v
+        model_contents["brain_state_cppn_inputs_w"] = cppn_inputs_w
+        model_contents["brain_state_cppn_inputs_t"] = cppn_inputs_t
+
+        return model_contents
 
     @classmethod
-    def load_brain_state(cls, path):
+    def load_brain_state(cls, brain_data) -> Optional[Dict[str, np.ndarray]]:
+        v_mask = brain_data["brain_state_v_mask"]
+        w_mask = brain_data["brain_state_w_mask"]
+        t_mask = brain_data["brain_state_t_mask"]
 
-        file_data = np.load(path)
+        input_positions = brain_data["brain_state_input_positions"]
+        neuron_positions = brain_data["brain_state_neuron_positions"]
+        output_positions = brain_data["brain_state_output_positions"]
 
-        v_mask = file_data['v_mask']
-        w_mask = file_data['w_mask']
-        t_mask = file_data['t_mask']
-        input_positions = file_data['input_positions']
-        neuron_positions = file_data['neuron_positions']
-        output_positions = file_data['output_positions']
-        cppn_inputs_v = file_data['cppn_inputs_v']
-        cppn_inputs_w = file_data['cppn_inputs_w']
-        cppn_inputs_t = file_data['cppn_inputs_t']
+        cppn_inputs_v = brain_data["brain_state_cppn_inputs_v"]
+        cppn_inputs_w = brain_data["brain_state_cppn_inputs_w"]
+        cppn_inputs_t = brain_data["brain_state_cppn_inputs_t"]
 
         return cls.get_brain_state_from_arrays(v_mask, w_mask, t_mask,
                                                input_positions, neuron_positions, output_positions,
