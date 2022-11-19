@@ -5,10 +5,13 @@ HEIGHT = 448
 
 config = {
     "type": "GUIApp",
-    "number_time_steps": 100
+    "number_time_steps": 100,
+    "include_fake_bug": False
 }
 
 if __name__ == "__main__":
 
     app = GUIApp(config)
+    app.reset()
     app.interactive_mode()
+    
