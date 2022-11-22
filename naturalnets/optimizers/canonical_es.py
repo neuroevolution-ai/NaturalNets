@@ -18,8 +18,8 @@ class OptimizerCanonicalEsCfg(IOptimizerCfg):
 @register_optimizer_class
 class CanonicalEs(IOptimizer):
 
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
-        super().__init__(individual_size, global_seed, configuration)
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
         self.config = OptimizerCanonicalEsCfg(**self.config_dict)
         self.policy = np.zeros(self.individual_size)

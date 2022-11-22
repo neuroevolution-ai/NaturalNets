@@ -45,6 +45,7 @@ class ChallengerNeuralNetwork(IEnvironment):
         brain_state = brain_class.generate_brain_state(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration)
 
+        # TODO fix this bc of new return type of this function
         individual_size = brain_class.get_individual_size(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration, brain_state)
 

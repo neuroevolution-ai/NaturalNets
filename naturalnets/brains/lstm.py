@@ -103,31 +103,45 @@ class LSTM(IBrain):
 
     @classmethod
     def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+        individual_size = 0
         parameter_dict = {}
 
         config = LSTMConfig(**configuration)
         current_input_size = input_size
 
         for i, hidden_size in enumerate(config.hidden_layers):
+            input_to_hidden_size = current_input_size * hidden_size * 4
+            hidden_to_hidden_size = hidden_size * hidden_size * 4
+
             layer_dict = {
-                "number_weights_input_to_hidden": current_input_size * hidden_size * 4,
-                "number_weights_hidden_to_hidden": hidden_size * hidden_size * 4
+                "number_weights_input_to_hidden": input_to_hidden_size,
+                "number_weights_hidden_to_hidden": hidden_to_hidden_size
             }
+
+            individual_size += (input_to_hidden_size + hidden_to_hidden_size)
 
             if config.use_bias:
                 layer_dict["number_of_biases"] = hidden_size * 4
+                individual_size += hidden_size * 4
 
             parameter_dict[f"lstm_layer_{i}"] = layer_dict
 
             current_input_size = hidden_size
 
+        output_neurons_start_index = individual_size
+
+        output_layer_size = current_input_size * output_size
         output_layer_dict = {
-            "number_output_weights": current_input_size * output_size
+            "number_output_weights": output_layer_size
         }
+
+        individual_size += output_layer_size
 
         if config.use_bias:
             output_layer_dict["output_biases"] = output_size
+            individual_size += output_size
 
+        output_neurons_end_index = individual_size
         parameter_dict["output_layer"] = output_layer_dict
 
-        return parameter_dict
+        return parameter_dict, output_neurons_start_index, output_neurons_end_index

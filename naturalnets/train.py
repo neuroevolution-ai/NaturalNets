@@ -103,15 +103,7 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         global_seed=config.global_seed
     )
 
-    individual_size = ep_runner.get_individual_size()
-
-    # TODO make this optimizer and brain agnostic
-    output_layer_num_individuals = 0
-    if config.optimizer["initialize_last_layer_different"]:
-        output_layer_num_individuals += config.brain["hidden_layers"][-1] * ep_runner.get_output_size()
-
-        if config.brain["use_bias"]:
-            output_layer_num_individuals += ep_runner.get_output_size()
+    individual_size, output_neurons_start_index, output_neurons_end_index = ep_runner.get_individual_size()
 
     print(f"Free parameters: {ep_runner.get_free_parameter_usage()}")
     print(f"Individual size: {individual_size}")
@@ -120,8 +112,13 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer["type"])
 
-    opt = optimizer_class(individual_size=individual_size, global_seed=config.global_seed,
-                          configuration=config.optimizer, output_layer_num_individuals=output_layer_num_individuals)
+    opt = optimizer_class(
+        individual_size=individual_size,
+        global_seed=config.global_seed,
+        configuration=config.optimizer,
+        output_neurons_start_index=output_neurons_start_index,
+        output_neurons_end_index=output_neurons_end_index
+    )
 
     best_genome_overall = None
     best_reward_overall = -math.inf

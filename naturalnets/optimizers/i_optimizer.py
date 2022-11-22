@@ -27,7 +27,7 @@ class IOptimizerCfg:
 
 class IOptimizer(abc.ABC):
 
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
         self.individual_size = individual_size
         self.global_seed = global_seed
         self.config_dict = configuration

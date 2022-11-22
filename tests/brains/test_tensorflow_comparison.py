@@ -40,7 +40,9 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
         env_action_size=output_size
     )
 
-    individual_size = our_implementation_class.get_individual_size(input_size, output_size, brain_configuration, {})
+    individual_size, _, _ = our_implementation_class.get_individual_size(
+        input_size, output_size, brain_configuration, {}
+    )
 
     config = config_class(**brain_configuration)
 

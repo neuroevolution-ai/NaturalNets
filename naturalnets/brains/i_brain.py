@@ -118,7 +118,8 @@ class IBrain(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict,
+                                 brain_state: dict) -> Tuple[dict, int, int]:
         pass
 
     @classmethod
@@ -196,7 +197,8 @@ class IBrain(abc.ABC):
             raise RuntimeError("The chosen activation function '{}' is not implemented".format(activation))
 
     @classmethod
-    def get_individual_size(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict) -> int:
+    def get_individual_size(cls, input_size: int, output_size: int, configuration: dict,
+                            brain_state: dict) -> Tuple[int, int, int]:
         """uses context information to calculate the required number of free parameter needed to construct
                 an individual of this class"""
 
@@ -209,8 +211,11 @@ class IBrain(abc.ABC):
                     sum_ += item
             return sum_
 
-        usage_dict = cls.get_free_parameter_usage(input_size, output_size, configuration, brain_state)
-        return sum_dict(usage_dict)
+        usage_dict, output_neurons_start_index, output_neurons_end_index = cls.get_free_parameter_usage(
+            input_size, output_size, configuration, brain_state
+        )
+
+        return sum_dict(usage_dict), output_neurons_start_index, output_neurons_end_index
 
     @staticmethod
     def relu(x: np.ndarray) -> np.ndarray:

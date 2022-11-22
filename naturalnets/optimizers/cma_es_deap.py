@@ -19,8 +19,8 @@ class OptimizerCmaEsDeapCfg(IOptimizerCfg):
 @register_optimizer_class
 class CmaEsDeap(IOptimizer):
 
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict):
-        super().__init__(individual_size, global_seed, configuration)
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
         config = OptimizerCmaEsDeapCfg(**self.config_dict)
 

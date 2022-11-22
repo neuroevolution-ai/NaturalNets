@@ -1,5 +1,5 @@
 import itertools
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 from attrs import define, field, validators
@@ -104,7 +104,8 @@ class FeedForwardNN(IBrain):
         return x
 
     @classmethod
-    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict,
+                                 brain_state: dict) -> Tuple[dict, int, int]:
 
         config = FeedForwardCfg(**configuration)
 
@@ -115,9 +116,18 @@ class FeedForwardNN(IBrain):
             individual_size += last_layer * hidden_layer
             last_layer = hidden_layer
 
-        individual_size += last_layer * output_size
+        output_neurons_start_index = individual_size
+
+        output_matrix_size = last_layer * output_size
+        individual_size += output_matrix_size
+
+        output_neurons_end_index = individual_size
 
         if config.use_bias:
             individual_size += sum(config.hidden_layers) + output_size
 
-        return {"individual_size": individual_size}
+            # Subtract output bias size and output matrix size from the end index
+            output_neurons_start_index = individual_size - output_size - output_matrix_size
+            output_neurons_end_index = individual_size
+
+        return {"individual_size": individual_size}, output_neurons_start_index, output_neurons_end_index

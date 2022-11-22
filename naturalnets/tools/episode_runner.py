@@ -1,4 +1,4 @@
-from typing import Type, List
+from typing import Type, List, Tuple
 
 import numpy as np
 
@@ -50,7 +50,12 @@ class EpisodeRunner:
             self.current_ob_mean = self.ob_stat.mean
             self.current_ob_std = self.ob_stat.std
 
-    def get_individual_size(self):
+    def get_individual_size(self) -> Tuple[int, int, int]:
+        """
+        Calculates the individual size for the brain, and the number of output neurons in that individual
+
+        :return: Individual size and number of output neurons
+        """
         return self.brain_class.get_individual_size(self.input_size, self.output_size, self.brain_configuration,
                                                     self.brain_state)
 
@@ -61,8 +66,9 @@ class EpisodeRunner:
         return self.output_size
 
     def get_free_parameter_usage(self):
-        return self.brain_class.get_free_parameter_usage(self.input_size, self.output_size, self.brain_configuration,
-                                                         self.brain_state)
+        free_parameter_usage, _, _ = self.brain_class.get_free_parameter_usage(
+            self.input_size, self.output_size, self.brain_configuration, self.brain_state)
+        return free_parameter_usage
 
     def update_ob_mean_std(self, recorded_observations: List[np.ndarray]):
         if self.observation_standardization:

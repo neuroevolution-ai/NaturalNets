@@ -35,8 +35,8 @@ class Individual(list):
 
 @register_optimizer_class
 class MuLambdaDeap(IOptimizer):
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict) -> None:
-        super().__init__(individual_size, global_seed, configuration)
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
         self.configuration = OptimizerMuLambdaCfg(**self.config_dict)
 

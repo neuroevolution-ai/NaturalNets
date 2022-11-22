@@ -114,6 +114,7 @@ class CTRNN(IBrain):
     def reset(self, rng_seed: int):
         super().reset(rng_seed)
 
+        # TODO fix this when using optimize_x0
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod
@@ -194,4 +195,7 @@ class CTRNN(IBrain):
         if configuration["optimize_x0"]:
             free_parameters["x_0"] = configuration["number_neurons"]
 
-        return free_parameters
+        number_of_output_neurons_start_index = free_parameters_v + free_parameters_w
+        number_of_output_neurons_end_index = number_of_output_neurons_start_index + free_parameters_t
+
+        return free_parameters, number_of_output_neurons_start_index, number_of_output_neurons_end_index

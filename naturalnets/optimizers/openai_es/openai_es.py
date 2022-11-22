@@ -51,14 +51,15 @@ class OptimizerOpenAIESCfg(IOptimizerCfg):
     # Does not use the rewards directly, but ranks them and centers the ranked rewards between -0.5 and 0.5
     use_centered_ranks: bool = field(default=True, validator=validators.instance_of(bool))
 
-    # TODO delete this when finished testing
-    initialize_last_layer_different: bool = field(default=False, validator=validators.instance_of(bool))
+    # TODO maybe add this to all optimizers?
+    init_last_layer_differently: bool = field(default=False, validator=validators.instance_of(bool))
 
 
 @register_optimizer_class
 class OpenAIEs(IOptimizer):
-    def __init__(self, individual_size: int, global_seed: int, configuration: dict, output_layer_num_individuals: int):
-        super().__init__(individual_size, global_seed, configuration)
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict,
+                 output_neurons_start_index: int, output_neurons_end_index: int, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
         self.rng = np.random.default_rng(seed=self.global_seed)
 
@@ -69,15 +70,17 @@ class OpenAIEs(IOptimizer):
         #  Specifically, std=1.0 is used for all hidden layers, and std=0.01 is used for the last layer which maps
         #  the previous calculations to the output
 
-        if output_layer_num_individuals > 0:
-            individual_hidden_layers = self.initialize_individual(
-                individual_size=individual_size-output_layer_num_individuals, std=1.0)
+        if self.configuration.init_last_layer_differently:
+            number_output = output_neurons_end_index - output_neurons_start_index
+
+            self.current_individual = self.initialize_individual(
+                individual_size=individual_size, std=1.0)
+
             individual_output_layer = self.initialize_individual(
-                individual_size=output_layer_num_individuals, std=0.01
+                individual_size=number_output, std=0.01
             )
 
-            self.current_individual = np.r_[individual_hidden_layers, individual_output_layer]
-            assert len(self.current_individual) == self.individual_size
+            self.current_individual[output_neurons_start_index:output_neurons_end_index] = individual_output_layer
         else:
             self.current_individual = self.initialize_individual(self.individual_size, std=1.0)
 
@@ -89,7 +92,7 @@ class OpenAIEs(IOptimizer):
         self.reward_history = deque(maxlen=10)
         self.last_mean_reward = 0
 
-    def initialize_individual(self, individual_size: int, std: float = 1.0):
+    def initialize_individual(self, individual_size: int, std: float = 1.0) -> np.ndarray:
         """
         This initializes the individual when first starting the optimizers. OpenAI used this in their implementation
         and experiments showed that this could be a factor for the performance of the algorithm.
