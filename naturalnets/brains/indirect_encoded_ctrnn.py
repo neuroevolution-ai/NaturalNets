@@ -5,7 +5,7 @@ import numpy as np
 
 from naturalnets.brains.continuous_time_rnn import CTRNN
 from naturalnets.brains.feed_forward_nn import FeedForwardNN
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
+from naturalnets.brains.i_brain import IBrain, IBrainCfg
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -20,7 +20,6 @@ class IndirectEncodedCTRNNCfg(IBrainCfg):
     outputs_z: float = -0.5
 
 
-@register_brain_class
 class IndirectCTRNN(IBrain):
 
     def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
