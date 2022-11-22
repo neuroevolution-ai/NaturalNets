@@ -45,17 +45,20 @@ class ChallengerNeuralNetwork(IEnvironment):
         brain_state = brain_class.generate_brain_state(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration)
 
-        # TODO fix this bc of new return type of this function
-        individual_size = brain_class.get_individual_size(
+        individual_size, _, _ = brain_class.get_individual_size(
             number_inputs_challenger_nn, number_outputs_challenger_nn, brain_configuration, brain_state)
 
         individual = rng.standard_normal(individual_size, dtype=np.float32)
 
-        self.brain = brain_class(input_size=number_inputs_challenger_nn,
-                                 output_size=number_outputs_challenger_nn,
-                                 individual=individual,
-                                 configuration=brain_configuration,
-                                 brain_state=brain_state)
+        self.brain = brain_class(
+            individual=individual,
+            configuration=brain_configuration,
+            brain_state=brain_state,
+            env_observation_size=number_inputs_challenger_nn,
+            env_action_size=number_outputs_challenger_nn,
+            ob_mean=None,
+            ob_std=None
+        )
 
         self.t = 0
 
@@ -79,5 +82,5 @@ class ChallengerNeuralNetwork(IEnvironment):
 
         return ob, rew, done, {}
 
-    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]]):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         raise NotImplementedError("Rendering is not implemented for this environment")
