@@ -65,11 +65,6 @@ class OpenAIEs(IOptimizer):
 
         self.configuration = OptimizerOpenAIESCfg(**self.config_dict)
 
-        # TODO technically different std values are used for different hidden layers in the original implementation.
-        #  A bit tricky to implement here, as we use also other brains instead of only feed forward.
-        #  Specifically, std=1.0 is used for all hidden layers, and std=0.01 is used for the last layer which maps
-        #  the previous calculations to the output
-
         if self.configuration.init_last_layer_differently:
             number_output = output_neurons_end_index - output_neurons_start_index
 
