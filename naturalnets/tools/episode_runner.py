@@ -7,7 +7,7 @@ from attrs import define, field, validators
 
 from naturalnets.brains import IBrain
 from naturalnets.enhancers.i_enhancer import get_enhancer_class
-from naturalnets.optimizers.openai_es.openai_es_utils import RunningStat
+from naturalnets.tools.utils import RunningStat
 
 MODEL_FILE_NAME = "model.npz"
 INDIVIDUAL_KEY = "individual"

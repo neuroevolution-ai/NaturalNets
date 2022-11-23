@@ -1,43 +1,22 @@
-from multiprocessing import shared_memory
+"""
+Includes code from:
+evolution-strategies-starter Copyright (c) 2016 OpenAI (http://openai.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
 
 import numpy as np
-
-SHARED_MEMORY_NAME = "shared_noise_table"
-
-
-class SharedNoiseTable:
-    def __init__(self):
-        # TODO clean up the constructor or delete the class I think it is not useful
-        import ctypes
-
-        seed = 123
-        count = 250000000  # 1 gigabyte of 32-bit numbers. Will actually sample 2 gigabytes below.
-
-        self.rng = np.random.default_rng()
-        self.noise = self.rng.standard_normal(size=count, dtype=np.float32)
-
-        shm = shared_memory.SharedMemory(name=SHARED_MEMORY_NAME, create=True, size=self.noise.nbytes)
-
-        b = np.array(self.noise.shape, dtype=self.noise.dtype, buffer=shm.buf)
-        b[:] = self.noise[:]
-
-
-        # logger.info('Sampling {} random numbers with seed {}'.format(count, seed))
-
-        #self._shared_mem = multiprocessing.Array(ctypes.c_float, count)
-        self.noise = np.ctypeslib.as_array(self._shared_mem.get_obj())
-
-        assert self.noise.dtype == np.float32
-
-        self.noise[:] = np.random.RandomState(seed).randn(count)  # 64-bit to 32-bit conversion here
-
-        #logger.info('Sampled {} bytes'.format(self.noise.size * 4))
-
-    def get(self, i: int, dim: int):
-        return self.noise[i:i + dim]
-
-    def sample_index(self, stream, dim):
-        return stream.randint(0, len(self.noise) - dim + 1)
 
 
 class Adam:
@@ -65,31 +44,6 @@ class Adam:
         self.v = self.beta2 * self.v + (1 - self.beta2) * (gradient * gradient)
         step = -a * self.m / (np.sqrt(self.v) + self.epsilon)
         return step
-
-
-class RunningStat(object):
-    def __init__(self, shape, eps):
-        self.sum = np.zeros(shape, dtype=np.float32)
-        self.sumsq = np.full(shape, eps, dtype=np.float32)
-        self.count = eps
-
-    def increment(self, s, ssq, c):
-        self.sum += s
-        self.sumsq += ssq
-        self.count += c
-
-    @property
-    def mean(self):
-        return self.sum / self.count
-
-    @property
-    def std(self):
-        return np.sqrt(np.maximum(self.sumsq / self.count - np.square(self.mean), 1e-2))
-
-    def set_from_init(self, init_mean, init_std, init_count):
-        self.sum[:] = init_mean * init_count
-        self.sumsq[:] = (np.square(init_mean) + np.square(init_std)) * init_count
-        self.count = init_count
 
 
 def compute_ranks(x):
