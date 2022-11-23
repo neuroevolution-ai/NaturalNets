@@ -1,7 +1,7 @@
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple
 
-from attrs import define, field, validators
 import numpy as np
+from attrs import define, field, validators
 
 from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
 
@@ -46,10 +46,9 @@ class ContinuousTimeRNNCfg(IBrainCfg):
 @register_brain_class
 class CTRNN(IBrain):
 
-    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int,
-                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size, ob_mean, ob_std)
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
 
         self.config = ContinuousTimeRNNCfg(**configuration)
 
@@ -86,7 +85,7 @@ class CTRNN(IBrain):
 
         self.x = self.x0
 
-    def internal_step(self, u: np.ndarray) -> np.ndarray:
+    def step(self, u: np.ndarray) -> np.ndarray:
 
         assert u.ndim == 1
 
@@ -111,10 +110,12 @@ class CTRNN(IBrain):
 
         return y
 
-    def reset(self, rng_seed: int):
-        super().reset(rng_seed)
-
+    def reset(self):
         # TODO fix this when using optimize_x0
+        if self.config.optimize_x0:
+            raise RuntimeError("CTRNN optimize_x0 is bugged, resetting the brain should take the trained x0, which is"
+                               "currently not implemented")
+
         self.x = np.zeros(self.config.number_neurons)
 
     @classmethod

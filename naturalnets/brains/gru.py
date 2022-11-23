@@ -1,4 +1,4 @@
-from typing import List, Union, Dict, Optional, Tuple
+from typing import List, Tuple
 
 import numpy as np
 from attrs import define, field, validators
@@ -15,13 +15,9 @@ class GRUConfig(IBrainCfg):
 
 @register_brain_class
 class GRU(IBrain):
-    def __init__(self, individual: np.ndarray, configuration: Union[GRUConfig, Dict], brain_state: dict,
-                 env_observation_size: int, env_action_size: int,
-                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
-        super().__init__(
-            individual, configuration, brain_state, env_observation_size, env_action_size,
-            ob_mean, ob_std
-        )
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
 
         if isinstance(configuration, dict):
             self.configuration = GRUConfig(**configuration)
@@ -50,7 +46,7 @@ class GRU(IBrain):
                 np.zeros(hidden_size, dtype=np.float32)
             )
 
-    def internal_step(self, inputs: np.ndarray) -> np.ndarray:
+    def step(self, inputs: np.ndarray) -> np.ndarray:
         current_input = inputs
         for i in range(len(self.configuration.hidden_layers)):
             w_ih = self.weights_input_to_hidden[i]
@@ -88,9 +84,7 @@ class GRU(IBrain):
 
         return np.tanh(np.dot(self.weights_hidden_to_output, current_input) + self.output_bias)
 
-    def reset(self, rng_seed: int):
-        super().reset(rng_seed)
-
+    def reset(self):
         self.hidden = []
         for hidden_size in self.configuration.hidden_layers:
             self.hidden.append(

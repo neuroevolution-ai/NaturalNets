@@ -1,5 +1,5 @@
 import itertools
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import numpy as np
 from attrs import define, field, validators
@@ -24,11 +24,9 @@ class FeedForwardCfg(IBrainCfg):
 @register_brain_class
 class FeedForwardNN(IBrain):
 
-    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int,
-                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size,
-                         ob_mean, ob_std)
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
 
         self.config = FeedForwardCfg(**configuration)
 
@@ -66,7 +64,7 @@ class FeedForwardNN(IBrain):
         if self.config.use_bias:
             self.biases_output_layer, index = self.read_matrix_from_genome(individual, index, self.output_size, 1)
 
-    def internal_step(self, ob: np.ndarray) -> np.ndarray:
+    def step(self, ob: np.ndarray) -> np.ndarray:
 
         assert ob.ndim == 1
         assert ob.size == self.input_size
@@ -75,8 +73,8 @@ class FeedForwardNN(IBrain):
 
         return x.flatten()
 
-    def reset(self, rng_seed: int):
-        super().reset(rng_seed)
+    def reset(self):
+        pass
 
     def predict(self, ob: np.ndarray) -> np.ndarray:
 

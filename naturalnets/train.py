@@ -18,9 +18,8 @@ from tensorboardX import SummaryWriter
 from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
-from naturalnets.optimizers.openai_es.openai_es_utils import RunningStat
 from naturalnets.tools.episode_runner import EpisodeRunner
-from naturalnets.tools.utils import flatten_dict, set_seeds, parse_potentially_old_config
+from naturalnets.tools.utils import flatten_dict, set_seeds
 from naturalnets.tools.write_results import write_results_to_textfile
 
 GEN_KEY = "gen"
@@ -44,6 +43,8 @@ class TrainingCfg:
     environment: dict
     brain: dict
     optimizer: dict
+    preprocessing: dict
+    enhancer: dict
     experiment_id: int = field(default=-1, validator=[validators.instance_of(int), validators.ge(-1)])
     global_seed: int = field(validator=[validators.instance_of(int), validators.ge(0)])
 
@@ -77,8 +78,6 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     if configuration is None:
         raise RuntimeError("No configuration provided!")
 
-    configuration = parse_potentially_old_config(configuration)
-
     config = TrainingCfg(**configuration)
 
     # For reproducibility, set the global random seeds
@@ -94,12 +93,17 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
 
+    preprocessing_config = config.preprocessing
+    enhancer_config = config.enhancer
+
     # Initialize episode runner
     ep_runner = EpisodeRunner(
         env_class=environment_class,
         env_configuration=config.environment,
         brain_class=brain_class,
         brain_configuration=config.brain,
+        preprocessing_config=preprocessing_config,
+        enhancer_config=enhancer_config,
         global_seed=config.global_seed
     )
 

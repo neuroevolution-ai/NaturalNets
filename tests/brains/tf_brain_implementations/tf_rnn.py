@@ -53,7 +53,7 @@ class TensorflowRNN(IBrain):
             output_dense_layer=self.output_dense_layer
         )
 
-    def internal_step(self, u: np.ndarray):
+    def step(self, u: np.ndarray):
         output = tf.convert_to_tensor(u.reshape(1, -1))
 
         for i, lstm_layer in enumerate(self.rnn_layers):

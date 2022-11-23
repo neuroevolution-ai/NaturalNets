@@ -67,7 +67,7 @@ class IndirectCTRNN(IBrain):
         self.ctrnn = CTRNN(individual_ctrnn, self.config.ctrnn_config, brain_state_ctrnn, env_observation_size,
                            env_action_size)
 
-    def internal_step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
+    def step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
 
         # assert ob.ndim == 3
         # assert ob.shape == self.input_size

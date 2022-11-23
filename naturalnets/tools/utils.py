@@ -52,14 +52,3 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
 def set_seeds(seed: int):
     np.random.seed(seed)
     random.seed(seed)
-
-
-def parse_potentially_old_config(training_config: dict):
-    parsed_training_config = deepcopy(training_config)
-    if "enhancer" in training_config and "enhancer" not in training_config["brain"]:
-        enhancer_config = parsed_training_config.pop("enhancer")
-        parsed_training_config["brain"]["enhancer"] = enhancer_config
-    elif "enhancer" in training_config and "enhancer" in training_config["brain"]:
-        raise RuntimeError(f"The training config has two 'enhancer' configuration parts, which is not supported")
-
-    return parsed_training_config
