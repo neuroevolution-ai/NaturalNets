@@ -151,9 +151,9 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
 
         if debug:
             # Use this for debugging
-            training_results = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+            training_results = [ep_runner.eval_fitness(*individual_eval) for individual_eval in evaluations]
         else:
-            training_results = pool.map(ep_runner.eval_fitness, evaluations)
+            training_results = pool.starmap(ep_runner.eval_fitness, evaluations)
 
         rewards_training = []
         recorded_observations = []
@@ -173,9 +173,9 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
             evaluations.append([best_genome_current_generation, i, 1, False])
 
         if debug:
-            rewards_validation = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+            rewards_validation = [ep_runner.eval_fitness(*individual_eval) for individual_eval in evaluations]
         else:
-            rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
+            rewards_validation = pool.starmap(ep_runner.eval_fitness, evaluations)
 
         min_reward_validation = np.min(rewards_validation)
         mean_reward_validation = np.mean(rewards_validation)

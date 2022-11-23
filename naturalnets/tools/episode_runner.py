@@ -1,5 +1,6 @@
 import os
-from typing import Type, List, Tuple, Optional
+import time
+from typing import Type, List, Tuple
 
 import numpy as np
 from attrs import define, field, validators
@@ -60,6 +61,7 @@ class EpisodeRunner:
 
         self.preprocessing_config = PreprocessingCfg(**preprocessing_config)
 
+        self.current_ob_mean, self.current_ob_std = None, None
         if self.preprocessing_config.observation_standardization:
             self.obs_rng = np.random.default_rng(global_seed)
 
@@ -118,28 +120,21 @@ class EpisodeRunner:
 
         np.savez(file_name, **model_contents)
 
-    def load_brain(self, exp_dir: str) -> Tuple[np.ndarray, dict, Optional[np.ndarray], Optional[np.ndarray]]:
+    def load_brain(self, exp_dir: str) -> np.ndarray:
         brain_data = np.load(os.path.join(exp_dir, MODEL_FILE_NAME))
 
         individual = brain_data[INDIVIDUAL_KEY]
 
-        brain_state = self.brain_class.load_brain_state(brain_data)
+        self.brain_state = self.brain_class.load_brain_state(brain_data)
 
-        ob_mean, ob_std = None, None
         if OB_MEAN_KEY in brain_data and OB_STD_KEY in brain_data:
-            ob_mean = brain_data[OB_MEAN_KEY]
-            ob_std = brain_data[OB_STD_KEY]
+            self.current_ob_mean = brain_data[OB_MEAN_KEY]
+            self.current_ob_std = brain_data[OB_STD_KEY]
 
-        return individual, brain_state, ob_mean, ob_std
+        return individual
 
-    def eval_fitness(self, evaluation):
-        # Extract parameters, this list of lists is necessary since pool.map only accepts a single argument
-        # See here: http://python.omics.wiki/multiprocessing_map/multiprocessing_partial_function_multiple_arguments
-        individual = evaluation[0]
-        env_seed = evaluation[1]
-        number_of_rounds = evaluation[2]
-        training: bool = evaluation[3]
-
+    def eval_fitness(self, individual: np.ndarray, env_seed: int, number_of_rounds: int, training: bool,
+                     render: bool = False, lag: float = 0.0):
         brain = self.brain_class(
             input_size=self.input_size,
             output_size=self.output_size,
@@ -162,7 +157,9 @@ class EpisodeRunner:
             if self.preprocessing_config.observation_standardization and training:
                 save_obs = self.obs_rng.uniform(0.0, 1.0) < self.preprocessing_config.calc_ob_stat_prob
 
-            env = self.env_class(configuration=self.env_configuration)
+            render_mode = "human" if render else None
+            env = self.env_class(configuration=self.env_configuration, render_mode=render_mode)
+
             ob = env.reset(env_seed=env_seed+i)
             enhancer.reset(rng_seed=env_seed+i)
             brain.reset()
@@ -186,13 +183,17 @@ class EpisodeRunner:
                     )
 
                 action = brain.step(processed_obs)
-                enhanced_action, _ = enhancer.step(action)
+                enhanced_action, enhancer_info = enhancer.step(action)
                 ob, rew, done, info = env.step(enhanced_action)
 
                 fitness_current += rew
 
                 if save_obs:
                     obs_list.append(ob)
+
+                if render:
+                    env.render(enhancer_info)
+                    time.sleep(lag)
 
             fitness_total += fitness_current
 
@@ -203,3 +204,25 @@ class EpisodeRunner:
             return fitness_total / number_of_rounds, total_obs
 
         return fitness_total / number_of_rounds
+
+    def visualize(self, exp_dir: str, number_visualization_episodes: int, lag: float):
+        individual = self.load_brain(exp_dir)
+
+        fitness_total = 0
+
+        for env_seed in range(number_visualization_episodes):
+            fitness_episode = self.eval_fitness(
+                individual=individual,
+                env_seed=env_seed,
+                number_of_rounds=1,
+                training=False,
+                render=True,
+                lag=lag
+            )
+
+            fitness_total += fitness_episode
+
+            print(f"Seed: {env_seed}   Reward:  {fitness_episode:4.2f}")
+
+        print(f"Reward mean: {fitness_total / number_visualization_episodes:4.2f}")
+        print("Finished")

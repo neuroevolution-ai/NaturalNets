@@ -5,9 +5,9 @@ import time
 import click
 
 from monkey_tester.monkey_tester import MonkeyTesterCfg, RandomMonkeyTester
-from naturalnets.brains.i_brain import get_brain_class, MODEL_FILE_NAME
+from naturalnets.brains.i_brain import get_brain_class
 from naturalnets.environments.i_environment import get_environment_class
-from naturalnets.tools.utils import parse_potentially_old_config
+from naturalnets.tools.episode_runner import EpisodeRunner
 
 
 def monkey_tester_visualization(monkey_dir: str, lag: float):
@@ -43,60 +43,24 @@ def monkey_tester_visualization(monkey_dir: str, lag: float):
 
 
 def experiment_visualization(exp_dir: str, lag: float):
-    # Load configuration file
     with open(os.path.join(exp_dir, "Configuration.json"), "r") as read_file:
         configuration = json.load(read_file)
 
-    configuration = parse_potentially_old_config(configuration)
-
-    environment_class = get_environment_class(configuration["environment"]["type"])
-    env = environment_class(configuration=configuration["environment"])
-
-    env_observation_size = env.get_number_inputs()
-    env_action_size = env.get_number_outputs()
-
-    brain_class = get_brain_class(configuration["brain"]["type"])
-
-    individual, brain_state, ob_mean, ob_std = brain_class.load_brain(os.path.join(exp_dir, MODEL_FILE_NAME))
-
-    brain = brain_class(
-        individual=individual,
-        configuration=configuration["brain"],
-        brain_state=brain_state,
-        env_observation_size=env_observation_size,
-        env_action_size=env_action_size,
-        ob_mean=ob_mean,
-        ob_std=ob_std
+    ep_runner = EpisodeRunner(
+        env_class=get_environment_class(configuration["environment"]["type"]),
+        env_configuration=configuration["environment"],
+        brain_class=get_brain_class(configuration["brain"]["type"]),
+        brain_configuration=configuration["brain"],
+        preprocessing_config=configuration["preprocessing"],
+        enhancer_config=configuration["enhancer"],
+        global_seed=0
     )
 
-    number_validation_runs = configuration["number_validation_runs"]
-
-    fitness_total = 0
-
-    for env_seed in range(number_validation_runs):
-
-        env = environment_class(configuration=configuration["environment"], render_mode="human")
-
-        ob = env.reset(env_seed=env_seed)
-        brain.reset(rng_seed=env_seed)
-
-        fitness_current = 0
-        done = False
-
-        while not done:
-            action, enhancer_info = brain.step(ob)
-            ob, rew, done, info = env.step(action)
-            fitness_current += rew
-
-            env.render(enhancer_info)
-            time.sleep(lag)
-
-        fitness_total += fitness_current
-
-        print("Seed: {}   Reward:  {:4.2f}".format(env_seed, fitness_current))
-
-    print("Reward mean: {:4.2f}".format(fitness_total / number_validation_runs))
-    print("Finished")
+    ep_runner.visualize(
+        exp_dir=exp_dir,
+        number_visualization_episodes=configuration["number_validation_runs"],
+        lag=lag
+    )
 
 
 @click.command()
