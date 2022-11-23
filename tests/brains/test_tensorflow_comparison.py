@@ -1,7 +1,5 @@
 import time
 
-from typing import Dict, List
-
 import numpy as np
 import tensorflow as tf
 
@@ -34,12 +32,6 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
     else:
         raise RuntimeError(f"Unsupported rnn_type '{brain_configuration['type']}'")
 
-    input_size, output_size = our_implementation_class.get_input_and_output_size(
-        configuration=brain_configuration,
-        env_observation_size=input_size,
-        env_action_size=output_size
-    )
-
     individual_size, _, _ = our_implementation_class.get_individual_size(
         input_size, output_size, brain_configuration, {}
     )
@@ -51,23 +43,19 @@ def get_rnn_implementations(brain_configuration, input_size, output_size):
     individual_ours = np.copy(individual_tensorflow)
 
     tf_implementation = tf_implementation_class(
+        input_size=input_size,
+        output_size=output_size,
         individual=individual_tensorflow,
         configuration=brain_configuration,
-        brain_state={},
-        env_observation_size=input_size,
-        env_action_size=output_size,
-        ob_mean=None,
-        ob_std=None
+        brain_state={}
     )
 
     our_implementation = our_implementation_class(
+        input_size=input_size,
+        output_size=output_size,
         individual=individual_ours,
         configuration=brain_configuration,
-        brain_state={},
-        env_observation_size=input_size,
-        env_action_size=output_size,
-        ob_mean=None,
-        ob_std=None
+        brain_state={}
     )
 
     tf_hidden_state = np.random.randn(np.sum(config.hidden_layers)).astype(np.float32)
@@ -139,21 +127,21 @@ class TestTensorflowComparison:
         # Go through each input, compute the output of both implementations and compare them in the end
         for i, curr_input in enumerate(inputs):
             time_s_tf = time.time()
-            tf_lstm_output, _ = tf_impl.step(curr_input)
+            tf_lstm_output = tf_impl.step(curr_input)
             time_e_tf = time.time()
             tf_times.append(time_e_tf - time_s_tf)
 
             tf_lstm_outputs.append(tf_lstm_output)
 
             time_s = time.time()
-            our_lstm_output, _ = our_impl.step(curr_input)
+            our_lstm_output = our_impl.step(curr_input)
             time_e = time.time()
             new_lstm_times.append(time_e - time_s)
 
             our_lstm_outputs.append(our_lstm_output)
 
             # Set the hidden state to be equal after each computation to avoid build up of numerical errors.
-            # Not doing this would result in different computations between the implementations although they might
+            # Not doing this would result in different computations between the implementations, although they might
             # be correct.
             for j, hidden_layer in enumerate(tf_impl.hidden):
                 if tensorflow_cmp_config["type"] == "LSTM":

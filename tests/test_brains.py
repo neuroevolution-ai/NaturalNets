@@ -21,16 +21,14 @@ class TestBrains:
 
         # noinspection PyCallingNonCallable
         brain = brain_class(
+            input_size=input_size,
+            output_size=output_size,
             individual=individual,
             configuration=brain_config,
-            brain_state=brain_state,
-            env_observation_size=input_size,
-            env_action_size=output_size,
-            ob_mean=None,
-            ob_std=None
+            brain_state=brain_state
         )
 
-        brain.reset(rng_seed=0)
+        brain.reset()
 
         reference_observations = reference_results["observations"]
         reference_actions = reference_results["actions"]
@@ -45,7 +43,7 @@ class TestBrains:
             ob = reference_observations[i]
             observations.append(ob)
 
-            action, _ = brain.step(ob)
+            action = brain.step(ob)
             actions.append(action)
 
         observations = np.array(observations)

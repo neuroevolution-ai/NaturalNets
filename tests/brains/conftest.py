@@ -24,16 +24,7 @@ def tensorflow_cmp_config(request) -> dict:
     config = {
         "type": chosen_brain,
         "hidden_layers": chosen_hidden_layers,
-        "use_bias": chosen_use_bias,
-        "enhancer": {
-            "type": None
-        },
-        "preprocessing": {
-            "observation_standardization": False,
-            "calc_ob_stat_prob": 0.0,
-            "observation_clipping": False,
-            "ob_clipping_value": 0.0
-        }
+        "use_bias": chosen_use_bias
     }
 
     return config

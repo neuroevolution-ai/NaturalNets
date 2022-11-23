@@ -1,5 +1,3 @@
-from typing import Optional
-
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -11,11 +9,9 @@ from tests.brains.tf_brain_implementations.tf_brain_utils import assign_individu
 
 class TensorflowRNN(IBrain):
 
-    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
-                 env_observation_size: int, env_action_size: int,
-                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
-        super().__init__(individual, configuration, brain_state, env_observation_size, env_action_size,
-                         ob_mean, ob_std)
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
 
         self.configuration = RNNConfig(**configuration)
 
@@ -65,7 +61,7 @@ class TensorflowRNN(IBrain):
 
         return output[0]
 
-    def reset(self, rng_seed: int):
+    def reset(self):
         raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
                                   "do not use it.")
 
