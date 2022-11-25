@@ -32,14 +32,21 @@ class OptimizerOpenAIESCfg(IOptimizerCfg):
     population_size: int = field(validator=[validators.instance_of(int), validators.ge(2)])
 
     # Initial learning rate for the Adam optimizer
-    learning_rate: float = field(validator=[validators.instance_of(float), validators.gt(0)])
+    learning_rate: float = field(
+        converter=float,
+        validator=[validators.instance_of(float), validators.gt(0)]
+    )
 
     # Controls how much of the noise is added to the individual, i.e. this value is multiplied with the
     # sampled noise
-    noise_stddev: float = field(validator=[validators.instance_of(float), validators.gt(0.0), validators.le(1.0)])
+    noise_stddev: float = field(
+        converter=float,
+        validator=[validators.instance_of(float), validators.gt(0.0), validators.le(1.0)]
+    )
 
     # Controls the amount of weight decay, which is also called L2 regularization
     l2_regularization_coefficient: float = field(
+        converter=float,
         validator=[validators.instance_of(float), validators.ge(0.0), validators.le(1.0)]
     )
 

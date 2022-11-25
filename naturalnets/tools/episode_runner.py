@@ -20,12 +20,14 @@ class PreprocessingCfg:
     observation_standardization: bool = field(default=False, validator=validators.instance_of(bool))
     calc_ob_stat_prob: float = field(
         default=0.0,
+        converter=float,
         validator=[validators.instance_of(float), validators.ge(0.0), validators.le(1.0)]
     )
 
     observation_clipping: bool = field(default=False, validator=validators.instance_of(bool))
     ob_clipping_value: float = field(
         default=0.0,
+        converter=float,
         validator=[validators.instance_of(float), validators.ge(0.0)]
     )
 
