@@ -57,6 +57,14 @@
                     "values": [null, "RandomEnhancer"]
                 }
             }
+        },
+        "preprocessing": {
+            "parameters": {
+                "observation_standardization": { "value": false },
+                "calc_ob_stat_prob": { "value": 0.01 },
+                "observation_clipping": { "value": false },
+                "ob_clipping_value": { "value": 5.0 }
+            }
         }
     }
 }
