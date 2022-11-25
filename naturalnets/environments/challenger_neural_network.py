@@ -51,13 +51,11 @@ class ChallengerNeuralNetwork(IEnvironment):
         individual = rng.standard_normal(individual_size, dtype=np.float32)
 
         self.brain = brain_class(
+            input_size=number_inputs_challenger_nn,
+            output_size=number_outputs_challenger_nn,
             individual=individual,
             configuration=brain_configuration,
-            brain_state=brain_state,
-            env_observation_size=number_inputs_challenger_nn,
-            env_action_size=number_outputs_challenger_nn,
-            ob_mean=None,
-            ob_std=None
+            brain_state=brain_state
         )
 
         self.t = 0
