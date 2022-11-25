@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 from attrs import define, field, validators
@@ -19,10 +19,10 @@ class OptimizerCmaEsDeapCfg(IOptimizerCfg):
 @register_optimizer_class
 class CmaEsDeap(IOptimizer):
 
-    def __init__(self, individual_size: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
-        self.individual_size = individual_size
-        config = OptimizerCmaEsDeapCfg(**configuration)
+        config = OptimizerCmaEsDeapCfg(**self.config_dict)
 
         try:
             del creator.Individual
@@ -51,9 +51,13 @@ class CmaEsDeap(IOptimizer):
 
         return genomes
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = np.array(self.population[np.argmax(rewards)])
+
         for ind, fit in zip(self.population, rewards):
             ind.fitness.values = (fit,)
 
         # Update the strategy with the evaluated individuals
         self.toolbox.update(self.population)
+
+        return best_genome_current_generation

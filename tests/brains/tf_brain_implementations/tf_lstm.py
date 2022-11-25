@@ -9,14 +9,16 @@ from tests.brains.tf_brain_implementations.tf_brain_utils import assign_individu
 
 class TensorflowLSTM(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: LSTMConfig,
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
                  brain_state: dict):
-        self.configuration = configuration
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
+
+        self.configuration = LSTMConfig(**configuration)
 
         self.hidden = []
         self.rnn_layers = []
 
-        input_shape = (1, 1, input_size)
+        input_shape = (1, 1, self.input_size)
 
         for i, hidden_size in enumerate(self.configuration.hidden_layers):
             lstm_layer = keras.layers.LSTMCell(
@@ -33,14 +35,14 @@ class TensorflowLSTM(IBrain):
 
             self.hidden.append([tf.zeros((1, hidden_size)), tf.zeros((1, hidden_size))])
 
-        self.output_dense_layer = keras.layers.Dense(output_size, use_bias=self.configuration.use_bias)
+        self.output_dense_layer = keras.layers.Dense(self.output_size, use_bias=self.configuration.use_bias)
         self.output_dense_layer.trainable = False
         self.output_dense_layer.build(input_shape=(1, self.configuration.hidden_layers[-1]))
 
         assign_individual_to_tf_layer_weights(
             individual,
-            input_size=input_size,
-            output_size=output_size,
+            input_size=self.input_size,
+            output_size=self.output_size,
             number_of_gates=4,
             hidden_layers=self.configuration.hidden_layers,
             lstm_layers=self.rnn_layers,
@@ -66,15 +68,5 @@ class TensorflowLSTM(IBrain):
 
     @classmethod
     def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
-        raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
-                                  "do not use it.")
-
-    @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
-                                  "do not use it.")
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
         raise NotImplementedError("This brain is only implemented to test the corresponding NumPy implementation, "
                                   "do not use it.")

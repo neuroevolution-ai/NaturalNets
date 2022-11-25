@@ -1,6 +1,7 @@
-from typing import Union
+from typing import Union, List
 
 import cma
+import numpy as np
 from attrs import define, field, validators
 
 from naturalnets.optimizers.i_optimizer import IOptimizer, IOptimizerCfg, register_optimizer_class
@@ -15,13 +16,16 @@ class OptimizerCmaEsPyCmaCfg(IOptimizerCfg):
 @register_optimizer_class
 class CmaEsPyCma(IOptimizer):
 
-    def __init__(self, individual_size: int, configuration: dict):
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
-        self.individual_size = individual_size
-        config = OptimizerCmaEsPyCmaCfg(**configuration)
+        config = OptimizerCmaEsPyCmaCfg(**self.config_dict)
 
-        self.es = cma.CMAEvolutionStrategy(x0=[0.0] * individual_size, sigma0=config.sigma,
-                                           inopts={"popsize": config.population_size})
+        self.es = cma.CMAEvolutionStrategy(
+            x0=[0.0] * self.individual_size,
+            sigma0=config.sigma,
+            inopts={"popsize": config.population_size}
+        )
 
         self.solutions = None
 
@@ -29,5 +33,9 @@ class CmaEsPyCma(IOptimizer):
         self.solutions = self.es.ask()
         return self.solutions
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = self.solutions[np.argmax(rewards)]
+
         self.es.tell(self.solutions, rewards)
+
+        return best_genome_current_generation

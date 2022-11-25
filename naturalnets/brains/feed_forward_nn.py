@@ -1,5 +1,5 @@
 import itertools
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 from attrs import define, field, validators
@@ -26,13 +26,9 @@ class FeedForwardNN(IBrain):
 
     def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
                  brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
 
         self.config = FeedForwardCfg(**configuration)
-
-        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
-
-        self.input_size: int = input_size
-        self.output_size: int = output_size
 
         # Set activation functions for hidden layers and output layer based on config
         self.activation_hidden_layers = self.get_activation_function(self.config.neuron_activation)
@@ -106,19 +102,8 @@ class FeedForwardNN(IBrain):
         return x
 
     @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        return None
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
-        pass
-
-    @classmethod
-    def load_brain_state(cls, path):
-        pass
-
-    @classmethod
-    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+    def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict,
+                                 brain_state: dict) -> Tuple[dict, int, int]:
 
         config = FeedForwardCfg(**configuration)
 
@@ -129,9 +114,18 @@ class FeedForwardNN(IBrain):
             individual_size += last_layer * hidden_layer
             last_layer = hidden_layer
 
-        individual_size += last_layer * output_size
+        output_neurons_start_index = individual_size
+
+        output_matrix_size = last_layer * output_size
+        individual_size += output_matrix_size
+
+        output_neurons_end_index = individual_size
 
         if config.use_bias:
             individual_size += sum(config.hidden_layers) + output_size
 
-        return {"individual_size": individual_size}
+            # Subtract output bias size and output matrix size from the end index
+            output_neurons_start_index = individual_size - output_size - output_matrix_size
+            output_neurons_end_index = individual_size
+
+        return {"individual_size": individual_size}, output_neurons_start_index, output_neurons_end_index

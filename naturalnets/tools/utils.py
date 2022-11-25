@@ -51,3 +51,46 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
 def set_seeds(seed: int):
     np.random.seed(seed)
     random.seed(seed)
+
+
+class RunningStat(object):
+    """
+    Includes code from:
+    evolution-strategies-starter Copyright (c) 2016 OpenAI (http://openai.com)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+    documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+    OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+    OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    """
+
+    def __init__(self, shape, eps):
+        self.sum = np.zeros(shape, dtype=np.float32)
+        self.sumsq = np.full(shape, eps, dtype=np.float32)
+        self.count = eps
+
+    def increment(self, s, ssq, c):
+        self.sum += s
+        self.sumsq += ssq
+        self.count += c
+
+    @property
+    def mean(self):
+        return self.sum / self.count
+
+    @property
+    def std(self):
+        return np.sqrt(np.maximum(self.sumsq / self.count - np.square(self.mean), 1e-2))
+
+    def set_from_init(self, init_mean, init_std, init_count):
+        self.sum[:] = init_mean * init_count
+        self.sumsq[:] = (np.square(init_mean) + np.square(init_std)) * init_count
+        self.count = init_count

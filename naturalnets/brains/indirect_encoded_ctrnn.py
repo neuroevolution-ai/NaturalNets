@@ -1,11 +1,11 @@
-from typing import Union
+from typing import Union, Dict, Optional
 
 import attr
 import numpy as np
 
 from naturalnets.brains.continuous_time_rnn import CTRNN
 from naturalnets.brains.feed_forward_nn import FeedForwardNN
-from naturalnets.brains.i_brain import IBrain, IBrainCfg, register_brain_class
+from naturalnets.brains.i_brain import IBrain, IBrainCfg
 
 
 @attr.s(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -20,18 +20,17 @@ class IndirectEncodedCTRNNCfg(IBrainCfg):
     outputs_z: float = -0.5
 
 
-@register_brain_class
 class IndirectCTRNN(IBrain):
 
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
-                 brain_state: dict):
+    def __init__(self, individual: np.ndarray, configuration: dict, brain_state: dict,
+                 env_observation_size: int, env_action_size: int,
+                 ob_mean: Optional[np.ndarray], ob_std: Optional[np.ndarray]):
+        super().__init__(
+            individual, configuration, brain_state, env_observation_size, env_action_size,
+            ob_mean, ob_std
+        )
 
         self.config = IndirectEncodedCTRNNCfg(**configuration)
-
-        assert len(individual) == self.get_individual_size(input_size, output_size, configuration, brain_state)
-
-        self.input_size: int = input_size
-        self.output_size: int = output_size
 
         cppn_size = FeedForwardNN.get_individual_size(input_size=2*self.config.number_dimensions,
                                                       output_size=1,
@@ -62,8 +61,11 @@ class IndirectCTRNN(IBrain):
 
         brain_state_ctrnn = {"v_mask": v_mask, "w_mask": w_mask, "t_mask": t_mask}
 
-        self.ctrnn = CTRNN(input_size, output_size, individual_ctrnn, self.config.ctrnn_config,
-                           brain_state_ctrnn)
+        # TODO check if this works regarding env_observation_size and env_action_size. I guess the CTRNN config
+        #   needs to be careful with which enhancer they use, if any, since when creating the CTRNN here an enhancer
+        #   is created if this is provided in the config.
+        self.ctrnn = CTRNN(individual_ctrnn, self.config.ctrnn_config, brain_state_ctrnn, env_observation_size,
+                           env_action_size)
 
     def step(self, ob: np.ndarray) -> Union[np.ndarray, np.generic]:
 
@@ -75,10 +77,16 @@ class IndirectCTRNN(IBrain):
 
         # assert ob.ndim == 1
 
-        return self.ctrnn.step(ob)
+        # TODO enhancer_info is thrown away here, since IBrain expects one output from internal_step. If this brain is
+        #  used in the future, IBrain.step() should maybe be extended to also accept the enhancer_info from this brain
+        ctrnn_action, _ = self.ctrnn.step(ob)
 
-    def reset(self):
-        self.ctrnn.reset()
+        return ctrnn_action
+
+    def reset(self, rng_seed: int):
+        super().reset(rng_seed)
+
+        self.ctrnn.reset(rng_seed)
 
     @classmethod
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
@@ -149,8 +157,7 @@ class IndirectCTRNN(IBrain):
                                                cppn_inputs_v, cppn_inputs_w, cppn_inputs_t)
 
     @classmethod
-    def save_brain_state(cls, path, brain_state):
-
+    def register_brain_state_for_saving(cls, model_contents: dict, brain_state: Dict[str, np.ndarray]):
         v_mask = brain_state['v_mask']
         w_mask = brain_state['w_mask']
         t_mask = brain_state['t_mask']
@@ -161,24 +168,33 @@ class IndirectCTRNN(IBrain):
         cppn_inputs_w = brain_state['cppn_inputs_w']
         cppn_inputs_t = brain_state['cppn_inputs_t']
 
-        np.savez(path, v_mask=v_mask, w_mask=w_mask, t_mask=t_mask, input_positions=input_positions,
-                 neuron_positions=neuron_positions, output_positions=output_positions, cppn_inputs_v=cppn_inputs_v,
-                 cppn_inputs_w=cppn_inputs_w, cppn_inputs_t=cppn_inputs_t)
+        model_contents["brain_state_v_mask"] = v_mask
+        model_contents["brain_state_w_mask"] = w_mask
+        model_contents["brain_state_t_mask"] = t_mask
+
+        model_contents["brain_state_input_positions"] = input_positions
+        model_contents["brain_state_neuron_positions"] = neuron_positions
+        model_contents["brain_state_output_positions"] = output_positions
+
+        model_contents["brain_state_cppn_inputs_v"] = cppn_inputs_v
+        model_contents["brain_state_cppn_inputs_w"] = cppn_inputs_w
+        model_contents["brain_state_cppn_inputs_t"] = cppn_inputs_t
+
+        return model_contents
 
     @classmethod
-    def load_brain_state(cls, path):
+    def load_brain_state(cls, brain_data) -> Optional[Dict[str, np.ndarray]]:
+        v_mask = brain_data["brain_state_v_mask"]
+        w_mask = brain_data["brain_state_w_mask"]
+        t_mask = brain_data["brain_state_t_mask"]
 
-        file_data = np.load(path)
+        input_positions = brain_data["brain_state_input_positions"]
+        neuron_positions = brain_data["brain_state_neuron_positions"]
+        output_positions = brain_data["brain_state_output_positions"]
 
-        v_mask = file_data['v_mask']
-        w_mask = file_data['w_mask']
-        t_mask = file_data['t_mask']
-        input_positions = file_data['input_positions']
-        neuron_positions = file_data['neuron_positions']
-        output_positions = file_data['output_positions']
-        cppn_inputs_v = file_data['cppn_inputs_v']
-        cppn_inputs_w = file_data['cppn_inputs_w']
-        cppn_inputs_t = file_data['cppn_inputs_t']
+        cppn_inputs_v = brain_data["brain_state_cppn_inputs_v"]
+        cppn_inputs_w = brain_data["brain_state_cppn_inputs_w"]
+        cppn_inputs_t = brain_data["brain_state_cppn_inputs_t"]
 
         return cls.get_brain_state_from_arrays(v_mask, w_mask, t_mask,
                                                input_positions, neuron_positions, output_positions,

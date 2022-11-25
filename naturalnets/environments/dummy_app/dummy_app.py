@@ -42,7 +42,7 @@ class DummyAppCfg:
 @register_environment_class
 class DummyApp(IEnvironment):
 
-    def __init__(self, configuration: dict):
+    def __init__(self, configuration: dict, **kwargs):
         self.config = DummyAppCfg(**configuration)
         self.number_buttons = self.config.number_button_columns * self.config.number_button_rows
 

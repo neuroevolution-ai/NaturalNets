@@ -1,5 +1,7 @@
 import abc
+from typing import List
 
+import numpy as np
 from attrs import define, field, validators
 
 registered_optimizer_classes = {}
@@ -25,10 +27,15 @@ class IOptimizerCfg:
 
 class IOptimizer(abc.ABC):
 
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        self.individual_size = individual_size
+        self.global_seed = global_seed
+        self.config_dict = configuration
+
     @abc.abstractmethod
     def ask(self):
         pass
 
     @abc.abstractmethod
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
         pass

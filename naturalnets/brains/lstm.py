@@ -1,4 +1,4 @@
-from typing import List, Union, Dict
+from typing import List
 
 import numpy as np
 from attrs import define, field, validators
@@ -15,8 +15,10 @@ class LSTMConfig(IBrainCfg):
 
 @register_brain_class
 class LSTM(IBrain):
-    def __init__(self, input_size: int, output_size: int, individual: np.ndarray,
-                 configuration: Union[LSTMConfig, Dict], brain_state: dict):
+    def __init__(self, input_size: int, output_size: int, individual: np.ndarray, configuration: dict,
+                 brain_state: dict):
+        super().__init__(input_size, output_size, individual, configuration, brain_state)
+
         if isinstance(configuration, dict):
             self.configuration = LSTMConfig(**configuration)
         else:
@@ -24,8 +26,8 @@ class LSTM(IBrain):
 
         brain_weights = assign_individual_to_brain_weights(
             individual,
-            input_size=input_size,
-            output_size=output_size,
+            input_size=self.input_size,
+            output_size=self.output_size,
             number_of_gates=4,
             hidden_layers=self.configuration.hidden_layers,
             use_bias=self.configuration.use_bias
@@ -45,7 +47,7 @@ class LSTM(IBrain):
                 np.zeros(hidden_size, dtype=np.float32)
             ])
 
-    def step(self, inputs: np.ndarray):
+    def step(self, inputs: np.ndarray) -> np.ndarray:
         current_input = inputs
         for i in range(len(self.configuration.hidden_layers)):
             w_ih = self.weights_input_to_hidden[i]
@@ -95,39 +97,45 @@ class LSTM(IBrain):
 
     @classmethod
     def get_free_parameter_usage(cls, input_size: int, output_size: int, configuration: dict, brain_state: dict):
+        individual_size = 0
         parameter_dict = {}
 
         config = LSTMConfig(**configuration)
         current_input_size = input_size
 
         for i, hidden_size in enumerate(config.hidden_layers):
+            input_to_hidden_size = current_input_size * hidden_size * 4
+            hidden_to_hidden_size = hidden_size * hidden_size * 4
+
             layer_dict = {
-                "number_weights_input_to_hidden": current_input_size * hidden_size * 4,
-                "number_weights_hidden_to_hidden": hidden_size * hidden_size * 4
+                "number_weights_input_to_hidden": input_to_hidden_size,
+                "number_weights_hidden_to_hidden": hidden_to_hidden_size
             }
+
+            individual_size += (input_to_hidden_size + hidden_to_hidden_size)
 
             if config.use_bias:
                 layer_dict["number_of_biases"] = hidden_size * 4
+                individual_size += hidden_size * 4
 
             parameter_dict[f"lstm_layer_{i}"] = layer_dict
 
             current_input_size = hidden_size
 
+        output_neurons_start_index = individual_size
+
+        output_layer_size = current_input_size * output_size
         output_layer_dict = {
-            "number_output_weights": current_input_size * output_size
+            "number_output_weights": output_layer_size
         }
+
+        individual_size += output_layer_size
 
         if config.use_bias:
             output_layer_dict["output_biases"] = output_size
+            individual_size += output_size
 
+        output_neurons_end_index = individual_size
         parameter_dict["output_layer"] = output_layer_dict
 
-        return parameter_dict
-
-    @classmethod
-    def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict):
-        pass
-
-    @classmethod
-    def save_brain_state(cls, path, brain_state):
-        pass
+        return parameter_dict, output_neurons_start_index, output_neurons_end_index

@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 from attrs import define, field, validators
@@ -35,14 +35,13 @@ class Individual(list):
 
 @register_optimizer_class
 class MuLambdaDeap(IOptimizer):
-    def __init__(self, individual_size: int, configuration: dict) -> None:
-        super().__init__()
+    def __init__(self, individual_size: int, global_seed: int, configuration: dict, **kwargs):
+        super().__init__(individual_size, global_seed, configuration, **kwargs)
 
-        self.individual_size = individual_size
-        self.configuration = OptimizerMuLambdaCfg(**configuration)
+        self.configuration = OptimizerMuLambdaCfg(**self.config_dict)
 
         self.indices = partial(np.random.uniform, -self.configuration.initial_gene_range,
-                               self.configuration.initial_gene_range, individual_size)
+                               self.configuration.initial_gene_range, self.individual_size)
         self.individual = partial(tools.initIterate, Individual, self.indices)
         self.population = tools.initRepeat(list, self.individual, n=self.configuration.mu)
         self.offspring = None
@@ -82,8 +81,12 @@ class MuLambdaDeap(IOptimizer):
 
         return genomes
 
-    def tell(self, rewards):
+    def tell(self, rewards: List[float]) -> np.ndarray:
+        best_genome_current_generation = np.array(self.offspring[np.argmax(rewards)])
+
         for individual, individual_reward in zip(self.offspring, rewards):
             individual.fitness.values = tuple([individual_reward])
 
         self.population = self.select(self.offspring, self.configuration.mu)
+
+        return best_genome_current_generation

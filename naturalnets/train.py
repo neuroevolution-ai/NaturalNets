@@ -16,7 +16,6 @@ from cpuinfo import get_cpu_info
 from tensorboardX import SummaryWriter
 
 from naturalnets.brains.i_brain import get_brain_class
-from naturalnets.enhancers.i_enhancer import get_enhancer_class, DummyEnhancer
 from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.optimizers.i_optimizer import get_optimizer_class
 from naturalnets.tools.episode_runner import EpisodeRunner
@@ -44,6 +43,7 @@ class TrainingCfg:
     environment: dict
     brain: dict
     optimizer: dict
+    preprocessing: dict
     enhancer: dict
     experiment_id: int = field(default=-1, validator=[validators.instance_of(int), validators.ge(-1)])
     global_seed: int = field(validator=[validators.instance_of(int), validators.ge(0)])
@@ -93,33 +93,36 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     # Get brain class from configuration
     brain_class = get_brain_class(config.brain["type"])
 
-    try:
-        enhancer_type = config.enhancer["type"]
-    except TypeError:
-        raise RuntimeError("The configuration needs an 'enhancer' block.")
-
-    if enhancer_type is not None:
-        enhancer_class = get_enhancer_class(enhancer_type)
-    else:
-        enhancer_class = DummyEnhancer
+    preprocessing_config = config.preprocessing
+    enhancer_config = config.enhancer
 
     # Initialize episode runner
-    ep_runner = EpisodeRunner(env_class=environment_class,
-                              env_configuration=config.environment,
-                              brain_class=brain_class,
-                              brain_configuration=config.brain,
-                              enhancer_class=enhancer_class)
+    ep_runner = EpisodeRunner(
+        env_class=environment_class,
+        env_configuration=config.environment,
+        brain_class=brain_class,
+        brain_configuration=config.brain,
+        preprocessing_config=preprocessing_config,
+        enhancer_config=enhancer_config,
+        global_seed=config.global_seed
+    )
 
-    individual_size = ep_runner.get_individual_size()
+    individual_size, output_neurons_start_index, output_neurons_end_index = ep_runner.get_individual_size()
 
-    print("Free parameters: " + str(ep_runner.get_free_parameter_usage()))
-    print("Individual size: {}".format(individual_size))
-    print("Used CPU for training: " + get_cpu_info()["brand_raw"])
+    print(f"Free parameters: {ep_runner.get_free_parameter_usage()}")
+    print(f"Individual size: {individual_size}")
+    print(f"Used CPU for training: {get_cpu_info()['brand_raw']}")
 
     # Get optimizer class from configuration
     optimizer_class = get_optimizer_class(config.optimizer["type"])
 
-    opt = optimizer_class(individual_size=individual_size, configuration=config.optimizer)
+    opt = optimizer_class(
+        individual_size=individual_size,
+        global_seed=config.global_seed,
+        configuration=config.optimizer,
+        output_neurons_start_index=output_neurons_start_index,
+        output_neurons_end_index=output_neurons_end_index
+    )
 
     best_genome_overall = None
     best_reward_overall = -math.inf
@@ -144,28 +147,35 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         # Training runs for candidates
         evaluations = []
         for genome in genomes:
-            evaluations.append([genome, env_seed, config.number_rounds])
+            evaluations.append([genome, env_seed, config.number_rounds, True])
 
         if debug:
             # Use this for debugging
-            rewards_training = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+            training_results = [ep_runner.eval_fitness(*individual_eval) for individual_eval in evaluations]
         else:
-            rewards_training = pool.map(ep_runner.eval_fitness, evaluations)
+            training_results = pool.starmap(ep_runner.eval_fitness, evaluations)
+
+        rewards_training = []
+        recorded_observations = []
+        for result in training_results:
+            if isinstance(result, tuple):
+                rewards_training.append(result[0])
+                recorded_observations.extend(result[1])
+            else:
+                rewards_training.append(result)
 
         # Tell optimizers new rewards
-        opt.tell(rewards_training)
-
-        best_genome_current_generation = genomes[np.argmax(rewards_training)]
+        best_genome_current_generation = opt.tell(rewards_training)
 
         # Validation runs for best individual
         evaluations = []
         for i in range(config.number_validation_runs):
-            evaluations.append([best_genome_current_generation, i, 1])
+            evaluations.append([best_genome_current_generation, i, 1, False])
 
         if debug:
-            rewards_validation = [ep_runner.eval_fitness(individual_eval) for individual_eval in evaluations]
+            rewards_validation = [ep_runner.eval_fitness(*individual_eval) for individual_eval in evaluations]
         else:
-            rewards_validation = pool.map(ep_runner.eval_fitness, evaluations)
+            rewards_validation = pool.starmap(ep_runner.eval_fitness, evaluations)
 
         min_reward_validation = np.min(rewards_validation)
         mean_reward_validation = np.mean(rewards_validation)
@@ -175,6 +185,12 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
         if best_reward_current_generation > best_reward_overall:
             best_genome_overall = best_genome_current_generation
             best_reward_overall = best_reward_current_generation
+
+        # Update the statistics used for standardizing the observations, so that in the new generation the updated ones
+        # can be used (if this preprocessing is not selected for the training, nothing is done, and
+        # len(recorded_observations) is zero anyway
+        # Important to do this here at the end, otherwise the validation episodes would use the updated statistics
+        ep_runner.update_ob_mean_std(recorded_observations)
 
         elapsed_time_current_generation = time.time() - start_time_current_generation
 
@@ -224,11 +240,8 @@ def train(configuration: Optional[Union[str, Dict]] = None, results_directory: s
     with open(os.path.join(results_subdirectory, "Configuration.json"), "w") as outfile:
         json.dump(dict(configuration), outfile, ensure_ascii=False, indent=4)
 
-    # Save best genome
-    np.save(os.path.join(results_subdirectory, "Best_Genome"), best_genome_overall)
-
-    # Save brain state (i.e. masks)
-    ep_runner.save_brain_state(os.path.join(results_subdirectory, "Brain_State"))
+    # Save best genome and current brain statistics (such as the brain_mask, current ob_mean and ob_std, etc.)
+    ep_runner.save_brain(results_subdirectory, best_genome_overall)
 
     # Last element of log contains additional for training
     log.append({
