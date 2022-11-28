@@ -1,3 +1,6 @@
+# Ignore out directory
+/out
+
 __pycache__/
 *.pyc
 .idea/
