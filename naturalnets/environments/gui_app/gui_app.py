@@ -1,6 +1,7 @@
 import enum
 import logging
 import time
+import os
 from typing import Optional, Dict, List
 
 from attrs import define, field, validators
@@ -156,6 +157,11 @@ class GUIApp(IEnvironment):
                     print(f"Reward: {rew}")
 
             image = self._render_image()
+
+            # Save current image to the filesystem in the out directory (this directory should be added to .gitignore)
+            if not os.path.exists('out'):
+                os.makedirs('out')
+            cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
 
             if current_action is not None:
                 # Draw the position of the click as a black circle;
