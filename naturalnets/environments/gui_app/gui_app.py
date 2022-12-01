@@ -154,7 +154,7 @@ class GUIApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                _, rew, _, info = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
+                ob, rew, _, info = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
                                                            new_high=1))
                 self.clicked = False
 
@@ -162,8 +162,12 @@ class GUIApp(IEnvironment):
                     print(f"Reward: {rew}")
 
                 if save_state_vector:
+                    states = []
+                    for state_info, state in zip(info['states_info'], ob):
+                        states.append(str(state_info) + " " + str(state))
+
                     with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
-                        writer.write_all(info['states_info'])
+                        writer.write_all(states)
 
             image = self._render_image()
 

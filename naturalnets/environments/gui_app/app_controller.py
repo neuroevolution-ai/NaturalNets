@@ -104,11 +104,11 @@ class AppController:
         state_sector = self.get_next_state_sector(state_len)
         state_element.assign_state_sector(state_sector)
 
-        states_info.append({
-            'class_name': str(type(state_element)).split('.')[-1][:-2],
-            'recursion_depth': str(recursion_depth),
-            'length': str(state_len)
-        })
+        for _ in range(state_len):
+            states_info.append({
+                'class_name': str(type(state_element)).split('.')[-1][:-2],
+                'recursion_depth': str(recursion_depth)
+            })
 
         for child in state_element.get_children():
             self.assign_state(child, recursion_depth+1, states_info)
