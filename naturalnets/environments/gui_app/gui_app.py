@@ -7,6 +7,7 @@ from typing import Optional, Dict, List
 from attrs import define, field, validators
 import cv2
 import numpy as np
+import jsonlines
 
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
@@ -97,7 +98,7 @@ class GUIApp(IEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {}
+        return self.get_observation(), rew, done, {'states_info': self.app_controller.get_states_info()}
 
     def _render_image(self):
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -139,29 +140,35 @@ class GUIApp(IEnvironment):
             self.action = np.array([x, y])
             self.clicked = True
 
-    def interactive_mode(self, print_reward: bool = False):
+    def interactive_mode(self, print_reward: bool = False, save_screenshots: bool = False, save_state_vector: bool = False):
         # Create the window here first, so that the callback can be registered
         # The callback simply registers the clicks of a user
         cv2.namedWindow(self.window_name)
         cv2.setMouseCallback(self.window_name, self.click_event)
 
+        # Create out directory if it does not exist yet (this directory should be added to .gitignore)
+        if (save_screenshots or save_state_vector) and not os.path.exists('out'):
+            os.makedirs('out')
+
         while True:
             current_action = None
             if self.clicked:
                 current_action = self.action
-                _, rew, _, _ = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
-                                                        new_high=1))
+                _, rew, _, info = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
+                                                           new_high=1))
                 self.clicked = False
 
                 if print_reward:
                     print(f"Reward: {rew}")
 
+                if save_state_vector:
+                    with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
+                        writer.write_all(info['states_info'])
+
             image = self._render_image()
 
-            # Save current image to the filesystem in the out directory (this directory should be added to .gitignore)
-            if not os.path.exists('out'):
-                os.makedirs('out')
-            cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
+            if save_screenshots:
+                cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
 
             if current_action is not None:
                 # Draw the position of the click as a black circle;

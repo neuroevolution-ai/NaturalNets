@@ -29,8 +29,10 @@ class AppController:
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
-        self.assign_state(self.main_window)
-        self.assign_state(self.settings_window)
+        states_info = []
+        self.assign_state(self.main_window, 0, states_info)
+        self.assign_state(self.settings_window, 0, states_info)
+        self._states_info = states_info
 
         self.reward_array = None
         self.reset_reward_array()
@@ -74,8 +76,8 @@ class AppController:
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
-        self.assign_state(self.main_window)
-        self.assign_state(self.settings_window)
+        self.assign_state(self.main_window, 0, [])
+        self.assign_state(self.settings_window, 0, [])
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
@@ -92,7 +94,7 @@ class AppController:
         accumulated_len += state_element.get_state_len()
         return accumulated_len
 
-    def assign_state(self, state_element: StateElement) -> None:
+    def assign_state(self, state_element: StateElement, recursion_depth: int, states_info: list) -> None:
         """Assigns (part of) the app state-vector to the given StateElement and all of its children.
 
         Args:
@@ -102,8 +104,14 @@ class AppController:
         state_sector = self.get_next_state_sector(state_len)
         state_element.assign_state_sector(state_sector)
 
+        states_info.append({
+            'class_name': str(type(state_element)).split('.')[-1][:-2],
+            'recursion_depth': str(recursion_depth),
+            'length': str(state_len)
+        })
+
         for child in state_element.get_children():
-            self.assign_state(child)
+            self.assign_state(child, recursion_depth+1, states_info)
 
     def get_next_state_sector(self, state_len):
         """Returns the next state sector (i.e. the next non-assigned part of the total
@@ -122,6 +130,11 @@ class AppController:
         """Returns the app's total state.
         """
         return self._state
+
+    def get_states_info(self) -> list:
+        """Returns the app's info for the state vector as a list containing all states.
+        """
+        return self._states_info
 
     def get_total_state_len(self) -> int:
         """Returns the app's total state length.
