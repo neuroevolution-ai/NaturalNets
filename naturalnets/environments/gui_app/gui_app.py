@@ -1,19 +1,16 @@
 import enum
 import logging
 import time
-import os
 from typing import Optional, Dict, List
 
 from attrs import define, field, validators
 import cv2
 import numpy as np
-import jsonlines
 
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
-from naturalnets.tools.utils import rescale_values
 
 
 class FakeBugOptions(enum.Enum):
@@ -59,9 +56,6 @@ class GUIApp(IEnvironment):
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
         self.window_name = "App"
-        self.action = None
-        self.clicked = False
-
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -134,70 +128,6 @@ class GUIApp(IEnvironment):
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 
-    def click_event(self, event, x, y, _flags, _params):
-        """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.action = np.array([x, y])
-            self.clicked = True
-
-    def interactive_mode(self, print_reward: bool = False, save_screenshots: bool = False, save_state_vector: bool = False):
-        # Create the window here first, so that the callback can be registered
-        # The callback simply registers the clicks of a user
-        cv2.namedWindow(self.window_name)
-        cv2.setMouseCallback(self.window_name, self.click_event)
-
-        # Create out directory if it does not exist yet (this directory should be added to .gitignore)
-        if (save_screenshots or save_state_vector) and not os.path.exists('out'):
-            os.makedirs('out')
-
-        while True:
-            current_action = None
-            if self.clicked:
-                current_action = self.action
-                ob, rew, _, info = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
-                                                           new_high=1))
-                self.clicked = False
-
-                if print_reward:
-                    print(f"Reward: {rew}")
-
-                if save_state_vector:
-                    states = []
-                    for state_info, state in zip(info['states_info'], ob):
-                        states.append(str(state_info) + " " + str(state))
-
-                    with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
-                        writer.write_all(states)
-
-            image = self._render_image()
-
-            if save_screenshots:
-                cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
-
-            if current_action is not None:
-                # Draw the position of the click as a black circle;
-                # thickness=-1 will fill the circle shape with the specified color
-                cv2.circle(
-                    image,
-                    (current_action[0], current_action[1]), radius=4, color=Color.BLACK.value, thickness=-1
-                )
-
-            cv2.imshow(self.window_name, image)
-
-            while True:
-                # Waits 50ms for a key press (notice that this does not include mouse clicks,
-                # therefore we use the callback method for the clicks)
-                key = cv2.waitKey(50)
-
-                # Keycode 27 is the ESC key
-                if key == 27:
-                    cv2.destroyAllWindows()
-                    return
-
-                if self.clicked:
-                    # The user clicked, thus use the position for a step() and render the new image
-                    break
-
     def get_number_inputs(self) -> int:
         return self.app_controller.get_total_state_len()
 
@@ -212,9 +142,6 @@ class GUIApp(IEnvironment):
         self.click_position_x = 0
         self.click_position_y = 0
 
-        self.action = None
-        self.clicked = False
-
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -222,3 +149,6 @@ class GUIApp(IEnvironment):
 
     def get_observation(self):
         return self.get_state()
+
+    def get_window_name(self):
+        return self.window_name
