@@ -237,6 +237,10 @@ class DummyApp(IEnvironment):
     def get_window_name(self):
         return self.window_name
 
+    def get_screen_size(self):
+        assert self.config.screen_width == self.config.screen_height
+        return self.config.screen_width
+
     @staticmethod
     def is_point_in_rect(point_x, point_y, rect_x, rect_y, width, height):
         return rect_x <= point_x <= (rect_x + width) and rect_y <= point_y <= (rect_y + height)

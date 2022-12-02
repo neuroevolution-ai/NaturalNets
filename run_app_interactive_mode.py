@@ -6,10 +6,8 @@ from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.tools.utils import rescale_values
 
-WIDTH = 448
-HEIGHT = 448
 
-config = {
+config1 = {
     "environment": {
         "type": "GUIApp",
         "number_time_steps": 200,
@@ -17,7 +15,7 @@ config = {
     }
 }
 
-config = {
+config2 = {
     "environment": {
         "type": "DummyApp",
         "number_time_steps": 100,
@@ -30,6 +28,8 @@ config = {
         "fixed_env_seed": True
     }
 }
+
+config = config2
 
 print_reward = False
 save_screenshots = False
@@ -57,7 +57,10 @@ def click_event(event, x, y, _flags, _params):
     """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
     if event == cv2.EVENT_LBUTTONDOWN:
         current_action = np.array([x, y])
-        ob, rew, _, info = app.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
+        ob, rew, _, info = app.step(rescale_values(current_action,
+                                                   previous_low=0,
+                                                   previous_high=app.get_screen_size(),
+                                                   new_low=-1,
                                                    new_high=1))
 
         if print_reward:

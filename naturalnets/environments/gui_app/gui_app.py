@@ -152,3 +152,7 @@ class GUIApp(IEnvironment):
 
     def get_window_name(self):
         return self.window_name
+
+    def get_screen_size(self):
+        assert self.screen_width == self.screen_height
+        return self.screen_width
