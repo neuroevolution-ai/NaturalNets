@@ -67,6 +67,7 @@ class DummyApp(IEnvironment):
         assert self.grid_cell_horizontal_offset >= 0 and self.grid_cell_vertical_offset >= 0, err
 
         self.rng = default_rng()
+        self.window_name = "DummyApp"
 
         self.buttons = None
 
@@ -161,7 +162,7 @@ class DummyApp(IEnvironment):
     def get_observation(self):
         return self.button_states
 
-    def render(self, enhancer_info: Dict = None):
+    def _render_image(self):
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
         image[:, :, :] = 255
 
@@ -191,6 +192,12 @@ class DummyApp(IEnvironment):
 
             image = cv2.putText(image, str(i), (text_point_x, text_point_y), cv2.FONT_HERSHEY_PLAIN,
                                 fontScale=FONT_SCALE, color=BLACK, thickness=THICKNESS, lineType=cv2.LINE_AA)
+
+        return image
+
+    def render(self, enhancer_info: Dict = None):
+
+        image = self._render_image()
 
         # Draw click areas, i.e. cells of the grid in which the buttons reside
         for j in range(self.config.number_button_rows):
@@ -224,8 +231,11 @@ class DummyApp(IEnvironment):
         # Click position
         image = cv2.circle(image, (self.click_position_x, self.click_position_y), radius=3, color=BLUE, thickness=-1)
 
-        cv2.imshow("DummyApp", image)
+        cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
+
+    def get_window_name(self):
+        return self.window_name
 
     @staticmethod
     def is_point_in_rect(point_x, point_y, rect_x, rect_y, width, height):

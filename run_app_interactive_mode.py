@@ -2,7 +2,7 @@ import jsonlines
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.gui_app.gui_app import GUIApp
+from naturalnets.environments.i_environment import get_environment_class
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.tools.utils import rescale_values
 
@@ -10,14 +10,30 @@ WIDTH = 448
 HEIGHT = 448
 
 config = {
-    "type": "GUIApp",
-    "number_time_steps": 100,
-    "include_fake_bug": False
+    "environment": {
+        "type": "GUIApp",
+        "number_time_steps": 200,
+        "include_fake_bug": False
+    }
 }
 
-print_reward = True
-save_screenshots = True
-save_state_vector = True
+config = {
+    "environment": {
+        "type": "DummyApp",
+        "number_time_steps": 100,
+        "screen_width": 400,
+        "screen_height": 400,
+        "number_button_columns": 5,
+        "number_button_rows": 5,
+        "button_width": 50,
+        "button_height": 30,
+        "fixed_env_seed": True
+    }
+}
+
+print_reward = False
+save_screenshots = False
+save_state_vector = False
 
 
 def render(action):
@@ -60,7 +76,9 @@ def click_event(event, x, y, _flags, _params):
 
 if __name__ == "__main__":
 
-    app = GUIApp(config)
+    # Get environment class from configuration
+    environment_class = get_environment_class(config["environment"]["type"])
+    app = environment_class(config["environment"])
     app.reset()
     window_name = app.get_window_name()
 
