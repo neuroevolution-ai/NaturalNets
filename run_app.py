@@ -55,7 +55,7 @@ def click_event(event, x, y, _flags, _params):
             with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
                 writer.write_all(states)
 
-        render(current_action)
+        render(action=current_action)
 
 
 if __name__ == "__main__":
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         os.makedirs('out')
 
     # Render initial GUI view
-    render(None)
+    render(action=None)
 
     while True:
         # Waits 50ms for a key press (notice that this does not include mouse clicks,
