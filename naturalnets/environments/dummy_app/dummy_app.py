@@ -36,6 +36,7 @@ class DummyAppCfg:
     number_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    force_consecutive_click_order: bool = field(default=True, validator=[validators.instance_of(int)])
     fixed_env_seed: bool = field(validator=[validators.instance_of(bool)])
 
 
@@ -140,12 +141,17 @@ class DummyApp(IEnvironment):
 
         rew = 0.0
 
-        if button == 0:
-            if self.button_states[0] == 0:
-                rew += 1.0
-                self.button_states[0] = 1
+        if self.config.force_consecutive_click_order:
+            if button == 0:
+                if self.button_states[0] == 0:
+                    rew += 1.0
+                    self.button_states[0] = 1
+            else:
+                if self.button_states[button] == 0 and self.button_states[button - 1] == 1:
+                    rew += 1.0
+                    self.button_states[button] = 1
         else:
-            if self.button_states[button] == 0 and self.button_states[button - 1] == 1:
+            if self.button_states[button] == 0:
                 rew += 1.0
                 self.button_states[button] = 1
 
