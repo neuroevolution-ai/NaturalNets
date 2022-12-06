@@ -156,11 +156,23 @@ class DummyApp(IEnvironment):
             done = True
 
         ob = self.get_observation()
+        info = {"action": button+1}
 
-        return ob, rew, done, {}
+        return ob, rew, done, info
 
     def get_observation(self):
         return self.button_states
+
+    def get_observation_dict(self):
+
+        observation = dict()
+        observation["button_states"] = list()
+
+        for i in range(len(self.button_states)):
+            if self.button_states == 1:
+                observation["button_states"].append(i)
+
+        return observation
 
     def _render_image(self):
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
