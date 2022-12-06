@@ -169,8 +169,8 @@ class DummyApp(IEnvironment):
         observation["button_states"] = list()
 
         for i in range(len(self.button_states)):
-            if self.button_states == 1:
-                observation["button_states"].append(i)
+            if self.button_states[i] == 1:
+                observation["button_states"].append(i+1)
 
         return observation
 
