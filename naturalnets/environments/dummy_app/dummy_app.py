@@ -139,6 +139,10 @@ class DummyApp(IEnvironment):
                 if distance == 0.0:
                     break
 
+        return self.step_widget(button)
+
+    def step_widget(self, widget_id: int):
+        button = widget_id
         rew = 0.0
 
         if self.config.force_consecutive_click_order:
