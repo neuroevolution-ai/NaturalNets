@@ -156,7 +156,7 @@ class DummyApp(IEnvironment):
             done = True
 
         ob = self.get_observation()
-        info = {"action": button+1}
+        info = {"action": button}
 
         return ob, rew, done, info
 
@@ -170,7 +170,7 @@ class DummyApp(IEnvironment):
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
-                observation["button_states"].append(i+1)
+                observation["pressed buttons"].append(i)
 
         return observation
 
