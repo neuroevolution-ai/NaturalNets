@@ -166,7 +166,7 @@ class DummyApp(IEnvironment):
     def get_observation_dict(self):
 
         observation = dict()
-        observation["button_states"] = list()
+        observation["pressed buttons"] = list()
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
