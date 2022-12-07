@@ -36,7 +36,7 @@ class DummyAppCfg:
     number_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-    force_consecutive_click_order: bool = field(default=True, validator=[validators.instance_of(int)])
+    force_consecutive_click_order: bool = field(default=True, validator=[validators.instance_of(bool)])
     fixed_env_seed: bool = field(validator=[validators.instance_of(bool)])
 
 
