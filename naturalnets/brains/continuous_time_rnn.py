@@ -39,7 +39,7 @@ class ContinuousTimeRNNCfg(IBrainCfg):
     clipping_range: float = field(default=1.0, converter=float, validator=validators.gt(0))
     set_principle_diagonal_elements_of_W_negative: bool = field(default=False, validator=validators.instance_of(bool))
     # TODO can this be negative (probably not)?
-    alpha: float = field(default=0.0, validator=validators.instance_of(float))
+    alpha: float = field(default=0.0, converter=float, validator=validators.instance_of(float))
     optimize_x0: bool = field(default=False, validator=validators.instance_of(bool))
 
 
