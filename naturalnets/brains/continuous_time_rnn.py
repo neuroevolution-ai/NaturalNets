@@ -111,12 +111,8 @@ class CTRNN(IBrain):
         return y
 
     def reset(self):
-        # TODO fix this when using optimize_x0
-        if self.config.optimize_x0:
-            raise RuntimeError("CTRNN optimize_x0 is bugged, resetting the brain should take the trained x0, which is"
-                               "currently not implemented")
-
-        self.x = np.zeros(self.config.number_neurons)
+        # self.x0 always has the starting state of the hidden units, no matter if using config.optimize_x0 or not
+        self.x = self.x0
 
     @classmethod
     def generate_brain_state(cls, input_size: int, output_size: int, configuration: dict) -> Dict[str, np.ndarray]:
