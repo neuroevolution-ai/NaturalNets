@@ -29,11 +29,11 @@ config2 = {
     }
 }
 
-config = config2
+config = config1
 
-print_reward = False
-save_screenshots = False
-save_state_vector = False
+print_reward = True
+save_screenshots = True
+save_state_vector = True
 
 
 def render(action):
@@ -69,7 +69,7 @@ def click_event(event, x, y, _flags, _params):
         if save_state_vector:
             states = []
             for state_info, state in zip(info['states_info'], ob):
-                states.append(str(state_info) + " " + str(state))
+                states.append("({recursion_depth}) {class_name}: ".format(**state_info) + str(state))
 
             with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
                 writer.write_all(states)
