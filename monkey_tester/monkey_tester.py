@@ -209,7 +209,7 @@ def main(config: Union[str, dict]):
     # generate seeds for the monkey tester, that we can save in the config to reproduce later
     rng = np.random.default_rng()
 
-    random_seeds = rng.integers(2**32, size=configuration.num_monkeys)
+    random_seeds = rng.choice(2**32, size=configuration.num_monkeys, replace=False)
 
     results = []
     with mp.Pool(configuration.num_processes) as p:
