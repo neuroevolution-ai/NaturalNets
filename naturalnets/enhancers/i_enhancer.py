@@ -30,7 +30,8 @@ class IEnhancerCfg:
 
 class IEnhancer(ABC):
 
-    def __init__(self, env_output_size: int):
+    def __init__(self, config: dict, env_output_size: int):
+        self.config_dict = config
         self.env_output_size = env_output_size
 
     @abstractmethod

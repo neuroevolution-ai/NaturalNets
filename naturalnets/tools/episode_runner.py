@@ -50,8 +50,9 @@ class EpisodeRunner:
         self.input_size = self.env_observation_size
         self.output_size = self.env_action_size
 
-        self.enhancer_class = get_enhancer_class(enhancer_config["type"])
-        enhancer = self.enhancer_class(env_output_size=self.env_action_size)
+        self.enhancer_config = enhancer_config
+        self.enhancer_class = get_enhancer_class(self.enhancer_config["type"])
+        enhancer = self.enhancer_class(config=self.enhancer_config, env_output_size=self.env_action_size)
 
         self.output_size += enhancer.get_number_outputs()
 
@@ -146,6 +147,7 @@ class EpisodeRunner:
         )
 
         enhancer = self.enhancer_class(
+            config=self.enhancer_config,
             env_output_size=self.env_action_size
         )
 
