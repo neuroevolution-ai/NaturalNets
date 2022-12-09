@@ -102,6 +102,7 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
 
     with open(os.path.join(directory, "monkey_tester_details.json"), "w", encoding="utf-8") as f:
         monkey_tester_details = {
+            "reward_sum": reward_sum,
             "monkey_random_seed": monkey_random_seed,
             "time_started": time_started,
             "time_ended": time_ended
@@ -111,19 +112,6 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
 
 
 def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: int):
-
-    if configuration.wandb_logging:
-        monkey_config = asdict(configuration)
-        monkey_config["monkey_random_seed"] = monkey_random_seed
-
-        wandb.init(
-            entity=configuration.wandb_entity,
-            project=configuration.wandb_project,
-            name=f"{gethostname()}/{configuration.monkey_tester_type}/{os.path.basename(directory)}",
-            config=monkey_config,
-            tags=["monkey"]
-        )
-
     time_started = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
 
     env_config = configuration.environment
@@ -151,11 +139,6 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
         rewards += [reward]
         actions += [action]
 
-        if configuration.wandb_logging:
-            wandb.log({
-                "rew": reward_sum
-            })
-
     time_ended = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
 
     _save_monkey_tester_results(
@@ -169,9 +152,7 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
         reward_sum=reward_sum
     )
 
-    if configuration.wandb_logging:
-        wandb.run.summary["final_rew"] = reward_sum
-        wandb.finish()
+    return reward_sum
 
 
 @click.command()
@@ -197,7 +178,9 @@ def main(config: Union[str, dict]):
         datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
 
-    concrete_directories = [f"{main_chosen_directory}-{i}" for i in range(configuration.num_monkeys)]
+    concrete_directories = [
+        os.path.join(main_chosen_directory, f"monkey-{i}") for i in range(configuration.num_monkeys)
+    ]
 
     for _dir in concrete_directories:
         # Test if any directory already exists and raise an error if that is the case. We do not want
@@ -213,11 +196,27 @@ def main(config: Union[str, dict]):
 
     results = []
     with mp.Pool(configuration.num_processes) as p:
-        for _dir, monkey_seed in zip(concrete_directories, random_seeds):
-            results.append(p.apply_async(run_episode, (configuration, _dir, int(monkey_seed))))
+        for i, (_dir, monkey_seed) in enumerate(zip(concrete_directories, random_seeds)):
+            results.append((i, int(monkey_seed), p.apply_async(run_episode, (configuration, _dir, int(monkey_seed)))))
 
-        # Wait for all processes to finish
-        [r.wait() for r in results]
+        # Wait for all processes to finish by getting the results from the processes
+        monkey_rewards = [[i, seed, r.get()] for i, seed, r in results]
+
+    if configuration.wandb_logging:
+        monkey_config = asdict(configuration)
+
+        wandb.init(
+            entity=configuration.wandb_entity,
+            project=configuration.wandb_project,
+            name=f"{gethostname()}/{configuration.monkey_tester_type}/{os.path.basename(main_chosen_directory)}",
+            config=monkey_config,
+            tags=["monkey"]
+        )
+
+        monkey_table = wandb.Table(columns=["monkey_number", "seed", "reward_sum"], data=monkey_rewards)
+        wandb.log({"monkey_tester_results": monkey_table})
+
+        wandb.finish()
 
     logging.info("Monkey Testing finished")
 

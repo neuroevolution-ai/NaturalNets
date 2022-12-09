@@ -4,7 +4,7 @@
     "monkey_tester_type": "random-clicks",
     "environment": {
         "type": "GUIApp",
-        "number_time_steps": 100,
+        "number_time_steps": 200,
         "include_fake_bug": false
     },
     "results_dir": "results_monkey/",
