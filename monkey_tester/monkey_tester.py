@@ -87,15 +87,11 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
     monkey_tester_options["time_started"] = time_started
     monkey_tester_options["time_ended"] = time_ended
 
-    if configuration.store_monkey_tester_data:
-        np.savez(
-            os.path.join(directory, "data.npz"),
-            rewards=np.array(rewards, dtype=np.float32),
-            actions=np.array(actions, dtype=np.float32)
-        )
-
-    logging.info(f"Monkey Tester finished: Reward {reward_sum} - Started {time_started} - Ended {time_ended} - "
-                 f"Directory {directory}")
+    np.savez(
+        os.path.join(directory, "data.npz"),
+        rewards=np.array(rewards, dtype=np.float32),
+        actions=np.array(actions, dtype=np.float32)
+    )
 
     with open(os.path.join(directory, "monkey_tester_options.json"), "w", encoding="utf-8") as f:
         json.dump(asdict(configuration), f, indent=4)
@@ -141,16 +137,23 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
 
     time_ended = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
 
-    _save_monkey_tester_results(
-        configuration=configuration,
-        directory=directory,
-        monkey_random_seed=monkey_random_seed,
-        time_started=time_started,
-        time_ended=time_ended,
-        rewards=rewards,
-        actions=actions,
-        reward_sum=reward_sum
-    )
+    log_msg = f"Monkey Tester finished: Reward {reward_sum} - Started {time_started} - Ended {time_ended}"
+
+    if configuration.store_monkey_tester_data:
+        log_msg += f" - Directory {directory}"
+
+        _save_monkey_tester_results(
+            configuration=configuration,
+            directory=directory,
+            monkey_random_seed=monkey_random_seed,
+            time_started=time_started,
+            time_ended=time_ended,
+            rewards=rewards,
+            actions=actions,
+            reward_sum=reward_sum
+        )
+
+    logging.info(log_msg)
 
     return reward_sum
 
@@ -182,11 +185,12 @@ def main(config: Union[str, dict]):
         os.path.join(main_chosen_directory, f"monkey-{i}") for i in range(configuration.num_monkeys)
     ]
 
-    for _dir in concrete_directories:
-        # Test if any directory already exists and raise an error if that is the case. We do not want
-        # to overwrite existing results.
-        if os.path.exists(_dir):
-            raise RuntimeError(f"'{_dir}' already exists, please choose another directory")
+    if configuration.store_monkey_tester_data:
+        for _dir in concrete_directories:
+            # Test if any directory already exists and raise an error if that is the case. We do not want
+            # to overwrite existing results.
+            if os.path.exists(_dir):
+                raise RuntimeError(f"'{_dir}' already exists, please choose another directory")
 
     # Do not seed this, as we want always different seeds for the monkey tester. This RNG is only used to randomly
     # generate seeds for the monkey tester, that we can save in the config to reproduce later
