@@ -29,8 +29,8 @@ def check_categorical(possible_arguments: List[str], instance, attribute, value)
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class MonkeyTesterCfg:
-    # Number of monkey testers to start
-    num_monkeys: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    # Number of monkey testers to start. Must be lower than 200.000 because this is the limit for rows in a WandB.Table
+    num_monkeys: int = field(validator=[validators.instance_of(int), validators.gt(0), validators.le(200000)])
 
     # Number of processes to use, for parallel execution. Omitting this parameter will use all available
     # threads of that processor
