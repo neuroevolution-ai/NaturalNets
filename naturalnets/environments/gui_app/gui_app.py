@@ -3,9 +3,9 @@ import logging
 import time
 from typing import Optional, Dict, List
 
-from attrs import define, field, validators
 import cv2
 import numpy as np
+from attrs import define, field, validators
 
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
@@ -92,7 +92,7 @@ class GUIApp(IEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {'states_info': self.app_controller.get_states_info()}
+        return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
 
     def _render_image(self):
         img_shape = (self.screen_width, self.screen_height, 3)
