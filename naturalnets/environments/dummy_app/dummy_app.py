@@ -174,13 +174,13 @@ class DummyApp(IEnvironment):
         return self.button_states
 
     def get_observation_dict(self):
-
-        observation = dict()
-        observation["pressed buttons"] = list()
+        observation = {
+            "pressed_buttons": []
+        }
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
-                observation["pressed buttons"].append(i)
+                observation["pressed_buttons"].append(i)
 
         return observation
 
