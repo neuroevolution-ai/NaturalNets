@@ -6,13 +6,13 @@ import jsonlines
 import numpy as np
 
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.i_environment import get_environment_class
+from naturalnets.environments.i_environment import get_environment_class, IGUIEnvironment
 from naturalnets.tools.utils import rescale_values
 
 
 def run_interactive(config: dict, save_screenshots: bool, save_state_vector: bool, print_reward: bool):
     def render(action):
-        image = app._render_image()
+        image = app.render_image()
 
         if save_screenshots:
             cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
@@ -50,10 +50,13 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
             render(action=current_action)
 
-    # Get environment class from configuration
     environment_class = get_environment_class(config["environment"]["type"])
     app = environment_class(config["environment"])
-    app.reset()
+
+    assert isinstance(app, IGUIEnvironment)
+
+    app.reset(None)
+
     window_name = app.get_window_name()
 
     # Create the window here first, so that the callback can be registered

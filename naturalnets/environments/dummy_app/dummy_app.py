@@ -1,6 +1,6 @@
 import math
 from cmath import inf
-from typing import Dict
+from typing import Dict, Optional
 
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ from attrs import define, field, validators
 from numpy.random import default_rng
 
 from naturalnets.enhancers import RandomEnhancer
-from naturalnets.environments.i_environment import IEnvironment, register_environment_class
+from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 # Variables for rendering the DummyApp
 RED = (0, 0, 255)
@@ -41,7 +41,7 @@ class DummyAppCfg:
 
 
 @register_environment_class
-class DummyApp(IEnvironment):
+class DummyApp(IGUIEnvironment):
 
     def __init__(self, configuration: dict, **kwargs):
         self.config = DummyAppCfg(**configuration)
@@ -85,7 +85,7 @@ class DummyApp(IEnvironment):
     def get_number_outputs(self):
         return 2
 
-    def reset(self, env_seed: int = None):
+    def reset(self, env_seed: Optional[int] = None):
         if self.config.fixed_env_seed:
             self.rng = default_rng(seed=FIXED_ENV_SEED)
         else:
@@ -173,18 +173,7 @@ class DummyApp(IEnvironment):
     def get_observation(self):
         return self.button_states
 
-    def get_observation_dict(self):
-        observation = {
-            "pressed_buttons": []
-        }
-
-        for i in range(len(self.button_states)):
-            if self.button_states[i] == 1:
-                observation["pressed_buttons"].append(i)
-
-        return observation
-
-    def _render_image(self):
+    def render_image(self) -> np.ndarray:
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
         image[:, :, :] = 255
 
@@ -218,8 +207,7 @@ class DummyApp(IEnvironment):
         return image
 
     def render(self, enhancer_info: Dict = None):
-
-        image = self._render_image()
+        image = self.render_image()
 
         # Draw click areas, i.e. cells of the grid in which the buttons reside
         for j in range(self.config.number_button_rows):
@@ -256,10 +244,10 @@ class DummyApp(IEnvironment):
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 
-    def get_window_name(self):
+    def get_window_name(self) -> str:
         return self.window_name
 
-    def get_screen_size(self):
+    def get_screen_size(self) -> int:
         assert self.config.screen_width == self.config.screen_height
         return self.config.screen_width
 

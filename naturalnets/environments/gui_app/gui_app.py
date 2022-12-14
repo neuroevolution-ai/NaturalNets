@@ -10,7 +10,7 @@ from attrs import define, field, validators
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.i_environment import IEnvironment, register_environment_class
+from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 
 class FakeBugOptions(enum.Enum):
@@ -33,7 +33,7 @@ class AppCfg:
 
 
 @register_environment_class
-class GUIApp(IEnvironment):
+class GUIApp(IGUIEnvironment):
 
     screen_width: int = 448
     screen_height: int = 448
@@ -94,7 +94,7 @@ class GUIApp(IEnvironment):
 
         return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
 
-    def _render_image(self):
+    def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
@@ -102,7 +102,7 @@ class GUIApp(IEnvironment):
         return image
 
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
-        image = self._render_image()
+        image = self.render_image()
 
         # Draw the click position
         cv2.circle(
@@ -150,9 +150,9 @@ class GUIApp(IEnvironment):
     def get_observation(self):
         return self.get_state()
 
-    def get_window_name(self):
+    def get_window_name(self) -> str:
         return self.window_name
 
-    def get_screen_size(self):
+    def get_screen_size(self) -> int:
         assert self.screen_width == self.screen_height
         return self.screen_width
