@@ -9,13 +9,15 @@ from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.i_environment import get_environment_class, IGUIEnvironment
 from naturalnets.tools.utils import rescale_values
 
+OUT_DIRECTORY = "out"
+
 
 def run_interactive(config: dict, save_screenshots: bool, save_state_vector: bool, print_reward: bool):
     def render(action):
         image = app.render_image()
 
         if save_screenshots:
-            cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
+            cv2.imwrite(os.path.join(OUT_DIRECTORY, "screenshot.png"), image)
 
         if action is not None:
             # Draw the position of the click as a black circle;
@@ -42,10 +44,10 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
             if save_state_vector:
                 states = []
-                for state_info, state in zip(info['states_info'], ob):
+                for state_info, state in zip(info["states_info"], ob):
                     states.append("({recursion_depth}) {class_name}: ".format(**state_info) + str(state))
 
-                with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
+                with jsonlines.open(os.path.join(OUT_DIRECTORY, "state_vector.jsonl"), "w") as writer:
                     writer.write_all(states)
 
             render(action=current_action)
@@ -65,8 +67,8 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
     cv2.setMouseCallback(window_name, click_event)
 
     # Create out directory if it does not exist yet (this directory should be added to .gitignore)
-    if (save_screenshots or save_state_vector) and not os.path.exists('out'):
-        os.makedirs('out')
+    if (save_screenshots or save_state_vector) and not os.path.exists(OUT_DIRECTORY):
+        os.makedirs(OUT_DIRECTORY)
 
     # Render initial GUI view
     render(action=None)
