@@ -1,10 +1,12 @@
 import os
+from typing import List
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Base
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -16,6 +18,8 @@ from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, Dropdown
 class CalculatorSettings(Page, RewardElement):
     """The calculator settings page, manipulates the calculator page."""
     STATE_LEN = 0
+    MAX_CLICKABLE_ELEMENTS = 5
+
     IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings.png")
 
     ADDITION_BB = BoundingBox(38, 117, 66, 14)
@@ -154,6 +158,18 @@ class CalculatorSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return [self.opened_dd]
+
+        clickable_elements.extend(self.operator_checkboxes)
+        clickable_elements.append(self.dropdown)
+
+        return clickable_elements
+
 
 class CalculatorSettingsPopup(Page, RewardElement):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -162,6 +178,8 @@ class CalculatorSettingsPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(47, 87, 315, 114)
     IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings_popup.png")
 
@@ -247,3 +265,9 @@ class CalculatorSettingsPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self):
+        if self.dropdown_opened:
+            return [self.dropdown]
+
+        return [self.dropdown, self.apply_button]
