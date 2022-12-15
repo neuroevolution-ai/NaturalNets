@@ -56,17 +56,22 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
 
         self.is_figure_printer_button_visible = 0
-        self.figure_printer_button = Button(
+
+        self.text_printer_btn = Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer))
+        self.calculator_btn = Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator))
+        self.car_configurator_btn = Button(
+            self.CAR_CONFIGURATOR_BUTTON_BB, lambda: self.set_current_page(self.car_configurator)
+        )
+        self.figure_printer_btn = Button(
             self.FIGURE_PRINTER_BUTTON_BB,
             lambda: self.set_current_page(self.figure_printer)
         )
 
         self.buttons = [
-            Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer)),
-            Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator)),
-            Button(self.CAR_CONFIGURATOR_BUTTON_BB,
-                   lambda: self.set_current_page(self.car_configurator)),
-            self.figure_printer_button
+            self.text_printer_btn,
+            self.calculator_btn,
+            self.car_configurator_btn,
+            self.figure_printer_btn
         ]
 
         self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
@@ -149,7 +154,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 # check if figure printer button is visible
-                if button != self.figure_printer_button or self.is_figure_printer_button_visible:
+                if button != self.figure_printer_btn or self.is_figure_printer_button_visible:
                     button.handle_click(click_position)
                     break
 
