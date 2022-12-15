@@ -106,8 +106,8 @@ class AppController:
 
         for _ in range(state_len):
             states_info.append({
-                'class_name': str(type(state_element)).split('.')[-1][:-2],
-                'recursion_depth': str(recursion_depth)
+                "class_name": str(type(state_element)).split('.')[-1][:-2],
+                "recursion_depth": str(recursion_depth)
             })
 
         for child in state_element.get_children():
@@ -173,3 +173,14 @@ class AppController:
         if self.settings_window.is_open():
             img = self.settings_window.render(img)
         return img
+
+    def get_clickable_elements(self):
+        # TODO remove this once finished
+        return []
+
+        if self.settings_window.is_open():
+            return self.settings_window.get_clickable_elements()
+
+        currently_visible_widgets = [self.settings_button]
+
+        return self.main_window.get_widget_state(currently_visible_widgets)

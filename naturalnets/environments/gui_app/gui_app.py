@@ -24,6 +24,7 @@ class AppCfg:
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+    return_clickable_elements: bool = field(default=False, validator=validators.instance_of(bool))
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
@@ -92,7 +93,12 @@ class GUIApp(IGUIEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
+        info = {"states_info": self.app_controller.get_states_info()}
+
+        if self.config.return_clickable_elements:
+            info["clickable_elements"] = self.app_controller.get_clickable_elements()
+
+        return self.get_observation(), rew, done, info
 
     def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
