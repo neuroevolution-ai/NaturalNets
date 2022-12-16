@@ -266,7 +266,7 @@ class CalculatorSettingsPopup(Page, RewardElement):
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
 
-    def get_clickable_elements(self):
+    def get_clickable_elements(self) -> List[Clickable]:
         if self.dropdown_opened:
             return [self.dropdown]
 

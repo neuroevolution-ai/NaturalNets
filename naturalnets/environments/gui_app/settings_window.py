@@ -195,7 +195,7 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
         """Returns the bounding-box of the tabs-menu (bounding-box of all buttons)."""
         return get_group_bounding_box(tab_buttons)
 
-    def get_clickable_elements(self):
+    def get_clickable_elements(self) -> List[Clickable]:
         clickable_elements = [self.close_button]
         clickable_elements.extend(self.tab_buttons)
 

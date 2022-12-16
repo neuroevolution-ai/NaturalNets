@@ -227,7 +227,7 @@ class TextPrinterSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
-    def get_clickable_elements(self, clickable_elements: List[Clickable]):
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
         if self.popup.is_open():
             return self.popup.get_clickable_elements()
 
@@ -303,5 +303,5 @@ class TextPrinterSettingsPopup(Page, RewardElement):
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
 
-    def get_clickable_elements(self):
+    def get_clickable_elements(self) -> List[Clickable]:
         return [self.yes_button, self.no_button]
