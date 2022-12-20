@@ -1,7 +1,6 @@
 import os
 import numpy as np
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki.constants import AboutAnkiText
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -23,7 +22,6 @@ class AboutPage(Page,RewardElement):
         return cls.instance
 
     def __init__(self):
-        
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info)

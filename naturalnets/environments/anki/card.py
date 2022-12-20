@@ -10,10 +10,9 @@ class Card():
 
     Since there will be no images etc. in my self-defined decks I am going to use the same implementation for both of the functionalities
     """
-    def __init__(self,front: str,back: str,tags: str):
+    def __init__(self,front: str,back: str):
         self.front = front
         self.back = back
-        self.tags = tags
         self.due_date = 1
         self.is_marked = False
         self.is_buried = False
