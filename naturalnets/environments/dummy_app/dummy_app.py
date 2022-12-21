@@ -173,7 +173,7 @@ class DummyApp(IGUIEnvironment):
     def get_observation(self):
         return self.button_states
 
-    def get_observation_dict(self):
+    def get_observation_dict(self) -> dict:
         observation_dict = {
             "pressed buttons": []
         }

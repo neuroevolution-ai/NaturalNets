@@ -150,7 +150,7 @@ class GUIApp(IGUIEnvironment):
     def get_observation(self):
         return self.get_state()
 
-    def get_observation_dict(self):
+    def get_observation_dict(self) -> dict:
         raise NotImplementedError()
 
     def get_window_name(self) -> str:
