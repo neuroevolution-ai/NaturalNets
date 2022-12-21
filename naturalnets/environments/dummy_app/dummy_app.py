@@ -174,9 +174,9 @@ class DummyApp(IGUIEnvironment):
         return self.button_states
 
     def get_observation_dict(self):
-
-        observation_dict = dict()
-        observation_dict["pressed buttons"] = list()
+        observation_dict = {
+            "pressed buttons": []
+        }
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
