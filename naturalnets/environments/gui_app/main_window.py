@@ -27,6 +27,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
     """
 
     STATE_LEN = 4
+    MAX_CLICKABLE_ELEMENTS = 4
+
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
     FIGURE_PRINTER_BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_button.png")
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
@@ -176,3 +178,15 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
+
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        clickable_elements.extend([
+            self.text_printer_btn,
+            self.calculator_btn,
+            self.car_configurator_btn
+        ])
+
+        if self.is_figure_printer_button_visible == 1:
+            clickable_elements.append(self.figure_printer_btn)
+
+        return self.current_page.get_clickable_elements(clickable_elements)
