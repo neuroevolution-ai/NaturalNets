@@ -1,11 +1,12 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
 from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
 
@@ -125,6 +126,17 @@ class Dropdown(Widget):
             self.close()
         else:
             self.open()
+
+    def calculate_distance_to_click(self, click_position: np.ndarray, current_minimal_distance: Optional[float],
+                                    current_clickable: Optional[Clickable]) -> Tuple[float, Clickable]:
+        if self.is_open():
+            for item in self._update_item_bounding_boxes():
+                current_minimal_distance, current_clickable = item.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
+            return current_minimal_distance, current_clickable
+        else:
+            return super().calculate_distance_to_click(click_position, current_minimal_distance, current_clickable)
 
     def get_bb(self):
         if not self.is_open():
