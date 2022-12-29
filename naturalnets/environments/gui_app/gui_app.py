@@ -25,6 +25,8 @@ class AppCfg:
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
 
+    nearest_widget_click: bool = field(default=False, validator=validators.instance_of(bool))
+
     def __attrs_post_init__(self):
         if self.include_fake_bug:
             assert self.fake_bugs is not None and len(self.fake_bugs) > 0, ("'include_fake_bug' is set to True, please "
@@ -45,7 +47,7 @@ class GUIApp(IGUIEnvironment):
 
         self.config = AppCfg(**configuration)
 
-        self.app_controller = AppController()
+        self.app_controller = AppController(self.config.nearest_widget_click)
 
         self.t = 0
 

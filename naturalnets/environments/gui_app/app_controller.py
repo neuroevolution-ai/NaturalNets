@@ -16,7 +16,9 @@ class AppController:
     """
     SETTINGS_BUTTON_BB = BoundingBox(8, 0, 49, 18)
 
-    def __init__(self):
+    def __init__(self, nearest_widget_click: bool):
+        self.nearest_widget_click = nearest_widget_click
+
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow(self.main_window)
 

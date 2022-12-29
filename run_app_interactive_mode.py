@@ -96,7 +96,8 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
             "environment": {
                 "type": "GUIApp",
                 "number_time_steps": 200,
-                "include_fake_bug": False
+                "include_fake_bug": False,
+                "nearest_widget_click": True
             }
         }
     else:
@@ -113,6 +114,8 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
                 "fixed_env_seed": True
             }
         }
+
+        save_state_vector = False
 
     run_interactive(config, save_screenshots, save_state_vector, print_reward)
 
