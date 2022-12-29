@@ -1,5 +1,6 @@
 """Contains interfaces/abstract classes."""
 from abc import ABC, abstractmethod
+from typing import Optional, Tuple
 
 import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -33,6 +34,15 @@ class Clickable(HasBoundingBox):
     def handle_click(self, click_position: np.ndarray) -> None:
         """The on-click action of this element."""
         pass
+
+    def calculate_distance_to_click(self, click_position: np.ndarray, current_minimal_distance: Optional[float],
+                                    current_clickable: Optional["Clickable"]) -> Tuple[float, "Clickable"]:
+        own_distance = self.get_bb().distance_to_point(click_position)
+
+        if own_distance < current_minimal_distance:
+            return own_distance, self
+
+        return current_minimal_distance, current_clickable
 
     def is_clicked_by(self, click_position: np.ndarray) -> bool:
         """Returns true if the given click-position is inside this elements'
