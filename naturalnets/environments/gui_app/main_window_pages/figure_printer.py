@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -6,6 +7,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color, Figure
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -155,6 +157,28 @@ class FigurePrinter(Page, RewardElement):
 
         if self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        # Four items in the dropdown completely overlap the button, thus the button it is not checked for distance
+        # because it cannot be clicked, if the dropdown is open
+        if not (self.dropdown.is_open() and len(self.dropdown.get_visible_items()) == 4):
+            current_minimal_distance, current_clickable = self._draw_figure_button.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+        if current_clickable == self._draw_figure_button:
+            # That is a click position on the "Draw Figure" Button that is always clickable, even if the Dropdown
+            # has three items: Then, the lower part of the button is not overlapped by the opened dropdown
+            new_click_position = np.array([270, 422], dtype=np.int)
+        else:
+            new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
+
+        return current_minimal_distance, current_clickable, new_click_position
 
     def render(self, img: np.ndarray):
         super().render(img)
