@@ -152,6 +152,29 @@ class AppController:
         """
         previous_reward_array = copy(self.reward_array)
 
+        if self.nearest_widget_click:
+            current_minimal_distance, current_clickable, old_click_position = np.inf, None, click_position
+
+            if self.settings_window.is_open():
+                settings_window_result = self.settings_window.find_nearest_clickable(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+                current_minimal_distance, current_clickable, click_position = settings_window_result
+            else:
+                current_minimal_distance, current_clickable = self.settings_button.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+                main_window_result = self.main_window.find_nearest_clickable(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+                current_minimal_distance, current_clickable, click_position = main_window_result
+
+            print(f"Minimal Distance: {current_minimal_distance} Clickable {current_clickable} "
+                  f"Old Click Position {old_click_position} New Click Position {click_position}")
+
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
         elif (not self.main_window.current_page_blocks_click()

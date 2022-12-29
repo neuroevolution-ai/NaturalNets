@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -150,6 +150,19 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
         if self.tabs_bb.is_point_inside(click_position):
             self.handle_tabs_button_click(click_position)
             return
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Optional[Clickable]) -> Tuple[float, Clickable, np.ndarray]:
+        current_minimal_distance, current_clickable = self.close_button.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        for button in self.tab_buttons:
+            current_minimal_distance, current_clickable = button.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+        return self.current_tab.find_nearest_clickable(click_position, current_minimal_distance, current_clickable)
 
     def handle_tabs_button_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
