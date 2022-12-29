@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -7,6 +7,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
@@ -126,6 +127,16 @@ class TextPrinter(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray = None):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        current_minimal_distance, current_clickable = self.button.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
+
+        return current_minimal_distance, current_clickable, new_click_position
 
     def update_display_dict(self):
         return {
