@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, Tuple
 
 import cv2
 import numpy as np
@@ -7,6 +7,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Car, TireSize, Interior, PropulsionSystem
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -253,6 +254,36 @@ class CarConfigurator(Page, RewardElement):
                         self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "opened"])
                     return
 
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        for index, dropdown in enumerate(self.dropdowns):
+            if index == 0 or self._is_dropdown_value_selected(index - 1):
+                current_minimal_distance, current_clickable = dropdown.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+        if self._is_dropdown_value_selected(len(self.dropdowns) - 1):
+            current_minimal_distance, current_clickable = self.show_config_button.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        if current_clickable == self.popup.ok_button:
+            return current_minimal_distance, current_clickable, popup_click_position
+        else:
+            new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
+
+            if self.is_popup_open():
+                if current_clickable == self.tire_dropdown:
+                    new_click_position = np.array([393, 198], dtype=np.int)
+                elif current_clickable == self.interior_dropdown:
+                    new_click_position = np.array([393, 278], dtype=np.int)
+
+            return current_minimal_distance, current_clickable, new_click_position
+
     def display_configuration(self):
         car = self.car_dropdown.get_current_value()
         tire_size = self.tire_dropdown.get_current_value()
@@ -442,6 +473,17 @@ class CarConfiguratorPopup(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        if self.is_open():
+            current_minimal_distance, current_clickable = self.ok_button.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+            return current_minimal_distance, current_clickable, self.ok_button.get_bb().get_click_point_inside_bb()
+
+        return current_minimal_distance, current_clickable, click_position
 
     def open(self) -> None:
         """Opens this popup."""
