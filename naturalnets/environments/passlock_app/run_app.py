@@ -1,4 +1,3 @@
-from naturalnets.environments.gui_app.gui_app import GUIApp
 from naturalnets.environments.passlock_app.passlock_app import PasslockApp
 
 WIDTH = 1100
