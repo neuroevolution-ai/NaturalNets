@@ -43,8 +43,14 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         self.login = LoginPage()
         self.signup = SignupPage()
 
+    
+        self.pages: List[Page] = [self.login, self.signup]
+        assert len(self.pages) == self.get_state_len() + 1
+
+        self.current_page = None
+
         self.add_children([self.login, self.signup])
-        self.set_reward_children([self.login, self.signup])
+        self.set_reward_children([self.login, self.signup])    
 
         self.pages_to_str = {
             self.login: "login",

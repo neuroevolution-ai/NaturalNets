@@ -27,7 +27,6 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window_page.png")
 
-    
     APP_BOUNDING_BOX = BoundingBox(0, 0, 1100, 850)
 
     HOME_BUTTON_BB = BoundingBox(9, 28, 99, 22)
@@ -58,11 +57,11 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
         self.current_page = None
 
-    
+
         self.is_darkmode = False
         self.change_mode_button = Button(
             self.DARK_LIGHT_BB,
-            lambda: self.set_current_page(self.manual)
+            lambda: self.set_darkmode()
         )
 
         self.buttons = [
@@ -169,3 +168,6 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
+
+    def get_darkmode(self) -> bool:
+        return self.is_darkmode
