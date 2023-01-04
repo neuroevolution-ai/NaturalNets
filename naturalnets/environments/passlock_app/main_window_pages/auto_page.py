@@ -1,5 +1,7 @@
 from ast import List
 import os
+
+import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -66,4 +68,7 @@ class AutoPage(Page, RewardElement):
         pass
 
     def reset(self):
-        pass   
+        pass 
+
+    def handle_click(self, click_position: np.ndarray):
+        pass  
