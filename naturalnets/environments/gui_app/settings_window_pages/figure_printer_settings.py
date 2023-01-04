@@ -6,6 +6,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import Figure
 from naturalnets.environments.gui_app.page import Page
@@ -189,6 +190,33 @@ class FigurePrinterSettings(Page, RewardElement):
                 if self.get_selected_checkboxes_count() == 0:
                     self.popup.open()
 
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        current_minimal_distance, current_clickable = self._show_fig_printer_checkbox.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        for checkbox in self.figure_checkboxes:
+            current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+        current_minimal_distance, current_clickable = self._color_rbg.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        # Lower side of the house checkbox does not overlap with the apply button of the popup, thus if the checkbox
+        # is selected, the upper left corner (which is returned by get_click_point_inside_bb()) would overlap with the
+        # apply button, and thus the apply button is clicked instead of the selected house checkbox.
+        if self.is_popup_open() and current_clickable == self.figure_to_checkbox[Figure.HOUSE]:
+            return current_minimal_distance, current_clickable, np.array([243, 182], dtype=np.int)
+
+        return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
+
     def get_selected_checkboxes_count(self) -> int:
         return sum(checkbox.is_selected() for checkbox in self.figure_checkboxes)
 
@@ -288,6 +316,18 @@ class FigureCheckboxesPopup(Page, RewardElement):
 
             self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
             self.figure_printer_settings.set_figure_printer_dd_value(curr_dropdown_value)
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        if self.is_open():
+            for widget in [self.dropdown, self.apply_button]:
+                current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
+
+        return current_minimal_distance, current_clickable, click_position
 
     def open(self):
         """Opens this popup."""
