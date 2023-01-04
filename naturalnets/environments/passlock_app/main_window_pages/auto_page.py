@@ -1,18 +1,19 @@
 from ast import List
+import os
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import MAIN_PAGE_AREA_BB
+from naturalnets.environments.passlock_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 
 
 class AutoPage(Page, RewardElement):
 
     STATE_LEN = 0
-
+    IMG_PATH = os.path.join(IMAGES_PATH, "calculator.png")
     TEXTFIELD_1_BB = BoundingBox(125, 316, 97, 22)
     TEXTFIELD_2_BB = BoundingBox(125, 316, 97, 22)
     CREATE_PW_BB = BoundingBox(9, 112, 99, 22)
@@ -54,3 +55,15 @@ class AutoPage(Page, RewardElement):
                                         self.use_numbers_checkbox, self.use_special_chars_checkbox]
         
         self.add_widgets(self.widgets)
+
+    def enter_nameof_password(self):
+        pass
+
+    def enter_password(self):
+        pass
+
+    def render(self):
+        pass
+
+    def reset(self):
+        pass   

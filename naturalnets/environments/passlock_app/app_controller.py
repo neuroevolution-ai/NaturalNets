@@ -67,8 +67,8 @@ class PasslockAppController:
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
-        self.assign_state(self.main_window, 0, [])
-        self.assign_state(self.settings_window, 0, [])
+        self.assign_state(self.home_window, 0, [])
+        self.assign_state(self.auth_window, 0, [])
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
