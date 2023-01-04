@@ -1,7 +1,7 @@
 from PIL import Image
 import os
 
-folder_path = 'naturalnets\environments\passlock_app\img'
+folder_path = 'naturalnets\environments\passlock_app\img\login_page_img'
 
 # Iterate through all files in the folder
 for file in os.listdir(folder_path):
