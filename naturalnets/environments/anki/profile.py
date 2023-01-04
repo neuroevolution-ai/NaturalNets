@@ -1,6 +1,8 @@
+import numpy as np
 from naturalnets.environments.anki.deck import Deck, DeckOption
 import random
 import string
+from naturalnets.environments.gui_app.utils import put_text
 
 class Profile():
     
@@ -55,14 +57,18 @@ class ProfileDatabase():
     def __init__(self):
         self.profiles = [Profile("Profile 1")]
         self.active_profile = self.profiles[0]
-        self.scrolled_amount = 0
+        self.current_index = 0
     
     def add_profile(self) -> None:
         profile_name: str = ''.join(random.choices(string.ascii_lowercase, k=5))
-        if not(self.is_included(Profile(profile_name),self.profiles)) :
-            self.profiles.insert(Profile(profile_name))
-        else:
+        if self.is_included(Profile(profile_name),self.profiles):
             print("Name exists!")
+            return
+        elif self.profiles_length <= 18:
+            print("Max length is reached!")
+            return
+        else:
+            self.profiles.insert(Profile(profile_name))
 
     def rename_profile(self, profile: Profile) -> None:
         new_name: str = ''.join(random.choices(string.ascii_lowercase, k=5))
@@ -85,15 +91,15 @@ class ProfileDatabase():
                 return True      
         return False
 
-    def change_active_profile(self,index:int):
-        if index < len(self.profiles) and index >= 0 :
+    def change_active_profile(self, click_position:np.ndarray):
+        ##Calculate the clicked profile with size (384,22)
+        index: int = click_position[1]/22
+        if index < self.profiles_length and index >= 0 :
             self.active_profile = self.profiles[index]
+            self.current_index = index
         else:
             print("Index out of bounds")
     
     def reset_profiles(self):
         self.profiles = [Profile("Profile 1")]
         self.active_profile = self.profiles[0]
-    
-    def is_scrollable(self):
-        return self.profiles_length >= 19

@@ -1,15 +1,12 @@
-import random
-import string
 import numpy as np
 import os
-
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import Profile,ProfileDatabase
+import cv2
 class ProfilePage(Page,RewardElement):
     
     STATE_LEN = 0
@@ -24,8 +21,6 @@ class ProfilePage(Page,RewardElement):
     OPEN_BACKUP_BB = BoundingBox(410, 410, 110, 26)
     DOWNGRADE_QUIT_BB = BoundingBox(410, 446, 110, 26)
     PROFILES_BB = BoundingBox(11, 48, 386, 423)
-    UP_BB = BoundingBox(374, 48, 19, 21)
-    DOWN_BB = BoundingBox(374, 447, 19, 21)
 
     #Profiles in the profiles_bb have the (heigth,width) (384,22)
 
@@ -47,6 +42,7 @@ class ProfilePage(Page,RewardElement):
         self.downgrade_popup = DowngradePopup()
         self.open_backup_popup = OpenBackupPopup()
 
+        self.open_button: Button = Button(self.OPEN_BB, self.open_button.switch_to_main_page)
         self.add_button: Button = Button(self.ADD_BB, self.add_profile_popup.open)
         self.rename_profile_button: Button = Button(self.RENAME_BB, self.rename_profile_popup.open)
         self.delete_button: Button = Button(self.DELETE_BB, self.delete_check_popup.open)
@@ -58,33 +54,6 @@ class ProfilePage(Page,RewardElement):
             [self.add_profile_popup,self.rename_profile_popup,self.at_least_one_profile_popup,
             self.delete_check_popup,self.downgrade_popup,self.open_backup_popup])
 
-    @property
-    def reward_template(self):
-        return {
-            "open_button": {
-                "opened": 0,
-            },
-            "add_button": {
-                "opened": 0,
-            },
-            "rename_button": {
-                "opened": 0,
-            },
-            "delete_button": {
-                "opened": 0,
-            },
-            "quit_button": {
-                "opened": 0,
-            },
-            "open_backup_button": {
-                "opened": 0,
-            },
-            "downgrade_button": {
-                "opened": 0,
-            },
-        }
-
-
     def reset(self):
         self.add_profile_popup.close()
         self.rename_profile_popup.close()
@@ -94,17 +63,25 @@ class ProfilePage(Page,RewardElement):
         self.open_backup_popup.close()
         self.profile_database.reset_profiles()
 
-    def scroll_down(self):
-        if self.profile_database.is_scrollable and self.profile_database.scrolled_amount + 1 <= self.profile_database.profiles_length:
-            self.profile_database.scrolled_amount += 1
-    
-    def scroll_up(self):
-        if self.profile_database.is_scrollable and self.profile_database.scrolled_amount > 0:
-            self.profile_database.scrolled_amount -= 1
+    def handle_click(self, click_position: np.ndarray) -> None:
+        if(self.add_button.is_clicked_by(click_position)):
+            self.add_button.handle_click(click_position)
+        elif(self.rename_profile_button.is_clicked_by(click_position)):
+            self.rename_profile_button.handle_click(click_position)
+        elif(self.delete_button.is_clicked_by(click_position)):
+            self.delete_button.handle_click(click_position)
+        elif(self.quit_button.is_clicked_by(click_position)):
+            self.quit_button.handle_click(click_position)
+        elif(self.open_backup_button.is_clicked_by(click_position)):
+            self.open_backup_button.handle_click(click_position)
+        elif(self.downgrade_quit_button.is_clicked_by(click_position)):
+            self.downgrade_quit_button.is_clicked_by(click_position)
+        elif(self.PROFILES_BB.is_point_inside(click_position)):
+            ProfileDatabase().change_active_profile(click_position)
 
 
 class AddProfilePopup(Page, RewardElement):
-    
+
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(12, 166, 501, 149)
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
@@ -115,9 +92,10 @@ class AddProfilePopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.open()
         self.cancel_button: Button = Button(self.CANCEL_BUTTON_BB, self.close)
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfilePage().add_profile)
+        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfileDatabase().add_profile)
     
     @property
     def reward_template(self):
@@ -156,9 +134,10 @@ class RenameProfilePopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.open()
         self.cancel_button: Button = Button(self.CANCEL_BUTTON_BB, self.close)
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfilePage().rename_profile)
+        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfileDatabase().rename_profile)
 
     @property
     def reward_template(self):
@@ -196,8 +175,9 @@ class AtLeastOneProfilePopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.open()
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB,ProfilePage().rename_profile)
+        self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
 
     @property
     def reward_template(self):
@@ -235,7 +215,8 @@ class DeleteCheckPopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.yes_button: Button = Button(self.YES_BUTTON_BB,ProfilePage().delete_profile)
+        self.open()
+        self.yes_button: Button = Button(self.YES_BUTTON_BB,ProfileDatabase().delete_profile)
         self.no_button: Button = Button(self.NO_BUTTON_BB,self.close)
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
 
@@ -276,6 +257,7 @@ class DowngradePopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.open()
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close)
 
@@ -298,6 +280,7 @@ class DowngradePopup(Page, RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["popup", "close"])
+        ProfilePage().reset()
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -314,6 +297,7 @@ class OpenBackupPopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.open()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_backup)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close)
