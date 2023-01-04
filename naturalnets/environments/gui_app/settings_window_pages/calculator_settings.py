@@ -1,10 +1,12 @@
 import os
+from typing import Tuple
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Base
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -133,6 +135,24 @@ class CalculatorSettings(Page, RewardElement):
         if self.get_selected_checkboxes_count() == 0:
             self.popup.open()
 
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+
+        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        for checkbox in self.operator_checkboxes:
+            current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+        current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
+            click_position, current_minimal_distance, current_clickable
+        )
+
+        return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
+
     def get_selected_checkboxes_count(self) -> int:
         """Returns the number of selected checkboxes."""
         return sum(checkbox.is_selected() for checkbox in self.operator_checkboxes)
@@ -230,6 +250,18 @@ class CalculatorSettingsPopup(Page, RewardElement):
             self.apply_button.handle_click(click_position)
             self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
             self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
+
+    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
+                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        if self.is_open():
+            for widget in [self.dropdown, self.apply_button]:
+                current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
+
+            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
+
+        return current_minimal_distance, current_clickable, click_position
 
     def open(self):
         """Opens this popup."""
