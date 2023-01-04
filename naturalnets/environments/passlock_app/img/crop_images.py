@@ -1,18 +1,24 @@
 from PIL import Image
+import os
 
-# Open the image
-image = Image.open('naturalnets\environments\passlock_app\img\main_window_page.png')
+folder_path = 'naturalnets\environments\passlock_app\img'
 
-# Get the dimensions of the image
-width, height = image.size
-print(width)
-print(height)
-# Set the new dimensions of the image
-new_width = width
-new_height = height
+# Iterate through all files in the folder
+for file in os.listdir(folder_path):
+  # Check if the file is a png file
+  if file.endswith(".png"):
+    # Open the image
+    image = Image.open(os.path.join(folder_path, file))
 
-# Crop the image to the new dimensions
-cropped_image = image.crop((0, 32, new_width, new_height))
+    # Get the dimensions of the image
+    width, height = image.size
 
-# Save the cropped image
-cropped_image.save('naturalnets\environments\passlock_app\img\main_window_page.png')
+    # Set the new dimensions of the image
+    new_width = width
+    new_height = height
+
+    # Crop the image to the new dimensions
+    cropped_image = image.crop((0, 30, new_width, new_height))
+
+    # Save the cropped image
+    cropped_image.save(os.path.join(folder_path, file))
