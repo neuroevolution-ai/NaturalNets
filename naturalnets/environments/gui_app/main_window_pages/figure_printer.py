@@ -164,16 +164,16 @@ class FigurePrinter(Page, RewardElement):
             click_position, current_minimal_distance, current_clickable
         )
 
-        # Four items in the dropdown completely overlap the button, thus the button it is not checked for distance
-        # because it cannot be clicked, if the dropdown is open
+        # If the dropdown is open and contains four items, it completely overlaps the "Draw Figure" button. Therefore,
+        # it is not checked for distance because it is not visible and cannot be clicked
         if not (self.dropdown.is_open() and len(self.dropdown.get_visible_items()) == 4):
             current_minimal_distance, current_clickable = self._draw_figure_button.calculate_distance_to_click(
                 click_position, current_minimal_distance, current_clickable
             )
 
         if current_clickable == self._draw_figure_button:
-            # That is a click position on the "Draw Figure" Button that is always clickable, even if the Dropdown
-            # has three items: Then, the lower part of the button is not overlapped by the opened dropdown
+            # That is a click position which is always clickable. It is on the lower part of the "Draw Figure" Button.
+            # If the dropdown has three items and is opened, then the upper half of the button is overlapped.
             new_click_position = np.array([270, 422], dtype=np.int)
         else:
             new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
