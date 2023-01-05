@@ -142,7 +142,13 @@ class CalculatorSettings(Page, RewardElement):
             click_position, current_minimal_distance, current_clickable
         )
 
-        for checkbox in self.operator_checkboxes:
+        if self.is_popup_open():
+            # Open popup overlaps the checkboxes on the right completely
+            clickable_checkboxes = [self.addition, self.multiplication]
+        else:
+            clickable_checkboxes = self.operator_checkboxes
+
+        for checkbox in clickable_checkboxes:
             current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
                 click_position, current_minimal_distance, current_clickable
             )
@@ -254,8 +260,12 @@ class CalculatorSettingsPopup(Page, RewardElement):
     def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
                                current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
         if self.is_open():
-            for widget in [self.dropdown, self.apply_button]:
-                current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
+            current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+            if not self.dropdown.is_open():
+                current_minimal_distance, current_clickable = self.apply_button.calculate_distance_to_click(
                     click_position, current_minimal_distance, current_clickable
                 )
 
