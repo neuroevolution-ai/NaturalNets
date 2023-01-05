@@ -196,14 +196,16 @@ class FigurePrinterSettings(Page, RewardElement):
             click_position, current_minimal_distance, current_clickable
         )
 
-        current_minimal_distance, current_clickable = self._show_fig_printer_checkbox.calculate_distance_to_click(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        for checkbox in self.figure_checkboxes:
-            current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
+        if not self.is_popup_open():
+            # Open popup overlaps all widgets, except for the color radio buttons
+            current_minimal_distance, current_clickable = self._show_fig_printer_checkbox.calculate_distance_to_click(
                 click_position, current_minimal_distance, current_clickable
             )
+
+            for checkbox in self.figure_checkboxes:
+                current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
+                    click_position, current_minimal_distance, current_clickable
+                )
 
         current_minimal_distance, current_clickable = self._color_rbg.calculate_distance_to_click(
             click_position, current_minimal_distance, current_clickable
@@ -320,8 +322,12 @@ class FigureCheckboxesPopup(Page, RewardElement):
     def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
                                current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
         if self.is_open():
-            for widget in [self.dropdown, self.apply_button]:
-                current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
+            current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
+
+            if not self.dropdown.is_open():
+                current_minimal_distance, current_clickable = self.apply_button.calculate_distance_to_click(
                     click_position, current_minimal_distance, current_clickable
                 )
 
