@@ -172,9 +172,6 @@ class AppController:
 
                 current_minimal_distance, current_clickable, click_position = main_window_result
 
-            print(f"Minimal Distance: {current_minimal_distance} Clickable {current_clickable} "
-                  f"Old Click Position {old_click_position} New Click Position {click_position}")
-
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
         elif (not self.main_window.current_page_blocks_click()
