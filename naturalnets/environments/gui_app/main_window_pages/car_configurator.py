@@ -256,6 +256,10 @@ class CarConfigurator(Page, RewardElement):
 
     def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
                                current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
+        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
+            click_position, current_minimal_distance, current_clickable
+        )
+
         for index, dropdown in enumerate(self.dropdowns):
             if index == 0 or self._is_dropdown_value_selected(index - 1):
                 current_minimal_distance, current_clickable = dropdown.calculate_distance_to_click(
@@ -267,22 +271,10 @@ class CarConfigurator(Page, RewardElement):
                 click_position, current_minimal_distance, current_clickable
             )
 
-        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
         if current_clickable == self.popup.ok_button:
             return current_minimal_distance, current_clickable, popup_click_position
         else:
-            new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
-
-            if self.is_popup_open():
-                if current_clickable == self.tire_dropdown:
-                    new_click_position = np.array([393, 198], dtype=np.int)
-                elif current_clickable == self.interior_dropdown:
-                    new_click_position = np.array([393, 278], dtype=np.int)
-
-            return current_minimal_distance, current_clickable, new_click_position
+            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 
     def display_configuration(self):
         car = self.car_dropdown.get_current_value()
@@ -481,7 +473,7 @@ class CarConfiguratorPopup(Page, RewardElement):
                 click_position, current_minimal_distance, current_clickable
             )
 
-            return current_minimal_distance, current_clickable, self.ok_button.get_bb().get_click_point_inside_bb()
+            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 
         return current_minimal_distance, current_clickable, click_position
 
