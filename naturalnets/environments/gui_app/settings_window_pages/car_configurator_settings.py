@@ -243,6 +243,10 @@ class CarConfiguratorSettings(Page, RewardElement):
 
         for checkbox_group in self._checkbox_groups:
             for checkbox in checkbox_group:
+                if checkbox == self.interior_sport and self.is_popup_open():
+                    # In this case the checkbox is not visible and is excluded from distance calculation
+                    continue
+
                 current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
                     click_position, current_minimal_distance, current_clickable
                 )
