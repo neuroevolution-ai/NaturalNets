@@ -223,9 +223,8 @@ class TextPrinterSettings(Page, RewardElement):
         #  However because the click is directly on the black radio button it will be selected, despite it not being
         #  visible. This is technically not a problem, because handle_click() will correctly just click into the popup
         #  and nothing happens, but the black button is therefore not the nearest (visible) widget. The no button would
-        #  be the nearest (visible) widget. One Solution: Make additional checks like, is popup open? If that is the
-        #  case then ignore the black and blue radio buttons, because they are not visible. Currently implemented:
-        #  Ignore these cases, check for nearest visible widgets, sample a click point, and click it
+        #  be the nearest (visible) widget.
+        #  Currently implemented: Completely invisible widgets are ignored by additional checks
 
         current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
             click_position, current_minimal_distance, current_clickable
@@ -237,9 +236,24 @@ class TextPrinterSettings(Page, RewardElement):
                 click_position, current_minimal_distance, current_clickable
             )
 
-        current_minimal_distance, current_clickable = self.rbg.calculate_distance_to_click(
-            click_position, current_minimal_distance, current_clickable
-        )
+        if self.is_popup_open():
+            # In this case the two radio buttons on the right side are not visible
+            clickable_radio_buttons = [self.red_rb, self.green_rb]
+        else:
+            if self.font_size_dd.is_open():
+                # In this case the two radio buttons on the left side are not visible
+                clickable_radio_buttons = [self.blue_rb, self.black_rb]
+            elif self.fonts_dd.is_open():
+                # In this case the two radio buttons on the right side are not visible
+                clickable_radio_buttons = [self.red_rb, self.green_rb]
+            else:
+                # All radio buttons are visible
+                clickable_radio_buttons = [self.red_rb, self.blue_rb, self.green_rb, self.black_rb]
+
+        for rb in clickable_radio_buttons:
+            current_minimal_distance, current_clickable = rb.calculate_distance_to_click(
+                click_position, current_minimal_distance, current_clickable
+            )
 
         for widget in self.font_style_checkboxes:
             current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
