@@ -1,52 +1,15 @@
-import numpy as np
-from naturalnets.environments.anki.deck import Deck, DeckOption
 import random
-import string
-from naturalnets.environments.gui_app.utils import put_text
+import numpy as np
+from naturalnets.environments.anki.constants import ProfileNames,OptionNames,DeckNames
+from naturalnets.environments.anki.deck import Deck, DeckOption
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
 
 class Profile():
     
     def __init__(self, profile_name: str):
         self.name = profile_name
-        self.deck_list: list[Deck] = []
-        self.deck_options : list[DeckOption] = [DeckOption("Default",True)]
-
-    def count_deck_option_occurrences(self,deck_option: DeckOption):
-        deck_option_occurrence: int = 0
-        for deck in self.deck_list:
-            if deck.current_option == deck_option:
-                deck_option_occurrence += 1
-        return deck_option_occurrence
-
-    def __init__(self):
-        self.available_deck_options: list[DeckOption] = [DeckOption("Default")]
+        self.decks = []
     
-    def add_option(self, deck_option: DeckOption):
-        if not(self.check_occurrence(deck_option)):
-            self.available_deck_options.append(deck_option)
-        else:
-            print("Option with same name already present")
-
-    def remove_option(self, deck_option: DeckOption):
-        if deck_option.is_default_option:
-            print("The default configuration can not be removed")
-            return
-
-        for option in self.available_deck_options:
-            if option.name == deck_option.name:
-                self.available_deck_options.remove(option)
-
-    def check_occurrence(self, deck_option: DeckOption) -> bool:
-        for available_deck_option in self.available_deck_options:
-            if available_deck_option.name == deck_option.name:
-                return True
-        
-        return False    
-      
-    def rename_option(self, deck_option: DeckOption):
-        # To avoid keyboard inputs renaming is randomized
-        deck_option.name = ''.join(random.choices(string.ascii_lowercase, k=5))
-
 class ProfileDatabase():
 
     def __new__(cls):
@@ -55,35 +18,51 @@ class ProfileDatabase():
         return cls.instance
 
     def __init__(self):
+        self.secure_random = random.SystemRandom()
+        self.profile_names = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
+        self.current_field_string = None
         self.profiles = [Profile("Profile 1")]
-        self.active_profile = self.profiles[0]
+        self.active_profile = None
         self.current_index = 0
     
+    def is_adding_profile_allowed(self) -> bool :
+        return self.profiles_length < 5
+
+    def profiles_length(self) -> int:
+        return len(self.profiles)
+
     def add_profile(self) -> None:
-        profile_name: str = ''.join(random.choices(string.ascii_lowercase, k=5))
+        if self.current_field_string == None:
+            return
+        profile_name = self.current_field_string
+        self.current_field_string = None
         if self.is_included(Profile(profile_name),self.profiles):
             print("Name exists!")
             return
-        elif self.profiles_length <= 18:
-            print("Max length is reached!")
+        elif not(self.is_adding_profile_allowed()):
+            print("Max length is exceeded")
             return
         else:
             self.profiles.insert(Profile(profile_name))
 
     def rename_profile(self, profile: Profile) -> None:
-        new_name: str = ''.join(random.choices(string.ascii_lowercase, k=5))
+        if self.current_field_string == None:
+            return
+        new_name = self.current_field_string
+        self.current_field_string = None
         if self.is_included(Profile(new_name),Profile(self.profiles)):
             print("Name already exists!")
-            return
-        profile.name = new_name
+        else:
+            profile.name = new_name
     
     def delete_profile(self, profile_name: str) -> None:
         for profile in self.profiles:
+            if self.profiles_length() == 1:
+                print("At least one profile must be present")
+                return
             if profile.name == profile_name:
                 self.profiles.remove(profile)
 
-    def profiles_length(self) -> int:
-        return len(self.profiles)
 
     def is_included(profile: Profile,profiles: list[Profile]) -> bool:
         for profile_temp in profiles:
@@ -91,15 +70,30 @@ class ProfileDatabase():
                 return True      
         return False
 
-    def change_active_profile(self, click_position:np.ndarray):
+    def change_current_profile_index(self, click_position:np.ndarray):
         ##Calculate the clicked profile with size (384,22)
-        index: int = click_position[1]/22
-        if index < self.profiles_length and index >= 0 :
-            self.active_profile = self.profiles[index]
-            self.current_index = index
+        current_bounding_box = self.calculate_current_bounding_box()
+        if(not(current_bounding_box.is_point_inside(click_position))):
+            print("Point not inside the profiles bounding box")
+            return
         else:
-            print("Index out of bounds")
+            click_index: int = click_position[1]/22
+            self.current_index = click_index
+
+    def change_active_profile(self):
+        self.active_profile = self.profiles[self.current_index]
     
     def reset_profiles(self):
         self.profiles = [Profile("Profile 1")]
-        self.active_profile = self.profiles[0]
+        self.active_profile = None
+        self.current_index = 0
+
+    def calculate_current_bounding_box(self):
+        #Each profile item has the 2-dimension (384,22)
+        upper_left_point = (11,49)
+        length = 22 * self.profiles_length()
+        current_bounding_box = BoundingBox(upper_left_point[0],upper_left_point[1],384,length)
+        return current_bounding_box
+
+    def set_current_field_string(self):
+        self.current_field_string = self.secure_random.choice(self.profile_names)

@@ -34,3 +34,12 @@ class MainPage(Page,RewardElement):
     def get_shared(self):
         """
         """
+class StudyDeckPopup():
+
+    STUDY_BB = BoundingBox(90,372,91,26)
+    ADD_BB = BoundingBox(191,373,91,26)
+    CANCEL_BB = BoundingBox(292,373,91,26)
+    HELP_BB = BoundingBox(394,373,91,26)
+    EXIT_BB = BoundingBox(460,0,42,37)
+
+    DECKS_BB = BoundingBox(15,84,471,280)

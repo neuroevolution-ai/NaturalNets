@@ -37,9 +37,6 @@ class AboutPage(Page,RewardElement):
             self.ok_button.handle_click(click_position)
 
     def debug_info(self):
-        """
-        Irrelevant for testing purposes but filler LOC for coverage
-        """
         print("Copy debug info to the clipboard")
 
     def close(self):
