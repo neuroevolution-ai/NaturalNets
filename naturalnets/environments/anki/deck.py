@@ -385,20 +385,18 @@ class DeckDatabase():
         return cls.instance
 
     def __init__(self):
+        
         self.secure_random = random.SystemRandom()
         self.deck_names = [DeckNames.DECK_NAME_1, DeckNames.DECK_NAME_2, DeckNames.DECK_NAME_3, DeckNames.DECK_NAME_4, DeckNames.DECK_NAME_5]
-        self.decks: list[Deck] = []
-        self.current_deck: Deck = None
+        self.decks: list[Deck] = [Deck(DeckNames.DECK_NAME_1)]
+        self.current_deck: Deck = Deck(DeckNames.DECK_NAME_1)
         self.current_index = 0
 
     def decks_length(self):
         return len(self.decks)
 
-    def is_adding_deck_allowed(self):
+    def is_deck_length_allowed(self):
         return self.decks_length() < 5
-    
-    def set_current_field_string(self):
-        self.current_field_string = self.secure_random.choice(self.deck_names)
 
     def count_number_of_files(self,dir_path: str):
         count = 0
@@ -419,24 +417,18 @@ class DeckDatabase():
                 return deck
         return None
 
-    def check_occurence(self,deck_name: str):
+    def is_included(self,deck_name: str):
         return self.fetch_deck(deck_name) is None
     
-    def create_deck(self):
-        if(self.current_field_string == None):
-            return 
-        elif (self.check_occurence(self.current_field_string)):
-            print("Deck already present")
-        else:
-            self.decks.append(Deck(self.current_field_string))
-            self.current_field_string = None
+    def create_deck(self,deck_name:str):
+        self.decks.append(Deck(deck_name))
     
     def import_deck(self,deck_import_name: DeckImportName):
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name.value + ".txt")
         deck_file = open(path,"r")
         deck_as_string = deck_file.read()
         deck = self.convert_string_to_deck(deck_import_name.value,deck_as_string)
-        if(self.check_occurence(deck_import_name.value)):
+        if(self.is_included(deck_import_name.value)):
             print("Deck already present")
             return
         elif (not(self.is_importing_allowed())):
@@ -461,7 +453,7 @@ class DeckDatabase():
         return os.path.exists(directory + '/' + file_name + '.txt')
 
     def delete_deck(self,deck_name :str):
-        if(not(self.check_occurence(deck_name))):
+        if(not(self.is_included(deck_name))):
             print("Deck is not present")
             return
         else:
@@ -470,7 +462,7 @@ class DeckDatabase():
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines('\n')
         deck: Deck = Deck(deck_name)
-        if(self.check_occurence(deck_name)):
+        if(self.is_included(deck_name)):
             print("Deck is already present")
             return
         for line in split_deck:
@@ -486,7 +478,7 @@ class DeckDatabase():
     def rename_deck(self,deck :Deck):
         if (self.current_field_string is None):
             print("Name is not specified")
-        elif (self.check_occurence(self.current_field_string)):
+        elif (self.is_included(self.current_field_string)):
             print("Deck name is already present")
         else:
             deck.name = self.current_field_string

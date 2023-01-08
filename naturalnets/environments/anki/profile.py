@@ -30,7 +30,7 @@ class ProfileDatabase():
     def profiles_length(self) -> int:
         return len(self.profiles)
 
-    def add_profile(self,profile_name: str) -> None:
+    def create_profile(self,profile_name: str) -> None:
             self.profiles.insert(Profile(profile_name))
 
     def rename_profile(self, profile: Profile) -> None:

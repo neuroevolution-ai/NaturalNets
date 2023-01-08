@@ -1,6 +1,6 @@
 import os
 import random
-from naturalnets.environments.anki.anki_account import AnkiAccountDatabase
+from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -11,11 +11,11 @@ class AnkiLoginPage(Page,RewardElement):
     
     """
     STATE_LEN is composed of if this page is open, if the username field is filled and
-    if the password field is filled 
+    if the password field is filled and if it is logged in
     """
     
-    STATE_LEN = 3
-    IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
+    STATE_LEN = 4
+    IMG_PATH = os.path.join(IMAGES_PATH, "add_login.png")
 
     WINDOW_BB = BoundingBox(0, 0, 278, 281)
     USERNAME_BB = BoundingBox(25, 121, 91, 26)
@@ -34,12 +34,13 @@ class AnkiLoginPage(Page,RewardElement):
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
 
-        self.username_clipboard = None
-        self.password_clipboard = None
+        self.current_anki_account: AnkiAccount = None
+        self.username_clipboard: str = None
+        self.password_clipboard: str = None
 
-        self.username_button: Button = Button(self.USERNAME_BB, self.set_password_clipboard())
-        self.password_button: Button = Button(self.PASSWORD_BB, self.set_username_clipboard())
-        self.ok_button: Button = Button(self.OK_BB, AnkiAccountDatabase().login())
+        self.username_button: Button = Button(self.USERNAME_BB, self.set_username_clipboard())
+        self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard())
+        self.ok_button: Button = Button(self.OK_BB, self.login())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_button: Button = Button(self.CLOSE_BB, self.close())
 
@@ -48,7 +49,8 @@ class AnkiLoginPage(Page,RewardElement):
         return {
             "window": ["open","close"],
             "username_clipboard": "clicked",
-            "password_clipboard": "clicked"
+            "password_clipboard": "clicked",
+            "logged_in": "true"
         }
     
     def open(self):
@@ -63,9 +65,18 @@ class AnkiLoginPage(Page,RewardElement):
         return self.get_state()[0]
     
     def set_username_clipboard(self):
+        self.register_selected_reward(["username_clipboard","clicked"])
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_username_list)
     
     def set_password_clipboard(self):
+        self.register_selected_reward(["password_clipboard","clicked"])
         self.get_state()[2] = 1
         self.password_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_password_list)
+
+    def login(self):
+        self.register_selected_reward(["logged_in","true"])
+        self.get_state()[3] = 1
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0 
+        self.current_anki_account = AnkiAccountDatabase().login()

@@ -1,8 +1,10 @@
 import os
 
 import numpy as np
-from naturalnets.environments.anki.deck import DeckDatabase,Deck
+from add_deck_popup_page import AddDeckPopupPage
+from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from study_window_page import StudyWindowPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
@@ -33,11 +35,16 @@ class ChooseDeckStudyPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
+        self.add_deck_popup = AddDeckPopupPage()
+        self.study_window_page = StudyWindowPage()
+        
+        self.add_child(self.add_deck_popup)        
+        self.add_child(self.study_window_page)
         
         self.current_index: int = 0
 
         self.study_button: Button = Button(self.STUDY_BB, self.study_deck())
-        self.add_button: Button = Button(self.ADD_BB,self.add)
+        self.add_button: Button = Button(self.ADD_BB,self.add_deck_popup.open())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.help_button: Button = Button(self.HELP_BB, self.help())
         self.close_button: Button = Button(self.CLOSE_BB, self.close())
@@ -62,7 +69,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         print("Led to external website")
         self.register_selected_reward(["help","clicked"])
 
-    def is_open(self):
+    def is_open(self) -> int:
         return self.get_state()[0]
 
     def change_current_deck_index(self,click_point:np.ndarray):
@@ -85,4 +92,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
 
     def study_deck(self):
         if(not(self.current_index is not None)):
-            self.selected_deck = DeckDatabase().decks[self.current_index]
+            DeckDatabase().current_deck = DeckDatabase().decks[self.current_index]
+        self.study_window_page.open()
+        self.close()
+        

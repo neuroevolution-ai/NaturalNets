@@ -25,7 +25,6 @@ class AddProfilePopupPage(Page,RewardElement):
     CANCEL_BB = BoundingBox(394, 106, 92, 27)
     CLOSE_WINDOW_BB = BoundingBox(459, 0, 41, 37)
 
-
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(AddProfilePopupPage, cls).__new__(cls)
@@ -34,15 +33,18 @@ class AddProfilePopupPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.secure_random = random.SystemRandom()
-        self.current_field_string = None
         
         self.name_exists_popup = NameExistsPopupPage()
         self.five_profiles_popup = FiveProfilesPopupPage()
+
         self.add_child(self.name_exists_popup)
+        self.add_child(self.five_profiles_popup)
+
+        self.secure_random = random.SystemRandom()
+        self.current_field_string = None
         
-        self.text_button: Button = Button(self.TEXT_BB,self.set_current_field_string())
-        self.ok_button: Button = Button(self.OK_BB,self.add_profile())
+        self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string())
+        self.ok_button: Button = Button(self.OK_BB, self.add_profile())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
     
@@ -75,10 +77,10 @@ class AddProfilePopupPage(Page,RewardElement):
         self.register_selected_reward(["profile_name_clipboard","clicked"])
         self.current_field_string = self.secure_random.choice(ProfileDatabase().profile_names)
     
-    def add_profile(self,profile: Profile):
+    def add_profile(self,name: str):
         if (not(ProfileDatabase().is_length_allowed())):
             self.five_profiles_popup.open()
-        elif (ProfileDatabase().is_included(profile)):
+        elif (ProfileDatabase().is_included(name)):
             self.name_exists_popup.open()
-        else:    
-            ProfileDatabase().add_profile(self.current_field_string)
+        elif(self.current_field_string is not None):    
+            ProfileDatabase().create_profile(self.current_field_string)
