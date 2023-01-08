@@ -20,7 +20,6 @@ class ProfileDatabase():
     def __init__(self):
         self.secure_random = random.SystemRandom()
         self.profile_names = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
-        self.current_field_string = None
         self.profiles = [Profile("Profile 1")]
         self.active_profile = None
         self.current_index = 0

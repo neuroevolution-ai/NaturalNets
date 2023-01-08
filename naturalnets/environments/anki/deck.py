@@ -2,7 +2,7 @@ import string
 
 import numpy as np
 from naturalnets.environments.anki.card import Card
-from naturalnets.environments.anki.constants import InsertionOrder,StandardSettingValues,LeechAction,SeparatedBy,DeckOptionAction
+from naturalnets.environments.anki.constants import InsertionOrder,StandardSettingValues,LeechAction,DeckOptionAction
 from naturalnets.environments.anki.deck import Deck,DeckOption,DeckDatabase
 from naturalnets.environments.anki.constants import OptionNames,DeckNames,DeckImportName,PREDEFINED_DECKS_PATH,EXPORTED_DECKS_PATH
 import random
@@ -11,15 +11,13 @@ import os
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 class Deck():
     
-    def __init__(self,name:str,separated_by: SeparatedBy):
+    def __init__(self,name:str):
+        
         self.secure_random = random.SystemRandom()
-        self.front_side_clipboard_temporary_string = None
-        self.back_side_clipboard_temporary_string = None
-        self.tag_clipboard_temporary_string = None
         self.name = name
         self.cards: list[Card] = []
+        self.current_card: Card = None
         self.current_option: DeckOption = DeckDatabase().decks[0]
-        self.seperated_by = separated_by
 
     def alter_option(self,action: DeckOptionAction):
         if action.value == DeckOptionAction.INCREMENT_CARD_NUMBER:
@@ -398,7 +396,6 @@ class DeckDatabase():
 
     def __init__(self):
         self.secure_random = random.SystemRandom()
-        self.current_field_string = None
         self.deck_names = [DeckNames.DECK_NAME_1, DeckNames.DECK_NAME_2, DeckNames.DECK_NAME_3, DeckNames.DECK_NAME_4, DeckNames.DECK_NAME_5]
         self.decks: list[Deck] = []
         self.current_deck: Deck = None
@@ -441,7 +438,7 @@ class DeckDatabase():
         elif (self.check_occurence(self.current_field_string)):
             print("Deck already present")
         else:
-            self.decks.append(Deck(self.current_field_string,SeparatedBy.SPACE))
+            self.decks.append(Deck(self.current_field_string))
             self.current_field_string = None
     
     def import_deck(self,deck_import_name: DeckImportName):
@@ -482,12 +479,12 @@ class DeckDatabase():
 
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines('\n')
-        deck: Deck = Deck(deck_name,SeparatedBy.SPACE)
+        deck: Deck = Deck(deck_name)
         if(self.check_occurence(deck_name)):
             print("Deck is already present")
             return
         for line in split_deck:
-            line = line.split(SeparatedBy.SPACE)
+            line = line.split(" ")
             deck.add_card(Card(line[0],line[1]))
         return deck
     
@@ -506,21 +503,4 @@ class DeckDatabase():
 
     def set_current_deck(self,deck: Deck):
         self.current_deck = deck
-    
-    def change_current_deck_index(self,click_point:np.ndarray):
-        # Items have size (469,22)
-        # Box containing the items has size (472,281)
-        # Top left corner (16,83)
-        current_bounding_box = self.calculate_current_bounding_box()
-        if(not(current_bounding_box.is_point_inside(click_point))):
-            print("Point not inside the profiles bounding box")
-            return
-        else:
-            click_index: int = click_point[1]/22
-            self.current_index = click_index
-
-    def calculate_current_bounding_box(self):
-       upper_left_point = (16,83)
-       length = 22 * self.decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 469, length)
-       return current_bounding_box
+        

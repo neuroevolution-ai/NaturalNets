@@ -8,25 +8,31 @@ class Card():
         self.back = back
         self.tag = None
 
-    def is_edited(self,card_component: str):
-        return "edited" in card_component
+    def is_front_edited(self):
+        return "edited" in self.front
+
+    def is_back_edited(self):
+        return "edited" in self.back
     
+    def is_tag_edited(self):
+        return "edited" in self.tag
+
     def edit_front(self):
-        if (self.is_edited(self.front)):
+        if (self.is_front_edited()):
             print("Front side is already edited")
             return
         else:
             self.front += " edited"
 
     def edit_back(self):
-        if (self.is_edited(self.back)):
+        if (self.is_back_edited()):
             print("Back side is already edited")
             return
         else:
             self.back += " edited"
 
     def edit_tag(self):
-        if (self.is_edited(self.tag)):
+        if (self.is_tag_edited()):
             print("Tag is already edited")
             return
         else:

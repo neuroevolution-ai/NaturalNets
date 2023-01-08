@@ -48,9 +48,6 @@ class FlagColour(Enum):
     PINK = "Pink"
     TURQUOISE = "Turquoise"
     PURPLE = "Purple"
-class SeparatedBy(Enum):
-    SPACE = " "
-
 class DeckOptionAction(Enum):
     INCREMENT_CARD_NUMBER = "increment_card_number"
     DECREMENT_CARD_NUMBER = "decrement_card_number"

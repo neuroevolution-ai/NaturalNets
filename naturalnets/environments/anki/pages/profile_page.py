@@ -5,12 +5,12 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.anki.profile import Profile,ProfileDatabase
-import cv2
+from naturalnets.environments.anki.profile import ProfileDatabase
+
 class ProfilePage(Page,RewardElement):
     
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "profile_page_ss.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
     WINDOW_BB = BoundingBox(0, 0, 530, 482)
     OPEN_BB = BoundingBox(406, 50, 110, 26)
@@ -35,9 +35,7 @@ class ProfilePage(Page,RewardElement):
         RewardElement.__init__(self)
         self.profile_database = ProfileDatabase()
 
-        self.add_profile_popup = AddProfilePopup()
         self.rename_profile_popup = RenameProfilePopup()
-        self.at_least_one_profile_popup = AtLeastOneProfilePopup()
         self.delete_check_popup = DeleteCheckPopup()
         self.downgrade_popup = DowngradePopup()
         self.open_backup_popup = OpenBackupPopup()
@@ -78,49 +76,6 @@ class ProfilePage(Page,RewardElement):
             self.downgrade_quit_button.is_clicked_by(click_position)
         elif(self.PROFILES_BB.is_point_inside(click_position)):
             ProfileDatabase().change_active_profile(click_position)
-
-
-class AddProfilePopup(Page, RewardElement):
-
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(12, 166, 501, 149)
-    IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
-    OK_BUTTON_BB = BoundingBox(308, 276, 91, 26)
-    CANCEL_BUTTON_BB = BoundingBox(408, 276, 91, 26)
-    EXIT_BUTTON_BB = BoundingBox(474, 168, 42, 38)
-
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
-        self.open()
-        self.cancel_button: Button = Button(self.CANCEL_BUTTON_BB, self.close)
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfileDatabase().add_profile)
-    
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.cancel_button.is_clicked_by(click_position):
-            self.cancel_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
 
 class RenameProfilePopup(Page, RewardElement):
     
@@ -163,127 +118,7 @@ class RenameProfilePopup(Page, RewardElement):
 
     def is_open(self) -> int:
         return self.get_state()[0]
-
-class AtLeastOneProfilePopup(Page, RewardElement):
-    
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(99, 167, 318, 145)
-    IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
-    EXIT_BUTTON_BB = BoundingBox(377, 167, 42, 31)
-    OK_BUTTON_BB = BoundingBox(311, 272, 91, 26)
-
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
-        self.open()
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-    
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
-
-
-class DeleteCheckPopup(Page, RewardElement):
-
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 168, 530, 135)
-    IMG_PATH = os.path.join(IMAGES_PATH, "delete_check.png")
-    YES_BUTTON_BB = BoundingBox(334, 265, 87, 24)
-    NO_BUTTON_BB = BoundingBox(430, 265, 87, 24)
-    EXIT_BUTTON_BB = BoundingBox(491, 168, 39, 35)
-
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
-        self.open()
-        self.yes_button: Button = Button(self.YES_BUTTON_BB,ProfileDatabase().delete_profile)
-        self.no_button: Button = Button(self.NO_BUTTON_BB,self.close)
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.yes_button.is_clicked_by(click_position):
-            self.yes_button.handle_click(click_position)
-        elif self.no_button.is_clicked_by(click_position):
-            self.no_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
-
-class DowngradePopup(Page, RewardElement):
-    
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(23, 166, 472, 147)
-    IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(389, 271, 91, 26)
-    EXIT_BUTTON_BB = BoundingBox(456, 165, 42, 30)
-
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
-        self.open()
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close)
-
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-        ProfilePage().reset()
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
+  
 
 class OpenBackupPopup(Page, RewardElement):
 

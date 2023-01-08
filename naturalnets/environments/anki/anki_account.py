@@ -1,5 +1,4 @@
-from typing import Final
-
+from pages.anki_login_page import AnkiLoginPage
 class AnkiAccount():
 
     def __init__(self,account_name: str,account_password: str):
@@ -11,7 +10,12 @@ class AnkiAccountDatabase():
 
     def __init__(self):
         self.active_account: AnkiAccount = None
-        self.anki_accounts_list: Final = [AnkiAccount("account_1","pTgHAa"),AnkiAccount("account_2","L7WwEH"),
-        AnkiAccount("account_3","yfTVwA"),AnkiAccount("account_4","DP7xg7"),AnkiAccount("account_5","zx7FeR")]
+        self.anki_username_list = ["account_1","account_2","account_3","account_4","account_5"]
+        self.anki_password_list = ["pTgHAa","L7WwEH","yfTVwA","DP7xg7","zx7FeR"]
 
-    
+    def login(self):
+        if(not(AnkiLoginPage().username_clipboard is not None 
+            and AnkiLoginPage().password_clipboard is not None)):
+            print("Username or password is not set")
+        else:
+            self.active_account = AnkiAccount(AnkiLoginPage().username_clipboard,AnkiLoginPage().password_clipboard)
