@@ -3,13 +3,14 @@ import random
 import string
 
 import numpy as np
+from choose_deck_page import ChooseDeckPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki.deck import Deck,DeckDatabase
-
+from naturalnets.environments.anki.deck import DeckDatabase
+from naturalnets.environments.anki.card import Card
 class AddCardPage(Page,RewardElement):
     """
     STATE_LEN is composed of (the opened state of the page, if the front field is filled,
@@ -34,21 +35,28 @@ class AddCardPage(Page,RewardElement):
         return cls.instance
     
     def __init__(self):
+        
+        self.secure_random = random.SystemRandom() 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.secure_random = random.SystemRandom()
-
+        
         self.front_side_clipboard_temporary_string = None
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
-
-        self.select_button: Button = Button(self.SELECT_BB,self.open_choose_deck())
-        self.front_text_button: Button = Button(self.FRONT_TEXT_BB,self.set_front_side_clipboard())
-        self.back_text_button: Button = Button(self.BACK_TEXT_BB,self.set_back_side_clipboard())
-        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB,self.set_tag_clipboard())
-        self.close_button: Button = Button(self.CLOSE_BB,self.close())
-        self.add_button: Button = Button(self.ADD_BB,DeckDatabase().current_deck.add_card())
-        self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB,self.close())
+        
+        self.choose_deck = ChooseDeckPage()
+        self.add_child(self.choose_deck)
+               
+        self.select_button: Button = Button(self.SELECT_BB, self.choose_deck.open())
+        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard())
+        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.set_back_side_clipboard())
+        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.set_tag_clipboard())
+        self.close_button: Button = Button(self.CLOSE_BB, self.close())
+        self.add_button: Button = Button(self.ADD_BB, self.add_card())
+        self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
+        
+        self.add_widgets([self.select_button,self.front_text_button,self.back_text_button,self.tags_text_button
+            ,self.close_button,self.add_button,self.close_window_button])
 
     @property
     def reward_template(self):
@@ -65,15 +73,15 @@ class AddCardPage(Page,RewardElement):
         elif(self.front_text_button.is_clicked_by(click_position)):
             self.front_text_button.handle_click(click_position)
         elif(self.back_text_button.is_clicked_by(click_position)):
-            self.back_text_button.is_clicked_by(click_position)
+            self.back_text_button.handle_click(click_position)
         elif(self.tags_text_button.is_clicked_by(click_position)):
-            self.tags_text_button.is_clicked_by(click_position)
+            self.tags_text_button.handle_click(click_position)
         elif(self.close_button.is_clicked_by(click_position)):
-            self.close_button.is_clicked_by(click_position)
+            self.close_button.handle_click(click_position)
         elif(self.add_button.is_clicked_by(click_position)):
-            self.add_button.is_clicked_by(click_position)
+            self.add_button.handle_click(click_position)
         elif(self.close_window_button.is_clicked_by(click_position)):
-            self.close_window_button.is_clicked_by(click_position)
+            self.close_window_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1
@@ -101,4 +109,16 @@ class AddCardPage(Page,RewardElement):
         self.tag_clipboard_temporary_string = self.secure_random.choices(string.ascii_lowercase + string.digits, 10)
         self.get_state()[3] = 1
 
+    def is_card_creatable(self):
+        return self.back_side_clipboard_temporary_string is not None and self.front_side_clipboard_temporary_string is not None
     
+    def reset_temporary_strings(self):
+        self.back_side_clipboard_temporary_string = None
+        self.front_side_clipboard_temporary_string = None
+        self.tag_clipboard_temporary_string = None
+
+    def add_card(self):
+        if(self.is_card_creatable()):
+            card = Card(self.front_side_clipboard_temporary_string,self.back_side_clipboard_temporary_string)
+            card.tag = self.tag_clipboard_temporary_string
+            DeckDatabase().current_deck.add_card(card)

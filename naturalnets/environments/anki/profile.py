@@ -20,28 +20,17 @@ class ProfileDatabase():
     def __init__(self):
         self.secure_random = random.SystemRandom()
         self.profile_names = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
-        self.profiles = [Profile("Profile 1")]
-        self.active_profile = None
+        self.profiles = [Profile(ProfileNames.ALICE)]
+        self.active_profile = ProfileNames.ALICE
         self.current_index = 0
     
-    def is_adding_profile_allowed(self) -> bool :
-        return self.profiles_length < 5
+    def is_length_allowed(self) -> bool :
+        return self.profiles_length < 5 
 
     def profiles_length(self) -> int:
         return len(self.profiles)
 
-    def add_profile(self) -> None:
-        if self.current_field_string == None:
-            return
-        profile_name = self.current_field_string
-        self.current_field_string = None
-        if self.is_included(Profile(profile_name),self.profiles):
-            print("Name exists!")
-            return
-        elif not(self.is_adding_profile_allowed()):
-            print("Max length is exceeded")
-            return
-        else:
+    def add_profile(self,profile_name: str) -> None:
             self.profiles.insert(Profile(profile_name))
 
     def rename_profile(self, profile: Profile) -> None:
@@ -63,9 +52,9 @@ class ProfileDatabase():
                 self.profiles.remove(profile)
 
 
-    def is_included(profile: Profile,profiles: list[Profile]) -> bool:
-        for profile_temp in profiles:
-            if profile_temp.name == profile.name:
+    def is_included(self,name: str) -> bool:
+        for profile_temp in self.profiles:
+            if profile_temp.name == name:
                 return True      
         return False
 
@@ -93,6 +82,3 @@ class ProfileDatabase():
         length = 22 * self.profiles_length()
         current_bounding_box = BoundingBox(upper_left_point[0],upper_left_point[1],384,length)
         return current_bounding_box
-
-    def set_current_field_string(self):
-        self.current_field_string = self.secure_random.choice(self.profile_names)

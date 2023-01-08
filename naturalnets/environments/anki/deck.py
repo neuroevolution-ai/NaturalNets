@@ -120,16 +120,6 @@ class Deck():
         self.tag_clipboard_temporary_string = self.secure_random.choices(string.ascii_lowercase + string.digits, 10)
     
     def add_card(self,card:Card):
-        if(not(self.is_front_side_clipboard())):
-            print("No clipboard for the front side")
-            return
-        elif(not(self.is_back_side_clipboard())):
-            print("No clipboard for the back side")
-            return
-        else:
-            card = Card(self.front_side_clipboard_temporary_string,self.back_side_clipboard_temporary_string)
-            if(self.is_tag_clipboard()):
-                card.tag = self.tag_clipboard_temporary_string
         self.cards.append(card)
 
 class DeckOption():

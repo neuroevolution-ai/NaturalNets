@@ -7,7 +7,9 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 
 class AboutPage(Page,RewardElement):
-    
+    """
+    STATE_LEN specifies whether this window is open or not
+    """
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(0, 0, 1002, 869)
     OK_BUTTON_BB = BoundingBox(797, 840, 91, 24)
@@ -42,7 +44,7 @@ class AboutPage(Page,RewardElement):
         elif self.exit_button.is_clicked_by(click_position):
             self.exit_button.handle_click(click_position)
         elif self.copy_debug_info_button.is_clicked_by(click_position):
-            self.ok_button.handle_click(click_position)
+            self.copy_debug_info_button.handle_click(click_position)
 
     def debug_info(self):
         print("Copy debug info to the clipboard")
