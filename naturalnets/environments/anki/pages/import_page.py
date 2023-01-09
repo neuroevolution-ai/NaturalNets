@@ -1,11 +1,16 @@
 import os
+
+import numpy as np
 from choose_deck_page import ChooseDeckPage
+from name_exists_popup_page import NameExistsPopupPage
+from five_decks_popup_page import FiveDecksPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
+from naturalnets.environments.anki.deck import DeckDatabase
 class ImportPage(Page,RewardElement):
     """
     STATE_LEN is composed of if this window is open, 
@@ -32,10 +37,12 @@ class ImportPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.choose_deck_page = ChooseDeckPage()
+        self.name_exists_popup = NameExistsPopupPage()
+        self.five_decks_popup = FiveDecksPopupPage()
 
         self.select_deck_button = Button(self.SELECT_DECK_BB, self.choose_deck_page.open())
         self.html_checkbox = CheckBox(self.HTML_BB, self.html_click())
-        self.import_button = Button(self.IMPORT_BB, self.)
+        self.import_button = Button(self.IMPORT_BB, self.import_deck())
         self.close_button = Button(self.CLOSE_BB, self.close())
         self.help_button = Button(self.HELP_BB, self.help())
     
@@ -48,6 +55,18 @@ class ImportPage(Page,RewardElement):
             "deck": "open"
         }
     
+    def handle_click(self, click_position: np.ndarray) -> None:
+        if (self.select_deck_button.is_clicked_by(click_position)):
+            self.select_deck_button.handle_click(click_position)
+        elif (self.html_checkbox.is_clicked_by(click_position)):
+            self.html_checkbox.handle_click(click_position)
+        elif (self.import_button.is_clicked_by(click_position)):
+            self.import_button.handle_click(click_position)
+        elif (self.close_button.is_clicked_by(click_position)):
+            self.close_button.handle_click(click_position)
+        elif (self.help_button.is_clicked_by(click_position)):
+            self.help_button.handle_click(click_position)
+
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window","open"])
@@ -69,8 +88,17 @@ class ImportPage(Page,RewardElement):
     
     def html_click(self):
         if(self.html_checkbox.get_state()):
-            self.html_checkbox.handle_click()
-            self.register_selected_reward(["deck","open"])
+            self.register_selected_reward(["checkbox","true"])
         else:
-            self.html_checkbox.handle_click()
-            self.register_selected_reward(["deck","close"])
+            self.register_selected_reward(["checkbox","false"])
+    
+    def import_deck(self):
+        if(DeckDatabase().is_deck_length_allowed()):
+            self.five_decks_popup.open()
+            return
+        elif(DeckDatabase().is_included(DeckDatabase().deck_import_names[self.choose_deck_page.current_index])):
+            self.name_exists_popup.open()
+            return
+        else:
+            DeckDatabase().import_deck(DeckDatabase().deck_import_names[self.choose_deck_page.current_index])
+            self.close()

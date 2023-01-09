@@ -83,3 +83,12 @@ class ProfilePage(Page,RewardElement):
         AddCardPage().reset_all()
         AnkiLoginPage().reset()
         ExportPage().reset_current_deck()
+    
+    def open(self):
+        self.get_state()[0] = 1
+    
+    def close(self):
+        self.get_state()[0] = 0
+    
+    def is_open(self):
+        return self.get_state()[0]

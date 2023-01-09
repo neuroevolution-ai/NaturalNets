@@ -1,7 +1,6 @@
 import random
 import numpy as np
 from naturalnets.environments.anki.constants import ProfileNames,OptionNames,DeckNames
-from naturalnets.environments.anki.deck import Deck, DeckOption
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 
 class Profile():

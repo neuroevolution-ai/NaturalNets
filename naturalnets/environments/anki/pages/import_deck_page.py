@@ -35,6 +35,14 @@ class ImportDeckPage(Page,RewardElement):
         self.help_button: Button = Button(self.HELP_BB, self.help())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
 
+    def handle_click(self,click_position: np.ndarray):
+        if(self.choose_button.is_clicked_by(click_position)):
+            self.choose_button.handle_click(click_position)
+        elif(self.help_button.is_clicked_by(click_position)):
+            self.help_button.is_clicked_by(click_position)
+        elif(self.close_window_button.is_clicked_by(click_position)):
+            self.close_window_button.is_clicked_by(click_position)
+            
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
