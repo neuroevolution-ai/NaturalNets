@@ -28,6 +28,8 @@ class DowngradePopupPage(Page, RewardElement):
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
 
+        self.add_widgets([self.ok_button,self.exit_button])
+        
     @property
     def reward_template(self):
         return {

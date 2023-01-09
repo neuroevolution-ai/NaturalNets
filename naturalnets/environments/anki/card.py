@@ -18,22 +18,13 @@ class Card():
         return "edited" in self.tag
 
     def edit_front(self):
-        if (self.is_front_edited()):
-            print("Front side is already edited")
-            return
-        else:
+        if (not(self.is_front_edited())):
             self.front += " edited"
 
     def edit_back(self):
-        if (self.is_back_edited()):
-            print("Back side is already edited")
-            return
-        else:
+        if (not(self.is_back_edited())):
             self.back += " edited"
 
     def edit_tag(self):
-        if (self.is_tag_edited()):
-            print("Tag is already edited")
-            return
-        else:
+        if (not(self.is_tag_edited())):
             self.tag = "edited"

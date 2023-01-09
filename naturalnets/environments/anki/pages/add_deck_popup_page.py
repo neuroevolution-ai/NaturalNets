@@ -45,7 +45,7 @@ class AddDeckPopupPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
 
-
+        self.add_widgets([self.ok_button,self.text_button,self.cancel_button,self.close_window_button])
     @property
     def reward_template(self):
         return {
@@ -67,11 +67,13 @@ class AddDeckPopupPage(Page,RewardElement):
         self.register_selected_reward(["deck_name_clipboard","clicked"])
 
     def add_deck(self):
-        if(not(DeckDatabase().is_deck_length_allowed())):
+        if (self.current_field_string is None):
+            return
+        elif (not(DeckDatabase().is_deck_length_allowed())):
             self.five_decks_popup.open()
-        elif(DeckDatabase().is_included(self.current_field_string)):
+        elif (DeckDatabase().is_included(self.current_field_string)):
             self.name_exists_popup.open()
-        elif(self.current_field_string is not None):
+        else:
             DeckDatabase().create_deck(self.current_field_string)
             self.current_field_string = None
             self.close()

@@ -26,6 +26,8 @@ class FiveDecksPopupPage(Page,RewardElement):
 
         self.ok_button = Button(self.OK_BB,self.close())
         self.close_button = Button(self.CLOSE_WINDOW_BB,self.close())
+
+        self.add_widgets([self.ok_button,self.close_button])
     
     @property
     def reward_template(self):

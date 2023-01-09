@@ -40,6 +40,9 @@ class EditCardPage(RewardElement,Page):
         self.close_button: Button = Button(self.CLOSE_BB,self.close())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB,self.close())
 
+        self.add_widgets([self.front_text_button,self.back_text_button,
+            self.tags_text_button,self.close_button,self.close_window_button])
+
     def handle_click(self, click_position: np.ndarray):
         if self.front_text_button.is_clicked_by(click_position):
             self.front_text_button.handle_click(click_position)
@@ -75,17 +78,14 @@ class EditCardPage(RewardElement,Page):
     def front_text_edit(self):
         if(not(DeckDatabase().current_deck.current_card.is_front_edited())):
             DeckDatabase().current_deck.current_card.edit_front()
-            self.get_state()[1] = 1
             self.register_selected_reward(["first_field_modified","true"])
     
     def back_text_edit(self):
         if(not(DeckDatabase().current_deck.current_card.is_back_edited())):
             DeckDatabase().current_deck.current_card.edit_back()
-            self.get_state()[2] = 1
             self.register_selected_reward(["second_field_modified","true"])
         
     def tags_text_edit(self):
         if(not(DeckDatabase().current_deck.current_card.is_tag_edited())):
             DeckDatabase().current_deck.current_card.edit_tag()
-            self.get_state()[3] = 1
             self.register_selected_reward(["tags_field_modified","true"])

@@ -47,7 +47,9 @@ class AddProfilePopupPage(Page,RewardElement):
         self.ok_button: Button = Button(self.OK_BB, self.add_profile())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
-    
+
+        self.add_widgets([self.text_button,self.ok_button,self.cancel_button,self.close_window_button])
+
     @property
     def reward_template(self):
         return {
@@ -79,11 +81,13 @@ class AddProfilePopupPage(Page,RewardElement):
         self.current_field_string = self.secure_random.choice(ProfileDatabase().profile_names)
     
     def add_profile(self,name: str):
-        if (not(ProfileDatabase().is_length_allowed())):
+        if (self.current_field_string is None):
+            return
+        elif (not(ProfileDatabase().is_length_allowed())):
             self.five_profiles_popup.open()
         elif (ProfileDatabase().is_included(name)):
             self.name_exists_popup.open()
-        elif(self.current_field_string is not None):    
+        else:    
             ProfileDatabase().create_profile(self.current_field_string)
             self.current_field_string = None
             self.close()

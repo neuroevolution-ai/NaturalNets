@@ -1,6 +1,7 @@
 import os
 from choose_deck_study_page import ChooseDeckStudyPage
 from anki.pages.check_media_page import CheckMediaPage
+from preferences_page import PreferencesPage
 from pages.export_page import ExportPage
 from pages.import_page import ImportPage
 from profile_page import ProfilePage
@@ -49,7 +50,8 @@ class MainPage(Page,RewardElement):
         self.import_page = ImportPage()
         self.export_page = ExportPage()
         self.choose_deck_study_page = ChooseDeckStudyPage()
-        self = CheckMediaPage()
+        self.check_media_page = CheckMediaPage()
+        self.preferences_page = PreferencesPage()
 
         switch_profile_ddi = DropdownItem(self.switch_profile(), "Switch Profile")
         import_ddi = DropdownItem(self.import_page.open(), "Import")
@@ -57,7 +59,8 @@ class MainPage(Page,RewardElement):
         exit_ddi = DropdownItem(self.exit_app(), "Exit")
 
         study_deck_ddi = DropdownItem(self.choose_deck_study_page.open(), "Study Deck")
-        check_media_ddi = DropdownItem(self)
+        check_media_ddi = DropdownItem(self.check_media_page.open(), "Check Media")
+        preferences_ddi = DropdownItem(self.preferences_page)
 
         file_dropdown = Dropdown(self.FILE_DROPDOWN_BB,[switch_profile_ddi,import_ddi,export_ddi,exit_ddi])
         edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB,[])

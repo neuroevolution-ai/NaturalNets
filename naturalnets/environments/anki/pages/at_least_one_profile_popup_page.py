@@ -31,6 +31,7 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close())
         self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close())
 
+        self.add_widgets([self.exit_button,self.ok_button])
     @property
     def reward_template(self):
         return {

@@ -35,6 +35,8 @@ class DeleteCheckPopupPage(Page,RewardElement):
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
         self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
 
+        self.add_widgets([self.at_least_one_profile_popup,self.yes_button,self.no_button,self.exit_button])
+
     @property
     def reward_template(self):
         return {
@@ -62,7 +64,7 @@ class DeleteCheckPopupPage(Page,RewardElement):
         return self.get_state()[0]
 
     def delete_profile(self):
-        if(ProfileDatabase().is_removing_allowed):
+        if(ProfileDatabase().is_removing_allowed()):
             ProfileDatabase().delete_profile(ProfileDatabase().profiles[ProfilePage().current_index])
             self.close()
         

@@ -50,6 +50,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.help_button: Button = Button(self.HELP_BB, self.help())
         self.close_button: Button = Button(self.CLOSE_BB, self.close())
+
+        self.add_widgets([self.study_button,self.add_button,self.cancel_button,self.help_button,self.close_button])
     
     @property
     def reward_template(self):
@@ -79,10 +81,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         # Box containing the items has size (472,110)
         # Top left corner (15,82)
         current_bounding_box = self.calculate_current_bounding_box()
-        if(not(current_bounding_box.is_point_inside(click_point))):
-            print("Point not inside the profiles bounding box")
-            return
-        else:
+        if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
 
@@ -95,6 +94,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
     def study_deck(self):
         if(self.current_index is not None):
             DeckDatabase().current_deck = DeckDatabase().decks[self.current_index]
+            self.register_selected_reward(["index", f"{self.current_index}"])
             self.study_window_page.open()
             self.close()
     

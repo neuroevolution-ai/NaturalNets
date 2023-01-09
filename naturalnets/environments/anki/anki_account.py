@@ -14,8 +14,9 @@ class AnkiAccountDatabase():
         self.anki_password_list = ["pTgHAa","L7WwEH","yfTVwA","DP7xg7","zx7FeR"]
 
     def login(self):
-        if(not(AnkiLoginPage().username_clipboard is not None 
-            and AnkiLoginPage().password_clipboard is not None)):
-            print("Username or password is not set")
-        else:
+        if(self.is_login_possible()):
             self.active_account = AnkiAccount(AnkiLoginPage().username_clipboard,AnkiLoginPage().password_clipboard)
+        return self.is_login_possible()
+
+    def is_login_possible(self):
+        return AnkiLoginPage().username_clipboard is not None and AnkiLoginPage().password_clipboard is not None

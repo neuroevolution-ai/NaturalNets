@@ -1,6 +1,6 @@
 import os
 import random
-from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
+from naturalnets.environments.anki.anki_account import AnkiAccountDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -34,7 +34,6 @@ class AnkiLoginPage(Page,RewardElement):
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
 
-        self.current_anki_account: AnkiAccount = None
         self.username_clipboard: str = None
         self.password_clipboard: str = None
 
@@ -44,6 +43,7 @@ class AnkiLoginPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_button: Button = Button(self.CLOSE_BB, self.close())
 
+        self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.close_button, self.ok_button])
     @property
     def reward_template(self):
         return {
@@ -75,13 +75,15 @@ class AnkiLoginPage(Page,RewardElement):
         self.password_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_password_list)
 
     def login(self):
-        self.register_selected_reward(["logged_in","true"])
-        self.get_state()[3] = 1
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0 
-        self.current_anki_account = AnkiAccountDatabase().login()
-        self.close()
-    
+        if(AnkiAccountDatabase().login()):
+            self.register_selected_reward(["logged_in","true"])
+            self.username_clipboard = None
+            self.password_clipboard = None
+            self.get_state()[3] = 1
+            self.get_state()[2] = 0
+            self.get_state()[1] = 0 
+            self.close()
+        
     def reset(self):
         self.current_anki_account = None
         self.username_clipboard = None

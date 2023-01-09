@@ -1,6 +1,8 @@
 import os
-
 import numpy as np
+from import_page import ImportPage
+from choose_deck_page import ChooseDeckPage
+from naturalnets.environments.anki.deck import Deck
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -31,17 +33,19 @@ class ImportDeckPage(Page,RewardElement):
 
         self.current_index: int = 0
 
-        self.choose_button: Button = Button(self.CHOOSE_BB, self.close())
+        self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck())
         self.help_button: Button = Button(self.HELP_BB, self.help())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
+
+        self.add_widgets([self.choose_button,self.help_button,self.close_window_button])
 
     def handle_click(self,click_position: np.ndarray):
         if(self.choose_button.is_clicked_by(click_position)):
             self.choose_button.handle_click(click_position)
         elif(self.help_button.is_clicked_by(click_position)):
-            self.help_button.is_clicked_by(click_position)
+            self.help_button.handle_click(click_position)
         elif(self.close_window_button.is_clicked_by(click_position)):
-            self.close_window_button.is_clicked_by(click_position)
+            self.close_window_button.handle_click(click_position)
             
     def open(self):
         self.get_state()[0] = 1
@@ -63,10 +67,7 @@ class ImportDeckPage(Page,RewardElement):
         # Box containing the items has size (472,110)
         # Top left corner (15,82)
         current_bounding_box = self.calculate_current_bounding_box()
-        if(not(current_bounding_box.is_point_inside(click_point))):
-            print("Point not inside the profiles bounding box")
-            return
-        else:
+        if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
 
@@ -76,4 +77,5 @@ class ImportDeckPage(Page,RewardElement):
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 469, length)
        return current_bounding_box
     
-    
+    def choose_deck(self):
+        ImportPage().current_deck = Deck(DeckDatabase().deck_import_names[self.current_index])

@@ -10,7 +10,7 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.anki.deck import DeckDatabase
+from naturalnets.environments.anki.deck import DeckDatabase, Deck
 class ImportPage(Page,RewardElement):
     """
     STATE_LEN is composed of if this window is open, 
@@ -39,6 +39,8 @@ class ImportPage(Page,RewardElement):
         self.choose_deck_page = ChooseDeckPage()
         self.name_exists_popup = NameExistsPopupPage()
         self.five_decks_popup = FiveDecksPopupPage()
+
+        self.current_deck: Deck = None
 
         self.select_deck_button = Button(self.SELECT_DECK_BB, self.choose_deck_page.open())
         self.html_checkbox = CheckBox(self.HTML_BB, self.html_click())
@@ -100,5 +102,5 @@ class ImportPage(Page,RewardElement):
             self.name_exists_popup.open()
             return
         else:
-            DeckDatabase().import_deck(DeckDatabase().deck_import_names[self.choose_deck_page.current_index])
+            DeckDatabase().import_deck(self.current_deck.name)
             self.close()

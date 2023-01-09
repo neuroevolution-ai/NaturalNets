@@ -18,8 +18,8 @@ class ChooseDeckPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck.png")
 
     WINDOW_BB = BoundingBox(0, 0, 501, 411)
-    ADD_BB = BoundingBox(192, 371, 91, 27)
-    CANCEL_BB = BoundingBox(292, 371, 91, 27)
+    CHOOSE_BB = BoundingBox(192, 371, 91, 27)
+    ADD_BB = BoundingBox(292, 371, 91, 27)
     HELP_BB = BoundingBox(394, 371, 91, 27)
     CLOSE_WINDOW_BB = BoundingBox(459, 0, 42, 38)
 
@@ -40,9 +40,11 @@ class ChooseDeckPage(Page,RewardElement):
         self.current_index: int = 0
 
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open())
-        self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
+        self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck())
         self.help_button: Button = Button(self.HELP_BB, self.help())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
+
+        self.add_widgets([self.add_button,self.choose_button,self.help_button,self.close_window_button])
 
     @property
     def reward_template(self):
@@ -72,10 +74,7 @@ class ChooseDeckPage(Page,RewardElement):
         # Box containing the items has size (472,110)
         # Top left corner (15,82)
         current_bounding_box = self.calculate_current_bounding_box()
-        if(not(current_bounding_box.is_point_inside(click_point))):
-            print("Point not inside the profiles bounding box")
-            return
-        else:
+        if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = click_point[1]/22
             self.current_index = click_index
 
@@ -87,6 +86,10 @@ class ChooseDeckPage(Page,RewardElement):
 
     def choose_deck(self):
         AddCardPage().set_current_deck(DeckDatabase().decks[self.current_index])
+        self.register_selected_reward(["index",f"{self.current_index}"])
+        for i in range(1,6):
+            self.get_state()[i] = 0
+        self.get_state()[self.current_index + 1] = 1
 
     def reset_index(self):
         self.current_index = 0

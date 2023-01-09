@@ -13,8 +13,8 @@ from naturalnets.environments.anki.deck import DeckDatabase, Deck
 from naturalnets.environments.anki.card import Card
 class AddCardPage(Page,RewardElement):
     """
-    STATE_LEN is composed of (the opened state of the page, if the front field is filled,
-        if the back field is filled, if the tags field is filled)
+    STATE_LEN is composed of if this page is open, if the front field is filled,
+        if the back field is filled, if the tags field is filled
     """
     
     STATE_LEN = 4
