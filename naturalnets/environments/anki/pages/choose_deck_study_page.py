@@ -26,6 +26,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
     HELP_BB = BoundingBox(395, 372, 91, 26)
     CLOSE_BB = BoundingBox(459, 0, 42, 38)
 
+    DECK_BB = BoundingBox(15, 82 ,472 ,110)
+
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(ChooseDeckStudyPage, cls).__new__(cls)
@@ -74,8 +76,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
 
     def change_current_deck_index(self,click_point:np.ndarray):
         # Items have size (469,22)
-        # Box containing the items has size (472,281)
-        # Top left corner (16,83)
+        # Box containing the items has size (472,110)
+        # Top left corner (15,82)
         current_bounding_box = self.calculate_current_bounding_box()
         if(not(current_bounding_box.is_point_inside(click_point))):
             print("Point not inside the profiles bounding box")
@@ -85,14 +87,16 @@ class ChooseDeckStudyPage(Page,RewardElement):
             self.current_index = click_index
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (16,83)
+       upper_left_point = (15,82)
        length = 22 * DeckDatabase().decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 469, length)
        return current_bounding_box
 
     def study_deck(self):
-        if(not(self.current_index is not None)):
+        if(self.current_index is not None):
             DeckDatabase().current_deck = DeckDatabase().decks[self.current_index]
-        self.study_window_page.open()
-        self.close()
-        
+            self.study_window_page.open()
+            self.close()
+    
+    def reset_index(self):
+        self.current_index = 0

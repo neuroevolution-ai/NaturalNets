@@ -14,7 +14,7 @@ class RenameProfilePage(RewardElement,Page):
     STATE_LEN is composed of the states if this window is open and if the text field is filled
     """
     STATE_LEN = 2
-    IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
     WINDOW_BB = BoundingBox(0, 0, 500, 147)
     OK_BB = BoundingBox(293, 106, 91, 26)
@@ -66,6 +66,14 @@ class RenameProfilePage(RewardElement,Page):
     
     def set_profile_name_clipboard(self):
         self.register_selected_reward(["profile_name_clipboard","clicked"])
-        ProfileDatabase().set_current_field_string()
     
+    def open(self):
+        self.get_state()[0] = 1
+        self.register_selected_reward(["window","open"])
+
+    def close(self):
+        self.get_state()[0] = 0
+        self.register_selected_reward(["window","close"])
     
+    def is_open(self) -> int:
+        return self.get_state()[0]

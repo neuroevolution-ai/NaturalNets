@@ -440,6 +440,7 @@ class DeckDatabase():
     def export_deck(self,deck: Deck):
         if (not(self.is_exporting_allowed(EXPORTED_DECKS_PATH))):
             print("Number of exported decks can not be more than 5")
+            return
         elif (not(self.is_file_exist(deck.name,EXPORTED_DECKS_PATH))):
             deck_file = open(EXPORTED_DECKS_PATH + f"{deck.name}.txt","w")
             for card in deck.cards:
@@ -485,4 +486,15 @@ class DeckDatabase():
 
     def set_current_deck(self,deck: Deck):
         self.current_deck = deck
-        
+    
+    def reset_decks(self):
+        self.reset_exported_decks()
+        self.decks = [Deck(DeckNames.DECK_NAME_1)]
+        self.current_index = 0
+        self.current_deck = self.decks[0]
+
+    def get_deck_names(self):
+        deck_names = []
+        for deck in self.decks:
+            deck_names.append(deck.name)
+        return deck_names

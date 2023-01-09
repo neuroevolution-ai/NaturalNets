@@ -14,7 +14,7 @@ class AboutPage(Page,RewardElement):
     WINDOW_BB = BoundingBox(0, 0, 1002, 869)
     OK_BUTTON_BB = BoundingBox(797, 840, 91, 24)
     COPY_DEBUG_INFO_BUTTON_BB = BoundingBox(898, 840, 101, 26)
-    EXIT_BUTTON_BB = BoundingBox(960, 1, 42, 37)
+    EXIT_BUTTON_BB = BoundingBox(960, 0, 42, 37)
 
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
 

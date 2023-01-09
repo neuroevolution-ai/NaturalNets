@@ -2,12 +2,13 @@ import os
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from at_least_one_profile_popup_page import AtLeastOneProfilePopupPage
+from profile_page import ProfilePage
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
-
 
 class DeleteCheckPopupPage(Page,RewardElement):
     """
@@ -29,9 +30,10 @@ class DeleteCheckPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.yes_button: Button = Button(self.YES_BUTTON_BB,ProfileDatabase().delete_profile())
-        self.no_button: Button = Button(self.NO_BUTTON_BB,self.close())
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close())
+        self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
+        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile())
+        self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
+        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
 
     @property
     def reward_template(self):
@@ -58,3 +60,9 @@ class DeleteCheckPopupPage(Page,RewardElement):
 
     def is_open(self) -> int:
         return self.get_state()[0]
+
+    def delete_profile(self):
+        if(ProfileDatabase().is_removing_allowed):
+            ProfileDatabase().delete_profile(ProfileDatabase().profiles[ProfilePage().current_index])
+            self.close()
+        

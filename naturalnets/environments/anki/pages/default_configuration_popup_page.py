@@ -19,7 +19,7 @@ class DefaultConfigurationPopupPage(Page,RewardElement):
     
     WINDOW_BB = BoundingBox(0, 0, 381, 144)
     OK_BUTTON = BoundingBox(276, 106, 91, 26)
-    CLOSE_BB = BoundingBox(0, 0, 41, 27)
+    CLOSE_BB = BoundingBox(354, 0, 41, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

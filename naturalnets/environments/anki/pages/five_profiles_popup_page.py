@@ -1,4 +1,6 @@
 import os
+
+import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -30,6 +32,12 @@ class FiveProfilesPopupPage(Page,RewardElement):
         return {
             "window": ["open", "close"],
         }
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        if(self.ok_button.is_clicked_by(click_position)):
+            self.ok_button.handle_click(click_position)
+        elif(self.close_button.is_clicked_by(click_position)):
+            self.close_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1

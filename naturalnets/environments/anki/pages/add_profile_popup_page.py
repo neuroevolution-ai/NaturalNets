@@ -68,6 +68,7 @@ class AddProfilePopupPage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
+        self.current_field_string = None
     
     def open(self):
         self.get_state()[0] = 1
@@ -84,3 +85,5 @@ class AddProfilePopupPage(Page,RewardElement):
             self.name_exists_popup.open()
         elif(self.current_field_string is not None):    
             ProfileDatabase().create_profile(self.current_field_string)
+            self.current_field_string = None
+            self.close()

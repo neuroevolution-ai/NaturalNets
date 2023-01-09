@@ -12,11 +12,11 @@ from naturalnets.environments.anki.deck import DeckDatabase
 class EditCardPage(RewardElement,Page):
     
     """
-    STATE_LEN is determined by if the window is open and if the three fields are changed
+    STATE_LEN is determined by if this window is open
     """
 
     IMG_PATH = os.path.join(IMAGES_PATH, "edit_card.png")
-    STATE_LEN = 4
+    STATE_LEN = 1
 
     WINDOW_BB = BoundingBox(0, 0, 500, 535)
     FRONT_TEXT_BB = BoundingBox(388, 186, 91, 27)
@@ -66,8 +66,7 @@ class EditCardPage(RewardElement,Page):
         self.register_selected_reward(["window","open"])
 
     def close(self):
-        for i in range(3):
-            self.get_state()[i] = 0
+        self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
 
     def is_open(self):

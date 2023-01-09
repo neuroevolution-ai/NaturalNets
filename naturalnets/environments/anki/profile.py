@@ -27,6 +27,9 @@ class ProfileDatabase():
     def is_length_allowed(self) -> bool :
         return self.profiles_length < 5 
 
+    def is_removing_allowed(self):
+        return self.profiles_length == 1 
+    
     def profiles_length(self) -> int:
         return len(self.profiles)
 
@@ -34,20 +37,11 @@ class ProfileDatabase():
             self.profiles.insert(Profile(profile_name))
 
     def rename_profile(self, profile: Profile) -> None:
-        if self.current_field_string == None:
-            return
-        new_name = self.current_field_string
-        self.current_field_string = None
-        if self.is_included(Profile(new_name),Profile(self.profiles)):
-            print("Name already exists!")
-        else:
-            profile.name = new_name
+
+                ""
     
     def delete_profile(self, profile_name: str) -> None:
         for profile in self.profiles:
-            if self.profiles_length() == 1:
-                print("At least one profile must be present")
-                return
             if profile.name == profile_name:
                 self.profiles.remove(profile)
 
@@ -72,9 +66,10 @@ class ProfileDatabase():
         self.active_profile = self.profiles[self.current_index]
     
     def reset_profiles(self):
-        self.profiles = [Profile("Profile 1")]
-        self.active_profile = None
+        self.profiles = [Profile(ProfileNames.ALICE)]
         self.current_index = 0
+        self.active_profile = self.profiles[self.current_index]
+        
 
     def calculate_current_bounding_box(self):
         #Each profile item has the 2-dimension (384,22)

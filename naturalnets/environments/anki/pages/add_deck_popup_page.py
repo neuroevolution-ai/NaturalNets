@@ -73,3 +73,5 @@ class AddDeckPopupPage(Page,RewardElement):
             self.name_exists_popup.open()
         elif(self.current_field_string is not None):
             DeckDatabase().create_deck(self.current_field_string)
+            self.current_field_string = None
+            self.close()

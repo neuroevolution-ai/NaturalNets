@@ -1,15 +1,23 @@
 import numpy as np
 import os
+from downgrade_popup_page import DowngradePopupPage
+from choose_deck_study_page import ChooseDeckStudyPage
+from add_card_page import AddCardPage
+from anki_login_page import AnkiLoginPage
+from export_page import ExportPage
+from pages.choose_deck_page import ChooseDeckPage
+from pages.delete_check_popup_page import DeleteCheckPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
+from naturalnets.environments.anki.deck import DeckDatabase
 
 class ProfilePage(Page,RewardElement):
     
-    STATE_LEN = 0
+    STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
     WINDOW_BB = BoundingBox(0, 0, 530, 482)
@@ -33,89 +41,45 @@ class ProfilePage(Page,RewardElement):
         
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.profile_database = ProfileDatabase()
 
-        self.rename_profile_popup = RenameProfilePopup()
-        self.delete_check_popup = DeleteCheckPopup()
-        self.downgrade_popup = DowngradePopup()
-        self.open_backup_popup = OpenBackupPopup()
+        self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB,)
+        self.open_backup_button = Button(self.OPEN_BACKUP_BB,)
+        self.delete_button = Button(self.DELETE_BB,)
+        self.quit_button = Button(self.QUIT_BB,)
+        self.rename_button = Button(self.RENAME_BB,)
+        self.add_button = Button(self.ADD_BB,)
+        self.open_button = Button(self.OPEN_BB,)
 
-        self.open_button: Button = Button(self.OPEN_BB, self.open_button.switch_to_main_page)
-        self.add_button: Button = Button(self.ADD_BB, self.add_profile_popup.open)
-        self.rename_profile_button: Button = Button(self.RENAME_BB, self.rename_profile_popup.open)
-        self.delete_button: Button = Button(self.DELETE_BB, self.delete_check_popup.open)
-        self.quit_button: Button = Button(self.QUIT_BB,self.reset)
-        self.open_backup_button: Button = Button(self.OPEN_BACKUP_BB, self.open_backup_popup.open)
-        self.downgrade_quit_button: Button = Button(self.DOWNGRADE_QUIT_BB, self.downgrade_popup.open)
-        
-        self.add_children(
-            [self.add_profile_popup,self.rename_profile_popup,self.at_least_one_profile_popup,
-            self.delete_check_popup,self.downgrade_popup,self.open_backup_popup])
+        self.current_index = 0
+        self.profile = ProfileDatabase().profiles[0]
 
-    def reset(self):
-        self.add_profile_popup.close()
-        self.rename_profile_popup.close()
-        self.at_least_one_profile_popup.close()
-        self.delete_check_popup.close()
-        self.downgrade_popup.close()
-        self.open_backup_popup.close()
-        self.profile_database.reset_profiles()
+    def change_current_deck_index(self,click_point:np.ndarray):
+        # Items have size (384,22)
+        # Box containing the items has size (386,423)
+        # Top left corner (11,48)
+        current_bounding_box = self.calculate_current_bounding_box()
+        if(not(current_bounding_box.is_point_inside(click_point))):
+            print("Point not inside the profiles bounding box")
+            return
+        else:
+            click_index: int = click_point[1]/22
+            self.current_index = click_index
+            self.profile = ProfileDatabase().profiles[self.current_index]
 
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if(self.add_button.is_clicked_by(click_position)):
-            self.add_button.handle_click(click_position)
-        elif(self.rename_profile_button.is_clicked_by(click_position)):
-            self.rename_profile_button.handle_click(click_position)
-        elif(self.delete_button.is_clicked_by(click_position)):
-            self.delete_button.handle_click(click_position)
-        elif(self.quit_button.is_clicked_by(click_position)):
-            self.quit_button.handle_click(click_position)
-        elif(self.open_backup_button.is_clicked_by(click_position)):
-            self.open_backup_button.handle_click(click_position)
-        elif(self.downgrade_quit_button.is_clicked_by(click_position)):
-            self.downgrade_quit_button.is_clicked_by(click_position)
-        elif(self.PROFILES_BB.is_point_inside(click_position)):
-            ProfileDatabase().change_active_profile(click_position)
-
-class RenameProfilePopup(Page, RewardElement):
+    def calculate_current_bounding_box(self):
+       upper_left_point = (11,48)
+       length = 22 * DeckDatabase().decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 386, length)
+       return current_bounding_box
     
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(12, 166, 501, 149)
-    IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
-    OK_BUTTON_BB = BoundingBox(308, 276, 91, 26)
-    CANCEL_BUTTON_BB = BoundingBox(408, 276, 91, 26)
-    EXIT_BUTTON_BB = BoundingBox(474, 168, 42, 38)
+    def delete_profile(self):
+        ProfileDatabase().profiles.remove(self.profile)
 
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
-        self.open()
-        self.cancel_button: Button = Button(self.CANCEL_BUTTON_BB, self.close)
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close)
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, ProfileDatabase().rename_profile)
-
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.cancel_button.is_clicked_by(click_position):
-            self.cancel_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.ok_button.is_clicked_by(click_position):
-            self.ok_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
-  
+    def reset_all(self):
+        ProfileDatabase().reset_profiles()
+        DeckDatabase().reset_decks()
+        ChooseDeckStudyPage().reset_index()
+        ChooseDeckPage().reset_index()
+        AddCardPage().reset_all()
+        AnkiLoginPage().reset()
+        ExportPage().reset_current_deck()

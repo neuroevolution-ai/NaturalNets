@@ -9,7 +9,7 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki.deck import DeckDatabase
+from naturalnets.environments.anki.deck import DeckDatabase, Deck
 from naturalnets.environments.anki.card import Card
 class AddCardPage(Page,RewardElement):
     """
@@ -44,6 +44,8 @@ class AddCardPage(Page,RewardElement):
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
         
+        self.current_deck = None
+
         self.choose_deck = ChooseDeckPage()
         self.add_child(self.choose_deck)
                
@@ -122,4 +124,11 @@ class AddCardPage(Page,RewardElement):
         if(self.is_card_creatable()):
             card = Card(self.front_side_clipboard_temporary_string,self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
-            DeckDatabase().current_deck.add_card(card)
+            DeckDatabase().decks[ChooseDeckPage().current_index].add_card(card)
+
+    def set_current_deck(self,deck: Deck):
+        self.current_deck = deck
+
+    def reset_all(self):
+        self.reset_temporary_strings()
+        self.current_deck = None

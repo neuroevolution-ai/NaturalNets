@@ -15,7 +15,7 @@ class AnkiLoginPage(Page,RewardElement):
     """
     
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "add_login.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "anki_login.png")
 
     WINDOW_BB = BoundingBox(0, 0, 278, 281)
     USERNAME_BB = BoundingBox(25, 121, 91, 26)
@@ -80,3 +80,12 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[2] = 0
         self.get_state()[1] = 0 
         self.current_anki_account = AnkiAccountDatabase().login()
+        self.close()
+    
+    def reset(self):
+        self.current_anki_account = None
+        self.username_clipboard = None
+        self.password_clipboard = None
+        self.get_state()[3] = 0
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
