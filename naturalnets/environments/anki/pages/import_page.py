@@ -95,7 +95,9 @@ class ImportPage(Page,RewardElement):
             self.register_selected_reward(["checkbox","false"])
     
     def import_deck(self):
-        if(DeckDatabase().is_deck_length_allowed()):
+        if(self.current_deck is None):
+            return
+        elif(DeckDatabase().is_deck_length_allowed()):
             self.five_decks_popup.open()
             return
         elif(DeckDatabase().is_included(DeckDatabase().deck_import_names[self.choose_deck_page.current_index])):

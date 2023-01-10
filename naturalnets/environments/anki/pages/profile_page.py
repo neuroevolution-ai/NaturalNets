@@ -1,12 +1,8 @@
 import numpy as np
 import os
-from downgrade_popup_page import DowngradePopupPage
-from choose_deck_study_page import ChooseDeckStudyPage
-from add_card_page import AddCardPage
-from anki_login_page import AnkiLoginPage
-from export_page import ExportPage
-from pages.choose_deck_page import ChooseDeckPage
-from pages.delete_check_popup_page import DeleteCheckPopupPage
+from main_page import MainPage
+from at_least_one_profile_popup_page import AtLeastOneProfilePopupPage
+from delete_check_popup_page import DeleteCheckPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
@@ -42,14 +38,19 @@ class ProfilePage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
+        self.main_page = MainPage()
+
         self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB,)
         self.open_backup_button = Button(self.OPEN_BACKUP_BB,)
-        self.delete_button = Button(self.DELETE_BB,)
-        self.quit_button = Button(self.QUIT_BB,)
+        self.delete_button = Button(self.DELETE_BB, self.handle_delete())
+        self.quit_button = Button(self.QUIT_BB, )
         self.rename_button = Button(self.RENAME_BB,)
         self.add_button = Button(self.ADD_BB,)
         self.open_button = Button(self.OPEN_BB,)
 
+        self.delete_check = DeleteCheckPopupPage()
+        self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
+        
         self.current_index = 0
         self.profile = ProfileDatabase().profiles[0]
 
@@ -58,10 +59,7 @@ class ProfilePage(Page,RewardElement):
         # Box containing the items has size (386,423)
         # Top left corner (11,48)
         current_bounding_box = self.calculate_current_bounding_box()
-        if(not(current_bounding_box.is_point_inside(click_point))):
-            print("Point not inside the profiles bounding box")
-            return
-        else:
+        if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
             self.profile = ProfileDatabase().profiles[self.current_index]
@@ -74,15 +72,6 @@ class ProfilePage(Page,RewardElement):
     
     def delete_profile(self):
         ProfileDatabase().profiles.remove(self.profile)
-
-    def reset_all(self):
-        ProfileDatabase().reset_profiles()
-        DeckDatabase().reset_decks()
-        ChooseDeckStudyPage().reset_index()
-        ChooseDeckPage().reset_index()
-        AddCardPage().reset_all()
-        AnkiLoginPage().reset()
-        ExportPage().reset_current_deck()
     
     def open(self):
         self.get_state()[0] = 1
@@ -92,3 +81,9 @@ class ProfilePage(Page,RewardElement):
     
     def is_open(self):
         return self.get_state()[0]
+
+    def handle_delete(self):
+        if(not(ProfileDatabase().is_removing_allowed())):
+            self.at_least_one_profile_popup.open()
+        else:
+            self.delete_check.open()

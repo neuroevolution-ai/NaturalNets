@@ -1,16 +1,16 @@
 import os
-from choose_deck_study_page import ChooseDeckStudyPage
-from anki.pages.check_media_page import CheckMediaPage
-from preferences_page import PreferencesPage
-from pages.export_page import ExportPage
-from pages.import_page import ImportPage
-from profile_page import ProfilePage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.anki_account import AnkiAccountDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from choose_deck_study_page import ChooseDeckStudyPage
+from anki.pages.check_media_page import CheckMediaPage
+from preferences_page import PreferencesPage
+from pages.import_page import ImportPage
+from profile_page import ProfilePage
+from export_page import ExportPage
 
 anki_account_database = AnkiAccountDatabase()
 
@@ -45,7 +45,7 @@ class MainPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+
         self.profile_page = ProfilePage()
         self.import_page = ImportPage()
         self.export_page = ExportPage()

@@ -15,10 +15,10 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class OpenBackupPopup(Page, RewardElement):
+class ResetCollection(Page, RewardElement):
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
+    IMG_PATH = os.path.join(IMAGES_PATH,"reset_collection.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 400, 146)
     YES_BUTTON_BB = BoundingBox(194, 106, 90, 26)
@@ -35,14 +35,14 @@ class OpenBackupPopup(Page, RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(OpenBackupPopup, cls).__new__(cls)
+            cls.instance = super(ResetCollection, cls).__new__(cls)
         return cls.instance
     
     @property
     def reward_template(self):
         return {
             "popup": ["open", "close"],
-            "set_to_default":"true"
+            "reset":"true"
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -65,14 +65,13 @@ class OpenBackupPopup(Page, RewardElement):
         return self.get_state()[0]
     
     def reset_all(self):
-        
-        ProfileDatabase().default_profiles()
-        DeckDatabase().default_decks()
+        ProfileDatabase().reset_profiles()
+        DeckDatabase().reset_decks()
         ChooseDeckStudyPage().reset_index()
         ChooseDeckPage().reset_index()
         AddCardPage().reset_all()
-        AnkiLoginPage().default_login()
+        AnkiLoginPage().reset()
         ExportPage().reset_current_deck()
-        self.register_selected_reward(["set_to_default","true"])
+        self.register_selected_reward(["popup","true"])
         self.close()
         

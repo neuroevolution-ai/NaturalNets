@@ -3,10 +3,8 @@ from typing import List
 from naturalnets.environments.anki.card import Card
 from naturalnets.environments.anki.deck import Deck,DeckDatabase
 from naturalnets.environments.anki.constants import DeckNames,DeckImportName,PREDEFINED_DECKS_PATH,EXPORTED_DECKS_PATH
-import random
 import os
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
 class Deck():
     
     def __init__(self,deck_name:str):
@@ -38,11 +36,11 @@ class DeckDatabase():
 
     def __init__(self):
         
-        self.deck_names = [DeckNames.DECK_NAME_1, DeckNames.DECK_NAME_2, DeckNames.DECK_NAME_3, DeckNames.DECK_NAME_4, DeckNames.DECK_NAME_5]
-        self.deck_import_names = [DeckImportName.DUTCH_NUMBERS, DeckImportName.GERMAN_NUMBERS, DeckImportName.ITALIAN_NUMBERS]
-        self.decks: List[Deck] = [Deck(DeckNames.DECK_NAME_1)]
-        self.current_deck: Deck = Deck(DeckNames.DECK_NAME_1)
+        self.deck_names = [DeckNames.DECK_NAME_1.value, DeckNames.DECK_NAME_2.value, DeckNames.DECK_NAME_3.value, DeckNames.DECK_NAME_4.value, DeckNames.DECK_NAME_5.value]
+        self.deck_import_names = [DeckImportName.DUTCH_NUMBERS.value, DeckImportName.GERMAN_NUMBERS.value, DeckImportName.ITALIAN_NUMBERS.value]
+        self.decks: List[Deck] = [Deck(DeckNames.DECK_NAME_1.value)]
         self.current_index = 0
+        self.current_deck: Deck = self.decks[self.current_index]
 
     def decks_length(self):
         return len(self.decks)
@@ -73,11 +71,11 @@ class DeckDatabase():
         self.decks.append(Deck(deck_name))
     
     def import_deck(self,deck_import_name: str):
-        path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name.value + ".txt")
+        path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
         deck_file = open(path,"r")
         deck_as_string = deck_file.read()
         deck = self.convert_string_to_deck(deck_import_name.value,deck_as_string)
-        if(not(self.is_included(deck_import_name.value)) and self.is_deck_length_allowed()):
+        if(not(self.is_included(deck_import_name)) and self.is_deck_length_allowed()):
             self.decks.append(deck)
         deck_file.close()
 
@@ -115,6 +113,24 @@ class DeckDatabase():
     
     def reset_decks(self):
         self.reset_exported_decks()
-        self.decks = [Deck(DeckNames.DECK_NAME_1)]
+        self.decks = [Deck(DeckNames.DECK_NAME_1.value)]
         self.current_index = 0
-        self.current_deck = self.decks[0]
+        self.update_current_deck()
+
+    def default_decks(self):
+        
+        card_1 = Card("Front side", "Back side")
+        card_2 = Card("This is a question", "This is the answer")
+        deck_1 = Deck("Cool deck")
+        deck_1.add_card(card_1)        
+        deck_1.add_card(card_2)
+        
+        deck_2 = Deck(DeckNames.DECK_NAME_1.value)
+        card_3 = Card("This is the", "First card in the deck")
+        deck_2.add_card(card_3)
+
+        self.decks = [deck_1,deck_2]
+        self.update_current_deck()
+
+    def update_current_deck(self):
+        self.current_deck = self.decks[self.current_index]

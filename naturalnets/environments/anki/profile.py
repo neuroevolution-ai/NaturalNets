@@ -1,4 +1,5 @@
 import random
+from typing import Final
 import numpy as np
 from naturalnets.environments.anki.constants import ProfileNames,OptionNames,DeckNames
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -17,7 +18,7 @@ class ProfileDatabase():
         return cls.instance
 
     def __init__(self):
-        self.profile_names = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
+        self.profile_names: Final = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
         self.profiles = [Profile(ProfileNames.ALICE)]
         self.active_profile = self.profiles[0]
         self.current_index = 0
@@ -56,3 +57,7 @@ class ProfileDatabase():
         self.current_index = 0
         self.active_profile = self.profiles[self.current_index]
         
+    def default_profiles(self):
+        self.profiles = [Profile(ProfileNames.ALICE),Profile(ProfileNames.BOB),Profile(ProfileNames.CAROL)]
+        self.active_profile = self.profiles[1]
+        self.current_index = 1

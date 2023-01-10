@@ -1,5 +1,6 @@
 import os
 import random
+import string
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
@@ -34,8 +35,9 @@ class RenameProfilePage(RewardElement,Page):
         
         self.secure_random = random.SystemRandom()
         self.current_field_string = None
-        self.text_button: Button = Button(self.TEXT_BB,self.set_profile_name_clipboard())
-        self.ok_button: Button = Button(self.OK_BB, ProfileDatabase().rename_profile())
+        
+        self.text_button: Button = Button(self.TEXT_BB,self.set_current_field_string())
+        self.ok_button: Button = Button(self.OK_BB, self.rename_profile())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
     
@@ -64,16 +66,13 @@ class RenameProfilePage(RewardElement,Page):
         self.get_state()[0] = 1
         self.register_selected_reward(["window","open"])
     
-    def set_profile_name_clipboard(self):
+    def set_current_field_string(self):
+        self.current_field_string = self.secure_random.choices(string.ascii_lowercase + string.digits, 10)
         self.register_selected_reward(["profile_name_clipboard","clicked"])
-    
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
     
     def is_open(self) -> int:
         return self.get_state()[0]
+
+    def rename_profile(self):
+        if(self.current_field_string is not None):
+            ProfileDatabase().rename_profile(self.current_field_string)

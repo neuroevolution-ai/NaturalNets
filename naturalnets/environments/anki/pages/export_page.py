@@ -81,7 +81,7 @@ class ExportPage(Page,RewardElement):
         return self.get_state()[0]
 
     def reset_current_deck(self):
-        self.current_deck = None
+        self.include_dropdown.set_selected_item(self.include_dropdown.get_all_items()[0])
 
     def export_deck(self):
         self.register_selected_reward(["exported","true"])
