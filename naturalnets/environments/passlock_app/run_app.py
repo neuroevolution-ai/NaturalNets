@@ -1,7 +1,7 @@
 from naturalnets.environments.passlock_app.passlock_app import PasslockApp
 
-WIDTH = 1100
-HEIGHT = 850
+WIDTH = 1920
+HEIGHT = 1080
 
 config = {
     "type": "PasslockApp",

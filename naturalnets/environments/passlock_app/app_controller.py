@@ -1,4 +1,5 @@
 from copy import copy
+from multiprocessing.connection import Listener
 import numpy as np
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
@@ -37,13 +38,13 @@ class PasslockAppController:
         return reward_count
 
     def reset_reward_array(self):
-        reward_count = self.calculate_reward_count(0, self.main_window)
-        reward_count = self.calculate_reward_count(reward_count, self.settings_window)
+        reward_count = self.calculate_reward_count(0, self.home_window)
+        reward_count = self.calculate_reward_count(reward_count, self.auth_window)
 
         self.reward_array = np.zeros(reward_count, dtype=np.uint8)
 
-        last_reward_index = self.assign_reward(0, self.main_window)
-        last_reward_index = self.assign_reward(last_reward_index, self.settings_window)
+        last_reward_index = self.assign_reward(0, self.home_window)
+        last_reward_index = self.assign_reward(last_reward_index, self.auth_window)
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
@@ -56,10 +57,13 @@ class PasslockAppController:
 
         return current_index
 
+    
+
     def reset(self):
         self.home_window.reset()
+        self.home_window.close()
 
-        self.auth_window.close()
+        
         self.auth_window.reset()
 
         self.reset_reward_array()
@@ -69,6 +73,7 @@ class PasslockAppController:
 
         self.assign_state(self.home_window, 0, [])
         self.assign_state(self.auth_window, 0, [])
+        self.auth_window.open()
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
@@ -140,9 +145,10 @@ class PasslockAppController:
         """Delegates click-handling to the clicked component.
         """
         previous_reward_array = copy(self.reward_array)
-
+        
         if self.auth_window.is_open():
-            self.auth_window.handle_click(click_position)
+            if(self.auth_window.handle_click(click_position)):
+                self.sign_up()
         else:
             self.home_window.handle_click(click_position)
 
@@ -157,7 +163,20 @@ class PasslockAppController:
         Args:
             img (np.ndarray): The cv2 image to render onto.
         """
-        img = self.home_window.render(img)
-        if self.auth_window.is_open():
+
+        if(self.auth_window.is_open()):
             img = self.auth_window.render(img)
+
+        if self.home_window.is_open():
+            img = self.home_window.render(img)
+
         return img
+
+    def sign_up(self):
+        self.auth_window.close()
+        self.home_window.open()
+        self.home_window.set_current_page(self.home_window.manual)
+
+    def log_out(self):
+        self.home_window.close()
+        self.auth_window.open()

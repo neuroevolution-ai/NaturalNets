@@ -1,4 +1,4 @@
-from ast import List
+from typing import Dict, List
 import os
 import cv2
 
@@ -25,9 +25,9 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     """
 
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "main_window_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "home_window.png")
 
-    APP_BOUNDING_BOX = BoundingBox(0, 0, 1100, 850)
+    APP_BOUNDING_BOX = BoundingBox(0, 0, 1920, 1080)
 
     HOME_BUTTON_BB = BoundingBox(9, 28, 99, 22)
     SEARCH_BUTTON_BB = BoundingBox(9, 56, 99, 22)
@@ -38,8 +38,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     MANUAL_BUTTON_BB = BoundingBox(9, 28, 99, 22)
     AUTO_BUTTON_BB = BoundingBox(9, 28, 99, 22)
 
-    PAGES_AREA_BB = BoundingBox(9, 28, 99, 22)
-    MENU_AREA_BB = BoundingBox(9, 28, 99, 22)
+    PAGES_AREA_BB = BoundingBox(0, 0, 1920, 1080)
+    MENU_AREA_BB = BoundingBox(0, 0, 1920, 1080)
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
@@ -77,7 +77,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.add_children([self.manual, self.auto, self.search, self.settings])
         self.set_reward_children([self.manual, self.auto, self.search, self.settings])
 
-        self.pages_to_str = {
+        self.pages_to_str: Dict[Page, str] = {
             self.manual: "manual",
             self.auto: "auto",
             self.search: "search",
@@ -87,18 +87,36 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     @property
     def reward_template(self):
         return {
+            "home_window": ["open", "close"],
             "page_selected": ["manual", "auto", "search", "settings"]
         }
+        
     
     def reset(self):
         self.manual.reset()
         self.auto.reset()
-        self.search.reset()
+        #self.search.reset()
         self.settings.reset()
-
+        
         self.is_password_visible = 0
         self.is_darkmode = 0
         self.set_current_page(self.manual)
+
+    def close(self):
+        """Closes the home window."""
+        self.register_selected_reward(["home_window", "close"])
+
+        self.get_state()[0] = 0
+
+    def open(self):
+        """Opens the home window."""
+        self.register_selected_reward(["home_window", "open"])
+
+        self.get_state()[0] = 1
+
+    def is_open(self) -> int:
+        """Returns if the settings window is open."""
+        return self.get_state()[0]
 
     def get_current_page(self):
         return self.current_page    
@@ -129,9 +147,10 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         # to the main page (e.g. due to open dropdowns) or the click
         # is inside the bounding box of the current page.
         # Note that the settings menu button is handled in the AppController class.
-        if self.current_page_blocks_click() or self.PAGES_AREA_BB.is_point_inside(click_position):
+        if self.current_page_blocks_click() or not self.PAGES_AREA_BB.is_point_inside(click_position):
             self.current_page.handle_click(click_position)
             return
+
         # Check if menu is clicked
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
@@ -153,14 +172,18 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         """ Renders the main window and all its children onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)
-        img = render_onto_bb(img, self.get_bb(), to_render)
-        img = self.current_page.render(img)
 
-        if self.is_darkmode:
-            figure_printer_img = cv2.imread(self.FIGURE_PRINTER_BUTTON_IMG_PATH)
-            img = render_onto_bb(img, self.FIGURE_PRINTER_BUTTON_BB, figure_printer_img)
-
+        if(self.get_state()[0] == 1):
+            img = self.manual.render(img)
+        if(self.get_state()[1] == 1):
+            img = self.auto.render(img)
+        if(self.get_state()[2] == 1):
+            img = self.search.render(img)
+        if(self.get_state()[3] == 1):
+            img = self.settings.render(img)
+        
         return img
+        
 
     def get_bb(self) -> BoundingBox:
                                                                                                                                                                                                                                                

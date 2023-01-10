@@ -1,4 +1,4 @@
-from ast import List
+from typing import List
 import os
 
 import numpy as np
@@ -33,30 +33,44 @@ class AutoPage(Page, RewardElement):
         self.is_nameof_password_visible = 0
         self.enter_nameof_password_radiobutton = RadioButton(
             self.TEXTFIELD_1_BB,
-            self.enter_nameof_password()
+            lambda: self.enter_nameof_password()
         )
 
         self.is_password_visible = 0
         self.enter_secret_password_radiobutton = RadioButton(
             self.TEXTFIELD_2_BB,
-            self.enter_password()
+            lambda: self.enter_password()
         )
 
         self.radio_button_group = RadioButtonGroup([self.enter_secret_password_radiobutton, self.enter_nameof_password_radiobutton])
 
-        self.copy_pw_button = Button(self.COPY_PW_BB)
-        self.reset_pw_button = Button(self.RESET_PW_BB)
-        self.create_pw_button = Button(self.CREATE_PW_BB)
+        self.copy_pw_button = Button(self.COPY_PW_BB, lambda: self.nothing())
+        self.reset_pw_button = Button(self.RESET_PW_BB, lambda: self.nothing())
+        self.create_pw_button = Button(self.CREATE_PW_BB, lambda: self.nothing())
         self.pw_length_slider = Slider(self.PW_LENGTH_BB, 3)
         self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB)
         self.use_numbers_checkbox = CheckBox(self.USE_NUMBERS_BB)
         self.use_special_chars_checkbox = CheckBox(self.USE_SPECIAL_CHARS_BB)
 
-        self.widgets: List[Widget] = [self.radio_button_group, self.copy_pw_button, self.reset_pw_button, 
-                                        self.create_pw_button, self.pw_length_slider, self.use_letters_checkbox,
-                                        self.use_numbers_checkbox, self.use_special_chars_checkbox]
+        self.widgets: List[Widget] = [self.use_letters_checkbox,
+                                        self.use_numbers_checkbox, 
+                                        self.use_special_chars_checkbox]
         
-        self.add_widgets(self.widgets)
+        self.add_widget(self.radio_button_group)
+        #self.add_widget(self.copy_pw_button)
+        #self.add_widget(self.reset_pw_button)
+        #self.add_widget(self.create_pw_button)
+        self.add_widget(self.pw_length_slider)
+        self.add_widget(self.use_letters_checkbox)
+        self.add_widget(self.use_numbers_checkbox)
+        self.add_widget(self.use_special_chars_checkbox)
+        print("AutoPage created")
+
+    @property
+    def reward_template(self):
+        return {
+
+        }
 
     def enter_nameof_password(self):
         pass
@@ -71,4 +85,7 @@ class AutoPage(Page, RewardElement):
         pass 
 
     def handle_click(self, click_position: np.ndarray):
-        pass  
+        pass 
+
+    def nothing(self):
+        pass 

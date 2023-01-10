@@ -1,4 +1,4 @@
-from ast import List
+from typing import List
 import os
 
 import numpy as np
@@ -28,8 +28,8 @@ class SettingsPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.change_color_button = Button(self.CHANGE_COLOR_BB)
-        self.sync_pw_button = Button(self.SYNC_PW_BB)
+        self.change_color_button = Button(self.CHANGE_COLOR_BB, lambda: self.nothing())
+        self.sync_pw_button = Button(self.SYNC_PW_BB, lambda: self.nothing())
 
         self.zoom_radiobutton = RadioButton(
             self.ZOOM_TEXTFIELD_BB,
@@ -38,11 +38,11 @@ class SettingsPage(Page, RewardElement):
         
         self.auto_sync_radiobutton = RadioButton(self.AUTO_SYNC_BB)
 
-        self.about_button = Button(self.ABOUT_BB)
-        self.yt_button = Button(self.YT_BB)
-        self.log_out_button = Button(self.LOG_OUT_BB)
+        self.about_button = Button(self.ABOUT_BB, lambda: self.nothing())
+        self.yt_button = Button(self.YT_BB, lambda: self.nothing())
+        self.log_out_button = Button(self.LOG_OUT_BB, lambda: self.nothing())
 
-        self.radio_button_group = RadioButtonGroup(self.auto_sync_radiobutton, self.zoom_radiobutton)
+        self.radio_button_group = RadioButtonGroup([self.auto_sync_radiobutton, self.zoom_radiobutton])
 
         self.widgets: List[Widget] = [
             self.change_color_button,
@@ -53,7 +53,19 @@ class SettingsPage(Page, RewardElement):
             self.log_out_button
         ]
 
-        self.add_widgets(self.widgets)
+        #self.add_widget(self.change_color_button)
+        #self.add_widget(self.sync_pw_button)
+        self.add_widget(self.radio_button_group)
+        #self.add_widget(self.about_button)
+        #self.add_widget(self.yt_button)
+        #self.add_widget(self.log_out_button)
+        print("SettingsPage created")
+
+    @property
+    def reward_template(self):
+        return {
+
+        }
 
     def enter_zoom_level(self):
         pass
@@ -65,4 +77,7 @@ class SettingsPage(Page, RewardElement):
         pass
 
     def handle_click(self, click_position: np.ndarray):
-        pass    
+        pass  
+
+    def nothing(self):
+        pass

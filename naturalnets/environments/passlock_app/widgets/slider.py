@@ -19,4 +19,7 @@ class Slider(Widget):
 
     def render():
         pass
+
+    def handle_click():
+        pass
     
