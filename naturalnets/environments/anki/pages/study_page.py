@@ -1,8 +1,9 @@
+import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 
-class StudyWindowPage(RewardElement,Page):
+class StudyPage(RewardElement,Page):
 
     WINDOW_BB = BoundingBox(0, 0, 831, 710)
     
@@ -14,7 +15,7 @@ class StudyWindowPage(RewardElement,Page):
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(StudyWindowPage, cls).__new__(cls)
+            cls.instance = super(StudyPage, cls).__new__(cls)
         return cls.instance
     
     def open(self):

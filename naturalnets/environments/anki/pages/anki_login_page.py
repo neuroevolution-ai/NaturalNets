@@ -1,17 +1,22 @@
 import os
 import random
+
+import numpy as np
 from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AnkiLoginPage(Page,RewardElement):
     
     """
-    STATE_LEN is composed of if this page is open, if the username field is filled and
-    if the password field is filled and if it is logged in
+   State description:
+            state[0]: if this window is open
+            state[i]: if the i-th field is filled (3 > i > 0)
+            state[3]: if it's logged in
     """
     
     STATE_LEN = 4
@@ -97,3 +102,10 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[3] = 1
         self.get_state()[2] = 0
         self.get_state()[1] = 0
+    
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        if(self.username_clipboard is not None):
+            put_text(img,f"{self.username_clipboard}", (300, 355) ,font_scale = 0.3)
+        if(self.password_clipboard is not None):
+            put_text(img,f"{self.password_clipboard}", (300, 385) ,font_scale = 0.3)

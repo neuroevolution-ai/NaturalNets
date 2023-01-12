@@ -8,6 +8,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase, Deck
 from naturalnets.environments.anki.card import Card
@@ -126,6 +127,7 @@ class AddCardPage(Page,RewardElement):
             card = Card(self.front_side_clipboard_temporary_string,self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
             DeckDatabase().decks[ChooseDeckPage().current_index].add_card(card)
+            self.reset_temporary_strings()
 
     def set_current_deck(self,deck: Deck):
         self.current_deck = deck
@@ -133,3 +135,12 @@ class AddCardPage(Page,RewardElement):
     def reset_all(self):
         self.reset_temporary_strings()
         self.current_deck = None
+
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        if (self.front_side_clipboard_temporary_string is not None):
+            put_text(img,f"{self.front_side_clipboard_temporary_string}", (80, 228) ,font_scale = 0.3)
+        if (self.front_side_clipboard_temporary_string is not None):
+            put_text(img,f"{self.front_side_clipboard_temporary_string}", (80, 305) ,font_scale = 0.3)
+        if (self.front_side_clipboard_temporary_string is not None):
+            put_text(img,f"{self.front_side_clipboard_temporary_string}", (120, 445) ,font_scale = 0.3)

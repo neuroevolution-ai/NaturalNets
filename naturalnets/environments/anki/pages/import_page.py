@@ -106,3 +106,12 @@ class ImportPage(Page,RewardElement):
         else:
             DeckDatabase().import_deck(self.current_deck.name)
             self.close()
+    
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        if (self.choose_deck_page.get_state()[0]):
+            self.choose_deck_page.render()
+        elif (self.five_decks_popup.get_state()[0]):
+            self.five_decks_popup.render()
+        elif (self.name_exists_popup.get_state()[0]):
+            self.name_exists_popup.render()

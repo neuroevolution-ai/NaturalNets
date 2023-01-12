@@ -4,6 +4,7 @@ import numpy as np
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.gui_app.utils import put_text
 from pages.add_card_page import AddCardPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -24,7 +25,7 @@ class ChooseDeckPage(Page,RewardElement):
     ADD_BB = BoundingBox(311, 355, 91, 27)
     HELP_BB = BoundingBox(413, 355, 91, 27)
 
-    DECK_BB = BoundingBox(33,65,472,280)
+    DECK_BB = BoundingBox(33, 65, 472, 280)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -77,6 +78,7 @@ class ChooseDeckPage(Page,RewardElement):
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = click_point[1]/22
             self.current_index = click_index
+            self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
        upper_left_point = (13,45)
@@ -93,3 +95,10 @@ class ChooseDeckPage(Page,RewardElement):
 
     def reset_index(self):
         self.current_index = 0
+    
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        # Items have size (469,13)
+        bottom_index = 107 + 23 * len(DeckDatabase().decks)
+        for i, deck in enumerate (DeckDatabase().decks):
+            put_text(img, f" {deck.name}", (16, bottom_index - 23 * i),font_scale = 0.3)

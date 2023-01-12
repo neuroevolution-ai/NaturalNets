@@ -4,7 +4,8 @@ import numpy as np
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from study_window_page import StudyWindowPage
+from naturalnets.environments.gui_app.utils import put_text
+from study_page import StudyPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
@@ -39,7 +40,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.add_deck_popup = AddDeckPopupPage()
-        self.study_window_page = StudyWindowPage()
+        self.study_window_page = StudyPage()
         
         self.add_child(self.add_deck_popup)        
         self.add_child(self.study_window_page)
@@ -101,3 +102,10 @@ class ChooseDeckStudyPage(Page,RewardElement):
     
     def reset_index(self):
         self.current_index = 0
+    
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        # Items have size (469,13)
+        bottom_index = 107 + 23 * len(DeckDatabase().decks)
+        for i, deck in enumerate (DeckDatabase().decks):
+            put_text(img, f" {deck.name}", (16, bottom_index - 23 * i),font_scale = 0.3)

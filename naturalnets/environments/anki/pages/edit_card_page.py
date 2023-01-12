@@ -1,11 +1,11 @@
 import os
 
 import numpy as np
-from naturalnets.environments.anki.card import Card
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase
 
@@ -85,3 +85,12 @@ class EditCardPage(RewardElement,Page):
         if(not(DeckDatabase().current_deck.current_card.is_tag_edited())):
             DeckDatabase().current_deck.current_card.edit_tag()
             self.register_selected_reward(["tags_field_modified"])
+
+    def render(self,img: np.ndarray):
+        super().render(img)
+        if (DeckDatabase().current_deck.current_card.front is not None):
+            put_text(img,f"{DeckDatabase().current_deck.current_card.front}", (80, 228) ,font_scale = 0.3)
+        if (DeckDatabase().current_deck.current_card.back is not None):
+            put_text(img,f"{DeckDatabase().current_deck.current_card.back}", (80, 305) ,font_scale = 0.3)
+        if (DeckDatabase().current_deck.current_card.tag is not None):
+            put_text(img,f"{DeckDatabase().current_deck.current_card.tag}", (120, 445) ,font_scale = 0.3)

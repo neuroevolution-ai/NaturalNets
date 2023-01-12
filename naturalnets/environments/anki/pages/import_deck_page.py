@@ -1,18 +1,20 @@
 import os
 import numpy as np
 from import_page import ImportPage
-from choose_deck_page import ChooseDeckPage
 from naturalnets.environments.anki.deck import Deck
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH,PREDEFINED_DECKS_PATH
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase
 
 class ImportDeckPage(Page,RewardElement):
     """
-    STATE_LEN is composed of if this window is open or not and the max number of predefined importable decks by 3
+    State description:
+            state[0]: if this window is open
+            state[i]: i-th item is selected i = {1,2}  
     """
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck.png")
@@ -84,3 +86,9 @@ class ImportDeckPage(Page,RewardElement):
     
     def choose_deck(self):
         ImportPage().current_deck = Deck(DeckDatabase().deck_import_names[self.current_index])
+
+    def render(self,img: np.ndarray):
+        img = super().render(img)
+        bottom_index = 169 + 23 * len(DeckDatabase().decks)
+        for i, deck in enumerate (DeckDatabase().decks):
+            put_text(img, f" {deck.name}", (113, bottom_index - 23 * i),font_scale = 0.3)

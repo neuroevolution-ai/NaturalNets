@@ -10,7 +10,8 @@ from naturalnets.environments.gui_app.widgets.button import Button
 class CheckMediaPage(Page,RewardElement):
     
     """
-    STATE_LEN is whether this window is open or not
+    State description:
+            state[0]: if this window is open
     """
     
     STATE_LEN = 1
