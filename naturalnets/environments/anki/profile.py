@@ -23,7 +23,7 @@ class ProfileDatabase():
         self.active_profile = self.profiles[0]
         self.current_index = 0
     
-    def is_length_allowed(self) -> bool :
+    def is_adding_allowed(self) -> bool :
         return self.profiles_length() < 5 
 
     def is_removing_allowed(self):

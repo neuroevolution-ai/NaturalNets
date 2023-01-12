@@ -20,7 +20,7 @@ class OpenBackupPopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
 
-    BOUNDING_BOX = BoundingBox(0, 0, 400, 146)
+    BOUNDING_BOX = BoundingBox(57, 165, 400, 146)
     YES_BUTTON_BB = BoundingBox(194, 106, 90, 26)
     NO_BUTTON_BB = BoundingBox(296, 106, 90, 26)
     EXIT_BUTTON_BB = BoundingBox(362, 0, 38, 28)
@@ -65,7 +65,6 @@ class OpenBackupPopup(Page, RewardElement):
         return self.get_state()[0]
     
     def reset_all(self):
-        
         ProfileDatabase().default_profiles()
         DeckDatabase().default_decks()
         ChooseDeckStudyPage().reset_index()

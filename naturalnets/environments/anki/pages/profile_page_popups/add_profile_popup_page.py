@@ -83,7 +83,7 @@ class AddProfilePopupPage(Page,RewardElement):
     def add_profile(self,name: str):
         if (self.current_field_string is None):
             return
-        elif (not(ProfileDatabase().is_length_allowed())):
+        elif (not(ProfileDatabase().is_adding_allowed())):
             self.five_profiles_popup.open()
         elif (ProfileDatabase().is_included(name)):
             self.name_exists_popup.open()
