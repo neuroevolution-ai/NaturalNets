@@ -17,10 +17,10 @@ class ImportDeckPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 499, 412)
-    CHOOSE_BB = BoundingBox(190, 371, 91, 27)
-    HELP_BB = BoundingBox(394, 371, 91, 27)
-    CLOSE_WINDOW_BB = BoundingBox(459, 0, 40, 38)
+    WINDOW_BB = BoundingBox(0, 0, 499, 373)
+    CHOOSE_BB = BoundingBox(190, 334, 91, 27)
+    HELP_BB = BoundingBox(394, 334, 91, 27)
+    DECK_BB = BoundingBox(13, 45, 472, 280)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -35,17 +35,21 @@ class ImportDeckPage(Page,RewardElement):
 
         self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck())
         self.help_button: Button = Button(self.HELP_BB, self.help())
-        self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
+        self.add_widgets([self.choose_button,self.help_button])
 
-        self.add_widgets([self.choose_button,self.help_button,self.close_window_button])
-
+    @property
+    def reward_template(self):
+        return {
+            "window": ["open", "close"],
+            "index": [0, 1, 2, 3, 4],
+            "help": 0,
+        }
+    
     def handle_click(self,click_position: np.ndarray):
         if(self.choose_button.is_clicked_by(click_position)):
             self.choose_button.handle_click(click_position)
         elif(self.help_button.is_clicked_by(click_position)):
             self.help_button.handle_click(click_position)
-        elif(self.close_window_button.is_clicked_by(click_position)):
-            self.close_window_button.handle_click(click_position)
             
     def open(self):
         self.get_state()[0] = 1
@@ -53,7 +57,7 @@ class ImportDeckPage(Page,RewardElement):
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window", "close"])
+        self.register_selected_reward(["window"])
     
     def help(self):
         print("Led to external website")
@@ -64,17 +68,18 @@ class ImportDeckPage(Page,RewardElement):
 
     def change_current_deck_index(self,click_point: np.ndarray):
         # Items have size (469,22)
-        # Box containing the items has size (472,110)
-        # Top left corner (15,82)
+        # Box containing the items has size (472,280)
+        # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
+            self.register_selected_reward(["index", click_index])
 
     def calculate_current_bounding_box(self):
        upper_left_point = (15,82)
        length = 22 * DeckDatabase().count_number_of_files(PREDEFINED_DECKS_PATH)
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 469, length)
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 472, length)
        return current_bounding_box
     
     def choose_deck(self):

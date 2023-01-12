@@ -3,7 +3,7 @@ import os
 import numpy as np
 from choose_deck_page import ChooseDeckPage
 from name_exists_popup_page import NameExistsPopupPage
-from five_decks_popup_page import FiveDecksPopupPage
+from main_page_popups.five_decks_popup_page import FiveDecksPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
@@ -17,14 +17,14 @@ class ImportPage(Page,RewardElement):
     if choose deck is open and if the checkbox is selected
     """
     STATE_LEN = 3
-    IMG_PATH = os.path.join(IMAGES_PATH, "import_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "import.png")
 
-    WINDOW_BB = BoundingBox(0,0,689,620)
-    SELECT_DECK_BB = BoundingBox(386,79,277,27)
-    HTML_BB = BoundingBox(25,185,16,16)
-    IMPORT_BB = BoundingBox(382,579,92,27)
-    CLOSE_BB = BoundingBox(484,579,92,27)
-    HELP_BB = BoundingBox(584,579,92,27)
+    WINDOW_BB = BoundingBox(0,0,689,584)
+    SELECT_DECK_BB = BoundingBox(385,42,277,27)
+    HTML_BB = BoundingBox(24,149,16,16)
+    IMPORT_BB = BoundingBox(382,542,92,27)
+    CLOSE_BB = BoundingBox(484,542,92,27)
+    HELP_BB = BoundingBox(584,542,92,27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

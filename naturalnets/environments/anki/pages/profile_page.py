@@ -12,11 +12,12 @@ from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.anki.deck import DeckDatabase
 
 class ProfilePage(Page,RewardElement):
-    """Page to change the current profiles of the application.
+    """
+    Page to change the current profiles of the application.
 
         State description:
             state[0]: if this window is open
-            state[i]: i-th menu item of the profiles bounding-box (i > 0)
+            state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
     """
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")

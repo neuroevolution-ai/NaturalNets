@@ -10,11 +10,14 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class DowngradePopupPage(Page, RewardElement):
     
+    """
+    State description:
+        state[0]: if this window is open  
+    """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 0, 472, 147)
+    BOUNDING_BOX = BoundingBox(0, 0, 472, 121)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(366, 105, 91, 26)
-    EXIT_BUTTON_BB = BoundingBox(430, 0, 42, 30)
+    OK_BUTTON_BB = BoundingBox(365, 80, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -26,9 +29,7 @@ class DowngradePopupPage(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
-
-        self.add_widgets([self.ok_button,self.exit_button])
+        self.add_widgets([self.ok_button])
         
     @property
     def reward_template(self):
@@ -39,8 +40,6 @@ class DowngradePopupPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1

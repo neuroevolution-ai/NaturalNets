@@ -18,11 +18,10 @@ class AnkiLoginPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login.png")
 
     WINDOW_BB = BoundingBox(0, 0, 278, 281)
-    USERNAME_BB = BoundingBox(25, 121, 91, 26)
-    PASSWORD_BB = BoundingBox(149, 121, 91, 26)
-    OK_BB = BoundingBox(70, 243, 91, 26)
-    CANCEL_BB = BoundingBox(170, 243, 91, 26)
-    CLOSE_BB = BoundingBox(236, 0, 42, 37)
+    USERNAME_BB = BoundingBox(24, 84, 91, 26)
+    PASSWORD_BB = BoundingBox(149, 84, 91, 26)
+    OK_BB = BoundingBox(70, 207, 91, 26)
+    CANCEL_BB = BoundingBox(171, 207, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -41,15 +40,14 @@ class AnkiLoginPage(Page,RewardElement):
         self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard())
         self.ok_button: Button = Button(self.OK_BB, self.login())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
-        self.close_button: Button = Button(self.CLOSE_BB, self.close())
 
-        self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.close_button, self.ok_button])
+        self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
     @property
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "username_clipboard": "clicked",
-            "password_clipboard": "clicked",
+            "username_clipboard": 0,
+            "password_clipboard": 0,
             "logged_in": "true"
         }
     
@@ -65,12 +63,12 @@ class AnkiLoginPage(Page,RewardElement):
         return self.get_state()[0]
     
     def set_username_clipboard(self):
-        self.register_selected_reward(["username_clipboard","clicked"])
+        self.register_selected_reward(["username_clipboard"])
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_username_list)
     
     def set_password_clipboard(self):
-        self.register_selected_reward(["password_clipboard","clicked"])
+        self.register_selected_reward(["password_clipboard"])
         self.get_state()[2] = 1
         self.password_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_password_list)
 

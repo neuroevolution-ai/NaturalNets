@@ -11,16 +11,17 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase
 class AddDeckPopupPage(Page,RewardElement):
     """
-    STATE_LEN is composed of the information if this window is open and if the text field is filled 
+    State description:
+            state[0]: if this popup is open
+            state[1]: if the text field is filled
     """
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_deck_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 500, 147)
-    OK_BB = BoundingBox(293, 106, 91, 26)
-    TEXT_BB = BoundingBox(400, 74, 86, 22)
-    CANCEL_BB = BoundingBox(394, 106, 92, 27)
-    CLOSE_WINDOW_BB = BoundingBox(459, 0, 41, 37)
+    WINDOW_BB = BoundingBox(0, 0, 498, 109)
+    OK_BB = BoundingBox(293, 70, 91, 26)
+    TEXT_BB = BoundingBox(398, 38, 86, 22)
+    CANCEL_BB = BoundingBox(393, 70, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -43,14 +44,13 @@ class AddDeckPopupPage(Page,RewardElement):
         self.ok_button: Button = Button(self.OK_BB, self.add_deck())
         self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
-        self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
 
-        self.add_widgets([self.ok_button,self.text_button,self.cancel_button,self.close_window_button])
+        self.add_widgets([self.ok_button,self.text_button,self.cancel_button])
     @property
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "deck_name_clipboard": "clicked"
+            "deck_name_clipboard": 0
         }
 
     def close(self):
@@ -64,7 +64,7 @@ class AddDeckPopupPage(Page,RewardElement):
 
     def set_deck_name_clipboard(self):
         self.current_field_string = self.secure_random.random(DeckDatabase().deck_names)
-        self.register_selected_reward(["deck_name_clipboard","clicked"])
+        self.register_selected_reward(["deck_name_clipboard"])
 
     def add_deck(self):
         if (self.current_field_string is None):

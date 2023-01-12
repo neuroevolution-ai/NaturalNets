@@ -17,12 +17,10 @@ class RenameProfilePage(RewardElement,Page):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 500, 147)
-    OK_BB = BoundingBox(293, 106, 91, 26)
-    TEXT_BB = BoundingBox(400, 74, 86, 22)
-    CANCEL_BB = BoundingBox(394, 106, 92, 27)
-    CLOSE_WINDOW_BB = BoundingBox(459, 0, 41, 37)
-
+    WINDOW_BB = BoundingBox(0, 0, 498, 111)
+    OK_BB = BoundingBox(293, 70, 91, 26)
+    TEXT_BB = BoundingBox(400, 38, 86, 22)
+    CANCEL_BB = BoundingBox(394, 70, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -39,7 +37,6 @@ class RenameProfilePage(RewardElement,Page):
         self.text_button: Button = Button(self.TEXT_BB,self.set_current_field_string())
         self.ok_button: Button = Button(self.OK_BB, self.rename_profile())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
-        self.close_window_button: Button = Button(self.CLOSE_WINDOW_BB, self.close())
     
     @property
     def reward_template(self):
@@ -55,8 +52,6 @@ class RenameProfilePage(RewardElement,Page):
             self.ok_button.handle_click(click_position)
         elif(self.cancel_button.is_clicked_by(click_position)):
             self.cancel_button.handle_click(click_position)
-        elif(self.close_window_button.is_clicked_by(click_position)):
-            self.close_window_button.handle_click(click_position)
 
     def close(self):
         self.get_state()[0] = 0

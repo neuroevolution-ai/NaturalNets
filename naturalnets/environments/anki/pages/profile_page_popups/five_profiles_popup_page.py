@@ -9,11 +9,15 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class FiveProfilesPopupPage(Page,RewardElement):
 
+    """
+    State description:
+        state[0]: if this window is open  
+    """
+    
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_profiles_popup.png")
-    WINDOW_BB = BoundingBox(0, 0, 319, 146)
-    OK_BB = BoundingBox(212, 105, 92, 26)
-    CLOSE_WINDOW_BB = BoundingBox(278, 0, 41, 28)
+    WINDOW_BB = BoundingBox(0, 0, 317, 121)
+    OK_BB = BoundingBox(212, 80, 92, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -25,8 +29,6 @@ class FiveProfilesPopupPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.ok_button = Button(self.OK_BB,self.close())
-        self.close_button = Button(self.CLOSE_WINDOW_BB,self.close())
-
         self.add_widgets([self.ok_button,self.close_button])
     
     @property
@@ -38,8 +40,6 @@ class FiveProfilesPopupPage(Page,RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if(self.ok_button.is_clicked_by(click_position)):
             self.ok_button.handle_click(click_position)
-        elif(self.close_button.is_clicked_by(click_position)):
-            self.close_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1

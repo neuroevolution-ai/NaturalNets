@@ -15,15 +15,14 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class ResetCollection(Page, RewardElement):
+class ResetCollectionPopup(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"reset_collection.png")
 
-    BOUNDING_BOX = BoundingBox(0, 0, 400, 146)
+    BOUNDING_BOX = BoundingBox(0, 0, 400, 120)
     YES_BUTTON_BB = BoundingBox(194, 106, 90, 26)
     NO_BUTTON_BB = BoundingBox(296, 106, 90, 26)
-    EXIT_BUTTON_BB = BoundingBox(362, 0, 38, 28)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
@@ -31,11 +30,10 @@ class ResetCollection(Page, RewardElement):
    
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all())
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(ResetCollection, cls).__new__(cls)
+            cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
         return cls.instance
     
     @property
@@ -50,8 +48,6 @@ class ResetCollection(Page, RewardElement):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1

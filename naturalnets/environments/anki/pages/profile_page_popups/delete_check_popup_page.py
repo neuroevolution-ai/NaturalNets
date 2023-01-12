@@ -12,14 +12,14 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class DeleteCheckPopupPage(Page,RewardElement):
     """
-    STATE_LEN describes if the popup is open
+    State description:
+        state[0]: if this window is open  
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 0, 530, 135)
+    BOUNDING_BOX = BoundingBox(0, 0, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_check_popup.png")
-    YES_BUTTON_BB = BoundingBox(335, 97, 87, 24)
-    NO_BUTTON_BB = BoundingBox(430, 97, 87, 24)
-    EXIT_BUTTON_BB = BoundingBox(491, 0, 39, 29)
+    YES_BUTTON_BB = BoundingBox(335, 75, 87, 24)
+    NO_BUTTON_BB = BoundingBox(430, 75, 87, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -33,9 +33,8 @@ class DeleteCheckPopupPage(Page,RewardElement):
         self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile())
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
 
-        self.add_widgets([self.at_least_one_profile_popup,self.yes_button,self.no_button,self.exit_button])
+        self.add_widgets([self.at_least_one_profile_popup,self.yes_button,self.no_button])
 
     @property
     def reward_template(self):
@@ -45,9 +44,7 @@ class DeleteCheckPopupPage(Page,RewardElement):
 
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.yes_button.is_clicked_by(click_position):
+        if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)

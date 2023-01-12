@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from add_deck_popup_page import AddDeckPopupPage
+from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from study_window_page import StudyWindowPage
@@ -13,20 +13,21 @@ from naturalnets.environments.gui_app.widgets.button import Button
 class ChooseDeckStudyPage(Page,RewardElement):
 
     """
-    STATE_LEN is composed of if this window is open and of the 5 indexes
+    State description:
+            state[0]: if this window is open
+            state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
     """
 
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 501, 411)
-    STUDY_BB = BoundingBox(91, 372, 91, 26)
-    ADD_BB = BoundingBox(192, 372, 91, 26)
-    CANCEL_BB = BoundingBox(293, 372, 91, 26)
-    HELP_BB = BoundingBox(395, 372, 91, 26)
-    CLOSE_BB = BoundingBox(459, 0, 42, 38)
+    WINDOW_BB = BoundingBox(0, 0, 498, 374)
+    STUDY_BB = BoundingBox(91, 334, 91, 26)
+    ADD_BB = BoundingBox(192, 334, 91, 26)
+    CANCEL_BB = BoundingBox(293, 334, 91, 26)
+    HELP_BB = BoundingBox(395, 334, 91, 26)
 
-    DECK_BB = BoundingBox(15, 82 ,472 ,110)
+    DECK_BB = BoundingBox(13, 45 ,471 ,280)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -49,16 +50,16 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.add_button: Button = Button(self.ADD_BB,self.add_deck_popup.open())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
         self.help_button: Button = Button(self.HELP_BB, self.help())
-        self.close_button: Button = Button(self.CLOSE_BB, self.close())
 
-        self.add_widgets([self.study_button,self.add_button,self.cancel_button,self.help_button,self.close_button])
+        self.add_widgets([self.study_button,self.add_button,self.cancel_button,self.help_button])
     
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
             "index": [0, 1, 2, 3, 4],
-            "help": "clicked"
+            "help": 0,
+            "study": 0,
         }
     
     def open(self):
@@ -71,30 +72,30 @@ class ChooseDeckStudyPage(Page,RewardElement):
     
     def help(self):
         print("Led to external website")
-        self.register_selected_reward(["help","clicked"])
+        self.register_selected_reward(["help"])
 
     def is_open(self) -> int:
         return self.get_state()[0]
 
     def change_current_deck_index(self,click_point:np.ndarray):
         # Items have size (469,22)
-        # Box containing the items has size (472,110)
-        # Top left corner (15,82)
+        # Box containing the items has size (471,280)
+        # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
+            self.register_selected_reward(["index", f"{self.current_index}"])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (15,82)
+       upper_left_point = (13,45)
        length = 22 * DeckDatabase().decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 469, length)
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 471, length)
        return current_bounding_box
 
     def study_deck(self):
         if(self.current_index is not None):
             DeckDatabase().current_deck = DeckDatabase().decks[self.current_index]
-            self.register_selected_reward(["index", f"{self.current_index}"])
             self.study_window_page.open()
             self.close()
     

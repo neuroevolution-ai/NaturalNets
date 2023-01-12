@@ -8,13 +8,15 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 
 class AboutPage(Page,RewardElement):
     """
-    STATE_LEN specifies whether this window is open or not
+    Page informing about contributors of the app
+        State description:
+            state[0]: Whether this window is open or not
+
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(0, 0, 1002, 869)
-    OK_BUTTON_BB = BoundingBox(797, 840, 91, 24)
-    COPY_DEBUG_INFO_BUTTON_BB = BoundingBox(898, 840, 101, 26)
-    EXIT_BUTTON_BB = BoundingBox(960, 0, 42, 37)
+    WINDOW_BB = BoundingBox(0, 0, 500, 416)
+    OK_BUTTON_BB = BoundingBox(399, 402, 46, 14)
+    COPY_DEBUG_INFO_BUTTON_BB = BoundingBox(449, 402, 51, 14)
 
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
 
@@ -29,27 +31,24 @@ class AboutPage(Page,RewardElement):
         
         self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info())
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB, self.close())
-        self.add_widgets([self.ok_button,self.exit_button])
+        self.add_widgets([self.ok_button])
 
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "copy_debug_info": "copied"
+            "copy_debug_info": 0
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-        elif self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
         elif self.copy_debug_info_button.is_clicked_by(click_position):
             self.copy_debug_info_button.handle_click(click_position)
 
     def debug_info(self):
         print("Copy debug info to the clipboard")
-        self.register_selected_reward(["copy_debug_info","copied"])
+        self.register_selected_reward(["copy_debug_info"])
 
     def open(self):
         self.get_state()[0] = 1

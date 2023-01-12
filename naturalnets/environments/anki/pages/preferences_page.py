@@ -1,10 +1,12 @@
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 
 
 class PreferencesPage(RewardElement,Page):
-    ""
 
+    WINDOW_BB = BoundingBox(0, 0, 798, 601)
+    
     def open(self):
         self.get_state()[0] = 1
     

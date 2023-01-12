@@ -14,10 +14,9 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
-    WINDOW_BB = BoundingBox(0, 0, 318, 145)
+    WINDOW_BB = BoundingBox(0, 0, 318, 121)
     
-    EXIT_BUTTON_BB = BoundingBox(276, 0, 42, 31)
-    OK_BUTTON_BB = BoundingBox(212, 105, 91, 26)
+    OK_BUTTON_BB = BoundingBox(212, 81, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -27,11 +26,10 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
-        self.exit_button: Button = Button(self.EXIT_BUTTON_BB,self.close())
+        
         self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close())
+        self.add_widgets([self.ok_button])
 
-        self.add_widgets([self.exit_button,self.ok_button])
     @property
     def reward_template(self):
         return {
@@ -39,9 +37,7 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
         }
     
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.exit_button.is_clicked_by(click_position):
-            self.exit_button.handle_click(click_position)
-        elif self.ok_button.is_clicked_by(click_position):
+        if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
 
     def open(self):

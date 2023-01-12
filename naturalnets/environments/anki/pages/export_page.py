@@ -15,18 +15,19 @@ from naturalnets.environments.anki.deck import DeckDatabase
 class ExportPage(Page,RewardElement):
     
     """
-    STATE_LEN is composed of 2 bits. One whether the window is open and one whether the dropdown is open 
+    State description:
+            state[0]: if this window is open
+            state[1]: if the dropdown is open 
     """
     
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "export_page.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 382, 317)
-    INCLUDE_DD_BB = BoundingBox(146, 83, 222, 24)
-    HTML_CHECKBOX_BB = BoundingBox(14, 117, 16, 16)
-    EXPORT_BB = BoundingBox(174, 276, 91, 26)
-    CANCEL_BB = BoundingBox(276, 276, 91, 26)
-    CLOSE_WINDOW_BB = BoundingBox(325, 0, 57, 39)
+    WINDOW_BB = BoundingBox(0, 0, 382, 278)
+    INCLUDE_DD_BB = BoundingBox(146, 45, 222, 24)
+    HTML_CHECKBOX_BB = BoundingBox(13, 79, 16, 16)
+    EXPORT_BB = BoundingBox(174, 237, 91, 26)
+    CANCEL_BB = BoundingBox(273, 237, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -45,16 +46,15 @@ class ExportPage(Page,RewardElement):
         self.html_checkbox = CheckBox(self.HTML_CHECKBOX_BB)
         self.export_button = Button(self.EXPORT_BB, self.export_deck())
         self.cancel_button = Button(self.CANCEL_BB, self.close())
-        self.close_window_button = Button(self.CLOSE_WINDOW_BB, self.close())
 
         self.add_widgets([self.include_dropdown,self.html_checkbox,self.export_button,
-            self.cancel_button,self.close_window_button])
+            self.cancel_button])
 
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "exported": "true"
+            "exported": 0
         }
  
     def handle_click(self,click_position: np.ndarray):
@@ -66,8 +66,6 @@ class ExportPage(Page,RewardElement):
             self.export_button.handle_click(click_position)
         elif(self.cancel_button.is_clicked_by(click_position)):
             self.cancel_button.handle_click(click_position)
-        elif(self.close_window_button.is_clicked_by(click_position)):
-            self.close_window_button.handle_click(click_position)
 
     def open(self):
         self.get_state()[0] = 1
@@ -81,8 +79,8 @@ class ExportPage(Page,RewardElement):
         return self.get_state()[0]
 
     def reset_current_deck(self):
-        self.include_dropdown.set_selected_item(self.include_dropdown.get_all_items())
+        self.include_dropdown.set_selected_item(self.include_dropdown.get_all_items()[0])
 
     def export_deck(self):
-        self.register_selected_reward(["exported","true"])
+        self.register_selected_reward(["exported"])
         DeckDatabase().export_deck(self.include_dropdown.get_selected_item().get_value())

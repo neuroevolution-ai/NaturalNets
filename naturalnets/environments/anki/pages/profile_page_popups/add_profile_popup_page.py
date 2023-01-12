@@ -14,16 +14,17 @@ from naturalnets.environments.gui_app.widgets.button import Button
 class AddProfilePopupPage(Page,RewardElement):
 
     """
-    STATE_LEN is composed of the states if this window is open and if the text field is filled
+    State description:
+        state[0]: if this popup is open
+        state[1]: if the text field is filled
     """
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 500, 147)
-    OK_BB = BoundingBox(293, 106, 91, 26)
-    TEXT_BB = BoundingBox(400, 74, 86, 22)
-    CANCEL_BB = BoundingBox(394, 106, 92, 27)
-    CLOSE_WINDOW_BB = BoundingBox(459, 0, 41, 37)
+    WINDOW_BB = BoundingBox(0, 0, 500, 111)
+    OK_BB = BoundingBox(292, 70, 91, 26)
+    TEXT_BB = BoundingBox(400, 38, 86, 22)
+    CANCEL_BB = BoundingBox(393, 70, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

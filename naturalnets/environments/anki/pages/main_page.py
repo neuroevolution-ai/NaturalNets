@@ -19,22 +19,21 @@ class MainPage(Page,RewardElement):
     STATE_LEN = 9
     IMG_PATH = os.path.join(IMAGES_PATH, "main_page.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 831, 750)
-    DECKS_BB = BoundingBox(194, 155, 458, 150)
+    WINDOW_BB = BoundingBox(0, 0, 831, 710)
+    DECKS_BB = BoundingBox(194, 115, 458, 150)
     
-    GET_SHARED_BB = BoundingBox(272, 700, 93, 27)
-    CREATE_DECK_BB = BoundingBox(369, 700, 93, 27)
-    IMPORT_FILE_BB = BoundingBox(473, 700, 93, 27)
+    GET_SHARED_BB = BoundingBox(272, 660, 93, 27)
+    CREATE_DECK_BB = BoundingBox(369, 660, 93, 27)
+    IMPORT_FILE_BB = BoundingBox(473, 660, 93, 27)
     
-    DECKS_BB = BoundingBox(236, 68, 56, 29)
-    ADD_BB = BoundingBox(310, 68, 46, 29)
-    SYNC_BB = BoundingBox(524, 68, 54, 29)
+    DECKS_BB = BoundingBox(236, 28, 56, 29)
+    ADD_BB = BoundingBox(310, 28, 46, 29)
+    SYNC_BB = BoundingBox(524, 28, 54, 29)
     
-    FILE_DROPDOWN_BB = BoundingBox(0, 41, 43, 23)
-    EDIT_DROPDOWN_BB = BoundingBox(43, 41, 47, 23)
-    TOOLS_DROPDOWN_BB = BoundingBox(90, 41, 53, 23)
-    HELP_DROPDOWN_BB = BoundingBox(143, 41, 50, 23)
-    CLOSE_WINDOW_BB = BoundingBox(777, 0, 54, 34)
+    FILE_DROPDOWN_BB = BoundingBox(0, 0, 43, 23)
+    EDIT_DROPDOWN_BB = BoundingBox(43, 0, 47, 23)
+    TOOLS_DROPDOWN_BB = BoundingBox(90, 0, 53, 23)
+    HELP_DROPDOWN_BB = BoundingBox(143, 0, 50, 23)
 
 
     def __new__(cls):
@@ -81,5 +80,4 @@ class MainPage(Page,RewardElement):
 
     def exit_app(self):
         self.profile_page.open()
-        self.profile_page.reset_all()
         self.close()
