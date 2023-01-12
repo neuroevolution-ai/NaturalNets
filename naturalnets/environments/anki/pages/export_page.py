@@ -23,11 +23,11 @@ class ExportPage(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "export_page.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 382, 278)
-    INCLUDE_DD_BB = BoundingBox(146, 45, 222, 24)
-    HTML_CHECKBOX_BB = BoundingBox(13, 79, 16, 16)
-    EXPORT_BB = BoundingBox(174, 237, 91, 26)
-    CANCEL_BB = BoundingBox(273, 237, 91, 26)
+    WINDOW_BB = BoundingBox(100, 100, 382, 278)
+    INCLUDE_DD_BB = BoundingBox(246, 145, 222, 24)
+    HTML_CHECKBOX_BB = BoundingBox(113, 179, 16, 16)
+    EXPORT_BB = BoundingBox(274, 337, 91, 26)
+    CANCEL_BB = BoundingBox(373, 337, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

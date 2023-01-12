@@ -18,11 +18,11 @@ class EditCardPage(RewardElement,Page):
     IMG_PATH = os.path.join(IMAGES_PATH, "edit_card.png")
     STATE_LEN = 1
 
-    WINDOW_BB = BoundingBox(0, 0, 499, 500)
-    FRONT_TEXT_BB = BoundingBox(387, 151, 91, 27)
-    BACK_TEXT_BB = BoundingBox(388, 227, 91, 27)
-    TAGS_TEXT_BB = BoundingBox(391, 423, 88, 22)
-    CLOSE_BB = BoundingBox(392, 458, 91, 27)
+    WINDOW_BB = BoundingBox(50, 50, 499, 500)
+    FRONT_TEXT_BB = BoundingBox(437, 201, 91, 27)
+    BACK_TEXT_BB = BoundingBox(438, 277, 91, 27)
+    TAGS_TEXT_BB = BoundingBox(441, 473, 88, 22)
+    CLOSE_BB = BoundingBox(442, 508, 91, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

@@ -21,10 +21,10 @@ class AddProfilePopupPage(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 500, 111)
-    OK_BB = BoundingBox(292, 70, 91, 26)
-    TEXT_BB = BoundingBox(400, 38, 86, 22)
-    CANCEL_BB = BoundingBox(393, 70, 92, 27)
+    WINDOW_BB = BoundingBox(30, 200, 500, 111)
+    OK_BB = BoundingBox(322, 270, 91, 26)
+    TEXT_BB = BoundingBox(440, 238, 86, 22)
+    CANCEL_BB = BoundingBox(423, 270, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

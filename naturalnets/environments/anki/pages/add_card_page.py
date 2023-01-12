@@ -21,13 +21,13 @@ class AddCardPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "add_card.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 566, 456)
-    SELECT_BB = BoundingBox(326, 10, 223, 26)
-    FRONT_TEXT_BB = BoundingBox(453, 178, 91, 26)
-    BACK_TEXT_BB = BoundingBox(453, 256, 91, 26)
-    TAGS_TEXT_BB = BoundingBox(461, 379, 87, 21)
-    CLOSE_BB = BoundingBox(356, 415, 91, 26)
-    ADD_BB = BoundingBox(156, 415, 91, 26)
+    WINDOW_BB = BoundingBox(50, 50, 566, 456)
+    SELECT_BB = BoundingBox(376, 60, 223, 26)
+    FRONT_TEXT_BB = BoundingBox(503, 228, 91, 26)
+    BACK_TEXT_BB = BoundingBox(503, 306, 91, 26)
+    TAGS_TEXT_BB = BoundingBox(511, 429, 87, 21)
+    CLOSE_BB = BoundingBox(406, 465, 91, 26)
+    ADD_BB = BoundingBox(206, 465, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

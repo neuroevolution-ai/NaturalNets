@@ -15,9 +15,9 @@ class DowngradePopupPage(Page, RewardElement):
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 0, 472, 121)
+    BOUNDING_BOX = BoundingBox(30, 200, 472, 121)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(365, 80, 91, 26)
+    OK_BUTTON_BB = BoundingBox(395, 280, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

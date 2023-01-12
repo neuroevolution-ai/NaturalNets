@@ -17,11 +17,11 @@ class AnkiLoginPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 278, 281)
-    USERNAME_BB = BoundingBox(24, 84, 91, 26)
-    PASSWORD_BB = BoundingBox(149, 84, 91, 26)
-    OK_BB = BoundingBox(70, 207, 91, 26)
-    CANCEL_BB = BoundingBox(171, 207, 91, 26)
+    WINDOW_BB = BoundingBox(200, 200, 278, 281)
+    USERNAME_BB = BoundingBox(224, 284, 91, 26)
+    PASSWORD_BB = BoundingBox(349, 284, 91, 26)
+    OK_BB = BoundingBox(270, 407, 91, 26)
+    CANCEL_BB = BoundingBox(371, 407, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

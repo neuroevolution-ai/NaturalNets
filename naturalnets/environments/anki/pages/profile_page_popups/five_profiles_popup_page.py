@@ -16,8 +16,8 @@ class FiveProfilesPopupPage(Page,RewardElement):
     
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_profiles_popup.png")
-    WINDOW_BB = BoundingBox(0, 0, 317, 121)
-    OK_BB = BoundingBox(212, 80, 92, 26)
+    WINDOW_BB = BoundingBox(30, 200, 317, 121)
+    OK_BB = BoundingBox(242, 280, 92, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

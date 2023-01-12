@@ -17,10 +17,10 @@ class RenameProfilePage(RewardElement,Page):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 498, 111)
-    OK_BB = BoundingBox(293, 70, 91, 26)
-    TEXT_BB = BoundingBox(400, 38, 86, 22)
-    CANCEL_BB = BoundingBox(394, 70, 92, 27)
+    WINDOW_BB = BoundingBox(30, 200, 498, 111)
+    OK_BB = BoundingBox(323, 270, 91, 26)
+    TEXT_BB = BoundingBox(430, 238, 86, 22)
+    CANCEL_BB = BoundingBox(424, 270, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

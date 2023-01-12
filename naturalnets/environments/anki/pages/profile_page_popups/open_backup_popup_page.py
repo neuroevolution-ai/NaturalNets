@@ -20,9 +20,9 @@ class OpenBackupPopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
 
-    BOUNDING_BOX = BoundingBox(0, 0, 400, 121)
-    YES_BUTTON_BB = BoundingBox(193, 80, 90, 26)
-    NO_BUTTON_BB = BoundingBox(296, 80, 90, 26)
+    BOUNDING_BOX = BoundingBox(30, 200, 400, 121)
+    YES_BUTTON_BB = BoundingBox(223, 280, 90, 26)
+    NO_BUTTON_BB = BoundingBox(326, 280, 90, 26)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)

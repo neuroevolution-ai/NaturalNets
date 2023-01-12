@@ -18,9 +18,9 @@ from naturalnets.environments.gui_app.widgets.button import Button
 class ResetCollectionPopup(Page, RewardElement):
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH,"reset_collection.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection.png")
 
-    BOUNDING_BOX = BoundingBox(0, 0, 400, 120)
+    BOUNDING_BOX = BoundingBox(20, 20, 400, 120)
     YES_BUTTON_BB = BoundingBox(194, 106, 90, 26)
     NO_BUTTON_BB = BoundingBox(296, 106, 90, 26)
 

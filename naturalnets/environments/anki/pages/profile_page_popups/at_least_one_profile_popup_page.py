@@ -14,9 +14,9 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
-    WINDOW_BB = BoundingBox(0, 0, 318, 121)
+    WINDOW_BB = BoundingBox(30, 200, 318, 121)
     
-    OK_BUTTON_BB = BoundingBox(212, 81, 91, 26)
+    OK_BUTTON_BB = BoundingBox(242, 281, 91, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

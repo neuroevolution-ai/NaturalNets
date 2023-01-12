@@ -18,10 +18,10 @@ class AddDeckPopupPage(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_deck_popup.png")
     
-    WINDOW_BB = BoundingBox(0, 0, 498, 109)
-    OK_BB = BoundingBox(293, 70, 91, 26)
-    TEXT_BB = BoundingBox(398, 38, 86, 22)
-    CANCEL_BB = BoundingBox(393, 70, 92, 27)
+    WINDOW_BB = BoundingBox(230, 260, 498, 109)
+    OK_BB = BoundingBox(523, 330, 91, 26)
+    TEXT_BB = BoundingBox(628, 298, 86, 22)
+    CANCEL_BB = BoundingBox(623, 330, 92, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

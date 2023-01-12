@@ -19,12 +19,12 @@ class ChooseDeckPage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 498, 375)
-    CHOOSE_BB = BoundingBox(190, 335, 91, 27)
-    ADD_BB = BoundingBox(291, 335, 91, 27)
-    HELP_BB = BoundingBox(393, 335, 91, 27)
+    WINDOW_BB = BoundingBox(20, 20, 498, 375)
+    CHOOSE_BB = BoundingBox(210, 355, 91, 27)
+    ADD_BB = BoundingBox(311, 355, 91, 27)
+    HELP_BB = BoundingBox(413, 355, 91, 27)
 
-    DECK_BB = BoundingBox(13,45,472,280)
+    DECK_BB = BoundingBox(33,65,472,280)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

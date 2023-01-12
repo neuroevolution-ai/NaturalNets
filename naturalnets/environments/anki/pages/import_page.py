@@ -19,12 +19,12 @@ class ImportPage(Page,RewardElement):
     STATE_LEN = 3
     IMG_PATH = os.path.join(IMAGES_PATH, "import.png")
 
-    WINDOW_BB = BoundingBox(0,0,689,584)
-    SELECT_DECK_BB = BoundingBox(385,42,277,27)
-    HTML_BB = BoundingBox(24,149,16,16)
-    IMPORT_BB = BoundingBox(382,542,92,27)
-    CLOSE_BB = BoundingBox(484,542,92,27)
-    HELP_BB = BoundingBox(584,542,92,27)
+    WINDOW_BB = BoundingBox(20,20,689,584)
+    SELECT_DECK_BB = BoundingBox(405,62,277,27)
+    HTML_BB = BoundingBox(44,169,16,16)
+    IMPORT_BB = BoundingBox(402,562,92,27)
+    CLOSE_BB = BoundingBox(504,562,92,27)
+    HELP_BB = BoundingBox(604,562,92,27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

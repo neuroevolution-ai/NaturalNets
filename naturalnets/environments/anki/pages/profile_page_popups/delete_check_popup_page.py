@@ -16,7 +16,7 @@ class DeleteCheckPopupPage(Page,RewardElement):
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 0, 530, 113)
+    BOUNDING_BOX = BoundingBox(35, 210, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_check_popup.png")
     YES_BUTTON_BB = BoundingBox(335, 75, 87, 24)
     NO_BUTTON_BB = BoundingBox(430, 75, 87, 24)

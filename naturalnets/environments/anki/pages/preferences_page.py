@@ -5,7 +5,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 
 class PreferencesPage(RewardElement,Page):
 
-    WINDOW_BB = BoundingBox(0, 0, 798, 601)
+    WINDOW_BB = BoundingBox(10, 10, 798, 601)
     
     def open(self):
         self.get_state()[0] = 1
