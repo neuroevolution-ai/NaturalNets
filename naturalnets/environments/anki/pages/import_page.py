@@ -13,10 +13,11 @@ from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.anki.deck import DeckDatabase, Deck
 class ImportPage(Page,RewardElement):
     """
-    STATE_LEN is composed of if this window is open, 
-    if choose deck is open and if the checkbox is selected
+    State description:
+            state[0]: if this window is open
+            state[i]: i-th item is selected i = {1,2,3}  
     """
-    STATE_LEN = 3
+    STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "import.png")
 
     WINDOW_BB = BoundingBox(20,20,689,584)

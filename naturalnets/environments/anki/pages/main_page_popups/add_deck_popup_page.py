@@ -66,6 +66,9 @@ class AddDeckPopupPage(Page,RewardElement):
         self.current_field_string = self.secure_random.random(DeckDatabase().deck_names)
         self.register_selected_reward(["deck_name_clipboard"])
 
+    def is_open(self):
+        return self.get_state()[0]
+    
     def add_deck(self):
         if (self.current_field_string is None):
             return

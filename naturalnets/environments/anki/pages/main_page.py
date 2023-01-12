@@ -5,11 +5,12 @@ import numpy as np
 from add_card_page import AddCardPage
 from anki_login_page import AnkiLoginPage
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
+from reset_collection_popup import ResetCollectionPopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.widgets.button import Button
 from study_page import StudyPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.anki.anki_account import AnkiAccountDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text
@@ -23,10 +24,13 @@ from export_page import ExportPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from about_page import AboutPage
 
-anki_account_database = AnkiAccountDatabase()
-
 class MainPage(Page,RewardElement):
     
+    """
+    State description:
+            state[i]: if this window is open i = {0,1,2,3,4}
+            state[j]: i-th item is selected j = {5,6,7,8}  
+    """
     STATE_LEN = 9
     IMG_PATH = os.path.join(IMAGES_PATH, "main_page.png")
 
@@ -73,10 +77,10 @@ class MainPage(Page,RewardElement):
         self.check_media_page,self.preferences_page,self.study_page,self.about_page,self.add_card_page,
         self.anki_login,self.add_deck_popup_page])
 
-        switch_profile_ddi = DropdownItem(self.switch_profile(), "Switch Profile")
+        switch_profile_ddi = DropdownItem(self.profile_page.open(), "Switch Profile")
         import_ddi = DropdownItem(self.import_page.open(), "Import")
         export_ddi = DropdownItem(self.export_page.open(), "Export")
-        exit_ddi = DropdownItem(self.exit_app(), "Exit")
+        exit_ddi = DropdownItem(self.reset(), "Exit")
 
         self.study_deck_ddi = DropdownItem(self.choose_deck_study_page.open(), "Study Deck")
         self.check_media_ddi = DropdownItem(self.check_media_page.open(), "Check Media")
@@ -84,7 +88,7 @@ class MainPage(Page,RewardElement):
 
         self.guide_ddi = DropdownItem(None, "Guide")
         self.support_ddi = DropdownItem(None, "Support")
-        self.about_ddi = DropdownItem(self.about_page, "About Page")
+        self.about_ddi = DropdownItem(self.about_page.open(), "About Page")
 
         self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB,[switch_profile_ddi,import_ddi,export_ddi,exit_ddi])
         self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB,[])
@@ -92,28 +96,36 @@ class MainPage(Page,RewardElement):
         self.help_dropdown = Dropdown(self.HELP_DROPDOWN_BB,[self.guide_ddi,self.support_ddi,self.about_ddi])
         self.dropdowns: List[Dropdown] = [self.file_dropdown, self.edit_dropdown, self.tools_dropdown, self.help_dropdown]
         
+        self.opened_dd: Dropdown = None
         self.add_widgets(self.dropdowns)
 
-        self.study_button: Button = Button(self.STUDY_BB, self.study_page.open())
-        self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card_page.open())
-        self.sync_button:  Button = Button(self.SYNC_BB, self.anki_login.open())
-        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.register_selected_reward(["get_shared"]))
-        self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.add_deck_popup_page.open())
-        self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.open_import_page())
+        self.study_button: Button = Button(self.STUDY_BB, {self.study_page.open(), self.register_selected_reward(["study_button"])} )
+        self.add_card_button: Button = Button(self.ADD_CARD_BB, {self.add_card_page.open(), self.register_selected_reward(["add_card_button"])})
+        self.sync_button:  Button = Button(self.SYNC_BB,{self.anki_login.open(), self.register_selected_reward(["anki_login"])})
+        self.get_shared_button: Button = Button(self.GET_SHARED_BB, {self.register_selected_reward(["get_shared"])})
+        self.create_deck_button: Button = Button(self.CREATE_DECK_BB, {self.add_deck_popup_page.open(), self.register_selected_reward(["create_deck_button"])})
+        self.import_file_button: Button = Button(self.IMPORT_FILE_BB, {self.import_page.open(), self.register_selected_reward(["import_file"])})
 
         self.add_widgets([self.study_button,self.add_card_button,self.sync_button,
         self.get_shared_button,self.create_deck_button,self.import_file_button])
 
+        self.dropdowns_to_str = {
+            self.file_dropdown: "file_dropdown",
+            self.edit_dropdown: "edit_dropdown",
+            self.tools_dropdown: "tools_dropdown",
+            self.help_dropdown: "help"
+        }
+
     @property
     def reward_template(self):
         return {
-            "add_card": ["open", "close"],
-            "anki_login": ["open","close"],
-            "study_button": "clicked",
+            "add_card_button": 0,
+            "anki_login": 0,
+            "study_button": 0,
             "decks": [0, 1, 2, 3, 4],
             "get_shared": 0,
-            "create_deck": "open",
-            "import_file": "open",
+            "create_deck_button": 0,
+            "import_file": 0,
             "file_dropdown": {
                 "opened": 0,
                 "selected": [ddi.display_name for ddi in self.file_dropdown.get_all_items()]
@@ -130,18 +142,69 @@ class MainPage(Page,RewardElement):
                 "selected": [ddi.display_name for ddi in self.help_dropdown.get_all_items()]
             }
         }
+    def get_dropdown_index(self):
+        for i,dropdown in self.dropdowns:
+            if dropdown.get_current_value() == self.opened_dd:
+                return i
 
-    def handle_click(self,click_position: np.ndarray):
-        ""
 
+    def handle_click(self, click_position: np.ndarray):
+        if self.opened_dd is not None:
+            self.opened_dd.handle_click(click_position)
+            current_value = self.opened_dd.get_current_value()
+            self.register_selected_reward([self.dropdowns_to_str[self.opened_dd], "selected", current_value])
+            self.opened_dd = None
+        
+        for dropdown in self.dropdowns:
+            if dropdown.is_clicked_by(click_position):
+                self.get_state()[5 + self.get_dropdown_index()] = 0
+                dropdown.handle_click(click_position)
+                if dropdown.is_open():
+                    self.opened_dd = dropdown
+                    self.get_state()[5 + self.get_dropdown_index()] = 1
+                    self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
+
+            return
+        
+        if (self.profile_page.is_open()):
+            self.profile_page.handle_click(click_position)
+        elif (self.import_page.is_open()):
+            self.import_page.handle_click(click_position)
+        elif (self.export_page.is_open()):
+            self.export_page.handle_click(click_position)
+        elif (self.choose_deck_study_page.is_open()):
+            self.choose_deck_study_page.handle_click(click_position)
+        elif (self.check_media_page.is_open()):
+            self.check_media_page.handle_click(click_position)
+        elif (self.preferences_page.is_open()):
+            self.preferences_page.handle_click(click_position)
+        elif (self.study_page.is_open()):
+            self.study_page.handle_click(click_position)
+        elif (self.about_page.is_open()):
+            self.about_page.handle_click(click_position)
+        elif (self.add_card_page.is_open()):
+            self.add_card_page.handle_click(click_position)
+        elif (self.anki_login.is_open()):
+            self.anki_login.handle_click(click_position)
+        elif (self.add_deck_popup_page.is_open()):    
+            self.add_deck_popup_page.handle_click(click_position)
+        elif (self.DECKS_BB.is_point_inside(click_position)):
+            self.change_current_deck_index(click_position)
+        for widget in self.widgets:
+            if (widget.is_clicked_by(click_position)):
+                widget.handle_click(click_position)
+                return
+        
     def change_current_deck_index(self,click_point:np.ndarray):
         # Items have size (458,30)
         # Top left corner (141,275)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = click_point[1] / 30
+            self.get_state()[DeckDatabase().current_index] = 0
             DeckDatabase().current_deck = DeckDatabase().decks[click_index]
-            self.register_selected_reward(["index", click_index])
+            self.get_state()[click_index] = 1
+            self.register_selected_reward(["decks", click_index])
 
     def calculate_current_bounding_box(self):
        upper_left_point = (141,275)
@@ -158,21 +221,33 @@ class MainPage(Page,RewardElement):
     def is_open(self):
         return self.get_state()[0]
 
-    def switch_profile(self):
-        self.profile_page.open()
-
-    def exit_app(self):
-        self.profile_page.open()
-        self.close()
-
     def render(self,img: np.ndarray):
         img = super().render(img)
         put_text(img, DeckDatabase().current_deck.name, (326,122), font_scale = 0.3)
+        for i, deck in enumerate(DeckDatabase().decks):
+            put_text(img, deck.name, (142,424 - i * 30),font_scale=0.3)
+        if (self.profile_page.is_open()):
+            self.profile_page.render(img)
+        elif (self.import_page.is_open()):
+            self.import_page.render(img)
+        elif (self.export_page.is_open()):
+            self.export_page.render(img)
+        elif (self.choose_deck_study_page.is_open()):
+            self.choose_deck_study_page.render(img)
+        elif (self.check_media_page.is_open()):
+            self.check_media_page.render(img)
+        elif (self.preferences_page.is_open()):
+            self.preferences_page.render(img)
+        elif (self.study_page.is_open()):
+            self.study_page.render(img)
+        elif (self.about_page.is_open()):
+            self.about_page.render(img)
+        elif (self.add_card_page.is_open()):
+            self.add_card_page.render(img)
+        elif (self.anki_login.is_open()):
+            self.anki_login.render(img)
+        elif (self.add_deck_popup_page.is_open()):    
+            self.add_deck_popup_page.render(img)
 
-    def open_import_page(self):
-        self.import_page.open()
-        self.register_selected_reward(["import_file","open"])
-    
-    def create_deck_button(self):
-        self.add_deck_popup_page.open()
-        self.register_selected_reward(["create_deck","open"])
+    def reset(self):
+        ResetCollectionPopup().reset_all()
