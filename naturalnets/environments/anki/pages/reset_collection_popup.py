@@ -15,8 +15,11 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class ResetCollectionPopup(Page, RewardElement):
-
+class ResetCollectionPopupPage(Page, RewardElement):
+    """
+    State description:
+            state[0]: if this window is open
+    """
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection.png")
 
@@ -33,7 +36,7 @@ class ResetCollectionPopup(Page, RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
+            cls.instance = super(ResetCollectionPopupPage, cls).__new__(cls)
         return cls.instance
     
     @property

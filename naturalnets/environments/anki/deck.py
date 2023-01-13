@@ -11,6 +11,8 @@ class Deck():
         self.name = deck_name
         self.cards: List[Card] = []
         self.current_card: Card = None
+        self.study_index = 0
+        
     
     def is_duplicate(self,card: Card):
         for current_card in self.cards:
@@ -22,6 +24,14 @@ class Deck():
         if(not(self.is_duplicate(card))):
             self.cards.append(card)
         
+    def increment_study_index(self):
+        if(self.study_index < len(self.cards)):
+            self.study_index += 1 
+        elif(self.study_index == len(self.cards)):
+            self.study_index = 0
+    
+    def create_study(self):
+        self.study_deck = self.study_deck
 
 class DeckDatabase():
 

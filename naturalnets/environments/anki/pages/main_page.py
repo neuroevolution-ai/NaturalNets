@@ -5,8 +5,7 @@ import numpy as np
 from add_card_page import AddCardPage
 from anki_login_page import AnkiLoginPage
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
-from reset_collection_popup import ResetCollectionPopup
-from naturalnets.environments.anki.profile import ProfileDatabase
+from reset_collection_popup import ResetCollectionPopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from study_page import StudyPage
 from naturalnets.environments.gui_app.page import Page
@@ -252,4 +251,4 @@ class MainPage(Page,RewardElement):
         return img
 
     def reset(self):
-        ResetCollectionPopup().reset_all()
+        ResetCollectionPopupPage().reset_all()
