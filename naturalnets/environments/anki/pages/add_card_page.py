@@ -144,3 +144,5 @@ class AddCardPage(Page,RewardElement):
             put_text(img,f"{self.front_side_clipboard_temporary_string}", (80, 305) ,font_scale = 0.3)
         if (self.front_side_clipboard_temporary_string is not None):
             put_text(img,f"{self.front_side_clipboard_temporary_string}", (120, 445) ,font_scale = 0.3)
+        
+        return img

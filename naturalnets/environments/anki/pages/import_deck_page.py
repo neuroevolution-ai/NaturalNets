@@ -92,3 +92,5 @@ class ImportDeckPage(Page,RewardElement):
         bottom_index = 169 + 23 * len(DeckDatabase().decks)
         for i, deck in enumerate (DeckDatabase().decks):
             put_text(img, f" {deck.name}", (113, bottom_index - 23 * i),font_scale = 0.3)
+        
+        return img

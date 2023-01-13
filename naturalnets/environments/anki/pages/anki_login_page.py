@@ -109,3 +109,5 @@ class AnkiLoginPage(Page,RewardElement):
             put_text(img,f"{self.username_clipboard}", (300, 355) ,font_scale = 0.3)
         if(self.password_clipboard is not None):
             put_text(img,f"{self.password_clipboard}", (300, 385) ,font_scale = 0.3)
+        
+        return img

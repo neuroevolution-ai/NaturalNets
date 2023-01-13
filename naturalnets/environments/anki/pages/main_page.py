@@ -248,6 +248,8 @@ class MainPage(Page,RewardElement):
             self.anki_login.render(img)
         elif (self.add_deck_popup_page.is_open()):    
             self.add_deck_popup_page.render(img)
+        
+        return img
 
     def reset(self):
         ResetCollectionPopup().reset_all()

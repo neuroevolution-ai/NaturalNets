@@ -87,10 +87,12 @@ class EditCardPage(RewardElement,Page):
             self.register_selected_reward(["tags_field_modified"])
 
     def render(self,img: np.ndarray):
-        super().render(img)
+        img = super().render(img)
         if (DeckDatabase().current_deck.current_card.front is not None):
             put_text(img,f"{DeckDatabase().current_deck.current_card.front}", (80, 228) ,font_scale = 0.3)
         if (DeckDatabase().current_deck.current_card.back is not None):
             put_text(img,f"{DeckDatabase().current_deck.current_card.back}", (80, 305) ,font_scale = 0.3)
         if (DeckDatabase().current_deck.current_card.tag is not None):
             put_text(img,f"{DeckDatabase().current_deck.current_card.tag}", (120, 445) ,font_scale = 0.3)
+        
+        return img

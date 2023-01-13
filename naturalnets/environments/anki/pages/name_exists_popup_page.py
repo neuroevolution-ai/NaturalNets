@@ -6,7 +6,10 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class NameExistsPopupPage(Page,RewardElement):
-
+    """
+    State description:
+            state[0]: if this window is open 
+    """
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "name_exists_popup_page.png")
     WINDOW_BB = BoundingBox(300, 300, 175, 118)

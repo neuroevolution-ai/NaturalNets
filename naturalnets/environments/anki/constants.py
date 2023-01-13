@@ -21,3 +21,21 @@ class DeckImportName(Enum):
     DUTCH_NUMBERS = "Dutch numbers 0-100"
     ITALIAN_NUMBERS = "Italian numbers 0-100"
     GERMAN_NUMBERS = "German numbers 0-100"
+
+class AnkiLanguages(Enum):
+    ENGLISH = "English"
+    GERMAN = "German"
+    SPANISH = "Spanish"
+
+class VideoDriver(Enum):
+    OPENGL = "Video driver: OpenGL (faster, may cause issues)"
+    ANGLE = "Video driver: ANGLE (may work better than OpenGL)"
+    SOFTWARE = "Video driver: Software (slower)"
+
+class DeckAddType(Enum):
+    ADD_TO_CURRENT = "When adding, default to current deck"
+    CHANGE_DECK =  "Change deck depending on note type"
+
+class VoiceRecorder(Enum):
+    QT = "Voice recording driver: Qt"
+    PY_AUDIO = "Voice recording driver: PyAudio"

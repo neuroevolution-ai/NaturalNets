@@ -102,3 +102,5 @@ class ChooseDeckPage(Page,RewardElement):
         bottom_index = 107 + 23 * len(DeckDatabase().decks)
         for i, deck in enumerate (DeckDatabase().decks):
             put_text(img, f" {deck.name}", (16, bottom_index - 23 * i),font_scale = 0.3)
+        
+        return img

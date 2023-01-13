@@ -116,3 +116,5 @@ class ImportPage(Page,RewardElement):
             self.five_decks_popup.render()
         elif (self.name_exists_popup.get_state()[0]):
             self.name_exists_popup.render()
+        
+        return img
