@@ -5,7 +5,6 @@ from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text
-from pages.add_card_page import AddCardPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -45,7 +44,7 @@ class ChooseDeckPage(Page,RewardElement):
         self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck())
         self.help_button: Button = Button(self.HELP_BB, self.help())
 
-        self.add_widgets([self.add_button,self.choose_button,self.help_button])
+        self.add_widgets([self.add_button, self.choose_button, self.help_button])
 
     @property
     def reward_template(self):
@@ -73,7 +72,7 @@ class ChooseDeckPage(Page,RewardElement):
     def change_current_deck_index(self,click_point:np.ndarray):
         # Items have size (469,22)
         # Box containing the items has size (472,280)
-        # Top left corner (13,45)
+        # Top left corner (33,65)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = click_point[1]/22
@@ -81,14 +80,15 @@ class ChooseDeckPage(Page,RewardElement):
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (13,45)
+       upper_left_point = (33,65)
        length = 22 * DeckDatabase().decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 472, length)
        return current_bounding_box
 
     def choose_deck(self):
-        AddCardPage().set_current_deck(DeckDatabase().decks[self.current_index])
-        self.register_selected_reward(["index",f"{self.current_index}"])
+        DeckDatabase().set_current_index(self.current_index)
+        DeckDatabase().set_current_deck(DeckDatabase().decks[self.current_index])
+        self.register_selected_reward(["index", f"{self.current_index}"])
         for i in range(1,6):
             self.get_state()[i] = 0
         self.get_state()[self.current_index + 1] = 1
@@ -98,9 +98,7 @@ class ChooseDeckPage(Page,RewardElement):
     
     def render(self,img: np.ndarray):
         img = super().render(img)
-        # Items have size (469,13)
-        bottom_index = 107 + 23 * len(DeckDatabase().decks)
+        # Items have size (469,22)
         for i, deck in enumerate (DeckDatabase().decks):
-            put_text(img, f" {deck.name}", (16, bottom_index - 23 * i),font_scale = 0.3)
-        
+            put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)), font_scale = 0.3)
         return img

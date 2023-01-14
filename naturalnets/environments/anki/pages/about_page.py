@@ -64,6 +64,5 @@ class AboutPage(Page,RewardElement):
         return self.get_state()[0]
 
     def render(self,img: np.ndarray):
-        frame = cv2.imread(self.IMG_PATH)
-        render_onto_bb(img, self.WINDOW_BB, frame)
+        img = super().render(img)
         return img

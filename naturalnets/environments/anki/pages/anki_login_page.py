@@ -1,5 +1,6 @@
 import os
 import random
+import cv2
 
 import numpy as np
 from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
@@ -7,7 +8,7 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AnkiLoginPage(Page,RewardElement):
@@ -15,7 +16,7 @@ class AnkiLoginPage(Page,RewardElement):
     """
    State description:
             state[0]: if this window is open
-            state[i]: if the i-th field is filled (3 > i > 0)
+            state[i]: if the i-th field is filled i = {1,2}
             state[3]: if it's logged in
     """
     
@@ -53,7 +54,7 @@ class AnkiLoginPage(Page,RewardElement):
             "window": ["open","close"],
             "username_clipboard": 0,
             "password_clipboard": 0,
-            "logged_in": "true"
+            "logged_in": 0
         }
     
     def open(self):
@@ -79,7 +80,7 @@ class AnkiLoginPage(Page,RewardElement):
 
     def login(self):
         if(AnkiAccountDatabase().login()):
-            self.register_selected_reward(["logged_in","true"])
+            self.register_selected_reward(["logged_in"])
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[3] = 1
@@ -108,6 +109,5 @@ class AnkiLoginPage(Page,RewardElement):
         if(self.username_clipboard is not None):
             put_text(img,f"{self.username_clipboard}", (300, 355) ,font_scale = 0.3)
         if(self.password_clipboard is not None):
-            put_text(img,f"{self.password_clipboard}", (300, 385) ,font_scale = 0.3)
-        
+            put_text(img,f"{self.password_clipboard}", (300, 380) ,font_scale = 0.3)
         return img

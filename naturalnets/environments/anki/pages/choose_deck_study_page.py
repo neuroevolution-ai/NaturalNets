@@ -39,7 +39,6 @@ class ChooseDeckStudyPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.add_deck_popup = AddDeckPopupPage()
-        
         self.add_child(self.add_deck_popup)        
         
         self.current_index: int = 0
@@ -83,18 +82,18 @@ class ChooseDeckStudyPage(Page,RewardElement):
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = click_point[1]/22
             self.current_index = click_index
-            self.register_selected_reward(["index", f"{self.current_index}"])
+            self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (13,45)
+       upper_left_point = (33,65)
        length = 22 * DeckDatabase().decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 471, length)
        return current_bounding_box
 
     def study_deck(self):
         if(self.current_index is not None):
-            DeckDatabase().current_deck = DeckDatabase().decks[self.current_index]
-            self.study_window_page.open()
+            DeckDatabase().set_current_deck(DeckDatabase().decks[self.current_index])
+            self.register_selected_reward(["study"])
             self.close()
     
     def reset_index(self):
@@ -102,9 +101,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
     
     def render(self,img: np.ndarray):
         img = super().render(img)
-        # Items have size (469,13)
-        bottom_index = 107 + 23 * len(DeckDatabase().decks)
+        # Items have size (469,22)
         for i, deck in enumerate (DeckDatabase().decks):
-            put_text(img, f" {deck.name}", (16, bottom_index - 23 * i),font_scale = 0.3)
-        
+            put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)),font_scale = 0.3)
         return img

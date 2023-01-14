@@ -9,9 +9,9 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki.deck import DeckDatabase, Deck
+from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.card import Card
 class AddCardPage(Page,RewardElement):
     """
@@ -133,13 +133,10 @@ class AddCardPage(Page,RewardElement):
         self.choose_deck.open()
 
     def render(self,img: np.ndarray):
-        frame = cv2.imread(self.IMG_PATH)
-        render_onto_bb(img, self.WINDOW_BB, frame)
+        img = super().render(img)
         if(self.choose_deck.is_open()):
-            frame = cv2.imread(self.choose_deck.IMG_PATH)
-            render_onto_bb(img, self.choose_deck.WINDOW_BB, frame)
+            self.choose_deck.render()
             return img
-        
         if (self.front_side_clipboard_temporary_string is not None):
             put_text(img, f"{self.front_side_clipboard_temporary_string}", (100, 230) ,font_scale = 0.3)
         if (self.back_side_clipboard_temporary_string is not None):

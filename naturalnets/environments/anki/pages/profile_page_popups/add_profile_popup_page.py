@@ -92,6 +92,5 @@ class AddProfilePopupPage(Page,RewardElement):
             self.close()
             
     def render(self,img:np.ndarray):
-        frame = cv2.imread(self.IMG_PATH)
-        render_onto_bb(img, self.WINDOW_BB, frame)
+        img = super().render(img)
         return img

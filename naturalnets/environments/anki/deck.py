@@ -144,3 +144,6 @@ class DeckDatabase():
 
     def update_current_deck(self):
         self.current_deck = self.decks[self.current_index]
+
+    def set_current_index(self,index: int):
+        self.current_index = index
