@@ -7,9 +7,8 @@ from add_card_page import AddCardPage
 from anki_login_page import AnkiLoginPage
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from anki.pages.edit_card_page import EditCardPage
-from reset_collection_popup import ResetCollectionPopupPage
+from reset_collection_popup_page import ResetCollectionPopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
-from study_page import StudyPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -19,9 +18,9 @@ from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, Dropdown
 from choose_deck_study_page import ChooseDeckStudyPage
 from anki.pages.check_media_page import CheckMediaPage
 from preferences_page import PreferencesPage
-from pages.import_page import ImportPage
+from pages.import_deck_page import ImportDeckPage
 from profile_page import ProfilePage
-from export_page import ExportPage
+from export_deck_page import ExportDeckPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from about_page import AboutPage
 
@@ -71,8 +70,8 @@ class MainPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.profile_page = ProfilePage()
-        self.import_page = ImportPage()
-        self.export_page = ExportPage()
+        self.import_page = ImportDeckPage()
+        self.export_deck_page = ExportDeckPage()
         self.choose_deck_study_page = ChooseDeckStudyPage()
         self.check_media_page = CheckMediaPage()
         self.preferences_page = PreferencesPage()
@@ -83,13 +82,13 @@ class MainPage(Page,RewardElement):
         self.edit_page = EditCardPage()
         self.deck_database = DeckDatabase()
 
-        self.add_children([self.profile_page,self.import_page,self.export_page,self.choose_deck_study_page,
-        self.check_media_page,self.preferences_page,self.study_page,self.about_page,self.add_card_page,
+        self.add_children([self.profile_page,self.import_page,self.export_deck_page,self.choose_deck_study_page,
+        self.check_media_page,self.preferences_page,self.about_page,self.add_card_page,
         self.anki_login,self.add_deck_popup_page,self.edit_page])
 
         switch_profile_ddi = DropdownItem(self.profile_page.open(), "Switch Profile")
         import_ddi = DropdownItem(self.import_page.open(), "Import")
-        export_ddi = DropdownItem(self.export_page.open(), "Export")
+        export_ddi = DropdownItem(self.export_deck_page.open(), "Export")
         exit_ddi = DropdownItem(self.reset(), "Exit")
 
         self.study_deck_ddi = DropdownItem(self.choose_deck_study_page.open(), "Study Deck")
@@ -187,8 +186,8 @@ class MainPage(Page,RewardElement):
             self.profile_page.handle_click(click_position)
         elif (self.import_page.is_open()):
             self.import_page.handle_click(click_position)
-        elif (self.export_page.is_open()):
-            self.export_page.handle_click(click_position)
+        elif (self.export_deck_page.is_open()):
+            self.export_deck_page.handle_click(click_position)
         elif (self.choose_deck_study_page.is_open()):
             self.choose_deck_study_page.handle_click(click_position)
         elif (self.check_media_page.is_open()):
@@ -273,16 +272,14 @@ class MainPage(Page,RewardElement):
             self.profile_page.render(img)
         elif (self.import_page.is_open()):
             self.import_page.render(img)
-        elif (self.export_page.is_open()):
-            self.export_page.render(img)
+        elif (self.export_deck_page.is_open()):
+            self.export_deck_page.render(img)
         elif (self.choose_deck_study_page.is_open()):
             self.choose_deck_study_page.render(img)
         elif (self.check_media_page.is_open()):
             self.check_media_page.render(img)
         elif (self.preferences_page.is_open()):
             self.preferences_page.render(img)
-        elif (self.study_page.is_open()):
-            self.study_page.render(img)
         elif (self.about_page.is_open()):
             self.about_page.render(img)
         elif (self.add_card_page.is_open()):
@@ -291,7 +288,6 @@ class MainPage(Page,RewardElement):
             self.anki_login.render(img)
         elif (self.add_deck_popup_page.is_open()):    
             self.add_deck_popup_page.render(img)
-        
         return img
 
     def render_deck_page(self,img: np.ndarray):

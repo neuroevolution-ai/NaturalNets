@@ -12,7 +12,8 @@ from naturalnets.environments.anki.deck import DeckDatabase
 class EditCardPage(RewardElement,Page):
     
     """
-    STATE_LEN is determined by if this window is open
+    State description:
+            state[0]: if this window is open
     """
 
     IMG_PATH = os.path.join(IMAGES_PATH, "edit_card.png")
@@ -21,8 +22,8 @@ class EditCardPage(RewardElement,Page):
     WINDOW_BB = BoundingBox(50, 50, 499, 500)
     FRONT_TEXT_BB = BoundingBox(437, 201, 91, 27)
     BACK_TEXT_BB = BoundingBox(438, 277, 91, 27)
-    TAGS_TEXT_BB = BoundingBox(441, 473, 88, 22)
-    CLOSE_BB = BoundingBox(442, 508, 91, 27)
+    TAGS_TEXT_BB = BoundingBox(441, 471, 88, 22)
+    CLOSE_BB = BoundingBox(442, 507, 91, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -33,13 +34,13 @@ class EditCardPage(RewardElement,Page):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.front_text_button: Button = Button(self.FRONT_TEXT_BB,self.front_text_edit())
-        self.back_text_button: Button = Button(self.BACK_TEXT_BB,self.back_text_edit())
-        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB,self.tags_text_edit())
-        self.close_button: Button = Button(self.CLOSE_BB,self.close())
+        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit())
+        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit())
+        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.tags_text_edit())
+        self.close_button: Button = Button(self.CLOSE_BB, self.close())
 
-        self.add_widgets([self.front_text_button,self.back_text_button,
-            self.tags_text_button,self.close_button])
+        self.add_widgets([self.front_text_button, self.back_text_button,
+            self.tags_text_button, self.close_button])
 
     def handle_click(self, click_position: np.ndarray):
         if self.front_text_button.is_clicked_by(click_position):
@@ -89,10 +90,9 @@ class EditCardPage(RewardElement,Page):
     def render(self,img: np.ndarray):
         img = super().render(img)
         if (DeckDatabase().current_deck.current_card.front is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.front}", (80, 228) ,font_scale = 0.3)
+            put_text(img,f"{DeckDatabase().current_deck.current_card.front}", (85, 198) ,font_scale = 0.3)
         if (DeckDatabase().current_deck.current_card.back is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.back}", (80, 305) ,font_scale = 0.3)
+            put_text(img,f"{DeckDatabase().current_deck.current_card.back}", (85, 305) ,font_scale = 0.3)
         if (DeckDatabase().current_deck.current_card.tag is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.tag}", (120, 445) ,font_scale = 0.3)
-        
+            put_text(img,f"{DeckDatabase().current_deck.current_card.tag}", (120, 478) ,font_scale = 0.3)
         return img

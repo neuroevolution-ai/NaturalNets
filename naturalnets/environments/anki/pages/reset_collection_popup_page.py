@@ -8,7 +8,7 @@ from choose_deck_study_page import ChooseDeckStudyPage
 from pages.anki_login_page import AnkiLoginPage
 from anki.pages.add_card_page import AddCardPage
 from anki.pages.choose_deck_page import ChooseDeckPage
-from export_page import ExportPage
+from export_deck_page import ExportDeckPage
 from choose_deck_study_page import ChooseDeckStudyPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -70,7 +70,10 @@ class ResetCollectionPopupPage(Page, RewardElement):
         ChooseDeckPage().reset_index()
         AddCardPage().reset_temporary_strings()
         AnkiLoginPage().reset()
-        ExportPage().reset_current_deck()
+        ExportDeckPage().reset_current_deck()
         self.register_selected_reward(["popup","true"])
         self.close()
-        
+    
+    def render(self, img:np.ndarray):
+        img = super().render(img)
+        return img

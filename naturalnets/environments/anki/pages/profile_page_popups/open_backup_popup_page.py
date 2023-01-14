@@ -10,7 +10,7 @@ from naturalnets.environments.gui_app.utils import render_onto_bb
 from pages.anki_login_page import AnkiLoginPage
 from anki.pages.add_card_page import AddCardPage
 from anki.pages.choose_deck_page import ChooseDeckPage
-from export_page import ExportPage
+from export_deck_page import ExportDeckPage
 from choose_deck_study_page import ChooseDeckStudyPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -70,7 +70,7 @@ class OpenBackupPopup(Page, RewardElement):
         ChooseDeckPage().reset_index()
         AddCardPage().reset_all()
         AnkiLoginPage().default_login()
-        ExportPage().reset_current_deck()
+        ExportDeckPage().reset_current_deck()
         self.register_selected_reward(["set_to_default","true"])
         self.close()
     

@@ -1,9 +1,9 @@
 import numpy as np
 import os
-from main_page import MainPage
 from add_card_page import AddCardPage
 from anki.pages.profile_page_popups.rename_profile_popup_page import RenameProfilePage
-from anki.pages.reset_collection_popup import ResetCollectionPopupPage
+from anki.pages.reset_collection_popup_page import ResetCollectionPopupPage
+from profile_page_popups.add_profile_popup_page import AddProfilePopupPage
 from naturalnets.environments.gui_app.utils import put_text
 from profile_page_popups.downgrade_popup_page import DowngradePopupPage
 from profile_page_popups.at_least_one_profile_popup_page import AtLeastOneProfilePopupPage
@@ -49,15 +49,14 @@ class ProfilePage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.main_page = MainPage()
-        self.add_page = AddCardPage()
+        self.add_profile_popup_page = AddProfilePopupPage()
         self.rename_page = RenameProfilePage()
         self.delete_page = DeleteProfilePopupPage()
         self.reset_page = ResetCollectionPopupPage()
         self.downgrade_popup = DowngradePopupPage()
         self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
         
-        self.add_children([self.main_page,self.add_page,self.rename_page,self.delete_page,self.reset_page])
+        self.add_children([self.add_page, self.rename_page, self.delete_page, self.reset_page])
         
         self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.register_selected_reward(["quit"]))
         self.open_backup_button = Button(self.OPEN_BACKUP_BB, {self.reset_page.open(), self.register_selected_reward(["reset_application"])})
@@ -65,9 +64,7 @@ class ProfilePage(Page,RewardElement):
         self.quit_button = Button(self.QUIT_BB, self.register_selected_reward(["quit"]))
         self.rename_button = Button(self.RENAME_BB, {self.rename_page.open(), self.register_selected_reward(["rename_profile_popup"])})
         self.add_button = Button(self.ADD_BB, {self.add_page.open(), self.register_selected_reward(["add_profile_popup"])})
-        self.open_button = Button(self.OPEN_BB, {self.main_page.open()})
-
-        
+        self.open_button = Button(self.OPEN_BB, self.close())
         
         self.current_index = 0
         self.profile = None
@@ -75,7 +72,7 @@ class ProfilePage(Page,RewardElement):
     @property
     def reward_template(self):
         return {
-            "window": 0,
+            "window": ["open", "close"],
             "open": 0,
             "add_profile_popup": 0,
             "rename_profile_popup": 0,
@@ -126,11 +123,6 @@ class ProfilePage(Page,RewardElement):
             self.delete_page.open()
             self.register_selected_reward(["delete_profile_popup"])
 
-    def open_main_page(self):
-        self.main_page.open()
-        self.close()
-        self.register_selected_reward(["open_main_window"])
-
     def render(self, img: np.ndarray):
         img = super().render(img)
         for i, deck in enumerate(DeckDatabase().decks):
@@ -149,3 +141,4 @@ class ProfilePage(Page,RewardElement):
             self.downgrade_popup.render(img)
         elif self.at_least_one_profile_popup.is_open():
             self.at_least_one_profile_popup.render(img)
+        return img
