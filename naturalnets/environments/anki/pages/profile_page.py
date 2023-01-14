@@ -1,6 +1,5 @@
 import numpy as np
 import os
-from add_card_page import AddCardPage
 from anki.pages.profile_page_popups.rename_profile_popup_page import RenameProfilePage
 from anki.pages.reset_collection_popup_page import ResetCollectionPopupPage
 from profile_page_popups.add_profile_popup_page import AddProfilePopupPage
@@ -50,50 +49,47 @@ class ProfilePage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.add_profile_popup_page = AddProfilePopupPage()
-        self.rename_page = RenameProfilePage()
-        self.delete_page = DeleteProfilePopupPage()
-        self.reset_page = ResetCollectionPopupPage()
-        self.downgrade_popup = DowngradePopupPage()
-        self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
+        self.rename_profile_page = RenameProfilePage()
+        self.delete_profile_popup_page = DeleteProfilePopupPage()
+        self.reset_collection_popup_page = ResetCollectionPopupPage()
+        self.downgrade_popup_page = DowngradePopupPage()
+        self.at_least_one_profile_popup_page = AtLeastOneProfilePopupPage()
         
-        self.add_children([self.add_page, self.rename_page, self.delete_page, self.reset_page])
+        self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
+            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup_page])
         
-        self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.register_selected_reward(["quit"]))
-        self.open_backup_button = Button(self.OPEN_BACKUP_BB, {self.reset_page.open(), self.register_selected_reward(["reset_application"])})
+        self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.downgrade_popup_page.open())
+        self.open_backup_button = Button(self.OPEN_BACKUP_BB, self.reset_collection_popup_page.open())
         self.delete_button = Button(self.DELETE_BB, self.handle_delete())
         self.quit_button = Button(self.QUIT_BB, self.register_selected_reward(["quit"]))
-        self.rename_button = Button(self.RENAME_BB, {self.rename_page.open(), self.register_selected_reward(["rename_profile_popup"])})
-        self.add_button = Button(self.ADD_BB, {self.add_page.open(), self.register_selected_reward(["add_profile_popup"])})
+        self.rename_button = Button(self.RENAME_BB, self.rename_profile_page.open())
+        self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open())
         self.open_button = Button(self.OPEN_BB, self.close())
         
         self.current_index = 0
         self.profile = None
 
+        self.add_widgets([ self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.quit_button,
+            self.rename_button, self.add_button, self.open_button])
+
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "open": 0,
-            "add_profile_popup": 0,
-            "rename_profile_popup": 0,
-            "delete_profile_popup": 0,
-            "at_least_one_profile_popup": 0,
-            "open_backup": 0,
-            "reset_application": 0,
             "selected_profile_index": [0, 1, 2, 3, 4],
             "quit": 0,
         }
 
-    def change_current_deck_index(self,click_point:np.ndarray):
+    def change_current_deck_index(self, click_point:np.ndarray):
         # Items have size (384,22)
         # Box containing the items has size (386,423)
         # Top left corner (11,11)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = click_point[1]/22
+            click_index: int = (click_point[1] - 11)/22
             self.current_index = click_index
             self.profile = ProfileDatabase().profiles[self.current_index]
-            self.get_state()[click_index] = 1
+            self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])
 
     def calculate_current_bounding_box(self):
@@ -102,43 +98,37 @@ class ProfilePage(Page,RewardElement):
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 386, length)
        return current_bounding_box
     
-    def delete_profile(self):
-        ProfileDatabase().profiles.remove(self.profile)
-    
     def open(self):
         self.get_state()[0] = 1
+        self.register_selected_reward(["window","open"])
     
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window"])
+        self.register_selected_reward(["window","close"])
     
     def is_open(self):
         return self.get_state()[0]
 
     def handle_delete(self):
         if(not(ProfileDatabase().is_removing_allowed())):
-            self.at_least_one_profile_popup.open()
-            self.register_selected_reward(["at_least_one_profile_popup"])
+            self.at_least_one_profile_popup_page.open()
         else:
-            self.delete_page.open()
-            self.register_selected_reward(["delete_profile_popup"])
+            self.delete_profile_popup_page.open()
 
     def render(self, img: np.ndarray):
         img = super().render(img)
         for i, deck in enumerate(DeckDatabase().decks):
-            put_text(img, deck.name, (11,121 - i * 22 - (len(DeckDatabase().decks)) * 22), font_scale = 0.3)
-        if self.main_page.is_open():
-            self.main_page.render(img)
-        elif self.add_page.is_open():
-            self.add_page.render(img)
-        elif self.rename_page.is_open():
-            self.rename_page.render(img)
-        elif self.delete_page.is_open():
-            self.delete_page.render(img)
-        elif self.reset_page.is_open():
-            self.reset_page.render(img)
-        elif self.downgrade_popup.is_open():
-            self.downgrade_popup.render(img)
-        elif self.at_least_one_profile_popup.is_open():
-            self.at_least_one_profile_popup.render(img)
+            put_text(img, deck.name, (11, 11 + (i + 1) * 22), font_scale = 0.3)
+        if self.add_profile_popup_page.is_open():
+            img = self.add_profile_popup_page.render(img)
+        elif self.rename_profile_page.is_open():
+            img = self.rename_profile_page.render(img)
+        elif self.delete_profile_popup_page.is_open():
+            img = self.delete_profile_popup_page.render(img)
+        elif self.reset_collection_popup_page.is_open():
+            img = self.reset_collection_popup_page.render(img)
+        elif self.downgrade_popup_page.is_open():
+            img = self.downgrade_popup_page.render(img)
+        elif self.at_least_one_profile_popup_page.is_open():
+            img = self.at_least_one_profile_popup_page.render(img)
         return img

@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-from choose_deck_page import ChooseDeckPage
 from name_exists_popup_page import NameExistsPopupPage
 from main_page_popups.five_decks_popup_page import FiveDecksPopupPage
 from pages.import_deck_popup_page import ImportDeckPopupPage

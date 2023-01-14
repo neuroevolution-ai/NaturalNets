@@ -1,7 +1,6 @@
 import os
 from typing import List
 import cv2
-
 import numpy as np
 from add_card_page import AddCardPage
 from anki_login_page import AnkiLoginPage
@@ -28,26 +27,25 @@ class MainPage(Page,RewardElement):
     
     """
     State description:
-            state[i]: if this window is open i = {0,1,2,3,4}
-            state[j]: i-th item is selected j = {5,6,7,8}
-            state[9]: learning window is active
-            state[10]: answer is shown
+            state[i]: i-th deck is selected i = {0, 1, 2, 3, 4}
+            state[5]: learning window is active
+            state[6]: answer is shown
     """
-    STATE_LEN = 11
+
+    STATE_LEN = 7
     IMG_PATH = os.path.join(IMAGES_PATH, "main_page.png")
     IMG_PATH_STUDY = os.path.join(IMAGES_PATH, "study_page.png")
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 831, 710)
+    WINDOW_BB = BoundingBox(0, 0, 834, 710)
     DECKS_BB = BoundingBox(141, 276, 458, 150)
-    EDIT_BB = BoundingBox(10, 698, 100, 28)
-    DECKS_BB = BoundingBox(393, 32, 69, 27)
-
+    
     GET_SHARED_BB = BoundingBox(272, 660, 93, 27)
     CREATE_DECK_BB = BoundingBox(369, 660, 93, 27)
     IMPORT_FILE_BB = BoundingBox(473, 660, 93, 27)
     
     ADD_CARD_BB = BoundingBox(269, 31, 46, 29)
+    DECKS_BUTTON_BB = BoundingBox(393, 32, 69, 27)
     SYNC_BB = BoundingBox(525, 30, 54, 29)
     
     FILE_DROPDOWN_BB = BoundingBox(0, 0, 43, 23)
@@ -57,6 +55,7 @@ class MainPage(Page,RewardElement):
 
     STUDY_BB = BoundingBox(505, 165, 92, 27)
 
+    EDIT_BB = BoundingBox(10, 698, 100, 28)
     SHOW_ANSWER_NEXT_BB = BoundingBox(379, 696, 115, 31)
     REMOVE_BB = BoundingBox(764, 698, 100, 28)
 
@@ -80,11 +79,9 @@ class MainPage(Page,RewardElement):
         self.anki_login = AnkiLoginPage()
         self.add_deck_popup_page = AddDeckPopupPage()
         self.edit_page = EditCardPage()
-        self.deck_database = DeckDatabase()
 
-        self.add_children([self.profile_page,self.import_page,self.export_deck_page,self.choose_deck_study_page,
-        self.check_media_page,self.preferences_page,self.about_page,self.add_card_page,
-        self.anki_login,self.add_deck_popup_page,self.edit_page])
+        self.add_children([self.profile_page, self.import_page, self.export_deck_page, self.choose_deck_study_page,
+        self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.add_deck_popup_page, self.edit_page, self.anki_login])
 
         switch_profile_ddi = DropdownItem(self.profile_page.open(), "Switch Profile")
         import_ddi = DropdownItem(self.import_page.open(), "Import")
@@ -194,8 +191,8 @@ class MainPage(Page,RewardElement):
             self.check_media_page.handle_click(click_position)
         elif (self.preferences_page.is_open()):
             self.preferences_page.handle_click(click_position)
-        elif (self.study_page.is_open()):
-            self.study_page.handle_click(click_position)
+        elif (self.edit_page.is_open()):
+            self.edit_page.handle_click(click_position)
         elif (self.about_page.is_open()):
             self.about_page.handle_click(click_position)
         elif (self.add_card_page.is_open()):

@@ -1,8 +1,6 @@
 import os
 import random
 import string
-import cv2
-
 import numpy as np
 from choose_deck_page import ChooseDeckPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox

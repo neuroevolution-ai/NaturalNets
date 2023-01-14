@@ -74,7 +74,7 @@ class ImportDeckPopupPage(Page,RewardElement):
         # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = click_point[1]/22
+            click_index: int = (click_point[1] - 145)/22
             self.current_index = click_index
             self.register_selected_reward(["index", click_index])
 

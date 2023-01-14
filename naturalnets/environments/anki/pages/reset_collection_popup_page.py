@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.deck import DeckDatabase
@@ -71,7 +70,7 @@ class ResetCollectionPopupPage(Page, RewardElement):
         AddCardPage().reset_temporary_strings()
         AnkiLoginPage().reset()
         ExportDeckPage().reset_current_deck()
-        self.register_selected_reward(["popup","true"])
+        self.register_selected_reward(["reset","true"])
         self.close()
     
     def render(self, img:np.ndarray):

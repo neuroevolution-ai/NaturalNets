@@ -1,14 +1,12 @@
 import os
 import random
-import cv2
-
 import numpy as np
 from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AnkiLoginPage(Page,RewardElement):

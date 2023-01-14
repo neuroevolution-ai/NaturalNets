@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
@@ -80,7 +79,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = click_point[1]/22
+            click_index: int = (click_point[1]- 65)/22
             self.current_index = click_index
             self.register_selected_reward(["index", self.current_index])
 

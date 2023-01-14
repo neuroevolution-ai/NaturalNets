@@ -94,3 +94,6 @@ class AddProfilePopupPage(Page,RewardElement):
     def render(self,img:np.ndarray):
         img = super().render(img)
         return img
+
+    def is_open(self) -> int:
+        return self.get_state()[0]
