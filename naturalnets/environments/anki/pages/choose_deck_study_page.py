@@ -5,7 +5,6 @@ from main_page_popups.add_deck_popup_page import AddDeckPopupPage
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import put_text
-from study_page import StudyPage
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
@@ -40,10 +39,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.add_deck_popup = AddDeckPopupPage()
-        self.study_window_page = StudyPage()
         
         self.add_child(self.add_deck_popup)        
-        self.add_child(self.study_window_page)
         
         self.current_index: int = 0
 
