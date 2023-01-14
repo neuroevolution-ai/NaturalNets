@@ -1,10 +1,12 @@
 import os
+import cv2
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class FiveDecksPopupPage(Page,RewardElement):
@@ -16,6 +18,7 @@ class FiveDecksPopupPage(Page,RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_decks_popup.png")
+    
     WINDOW_BB = BoundingBox(230, 265, 317, 121)
     OK_BB = BoundingBox(442, 445, 92, 26)
 
@@ -29,7 +32,7 @@ class FiveDecksPopupPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.ok_button = Button(self.OK_BB,self.close())
-        self.add_widgets([self.ok_button])
+        self.add_widget(self.ok_button)
     
     @property
     def reward_template(self):
@@ -51,3 +54,8 @@ class FiveDecksPopupPage(Page,RewardElement):
 
     def is_open(self):
         return self.get_state()[0]
+
+    def render(self,img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

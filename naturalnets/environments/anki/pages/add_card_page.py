@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import cv2
 
 import numpy as np
 from choose_deck_page import ChooseDeckPage
@@ -8,7 +9,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase, Deck
 from naturalnets.environments.anki.card import Card
@@ -37,34 +38,32 @@ class AddCardPage(Page,RewardElement):
     
     def __init__(self):
         
-        self.secure_random = random.SystemRandom() 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+        self.secure_random = random.SystemRandom()
+
         self.front_side_clipboard_temporary_string = None
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
         
-        self.current_deck = None
-
         self.choose_deck = ChooseDeckPage()
         self.add_child(self.choose_deck)
                
-        self.select_button: Button = Button(self.SELECT_BB, self.choose_deck.open())
+        self.select_button: Button = Button(self.SELECT_BB, self.select_deck())
         self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard())
         self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.set_back_side_clipboard())
         self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.set_tag_clipboard())
         self.close_button: Button = Button(self.CLOSE_BB, self.close())
         self.add_button: Button = Button(self.ADD_BB, self.add_card())
         
-        self.add_widgets([self.select_button,self.front_text_button,self.back_text_button,self.tags_text_button
-            ,self.close_button,self.add_button])
+        self.add_widgets([self.select_button, self.front_text_button, self.back_text_button, self.tags_text_button
+            ,self.close_button, self.add_button])
 
     @property
     def reward_template(self):
         return {
-            "select_deck": ["open","close"],
             "window": ["open", "close"],
+            "select_deck": 0,
             "front_side_clipboard": 0,
             "back_side_clipboard": 0,
             "tag_clipboard": 0
@@ -124,25 +123,27 @@ class AddCardPage(Page,RewardElement):
 
     def add_card(self):
         if(self.is_card_creatable()):
-            card = Card(self.front_side_clipboard_temporary_string,self.back_side_clipboard_temporary_string)
+            card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
             DeckDatabase().decks[ChooseDeckPage().current_index].add_card(card)
             self.reset_temporary_strings()
 
-    def set_current_deck(self,deck: Deck):
-        self.current_deck = deck
-
-    def reset_all(self):
-        self.reset_temporary_strings()
-        self.current_deck = None
+    def select_deck(self):
+        self.register_selected_reward(["select_deck"])
+        self.choose_deck.open()
 
     def render(self,img: np.ndarray):
-        img = super().render(img)
-        if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img,f"{self.front_side_clipboard_temporary_string}", (80, 228) ,font_scale = 0.3)
-        if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img,f"{self.front_side_clipboard_temporary_string}", (80, 305) ,font_scale = 0.3)
-        if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img,f"{self.front_side_clipboard_temporary_string}", (120, 445) ,font_scale = 0.3)
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        if(self.choose_deck.is_open()):
+            frame = cv2.imread(self.choose_deck.IMG_PATH)
+            render_onto_bb(img, self.choose_deck.WINDOW_BB, frame)
+            return img
         
+        if (self.front_side_clipboard_temporary_string is not None):
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (100, 230) ,font_scale = 0.3)
+        if (self.back_side_clipboard_temporary_string is not None):
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (100, 307) ,font_scale = 0.3)
+        if (self.tag_clipboard_temporary_string is not None):
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (130, 442) ,font_scale = 0.3)
         return img

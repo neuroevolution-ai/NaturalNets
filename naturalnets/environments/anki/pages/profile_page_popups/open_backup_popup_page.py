@@ -42,7 +42,7 @@ class OpenBackupPopup(Page, RewardElement):
     @property
     def reward_template(self):
         return {
-            "popup": ["open", "close"],
+            "window": ["open", "close"],
             "set_to_default":"true"
         }
 
@@ -54,11 +54,11 @@ class OpenBackupPopup(Page, RewardElement):
 
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self) -> int:
         return self.get_state()[0]

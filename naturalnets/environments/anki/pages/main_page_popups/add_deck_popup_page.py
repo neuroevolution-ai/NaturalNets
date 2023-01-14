@@ -1,12 +1,15 @@
 import os
 import random
+import cv2
+
+import numpy as np
 from five_decks_popup_page import FiveDecksPopupPage
 from name_exists_popup_page import NameExistsPopupPage
-from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki.deck import DeckDatabase
 class AddDeckPopupPage(Page,RewardElement):
@@ -45,7 +48,8 @@ class AddDeckPopupPage(Page,RewardElement):
         self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
 
-        self.add_widgets([self.ok_button,self.text_button,self.cancel_button])
+        self.add_widgets([self.ok_button, self.text_button, self.cancel_button])
+    
     @property
     def reward_template(self):
         return {
@@ -80,3 +84,8 @@ class AddDeckPopupPage(Page,RewardElement):
             DeckDatabase().create_deck(self.current_field_string)
             self.current_field_string = None
             self.close()
+    
+    def render(self,img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

@@ -1,5 +1,7 @@
 import os
+import cv2
 import numpy as np
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -31,7 +33,7 @@ class AboutPage(Page,RewardElement):
         
         self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info())
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
-        self.add_widgets([self.ok_button])
+        self.add_widgets([self.ok_button, self.copy_debug_info_button])
 
     @property
     def reward_template(self):
@@ -60,3 +62,8 @@ class AboutPage(Page,RewardElement):
     
     def is_open(self):
         return self.get_state()[0]
+
+    def render(self,img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

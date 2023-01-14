@@ -68,7 +68,7 @@ class ResetCollectionPopupPage(Page, RewardElement):
         DeckDatabase().reset_decks()
         ChooseDeckStudyPage().reset_index()
         ChooseDeckPage().reset_index()
-        AddCardPage().reset_all()
+        AddCardPage().reset_temporary_strings()
         AnkiLoginPage().reset()
         ExportPage().reset_current_deck()
         self.register_selected_reward(["popup","true"])
