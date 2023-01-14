@@ -1,8 +1,9 @@
 import os
+import cv2
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from at_least_one_profile_popup_page import AtLeastOneProfilePopupPage
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from profile_page import ProfilePage
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -10,36 +11,36 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class DeleteCheckPopupPage(Page,RewardElement):
+class DeleteProfilePopupPage(Page,RewardElement):
     """
     State description:
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(35, 210, 530, 113)
-    IMG_PATH = os.path.join(IMAGES_PATH, "delete_check_popup.png")
-    YES_BUTTON_BB = BoundingBox(335, 75, 87, 24)
-    NO_BUTTON_BB = BoundingBox(430, 75, 87, 24)
+    WINDOW_BB = BoundingBox(35, 210, 530, 113)
+    IMG_PATH = os.path.join(IMAGES_PATH, "delete_profile_popup.png")
+    YES_BUTTON_BB = BoundingBox(370, 285, 87, 24)
+    NO_BUTTON_BB = BoundingBox(465, 285, 87, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(DeleteCheckPopupPage, cls).__new__(cls)
+            cls.instance = super(DeleteProfilePopupPage, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile())
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
 
-        self.add_widgets([self.at_least_one_profile_popup,self.yes_button,self.no_button])
+        self.add_widgets([self.yes_button, self.no_button])
 
     @property
     def reward_template(self):
         return {
-            "window": ["open", "close"]
+            "window": ["open", "close"],
+            "delete_profile": 0
         }
 
 
@@ -63,5 +64,11 @@ class DeleteCheckPopupPage(Page,RewardElement):
     def delete_profile(self):
         if(ProfileDatabase().is_removing_allowed()):
             ProfileDatabase().delete_profile(ProfileDatabase().profiles[ProfilePage().current_index])
+            self.register_selected_reward(["delete_profile"])
             self.close()
+    
+    def render(self,img:np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img
         

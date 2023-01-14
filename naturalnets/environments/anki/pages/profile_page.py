@@ -7,7 +7,7 @@ from anki.pages.reset_collection_popup import ResetCollectionPopupPage
 from naturalnets.environments.gui_app.utils import put_text
 from profile_page_popups.downgrade_popup_page import DowngradePopupPage
 from profile_page_popups.at_least_one_profile_popup_page import AtLeastOneProfilePopupPage
-from profile_page_popups.delete_check_popup_page import DeleteCheckPopupPage
+from profile_page_popups.delete_profile_popup_page import DeleteProfilePopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
@@ -52,7 +52,7 @@ class ProfilePage(Page,RewardElement):
         self.main_page = MainPage()
         self.add_page = AddCardPage()
         self.rename_page = RenameProfilePage()
-        self.delete_page = DeleteCheckPopupPage()
+        self.delete_page = DeleteProfilePopupPage()
         self.reset_page = ResetCollectionPopupPage()
         self.downgrade_popup = DowngradePopupPage()
         self.at_least_one_profile_popup = AtLeastOneProfilePopupPage()

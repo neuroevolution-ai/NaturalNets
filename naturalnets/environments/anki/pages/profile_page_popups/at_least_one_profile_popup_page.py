@@ -1,15 +1,18 @@
 import os
+import cv2
 
 import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AtLeastOneProfilePopupPage(Page, RewardElement):
     """
-    STATE_LEN is whether the window is open or not
+    State description:
+        state[0]: if this popup is open
     """
 
     STATE_LEN = 1
@@ -50,3 +53,8 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
 
     def is_open(self) -> int:
         return self.get_state()[0]
+
+    def render(self, img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

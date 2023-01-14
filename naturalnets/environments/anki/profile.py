@@ -58,6 +58,6 @@ class ProfileDatabase():
         self.active_profile = self.profiles[self.current_index]
         
     def default_profiles(self):
-        self.profiles = [Profile(ProfileNames.ALICE),Profile(ProfileNames.BOB),Profile(ProfileNames.CAROL)]
+        self.profiles = [Profile(ProfileNames.ALICE), Profile(ProfileNames.BOB), Profile(ProfileNames.CAROL)]
         self.active_profile = self.profiles[1]
         self.current_index = 1

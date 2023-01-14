@@ -1,19 +1,25 @@
 import os
 import random
 import string
+import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from anki.pages.name_exists_popup_page import NameExistsPopupPage
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class RenameProfilePage(RewardElement,Page):
     
     """
-    STATE_LEN is composed of the states if this window is open and if the text field is filled
+    State description:
+        state[0]: if this popup is open
+        state[1]: if the text field is filled
     """
+
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
@@ -31,13 +37,17 @@ class RenameProfilePage(RewardElement,Page):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
+        self.name_exists_popup_page = NameExistsPopupPage()
         self.secure_random = random.SystemRandom()
         self.current_field_string = None
         
-        self.text_button: Button = Button(self.TEXT_BB,self.set_current_field_string())
+        self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string())
         self.ok_button: Button = Button(self.OK_BB, self.rename_profile())
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
-    
+
+        self.add_child(self.name_exists_popup_page)
+        self.add_widgets([self.text_button,self.ok_button,self.cancel_button])
+
     @property
     def reward_template(self):
         return {
@@ -69,5 +79,14 @@ class RenameProfilePage(RewardElement,Page):
         return self.get_state()[0]
 
     def rename_profile(self):
-        if(self.current_field_string is not None):
+        if (self.current_field_string is None):
+            return
+        if (ProfileDatabase().is_included(self.current_field_string)):
+            self.name_exists_popup_page.open()
+        else:
             ProfileDatabase().rename_profile(self.current_field_string)
+    
+    def render(self,img:np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

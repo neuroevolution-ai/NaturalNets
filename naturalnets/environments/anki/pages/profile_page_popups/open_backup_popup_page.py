@@ -1,10 +1,12 @@
 import os
+import cv2
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.profile import ProfileDatabase
 from choose_deck_study_page import ChooseDeckStudyPage
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from pages.anki_login_page import AnkiLoginPage
 from anki.pages.add_card_page import AddCardPage
 from anki.pages.choose_deck_page import ChooseDeckPage
@@ -20,17 +22,18 @@ class OpenBackupPopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
 
-    BOUNDING_BOX = BoundingBox(30, 200, 400, 121)
+    WINDOW_BB = BoundingBox(30, 200, 400, 121)
     YES_BUTTON_BB = BoundingBox(223, 280, 90, 26)
     NO_BUTTON_BB = BoundingBox(326, 280, 90, 26)
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
    
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all())
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
-
+        self.add_widgets([self.yes_button, self.no_button])
+    
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(OpenBackupPopup, cls).__new__(cls)
@@ -70,4 +73,8 @@ class OpenBackupPopup(Page, RewardElement):
         ExportPage().reset_current_deck()
         self.register_selected_reward(["set_to_default","true"])
         self.close()
-        
+    
+    def render(self,img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img

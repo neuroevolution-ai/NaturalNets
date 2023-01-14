@@ -1,10 +1,12 @@
 import os
+import cv2
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
@@ -15,7 +17,7 @@ class DowngradePopupPage(Page, RewardElement):
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(30, 200, 472, 121)
+    WINDOW_BB = BoundingBox(30, 200, 472, 121)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
     OK_BUTTON_BB = BoundingBox(395, 280, 91, 26)
 
@@ -25,11 +27,12 @@ class DowngradePopupPage(Page, RewardElement):
         return cls.instance
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
-        self.add_widgets([self.ok_button])
+        self.add_widget(self.ok_button)
+        
         
     @property
     def reward_template(self):
@@ -51,3 +54,8 @@ class DowngradePopupPage(Page, RewardElement):
 
     def is_open(self) -> int:
         return self.get_state()[0]
+
+    def render(self,img: np.ndarray):
+        frame = cv2.imread(self.IMG_PATH)
+        render_onto_bb(img, self.WINDOW_BB, frame)
+        return img
