@@ -2,7 +2,7 @@ from random import randrange
 import time
 import numpy as np
 
-from naturalnets.environments.anki.anki_app import AnkiApp
+from naturalnets.environments.anki import AnkiApp
 
 WIDTH = 834
 HEIGHT = 710
@@ -10,8 +10,6 @@ HEIGHT = 710
 config = {
     "type": "AnkiApp",
     "number_time_steps": 10**6,
-    "interactive": False,
-    "monkey_tester": True
 }
 
 state_diff: np.array = None

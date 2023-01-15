@@ -7,7 +7,7 @@ from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
 
 import numpy as np
-from anki import AppController
+from naturalnets.environments.anki import AppController
 from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -34,7 +34,7 @@ class AnkiApp(IGUIEnvironment):
         self.click_position_x = 0
         self.click_position_y = 0
 
-        self.window_name = "Anki App"
+        self.window_name = "AnkiApp"
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
         

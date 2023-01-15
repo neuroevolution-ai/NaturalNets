@@ -1,15 +1,15 @@
 import os
 import numpy as np
-from pages import NameExistsPopupPage
-from main_page_popups import FiveDecksPopupPage
-from pages import ImportDeckPopupPage
+from naturalnets.environments.anki.pages import NameExistsPopupPage
+from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopupPage
+from naturalnets.environments.anki.pages import ImportDeckPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from anki import DeckDatabase, Deck
+from naturalnets.environments.anki import DeckDatabase, Deck
 class ImportDeckPage(Page,RewardElement):
     """
     State description:

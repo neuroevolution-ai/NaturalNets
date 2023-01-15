@@ -1,8 +1,8 @@
 import os
 import random
 import numpy as np
-from anki import AnkiAccount, AnkiAccountDatabase
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki import AnkiAccount
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -37,6 +37,10 @@ class AnkiLoginPage(Page,RewardElement):
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
 
+        self.active_account: AnkiAccount = None
+        self.anki_username_list = ["account_1","account_2","account_3","account_4","account_5"]
+        self.anki_password_list = ["pTgHAa","L7WwEH","yfTVwA","DP7xg7","zx7FeR"]
+
         self.username_clipboard: str = None
         self.password_clipboard: str = None
 
@@ -55,6 +59,9 @@ class AnkiLoginPage(Page,RewardElement):
             "logged_in": 0
         }
     
+    def is_login_possible(self):
+        return self.username_clipboard is not None and self.password_clipboard is not None
+
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window","open"])
@@ -69,15 +76,15 @@ class AnkiLoginPage(Page,RewardElement):
     def set_username_clipboard(self):
         self.register_selected_reward(["username_clipboard"])
         self.get_state()[1] = 1
-        self.username_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_username_list)
+        self.username_clipboard = self.secure_random.choice(self.anki_username_list)
     
     def set_password_clipboard(self):
         self.register_selected_reward(["password_clipboard"])
         self.get_state()[2] = 1
-        self.password_clipboard = self.secure_random.choice(AnkiAccountDatabase().anki_password_list)
+        self.password_clipboard = self.secure_random.choice(self.anki_password_list)
 
     def login(self):
-        if(AnkiAccountDatabase().login()):
+        if(self.is_login_possible()):
             self.register_selected_reward(["logged_in"])
             self.username_clipboard = None
             self.password_clipboard = None
@@ -95,7 +102,7 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[1] = 0
 
     def default_login(self):
-        AnkiAccountDatabase().active_account = AnkiAccount(AnkiAccountDatabase().anki_username_list[0],AnkiAccountDatabase().anki_password_list[0])
+        self.active_account = AnkiAccount(self.anki_username_list[0],self.anki_password_list[0])
         self.username_clipboard = None
         self.password_clipboard = None
         self.get_state()[3] = 1

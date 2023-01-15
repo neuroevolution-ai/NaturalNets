@@ -3,26 +3,26 @@ from typing import List
 import cv2
 import numpy as np
 
-from pages import AddCardPage
-from pages import AnkiLoginPage
-from main_page_popups import AddDeckPopupPage
-from pages import EditCardPage
-from pages import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages import AddCardPage
+from naturalnets.environments.anki.pages import AnkiLoginPage
+from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
+from naturalnets.environments.anki.pages import EditCardPage
+from naturalnets.environments.anki.pages import ResetCollectionPopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
-from pages import ChooseDeckStudyPage
-from pages import CheckMediaPage
-from pages import PreferencesPage
-from pages import ImportDeckPage
-from pages import ProfilePage
-from pages import ExportDeckPage
-from anki import DeckDatabase
-from pages import AboutPage
+from naturalnets.environments.anki.pages import ChooseDeckStudyPage
+from naturalnets.environments.anki.pages import CheckMediaPage
+from naturalnets.environments.anki.pages import PreferencesPage
+from naturalnets.environments.anki.pages import ImportDeckPage
+from naturalnets.environments.anki.pages import ProfilePage
+from naturalnets.environments.anki.pages import ExportDeckPage
+from naturalnets.environments.anki import DeckDatabase
+from naturalnets.environments.anki.pages import AboutPage
 
 class MainPage(Page,RewardElement):
     

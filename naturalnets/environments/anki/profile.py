@@ -1,5 +1,5 @@
 from typing import Final
-from anki import ProfileNames
+from naturalnets.environments.anki import ProfileNames
 
 class Profile():
     

@@ -1,12 +1,12 @@
 import os
 import numpy as np
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.widgets.button import Button
-from anki import DeckDatabase
+from naturalnets.environments.anki import DeckDatabase
 
 class EditCardPage(RewardElement,Page):
     

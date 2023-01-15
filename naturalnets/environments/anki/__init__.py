@@ -1,4 +1,4 @@
-from naturalnets.environments.anki.anki_account import AnkiAccount,AnkiAccountDatabase
+from naturalnets.environments.anki.anki_account import AnkiAccount
 from naturalnets.environments.anki.anki_app import AppCfg,AnkiApp
 from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.anki.card import Card

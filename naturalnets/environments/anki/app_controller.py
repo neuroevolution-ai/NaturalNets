@@ -1,7 +1,7 @@
 from copy import copy
 
 import numpy as np
-from pages import MainPage
+from naturalnets.environments.anki.pages import MainPage
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 class AppController:

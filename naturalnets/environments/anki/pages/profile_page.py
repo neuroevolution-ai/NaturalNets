@@ -1,19 +1,19 @@
 import numpy as np
 import os
-from profile_page_popups import RenameProfilePage
-from pages import ResetCollectionPopupPage
-from profile_page_popups import AddProfilePopupPage
+from naturalnets.environments.anki.pages.profile_page_popups import RenameProfilePage
+from naturalnets.environments.anki.pages import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages.profile_page_popups import AddProfilePopupPage
 from naturalnets.environments.gui_app.utils import put_text
-from profile_page_popups import DowngradePopupPage
-from profile_page_popups import AtLeastOneProfilePopupPage
-from profile_page_popups import DeleteProfilePopupPage
+from naturalnets.environments.anki.pages.profile_page_popups import DowngradePopupPage
+from naturalnets.environments.anki.pages.profile_page_popups import AtLeastOneProfilePopupPage
+from naturalnets.environments.anki.pages.profile_page_popups import DeleteProfilePopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from anki.constants import IMAGES_PATH
-from anki import ProfileDatabase
-from anki import DeckDatabase
+from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki import ProfileDatabase
+from naturalnets.environments.anki import DeckDatabase
 
 class ProfilePage(Page,RewardElement):
     """
