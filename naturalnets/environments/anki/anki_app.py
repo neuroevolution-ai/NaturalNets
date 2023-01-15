@@ -7,7 +7,7 @@ from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
 
 import numpy as np
-from naturalnets.environments.anki import AppController
+from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -131,3 +131,6 @@ class AnkiApp(IGUIEnvironment):
 
     def get_window_name(self) -> str:
         return self.window_name
+    
+    def get_screen_size(self) -> int:
+        return 834
