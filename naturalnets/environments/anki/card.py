@@ -1,8 +1,5 @@
 class Card():
-    """
-    I implement a card simply as a tuple (question,answer). Tag is regarding the logic irrelevant but is alterable
-    and rewarded.
-    """
+
     def __init__(self,front: str,back: str):
         self.front = front
         self.back = back

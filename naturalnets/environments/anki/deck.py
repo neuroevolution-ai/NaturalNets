@@ -29,9 +29,7 @@ class Deck():
             self.study_index += 1 
         elif(self.study_index == len(self.cards)):
             self.study_index = 0
-    
-    def create_study(self):
-        self.study_deck = self.study_deck
+
 
 class DeckDatabase():
 
@@ -84,7 +82,7 @@ class DeckDatabase():
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
         deck_file = open(path,"r")
         deck_as_string = deck_file.read()
-        deck = self.convert_string_to_deck(deck_import_name.value,deck_as_string)
+        deck = self.convert_string_to_deck(deck_import_name,deck_as_string)
         if(not(self.is_included(deck_import_name)) and self.is_deck_length_allowed()):
             self.decks.append(deck)
         deck_file.close()
