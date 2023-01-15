@@ -14,7 +14,7 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class OpenBackupPopup(Page, RewardElement):
+class OpenBackupPopupPage(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
@@ -33,7 +33,7 @@ class OpenBackupPopup(Page, RewardElement):
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(OpenBackupPopup, cls).__new__(cls)
+            cls.instance = super(OpenBackupPopupPage, cls).__new__(cls)
         return cls.instance
     
     @property

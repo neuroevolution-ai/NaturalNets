@@ -1,8 +1,8 @@
 import os
 import random
 import numpy as np
-from naturalnets.environments.anki.anki_account import AnkiAccount, AnkiAccountDatabase
-from naturalnets.environments.anki.constants import IMAGES_PATH
+from anki import AnkiAccount, AnkiAccountDatabase
+from anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement

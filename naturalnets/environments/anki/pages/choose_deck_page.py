@@ -1,8 +1,8 @@
 import os
 import numpy as np
-from main_page_popups.add_deck_popup_page import AddDeckPopupPage
-from naturalnets.environments.anki.deck import DeckDatabase
-from naturalnets.environments.anki.constants import IMAGES_PATH
+from main_page_popups import AddDeckPopupPage
+from anki import DeckDatabase
+from anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement

@@ -4,7 +4,7 @@ import string
 from typing import List
 import cv2
 import numpy as np
-from naturalnets.environments.anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver
+from anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement

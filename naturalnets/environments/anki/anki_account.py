@@ -1,4 +1,4 @@
-from pages.anki_login_page import AnkiLoginPage
+from pages import AnkiLoginPage
 class AnkiAccount():
 
     def __init__(self,account_name: str,account_password: str):

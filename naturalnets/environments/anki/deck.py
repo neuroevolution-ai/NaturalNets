@@ -1,8 +1,8 @@
 from typing import List
 
-from naturalnets.environments.anki.card import Card
-from naturalnets.environments.anki.deck import Deck,DeckDatabase
-from naturalnets.environments.anki.constants import DeckNames,DeckImportName,PREDEFINED_DECKS_PATH,EXPORTED_DECKS_PATH
+from anki import Card
+from anki import Deck,DeckDatabase
+from anki.constants import DeckNames,DeckImportName,PREDEFINED_DECKS_PATH,EXPORTED_DECKS_PATH
 import os
 
 class Deck():
