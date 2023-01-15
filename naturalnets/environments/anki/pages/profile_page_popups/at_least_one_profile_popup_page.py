@@ -1,6 +1,4 @@
 import os
-import cv2
-
 import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page

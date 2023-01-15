@@ -1,12 +1,9 @@
 import os
-import cv2
-
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.profile import ProfileDatabase
 from choose_deck_study_page import ChooseDeckStudyPage
-from naturalnets.environments.gui_app.utils import render_onto_bb
 from pages.anki_login_page import AnkiLoginPage
 from anki.pages.add_card_page import AddCardPage
 from anki.pages.choose_deck_page import ChooseDeckPage

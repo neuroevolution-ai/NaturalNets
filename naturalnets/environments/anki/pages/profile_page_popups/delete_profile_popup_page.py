@@ -1,9 +1,6 @@
 import os
-import cv2
-
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.utils import render_onto_bb
 from profile_page import ProfilePage
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox

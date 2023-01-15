@@ -16,7 +16,7 @@ class Deck():
     
     def is_duplicate(self,card: Card):
         for current_card in self.cards:
-            if(current_card.__eq__(card)):
+            if(current_card is card):
                 return True
         return False
 

@@ -1,7 +1,5 @@
 import os
 import random
-import cv2
-
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from name_exists_popup_page import NameExistsPopupPage
@@ -10,7 +8,6 @@ from naturalnets.environments.anki.profile import Profile, ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AddProfilePopupPage(Page,RewardElement):

@@ -1,5 +1,4 @@
 import os
-
 import numpy as np
 from name_exists_popup_page import NameExistsPopupPage
 from main_page_popups.five_decks_popup_page import FiveDecksPopupPage
