@@ -145,7 +145,8 @@ class MainPage(Page,RewardElement):
             self.help_dropdown: "help"
         }
 
-        self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page])
+        self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
+        self.add_card_page])
 
     @property
     def reward_template(self):
