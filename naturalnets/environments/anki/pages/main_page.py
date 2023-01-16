@@ -143,7 +143,7 @@ class MainPage(Page,RewardElement):
             self.help_dropdown: "help"
         }
 
-        self.set_reward_children([self.anki_login])
+        self.set_reward_children([self.anki_login, self.add_deck_popup_page])
 
     @property
     def reward_template(self):
@@ -198,7 +198,6 @@ class MainPage(Page,RewardElement):
                     self.opened_dd = dropdown
                     self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
         
-        
         if (self.profile_page.is_open()):
             self.profile_page.handle_click(click_position)
         elif (self.import_deck_page.is_open()):
@@ -221,8 +220,7 @@ class MainPage(Page,RewardElement):
             self.anki_login.handle_click(click_position)
         elif (self.add_deck_popup_page.is_open()):    
             self.add_deck_popup_page.handle_click(click_position)
-        
-        if (self.DECKS_BB.is_point_inside(click_position)):
+        elif (self.DECKS_BB.is_point_inside(click_position)):
             self.change_current_deck_index(click_position)
 
         if (self.get_state()[6] == 0):

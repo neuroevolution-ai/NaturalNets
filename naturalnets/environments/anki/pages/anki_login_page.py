@@ -58,7 +58,7 @@ class AnkiLoginPage(Page,RewardElement):
             "window": ["open","close"],
             "set_username": ["set","cleared"],
             "set_password": ["set","cleared"],
-            "login": "true"
+            "login": [True, False]
         }
     
     def is_login_possible(self):
@@ -87,9 +87,9 @@ class AnkiLoginPage(Page,RewardElement):
 
     def login(self):
         if(self.is_login_possible()):
-            print(f"{self.username_clipboard}")
-            print(f"{self.password_clipboard}")
-            print("Logged in")
+            self.register_selected_reward(["set_username", "cleared"])
+            self.register_selected_reward(["set_password", "cleared"])
+            self.register_selected_reward(["login", True])
             self.close()
             self.username_clipboard = None
             self.password_clipboard = None
@@ -101,6 +101,9 @@ class AnkiLoginPage(Page,RewardElement):
         self.current_anki_account = None
         self.username_clipboard = None
         self.password_clipboard = None
+        self.register_selected_reward(["set_username", "cleared"])
+        self.register_selected_reward(["set_password", "cleared"])
+        self.register_selected_reward(["login", False])
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0

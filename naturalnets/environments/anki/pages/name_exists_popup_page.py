@@ -1,9 +1,11 @@
 import os
+import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class NameExistsPopupPage(Page,RewardElement):
@@ -12,9 +14,9 @@ class NameExistsPopupPage(Page,RewardElement):
             state[0]: if this window is open 
     """
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "name_exists_popup_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "name_exists_popup.png")
     WINDOW_BB = BoundingBox(300, 300, 175, 118)
-    OK_BB = BoundingBox(368, 380, 91, 27)
+    OK_BB = BoundingBox(313, 371, 79, 30)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -52,8 +54,11 @@ class NameExistsPopupPage(Page,RewardElement):
         return self.get_state()[0]
 
     def render(self,img: np.ndarray):
-        img = super().render(img)
-        return img
+        if(self.is_open()):
+            to_render = cv2.imread(self._img_path)
+            img = render_onto_bb(img, self.get_bb(), to_render)
+            return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        "return super().handle_click(click_position)"
+        if(self.ok_button.is_clicked_by(click_position)):
+            self.ok_button.handle_click(click_position)

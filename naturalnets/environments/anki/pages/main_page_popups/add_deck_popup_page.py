@@ -1,5 +1,6 @@
 import os
 import random
+import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup_page import FiveDecksPopupPage
 from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
@@ -8,6 +9,7 @@ from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AddDeckPopupPage(Page,RewardElement):
@@ -19,10 +21,10 @@ class AddDeckPopupPage(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_deck_popup.png")
     
-    WINDOW_BB = BoundingBox(230, 260, 498, 109)
-    OK_BB = BoundingBox(523, 330, 91, 26)
-    TEXT_BB = BoundingBox(628, 298, 86, 22)
-    CANCEL_BB = BoundingBox(623, 330, 92, 27)
+    WINDOW_BB = BoundingBox(136, 251, 498, 109)
+    OK_BB = BoundingBox(364, 321, 77, 23)
+    TEXT_BB = BoundingBox(453, 289, 71, 20)
+    CANCEL_BB = BoundingBox(450, 321, 76, 23)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -35,7 +37,7 @@ class AddDeckPopupPage(Page,RewardElement):
         
         self.five_decks_popup = FiveDecksPopupPage()
         self.name_exists_popup = NameExistsPopupPage()
-        
+        self.deck_database = DeckDatabase()
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
 
@@ -47,17 +49,19 @@ class AddDeckPopupPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.ok_button, self.text_button, self.cancel_button])
+        self.set_reward_children([self.name_exists_popup, self.five_decks_popup])
     
     @property
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "deck_name_clipboard": 0
+            "current_field_string": ["set","cleaned"],
         }
 
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["current_field_string","cleaned"])
         self.current_field_string = None
     
     def open(self):
@@ -65,8 +69,8 @@ class AddDeckPopupPage(Page,RewardElement):
         self.register_selected_reward(["window","open"])
 
     def set_deck_name_clipboard(self):
-        self.current_field_string = self.secure_random.random(DeckDatabase().deck_names)
-        self.register_selected_reward(["deck_name_clipboard"])
+        self.current_field_string = self.secure_random.choice(self.deck_database.deck_names)
+        self.register_selected_reward(["current_field_string", "set"])
 
     def is_open(self):
         return self.get_state()[0]
@@ -74,18 +78,39 @@ class AddDeckPopupPage(Page,RewardElement):
     def add_deck(self):
         if (self.current_field_string is None):
             return
-        elif (not(DeckDatabase().is_deck_length_allowed())):
+        elif (not(self.deck_database.is_deck_length_allowed())):
             self.five_decks_popup.open()
-        elif (DeckDatabase().is_included(self.current_field_string)):
+        elif (self.deck_database.is_included(self.current_field_string)):
             self.name_exists_popup.open()
         else:
-            DeckDatabase().create_deck(self.current_field_string)
+            self.deck_database.create_deck(self.current_field_string)
             self.current_field_string = None
             self.close()
     
     def render(self,img: np.ndarray):
-        img = super().render(img)
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        
+        if(self.current_field_string is not None):
+            put_text(img, f"{self.current_field_string}", (153, 304) ,font_scale = 0.4)
+
+        if (self.five_decks_popup.is_open()):
+            img = self.five_decks_popup.render(img)
+            return img
+        elif (self.name_exists_popup.is_open()):
+            img = self.name_exists_popup.render(img)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        "return super().handle_click(click_position)"
+        if(self.five_decks_popup.is_open()):
+           self.five_decks_popup.handle_click(click_position)
+           return
+        elif(self.name_exists_popup.is_open()):
+            self.name_exists_popup.handle_click(click_position)
+            return
+        elif(self.ok_button.is_clicked_by(click_position)):
+            self.ok_button.handle_click(click_position)
+        elif(self.text_button.is_clicked_by(click_position)):
+            self.text_button.handle_click(click_position)
+        elif(self.cancel_button.is_clicked_by(click_position)):
+            self.cancel_button.handle_click(click_position)
