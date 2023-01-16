@@ -1,10 +1,10 @@
 import os
 import random
 import numpy as np
-from main_page_popups.five_decks_popup_page import FiveDecksPopupPage
-from anki.pages.name_exists_popup_page import NameExistsPopupPage
-from anki.constants import IMAGES_PATH
-from anki import DeckDatabase
+from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup_page import FiveDecksPopupPage
+from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
+from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -42,9 +42,9 @@ class AddDeckPopupPage(Page,RewardElement):
         self.secure_random = random.SystemRandom()
         self.current_field_string = None
         
-        self.ok_button: Button = Button(self.OK_BB, self.add_deck())
-        self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard())
-        self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
+        self.ok_button: Button = Button(self.OK_BB, self.add_deck)
+        self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard)
+        self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.ok_button, self.text_button, self.cancel_button])
     
@@ -86,3 +86,6 @@ class AddDeckPopupPage(Page,RewardElement):
     def render(self,img: np.ndarray):
         img = super().render(img)
         return img
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        "return super().handle_click(click_position)"

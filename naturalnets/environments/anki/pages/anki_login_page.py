@@ -44,10 +44,10 @@ class AnkiLoginPage(Page,RewardElement):
         self.username_clipboard: str = None
         self.password_clipboard: str = None
 
-        self.username_button: Button = Button(self.USERNAME_BB, self.set_username_clipboard())
-        self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard())
-        self.ok_button: Button = Button(self.OK_BB, self.login())
-        self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
+        self.username_button: Button = Button(self.USERNAME_BB, self.set_username_clipboard)
+        self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard)
+        self.ok_button: Button = Button(self.OK_BB, self.login)
+        self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
     @property

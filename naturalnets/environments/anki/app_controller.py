@@ -3,7 +3,7 @@ from copy import copy
 import numpy as np
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.anki.pages import MainPage
+from naturalnets.environments.anki.pages.main_page import MainPage
 class AppController:
     
     def __init__(self):

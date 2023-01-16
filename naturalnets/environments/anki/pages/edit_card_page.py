@@ -33,10 +33,10 @@ class EditCardPage(RewardElement,Page):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit())
-        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit())
-        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.tags_text_edit())
-        self.close_button: Button = Button(self.CLOSE_BB, self.close())
+        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit)
+        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit)
+        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.tags_text_edit)
+        self.close_button: Button = Button(self.CLOSE_BB, self.close)
 
         self.add_widgets([self.front_text_button, self.back_text_button,
             self.tags_text_button, self.close_button])

@@ -39,9 +39,9 @@ class ChooseDeckPage(Page,RewardElement):
 
         self.current_index: int = 0
 
-        self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open())
-        self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck())
-        self.help_button: Button = Button(self.HELP_BB, self.help())
+        self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
+        self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck)
+        self.help_button: Button = Button(self.HELP_BB, self.help)
 
         self.add_widgets([self.add_button, self.choose_button, self.help_button])
 

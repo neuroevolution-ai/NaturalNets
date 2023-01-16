@@ -2,9 +2,9 @@ import os
 import random
 import string
 import numpy as np
-from naturalnets.environments.anki.pages import ChooseDeckPage
+from naturalnets.environments.anki import ChooseDeckPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
@@ -47,12 +47,12 @@ class AddCardPage(Page,RewardElement):
         self.choose_deck = ChooseDeckPage()
         self.add_child(self.choose_deck)
                
-        self.select_button: Button = Button(self.SELECT_BB, self.select_deck())
-        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard())
-        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.set_back_side_clipboard())
-        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.set_tag_clipboard())
-        self.close_button: Button = Button(self.CLOSE_BB, self.close())
-        self.add_button: Button = Button(self.ADD_BB, self.add_card())
+        self.select_button: Button = Button(self.SELECT_BB, self.select_deck)
+        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard)
+        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.set_back_side_clipboard)
+        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.set_tag_clipboard)
+        self.close_button: Button = Button(self.CLOSE_BB, self.close)
+        self.add_button: Button = Button(self.ADD_BB, self.add_card)
         
         self.add_widgets([self.select_button, self.front_text_button, self.back_text_button, self.tags_text_button
             ,self.close_button, self.add_button])

@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from main_page_popups import AddDeckPopupPage
+from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import put_text
@@ -42,10 +42,10 @@ class ChooseDeckStudyPage(Page,RewardElement):
         
         self.current_index: int = 0
 
-        self.study_button: Button = Button(self.STUDY_BB, self.study_deck())
-        self.add_button: Button = Button(self.ADD_BB,self.add_deck_popup.open())
-        self.cancel_button: Button = Button(self.CANCEL_BB, self.close())
-        self.help_button: Button = Button(self.HELP_BB, self.help())
+        self.study_button: Button = Button(self.STUDY_BB, self.study_deck)
+        self.add_button: Button = Button(self.ADD_BB,self.add_deck_popup.open)
+        self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
+        self.help_button: Button = Button(self.HELP_BB, self.help)
 
         self.add_widgets([self.study_button,self.add_button,self.cancel_button,self.help_button])
     
@@ -104,3 +104,6 @@ class ChooseDeckStudyPage(Page,RewardElement):
         for i, deck in enumerate (DeckDatabase().decks):
             put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)),font_scale = 0.3)
         return img
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        "return super().handle_click(click_position)"

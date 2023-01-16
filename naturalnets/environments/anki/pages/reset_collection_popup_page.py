@@ -3,12 +3,12 @@ import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import ProfileDatabase
-from naturalnets.environments.anki.pages import ChooseDeckStudyPage
-from naturalnets.environments.anki.pages import AnkiLoginPage
-from naturalnets.environments.anki.pages import AddCardPage
-from naturalnets.environments.anki.pages import ChooseDeckPage
-from naturalnets.environments.anki.pages import ExportDeckPage
-from naturalnets.environments.anki.pages import ChooseDeckStudyPage
+from naturalnets.environments.anki import ChooseDeckStudyPage
+from naturalnets.environments.anki import AnkiLoginPage
+from naturalnets.environments.anki import AddCardPage
+from naturalnets.environments.anki import ChooseDeckPage
+from naturalnets.environments.anki import ExportDeckPage
+from naturalnets.environments.anki import ChooseDeckStudyPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -30,8 +30,8 @@ class ResetCollectionPopupPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
    
-        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all())
-        self.no_button: Button = Button(self.NO_BUTTON_BB, self.close())
+        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
+        self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

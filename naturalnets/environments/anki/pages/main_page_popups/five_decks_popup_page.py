@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -28,7 +28,7 @@ class FiveDecksPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close())
+        self.ok_button = Button(self.OK_BB,self.close)
         self.add_widget(self.ok_button)
     
     @property

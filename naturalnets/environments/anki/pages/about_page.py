@@ -29,8 +29,8 @@ class AboutPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info())
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close())
+        self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info)
+        self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
         self.add_widgets([self.ok_button, self.copy_debug_info_button])
 
     @property

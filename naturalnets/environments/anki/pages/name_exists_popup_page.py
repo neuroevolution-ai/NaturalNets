@@ -25,20 +25,20 @@ class NameExistsPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close())
+        self.ok_button = Button(self.OK_BB,self.close)
         self.add_widget(self.ok_button)
         
     @property
     def reward_template(self):
         return {
-            "window": ["open", "close"],
+            "window": ["open","close"]
         }
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close())
+        self.ok_button = Button(self.OK_BB,self.close)
     
     def open(self):
         self.get_state()[0] = 1
@@ -54,3 +54,6 @@ class NameExistsPopupPage(Page,RewardElement):
     def render(self,img: np.ndarray):
         img = super().render(img)
         return img
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        "return super().handle_click(click_position)"

@@ -41,9 +41,9 @@ class ExportDeckPage(Page,RewardElement):
             dropdown_items.append(DropdownItem(deck,deck.name))
 
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB, dropdown_items)
-        self.html_checkbox = CheckBox(self.HTML_CHECKBOX_BB, self.register_selected_reward(["checkbox", not(self.html_checkbox.is_selected)]))
-        self.export_button = Button(self.EXPORT_BB, self.export_deck())
-        self.cancel_button = Button(self.CANCEL_BB, self.close())
+        self.html_checkbox = CheckBox(self.HTML_CHECKBOX_BB, None)
+        self.export_button = Button(self.EXPORT_BB, self.export_deck)
+        self.cancel_button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.include_dropdown, self.html_checkbox,
             self.export_button, self.cancel_button])

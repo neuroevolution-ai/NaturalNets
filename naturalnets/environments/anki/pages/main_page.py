@@ -3,11 +3,11 @@ from typing import List
 import cv2
 import numpy as np
 
-from naturalnets.environments.anki.pages import AddCardPage
-from naturalnets.environments.anki.pages import AnkiLoginPage
+from naturalnets.environments.anki import AddCardPage
+from naturalnets.environments.anki import AnkiLoginPage
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
-from naturalnets.environments.anki.pages import EditCardPage
-from naturalnets.environments.anki.pages import ResetCollectionPopupPage
+from naturalnets.environments.anki import EditCardPage
+from naturalnets.environments.anki import ResetCollectionPopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -15,14 +15,14 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
-from naturalnets.environments.anki.pages import ChooseDeckStudyPage
-from naturalnets.environments.anki.pages import CheckMediaPage
-from naturalnets.environments.anki.pages import PreferencesPage
-from naturalnets.environments.anki.pages import ImportDeckPage
-from naturalnets.environments.anki.pages import ProfilePage
-from naturalnets.environments.anki.pages import ExportDeckPage
+from naturalnets.environments.anki import ChooseDeckStudyPage
+from naturalnets.environments.anki import CheckMediaPage
+from naturalnets.environments.anki import PreferencesPage
+from naturalnets.environments.anki import ImportDeckPage
+from naturalnets.environments.anki import ProfilePage
+from naturalnets.environments.anki import ExportDeckPage
 from naturalnets.environments.anki import DeckDatabase
-from naturalnets.environments.anki.pages import AboutPage
+from naturalnets.environments.anki import AboutPage
 
 class MainPage(Page,RewardElement):
     
@@ -156,18 +156,18 @@ class MainPage(Page,RewardElement):
             "import_file": 0,
             "file_dropdown": {
                 "opened": 0,
-                "selected": [ddi.display_name for ddi in self.file_dropdown.get_all_items()]
+                "selected": ["Switch Profile","Import","Export","Exit"]
             },
             "edit_dropdown": {
                 "opened": 0
             },
             "tools_dropdown":{
                 "opened": 0,
-                "selected": [ddi.display_name for ddi in self.tools_dropdown.get_all_items()]
+                "selected": ["Study Deck", "Check Media", "Preferences"]
             },
             "help":{
                 "opened": 0,
-                "selected": [ddi.display_name for ddi in self.help_dropdown.get_all_items()]
+                "selected": ["Guide", "Support", "About Page"]
             }
         }
     
