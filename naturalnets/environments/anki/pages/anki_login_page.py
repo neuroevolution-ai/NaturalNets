@@ -116,3 +116,6 @@ class AnkiLoginPage(Page,RewardElement):
         if(self.password_clipboard is not None):
             put_text(img,f"{self.password_clipboard}", (300, 380) ,font_scale = 0.3)
         return img
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        "return super().handle_click(click_position)"

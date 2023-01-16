@@ -39,7 +39,7 @@ class MainPage(Page,RewardElement):
     IMG_PATH_STUDY = os.path.join(IMAGES_PATH, "study_page.png")
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 834, 710)
+    WINDOW_BB = BoundingBox(0, 0, 834, 709)
     DECKS_BB = BoundingBox(141, 276, 458, 150)
     
     GET_SHARED_BB = BoundingBox(262, 635, 93, 28)
@@ -100,7 +100,7 @@ class MainPage(Page,RewardElement):
 
         self.guide_ddi = DropdownItem(None, "Guide")
         self.support_ddi = DropdownItem(None, "Support")
-        self.about_ddi = DropdownItem(self.about_page.open(), "About Page")
+        self.about_ddi = DropdownItem(self.about_page.open, "About Page")
 
         self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB, [self.switch_profile_ddi, self.import_ddi, self.export_ddi, self.exit_ddi])
         self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB, [])
@@ -117,11 +117,11 @@ class MainPage(Page,RewardElement):
         self.study_button: Button = Button(self.STUDY_BB, self.study)
         self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card)
         self.sync_button:  Button = Button(self.SYNC_BB, self.login)
-        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.register_selected_reward(["get_shared"]))
+        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.register_button_reward)
         self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
         self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
         self.show_answer_button = Button(self.SHOW_ANSWER_NEXT_BB, self.show_answer)
-        self.remove_button = Button(self.REMOVE_BB, DeckDatabase().current_deck.cards.remove(DeckDatabase().current_deck[DeckDatabase().current_deck.study_index]))
+        self.remove_button = Button(self.REMOVE_BB, self.remove_action)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
 
         self.add_widgets([self.study_button, self.add_card_button, self.sync_button,
@@ -335,16 +335,16 @@ class MainPage(Page,RewardElement):
     def render_deck_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, DeckDatabase().current_deck.name, (326,122), font_scale = 0.3)
+        put_text(img, DeckDatabase().current_deck.name, (326,122), font_scale = 0.5)
         for i, deck in enumerate(DeckDatabase().decks):
-            put_text(img, deck.name, (148,298 + i * 30), font_scale=0.3)
+            put_text(img, deck.name, (148,296 + i * 30), font_scale = 0.5)
 
     def render_study_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].front, (340 ,120), font_scale = 0.3)
+        put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].front, (340 ,120), font_scale = 0.5)
         if (self.get_state()[7] == 1):
-            put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].back, (340 ,160), font_scale = 0.3)
+            put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].back, (340 ,160), font_scale = 0.5)
             button = cv2.imread(self.NEXT_BUTTON_PATH)
             render_onto_bb(img, self.SHOW_ANSWER_NEXT_BB, button)
         if (self.edit_card_page.open()):
@@ -353,3 +353,9 @@ class MainPage(Page,RewardElement):
     def close_all_children(self):
         for child in self.get_children():
             child.get_state()[0] = 0
+
+    def register_button_reward(self):
+        self.register_selected_reward(["get_shared"])
+
+    def remove_action(self):
+        DeckDatabase().current_deck.cards.remove(DeckDatabase().current_deck[DeckDatabase().current_deck.study_index])

@@ -101,3 +101,6 @@ class ChooseDeckPage(Page,RewardElement):
         for i, deck in enumerate (DeckDatabase().decks):
             put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)), font_scale = 0.3)
         return img
+
+    def handle_click(self, click_position: np.ndarray) -> None:
+        "return super().handle_click(click_position)"
