@@ -1,12 +1,13 @@
 import os
 import random
+import cv2
 import numpy as np
 from naturalnets.environments.anki import AnkiAccount
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class AnkiLoginPage(Page,RewardElement):
@@ -21,11 +22,11 @@ class AnkiLoginPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login.png")
 
-    WINDOW_BB = BoundingBox(200, 200, 278, 281)
-    USERNAME_BB = BoundingBox(224, 284, 91, 26)
-    PASSWORD_BB = BoundingBox(349, 284, 91, 26)
-    OK_BB = BoundingBox(270, 407, 91, 26)
-    CANCEL_BB = BoundingBox(371, 407, 91, 26)
+    WINDOW_BB = BoundingBox(200, 200, 277, 244)
+    USERNAME_BB = BoundingBox(192, 283, 79, 28)
+    PASSWORD_BB = BoundingBox(295, 283, 79, 28)
+    OK_BB = BoundingBox(230, 407, 76, 26)
+    CANCEL_BB = BoundingBox(316, 407, 76, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -50,13 +51,14 @@ class AnkiLoginPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
+
     @property
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "username_clipboard": 0,
-            "password_clipboard": 0,
-            "logged_in": 0
+            "set_username": ["set","cleared"],
+            "set_password": ["set","cleared"],
+            "login": "true"
         }
     
     def is_login_possible(self):
@@ -64,34 +66,36 @@ class AnkiLoginPage(Page,RewardElement):
 
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self):
         return self.get_state()[0]
     
     def set_username_clipboard(self):
-        self.register_selected_reward(["username_clipboard"])
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(self.anki_username_list)
-    
+        self.register_selected_reward(["set_username", "set"])
+
     def set_password_clipboard(self):
-        self.register_selected_reward(["password_clipboard"])
         self.get_state()[2] = 1
         self.password_clipboard = self.secure_random.choice(self.anki_password_list)
+        self.register_selected_reward(["set_password", "set"])
 
     def login(self):
         if(self.is_login_possible()):
-            self.register_selected_reward(["logged_in"])
+            print(f"{self.username_clipboard}")
+            print(f"{self.password_clipboard}")
+            print("Logged in")
+            self.close()
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[3] = 1
             self.get_state()[2] = 0
             self.get_state()[1] = 0 
-            self.close()
         
     def reset(self):
         self.current_anki_account = None
@@ -110,12 +114,20 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[1] = 0
     
     def render(self,img: np.ndarray):
-        img = super().render(img)
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.username_clipboard is not None):
-            put_text(img,f"{self.username_clipboard}", (300, 355) ,font_scale = 0.3)
+            put_text(img,f"{self.username_clipboard}", (295, 358) ,font_scale = 0.5)
         if(self.password_clipboard is not None):
-            put_text(img,f"{self.password_clipboard}", (300, 380) ,font_scale = 0.3)
+            put_text(img,f"{self.password_clipboard}", (295, 390) ,font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        "return super().handle_click(click_position)"
+        if (self.username_button.is_clicked_by(click_position)):
+            self.username_button.handle_click(click_position)
+        elif (self.password_button.is_clicked_by(click_position)):
+            self.password_button.handle_click(click_position)
+        elif (self.ok_button.is_clicked_by(click_position)):
+            self.ok_button.handle_click(click_position)
+        elif (self.cancel_button.is_clicked_by(click_position)):
+            self.cancel_button.handle_click(click_position)

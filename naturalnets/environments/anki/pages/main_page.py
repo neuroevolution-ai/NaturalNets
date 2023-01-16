@@ -143,6 +143,8 @@ class MainPage(Page,RewardElement):
             self.help_dropdown: "help"
         }
 
+        self.set_reward_children([self.anki_login])
+
     @property
     def reward_template(self):
         return {
