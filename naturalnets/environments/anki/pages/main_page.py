@@ -9,6 +9,7 @@ from naturalnets.environments.anki import AnkiLoginPage
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
 from naturalnets.environments.anki import EditCardPage
 from naturalnets.environments.anki import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -82,10 +83,11 @@ class MainPage(Page,RewardElement):
         self.add_deck_popup_page = AddDeckPopupPage()
         self.edit_card_page = EditCardPage()
         self.deck_database = DeckDatabase()
+        self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopupPage()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
             self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.anki_login, self.add_deck_popup_page,
-            self.edit_card_page]
+            self.edit_card_page,self.leads_to_external_website_popup_page]
         
         self.add_children([self.profile_page, self.import_deck_page, self.export_deck_page, 
         self.choose_deck_study_page, self.check_media_page, self.preferences_page, self.about_page, 
@@ -119,7 +121,7 @@ class MainPage(Page,RewardElement):
         self.study_button: Button = Button(self.STUDY_BB, self.study)
         self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card)
         self.sync_button:  Button = Button(self.SYNC_BB, self.login)
-        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.register_button_reward)
+        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.get_shared)
         self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
         self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
         self.show_answer_button = Button(self.SHOW_ANSWER_NEXT_BB, self.show_answer)
@@ -143,7 +145,7 @@ class MainPage(Page,RewardElement):
             self.help_dropdown: "help"
         }
 
-        self.set_reward_children([self.anki_login, self.add_deck_popup_page])
+        self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page])
 
     @property
     def reward_template(self):
@@ -183,7 +185,47 @@ class MainPage(Page,RewardElement):
 
     def handle_click(self, click_position: np.ndarray):
         print(click_position[0])
-        print(click_position[1])
+        print(click_position[1])        
+        if (self.profile_page.is_open()):
+            self.profile_page.handle_click(click_position)
+            return
+        elif (self.import_deck_page.is_open()):
+            self.import_deck_page.handle_click(click_position)
+            return
+        elif (self.export_deck_page.is_open()):
+            self.export_deck_page.handle_click(click_position)
+            return
+        elif (self.choose_deck_study_page.is_open()):
+            self.choose_deck_study_page.handle_click(click_position)
+            return
+        elif (self.check_media_page.is_open()):
+            self.check_media_page.handle_click(click_position)
+            return
+        elif (self.preferences_page.is_open()):
+            self.preferences_page.handle_click(click_position)
+            return
+        elif (self.edit_card_page.is_open()):
+            self.edit_card_page.handle_click(click_position)
+            return
+        elif (self.about_page.is_open()):
+            self.about_page.handle_click(click_position)
+            return
+        elif (self.add_card_page.is_open()):
+            self.add_card_page.handle_click(click_position)
+            return
+        elif (self.anki_login.is_open()):
+            self.anki_login.handle_click(click_position)
+            return
+        elif (self.add_deck_popup_page.is_open()):    
+            self.add_deck_popup_page.handle_click(click_position)
+            return
+        elif (self.leads_to_external_website_popup_page.is_open()):
+            self.leads_to_external_website_popup_page.handle_click(click_position)
+            return
+        elif (self.DECKS_BB.is_point_inside(click_position)):
+            self.change_current_deck_index(click_position)
+            return
+        
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
@@ -197,32 +239,7 @@ class MainPage(Page,RewardElement):
                 if dropdown.is_open():
                     self.opened_dd = dropdown
                     self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
-        
-        if (self.profile_page.is_open()):
-            self.profile_page.handle_click(click_position)
-        elif (self.import_deck_page.is_open()):
-            self.import_deck_page.handle_click(click_position)
-        elif (self.export_deck_page.is_open()):
-            self.export_deck_page.handle_click(click_position)
-        elif (self.choose_deck_study_page.is_open()):
-            self.choose_deck_study_page.handle_click(click_position)
-        elif (self.check_media_page.is_open()):
-            self.check_media_page.handle_click(click_position)
-        elif (self.preferences_page.is_open()):
-            self.preferences_page.handle_click(click_position)
-        elif (self.edit_card_page.is_open()):
-            self.edit_card_page.handle_click(click_position)
-        elif (self.about_page.is_open()):
-            self.about_page.handle_click(click_position)
-        elif (self.add_card_page.is_open()):
-            self.add_card_page.handle_click(click_position)
-        elif (self.anki_login.is_open()):
-            self.anki_login.handle_click(click_position)
-        elif (self.add_deck_popup_page.is_open()):    
-            self.add_deck_popup_page.handle_click(click_position)
-        elif (self.DECKS_BB.is_point_inside(click_position)):
-            self.change_current_deck_index(click_position)
-
+                    
         if (self.get_state()[6] == 0):
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
@@ -338,6 +355,8 @@ class MainPage(Page,RewardElement):
             self.anki_login.render(img)
         elif (self.add_deck_popup_page.is_open()):    
             self.add_deck_popup_page.render(img)
+        elif (self.leads_to_external_website_popup_page.is_open()):
+            self.leads_to_external_website_popup_page.render(img)
         return img
 
     def render_deck_page(self,img: np.ndarray):
@@ -364,7 +383,8 @@ class MainPage(Page,RewardElement):
         for child in self.get_children():
             child.get_state()[0] = 0
 
-    def register_button_reward(self):
+    def get_shared(self):
+        self.leads_to_external_website_popup_page.open()
         self.register_selected_reward(["get_shared"])
 
     def remove_action(self):
