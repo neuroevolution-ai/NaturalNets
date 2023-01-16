@@ -1,3 +1,4 @@
+from math import floor
 import os
 from typing import List
 import cv2
@@ -40,16 +41,16 @@ class MainPage(Page,RewardElement):
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
 
     WINDOW_BB = BoundingBox(0, 0, 834, 709)
-    DECKS_BB = BoundingBox(141, 276, 458, 150)
+    DECKS_BB = BoundingBox(119, 277, 389, 150)
     
-    GET_SHARED_BB = BoundingBox(262, 635, 93, 28)
-    CREATE_DECK_BB = BoundingBox(360, 635, 100, 28)
-    IMPORT_FILE_BB = BoundingBox(463, 635, 91, 28)
-    STUDY_BB = BoundingBox(505, 165, 92, 27)
+    GET_SHARED_BB = BoundingBox(223, 635, 77, 28)
+    CREATE_DECK_BB = BoundingBox(305, 635, 85, 28)
+    IMPORT_FILE_BB = BoundingBox(393, 635, 77, 28)
+    STUDY_BB = BoundingBox(429, 164, 79, 30)
 
-    ADD_CARD_BB = BoundingBox(269, 31, 82, 29)
+    ADD_CARD_BB = BoundingBox(229, 31, 78, 29)
     DECKS_BUTTON_BB = BoundingBox(393, 32, 69, 27)
-    SYNC_BB = BoundingBox(525, 30, 54, 29)
+    SYNC_BB = BoundingBox(447, 30, 54, 29)
     
     FILE_DROPDOWN_BB = BoundingBox(0, 0, 43, 23)
     EDIT_DROPDOWN_BB = BoundingBox(43, 0, 47, 23)
@@ -80,6 +81,7 @@ class MainPage(Page,RewardElement):
         self.anki_login = AnkiLoginPage()
         self.add_deck_popup_page = AddDeckPopupPage()
         self.edit_card_page = EditCardPage()
+        self.deck_database = DeckDatabase()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
             self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.anki_login, self.add_deck_popup_page,
@@ -128,10 +130,10 @@ class MainPage(Page,RewardElement):
         self.get_shared_button, self.create_deck_button, self.import_file_button, self.edit_button,
         self.show_answer_button, self.remove_button, self.next_button])
 
-        self.main_page_widgets = self.dropdowns + [self.add_card_button,self.sync_button,self.study_button,self.get_shared_button,
+        self.main_page_widgets = [self.add_card_button,self.sync_button,self.study_button,self.get_shared_button,
         self.create_deck_button,self.import_file_button]
 
-        self.study_page_widgets = self.dropdowns + [self.add_card_button, self.decks_button, self.sync_button, self.edit_button,
+        self.study_page_widgets = [self.add_card_button, self.decks_button, self.sync_button, self.edit_button,
         self.show_answer_button, self.remove_button, self.next_button]
 
         self.dropdowns_to_str = {
@@ -178,6 +180,8 @@ class MainPage(Page,RewardElement):
 
 
     def handle_click(self, click_position: np.ndarray):
+        print(click_position[0])
+        print(click_position[1])
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
@@ -191,7 +195,7 @@ class MainPage(Page,RewardElement):
                 if dropdown.is_open():
                     self.opened_dd = dropdown
                     self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
-            return
+        
         
         if (self.profile_page.is_open()):
             self.profile_page.handle_click(click_position)
@@ -215,13 +219,14 @@ class MainPage(Page,RewardElement):
             self.anki_login.handle_click(click_position)
         elif (self.add_deck_popup_page.is_open()):    
             self.add_deck_popup_page.handle_click(click_position)
-        elif (self.DECKS_BB.is_point_inside(click_position)):
+        
+        if (self.DECKS_BB.is_point_inside(click_position)):
             self.change_current_deck_index(click_position)
 
         if (self.get_state()[6] == 0):
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
-                    self.handle_click(click_position)
+                    widget.handle_click(click_position)
         elif (self.get_state()[7] == 0):
             for widget in self.study_page_widgets:
                 if widget is self.next_button:
@@ -256,15 +261,18 @@ class MainPage(Page,RewardElement):
         # Top left corner (141,275)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = (click_point[1] - 275) / 30
-            self.get_state()[DeckDatabase().current_index] = 0
-            DeckDatabase().current_deck = DeckDatabase().decks[click_index]
+            click_index: int = floor((click_point[1] - 275) / 30)
+            self.get_state()[self.deck_database.current_index] = 0
+            self.deck_database.current_deck = self.deck_database.decks[click_index]
+            self.deck_database.current_index = click_index
+            self.deck_database.set_current_index(click_index)
             self.get_state()[click_index] = 1
             self.register_selected_reward(["decks", click_index])
+            
 
     def calculate_current_bounding_box(self):
        upper_left_point = (141,275)
-       length = 30 * DeckDatabase().decks_length()
+       length = 30 * self.deck_database.decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 458, length)
        return current_bounding_box
 
@@ -295,7 +303,7 @@ class MainPage(Page,RewardElement):
     def next_card(self):
         self.get_state()[7] = 0
         self.register_selected_reward(["next_card"])
-        DeckDatabase().current_deck.increment_study_index()
+        self.deck_database.current_deck.increment_study_index()
 
     def show_answer(self):
         self.get_state()[7] = 1
@@ -303,9 +311,9 @@ class MainPage(Page,RewardElement):
     
     def render(self,img: np.ndarray):
         if(self.get_state()[6] == 1):
-            self.render_study_page(img)
+            img = self.render_study_page(img)
         elif(self.get_state()[6] == 0):
-            self.render_deck_page(img)
+            img = self.render_deck_page(img)
         img = self.render_onto_current(img)
         return img
 
@@ -335,20 +343,22 @@ class MainPage(Page,RewardElement):
     def render_deck_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, DeckDatabase().current_deck.name, (326,122), font_scale = 0.5)
-        for i, deck in enumerate(DeckDatabase().decks):
+        put_text(img, self.deck_database.current_deck.name, (326,122), font_scale = 0.5)
+        for i, deck in enumerate(self.deck_database.decks):
             put_text(img, deck.name, (148,296 + i * 30), font_scale = 0.5)
+        return img
 
     def render_study_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].front, (340 ,120), font_scale = 0.5)
+        put_text(img, self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front, (340 ,120), font_scale = 0.5)
         if (self.get_state()[7] == 1):
-            put_text(img, DeckDatabase().current_deck.cards[DeckDatabase().current_deck.study_index].back, (340 ,160), font_scale = 0.5)
+            put_text(img, self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back, (340 ,160), font_scale = 0.5)
             button = cv2.imread(self.NEXT_BUTTON_PATH)
             render_onto_bb(img, self.SHOW_ANSWER_NEXT_BB, button)
         if (self.edit_card_page.open()):
-            self.edit_card_page.render(img)
+            img = self.edit_card_page.render(img)
+        return img
     
     def close_all_children(self):
         for child in self.get_children():
@@ -358,4 +368,4 @@ class MainPage(Page,RewardElement):
         self.register_selected_reward(["get_shared"])
 
     def remove_action(self):
-        DeckDatabase().current_deck.cards.remove(DeckDatabase().current_deck[DeckDatabase().current_deck.study_index])
+        self.deck_database.current_deck.cards.remove(self.deck_database.current_deck[self.deck_database.current_deck.study_index])

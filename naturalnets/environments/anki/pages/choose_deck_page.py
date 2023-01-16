@@ -1,3 +1,4 @@
+from math import floor
 import os
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
@@ -74,8 +75,8 @@ class ChooseDeckPage(Page,RewardElement):
         # Top left corner (33,65)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = (click_point[1] - 65)/22
-            self.current_index = click_index
+            click_index: int = floor((click_point[1] - 65)/22)
+            self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
@@ -93,7 +94,7 @@ class ChooseDeckPage(Page,RewardElement):
         self.get_state()[self.current_index + 1] = 1
 
     def reset_index(self):
-        self.current_index = 0
+        self.current_index: int = 0
     
     def render(self,img: np.ndarray):
         img = super().render(img)

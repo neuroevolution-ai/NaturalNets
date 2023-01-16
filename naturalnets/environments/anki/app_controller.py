@@ -13,7 +13,7 @@ class AppController:
         self._total_state_len = self.get_element_state_len(self.main_page)
         
         states_info = []
-        self._last_allocated_state_index = 0
+        self._last_allocated_state_index: int = 0
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self.assign_state(self.main_page, 0, states_info)
         self._states_info = states_info
@@ -32,7 +32,7 @@ class AppController:
     def reset_reward_array(self):
         reward_count = self.calculate_reward_count(0, self.main_page)
         self.reward_array = np.zeros(reward_count, dtype=np.uint8)
-        last_reward_index = self.assign_reward(0, self.main_page)
+        last_reward_index: int = self.assign_reward(0, self.main_page)
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
@@ -49,7 +49,7 @@ class AppController:
         self.reset_reward_array()
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
-        self._last_allocated_state_index = 0
+        self._last_allocated_state_index: int = 0
 
         self.assign_state(self.main_page, 0, [])
 

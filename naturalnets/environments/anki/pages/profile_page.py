@@ -1,3 +1,4 @@
+from math import floor
 import random
 import string
 import numpy as np
@@ -69,7 +70,7 @@ class ProfilePage(Page,RewardElement):
         self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open)
         self.open_button = Button(self.OPEN_BB, self.close)
         
-        self.current_index = 0
+        self.current_index: int = 0
         self.profile = None
 
         self.add_widgets([ self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.quit_button,
@@ -89,8 +90,8 @@ class ProfilePage(Page,RewardElement):
         # Top left corner (11,11)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = (click_point[1] - 11)/22
-            self.current_index = click_index
+            click_index: int = floor((click_point[1] - 11)/22)
+            self.current_index: int = click_index
             self.profile = ProfileDatabase().profiles[self.current_index]
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])

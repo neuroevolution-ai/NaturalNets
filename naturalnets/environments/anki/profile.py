@@ -18,12 +18,12 @@ class ProfileDatabase():
         self.profile_names: Final = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
         self.profiles = [Profile(ProfileNames.ALICE)]
         self.active_profile = self.profiles[0]
-        self.current_index = 0
+        self.current_index: int = 0
     
     def is_adding_allowed(self) -> bool :
         return self.profiles_length() < 5 
 
-    def is_removing_allowed(self):
+    def is_removing_allowed(self) -> bool:
         return self.profiles_length() > 1 
     
     def profiles_length(self) -> int:
@@ -46,15 +46,15 @@ class ProfileDatabase():
                 return True      
         return False
 
-    def change_active_profile(self):
+    def change_active_profile(self) -> None:
         self.active_profile = self.profiles[self.current_index]
     
-    def reset_profiles(self):
+    def reset_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE)]
-        self.current_index = 0
+        self.current_index: int = 0
         self.active_profile = self.profiles[self.current_index]
         
-    def default_profiles(self):
+    def default_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE), Profile(ProfileNames.BOB), Profile(ProfileNames.CAROL)]
         self.active_profile = self.profiles[1]
-        self.current_index = 1
+        self.current_index: int = 1
