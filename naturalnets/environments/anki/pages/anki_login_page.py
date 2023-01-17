@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki import AnkiAccount
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.pages.main_page_popups.failed_login_popup_page import FailedLoginPopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -34,11 +35,14 @@ class AnkiLoginPage(Page,RewardElement):
         return cls.instance
 
     def __init__(self):
+        
         Page.__init__(self,self.STATE_LEN,self.WINDOW_BB,self.IMG_PATH)
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
-
-        self.active_account: AnkiAccount = None
+        
+        self.failed_login = FailedLoginPopupPage()
+        
+        self.current_anki_account: AnkiAccount = None
         self.anki_username_list = ["account_1","account_2","account_3","account_4","account_5"]
         self.anki_password_list = ["pTgHAa","L7WwEH","yfTVwA","DP7xg7","zx7FeR"]
 
@@ -51,7 +55,7 @@ class AnkiLoginPage(Page,RewardElement):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
-
+        self.set_reward_children([self.failed_login])
     @property
     def reward_template(self):
         return {
@@ -61,15 +65,19 @@ class AnkiLoginPage(Page,RewardElement):
             "login": [True, False]
         }
     
-    def is_login_possible(self):
+    def is_strings_not_none(self):
         return self.username_clipboard is not None and self.password_clipboard is not None
 
     def open(self):
         self.get_state()[0] = 1
+        self.username_clipboard = None
+        self.password_clipboard = None
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
+        self.username_clipboard = None
+        self.password_clipboard = None
         self.register_selected_reward(["window", "close"])
 
     def is_open(self):
@@ -86,16 +94,19 @@ class AnkiLoginPage(Page,RewardElement):
         self.register_selected_reward(["set_password", "set"])
 
     def login(self):
-        if(self.is_login_possible()):
+        if(self.is_allowed_login()):
             self.register_selected_reward(["set_username", "cleared"])
             self.register_selected_reward(["set_password", "cleared"])
             self.register_selected_reward(["login", True])
+            self.current_anki_account = AnkiAccount(self.username_clipboard,self.password_clipboard)
             self.close()
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[3] = 1
             self.get_state()[2] = 0
-            self.get_state()[1] = 0 
+            self.get_state()[1] = 0
+        else:
+            self.failed_login.open()
         
     def reset(self):
         self.current_anki_account = None
@@ -107,18 +118,13 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0
-
-    def default_login(self):
-        self.active_account = AnkiAccount(self.anki_username_list[0],self.anki_password_list[0])
-        self.username_clipboard = None
-        self.password_clipboard = None
-        self.get_state()[3] = 1
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
     
     def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
+        if(self.failed_login.is_open()):
+            img = self.failed_login.render(img)
+            return img
         if(self.username_clipboard is not None):
             put_text(img,f"{self.username_clipboard}", (295, 358) ,font_scale = 0.5)
         if(self.password_clipboard is not None):
@@ -126,6 +132,9 @@ class AnkiLoginPage(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        if(self.failed_login.is_open()):
+            self.failed_login.handle_click(click_position)
+            return
         if (self.username_button.is_clicked_by(click_position)):
             self.username_button.handle_click(click_position)
         elif (self.password_button.is_clicked_by(click_position)):
@@ -134,3 +143,15 @@ class AnkiLoginPage(Page,RewardElement):
             self.ok_button.handle_click(click_position)
         elif (self.cancel_button.is_clicked_by(click_position)):
             self.cancel_button.handle_click(click_position)
+    
+    def default_login(self):
+        self.active_account = AnkiAccount(self.anki_username_list[0],self.anki_password_list[0])
+        self.username_clipboard = None
+        self.password_clipboard = None
+        self.get_state()[3] = 1
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
+
+    def is_allowed_login(self):
+        if(self.is_strings_not_none()):
+            return self.anki_username_list.index(self.username_clipboard) ==  self.anki_password_list.index(self.password_clipboard)

@@ -1,5 +1,6 @@
 import os
 import cv2
+
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -8,7 +9,8 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class FiveDecksPopupPage(Page,RewardElement):
+
+class FailedLoginPopupPage(Page,RewardElement):
     
     """
     State description:
@@ -16,14 +18,14 @@ class FiveDecksPopupPage(Page,RewardElement):
     """
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "five_decks_popup.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "failed_login.png")
     
-    WINDOW_BB = BoundingBox(230, 290, 317, 121)
-    OK_BB = BoundingBox(374, 370, 77, 26)
+    WINDOW_BB = BoundingBox(230, 270, 318, 121)
+    OK_BB = BoundingBox(374, 350, 77, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(FiveDecksPopupPage, cls).__new__(cls)
+            cls.instance = super(FailedLoginPopupPage, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):

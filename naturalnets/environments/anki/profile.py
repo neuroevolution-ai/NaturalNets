@@ -15,8 +15,8 @@ class ProfileDatabase():
         return cls.instance
 
     def __init__(self):
-        self.profile_names: Final = [ProfileNames.ALICE, ProfileNames.BOB, ProfileNames.CAROL, ProfileNames.DENNIS, ProfileNames.EVA]
-        self.profiles = [Profile(ProfileNames.ALICE)]
+        self.profile_names: Final = [ProfileNames.ALICE.value, ProfileNames.BOB.value, ProfileNames.CAROL.value, ProfileNames.DENNIS.value, ProfileNames.EVA.value]
+        self.profiles = [Profile(ProfileNames.ALICE.value)]
         self.active_profile = self.profiles[0]
         self.current_index: int = 0
     

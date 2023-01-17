@@ -10,6 +10,7 @@ from naturalnets.environments.anki.pages.choose_deck_study_page import ChooseDec
 from naturalnets.environments.anki.pages.export_deck_page import ExportDeckPage
 from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
 from naturalnets.environments.anki import ResetCollectionPopupPage
+from naturalnets.environments.anki.profile import Profile
 from naturalnets.environments.gui_app.utils import put_text
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -58,6 +59,7 @@ class ProfilePage(Page,RewardElement):
         self.reset_collection_popup_page = ResetCollectionPopupPage()
         self.downgrade_popup_page = DowngradePopupPage()
         self.at_least_one_profile_popup_page = AtLeastOneProfilePopupPage()
+        self.profile_database = ProfileDatabase()
         
         self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
             self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup_page])
@@ -71,7 +73,7 @@ class ProfilePage(Page,RewardElement):
         self.open_button = Button(self.OPEN_BB, self.close)
         
         self.current_index: int = 0
-        self.profile = None
+        self.current_profile: Profile = self.profile_database.profiles[self.current_index]
 
         self.add_widgets([ self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.quit_button,
             self.rename_button, self.add_button, self.open_button])
@@ -92,7 +94,7 @@ class ProfilePage(Page,RewardElement):
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1] - 11)/22)
             self.current_index: int = click_index
-            self.profile = ProfileDatabase().profiles[self.current_index]
+            self.current_profile = self.profile_database.profiles[self.current_index]
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])
 
@@ -114,7 +116,7 @@ class ProfilePage(Page,RewardElement):
         return self.get_state()[0]
 
     def handle_delete(self):
-        if(not(ProfileDatabase().is_removing_allowed())):
+        if(not(self.profile_database.is_removing_allowed())):
             self.at_least_one_profile_popup_page.open()
         else:
             self.delete_profile_popup_page.open()
@@ -158,7 +160,7 @@ class DeleteProfilePopupPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        self.profile_database = ProfileDatabase()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
@@ -190,8 +192,8 @@ class DeleteProfilePopupPage(Page,RewardElement):
         return self.get_state()[0]
 
     def delete_profile(self):
-        if(ProfileDatabase().is_removing_allowed()):
-            ProfileDatabase().delete_profile(ProfileDatabase().profiles[ProfilePage().current_index])
+        if(self.profile_database.is_removing_allowed()):
+            self.profile_database.delete_profile(self.profile_database.profiles[ProfilePage().current_index])
             self.register_selected_reward(["delete_profile"])
             self.close()
     
@@ -309,7 +311,7 @@ class OpenBackupPopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-   
+        self.profile_database = ProfileDatabase()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
         self.add_widgets([self.yes_button, self.no_button])
@@ -344,7 +346,7 @@ class OpenBackupPopupPage(Page, RewardElement):
         return self.get_state()[0]
     
     def reset_all(self):
-        ProfileDatabase().default_profiles()
+        self.profile_database.default_profiles()
         DeckDatabase().default_decks()
         ChooseDeckStudyPage().reset_index()
         ChooseDeckPage().reset_index()
@@ -382,7 +384,7 @@ class RenameProfilePage(RewardElement,Page):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+        self.profile_database = ProfileDatabase()
         self.name_exists_popup_page = NameExistsPopupPage()
         self.secure_random = random.SystemRandom()
         self.current_field_string = None
@@ -427,10 +429,10 @@ class RenameProfilePage(RewardElement,Page):
     def rename_profile(self):
         if (self.current_field_string is None):
             return
-        if (ProfileDatabase().is_included(self.current_field_string)):
+        if (self.profile_database.is_included(self.current_field_string)):
             self.name_exists_popup_page.open()
         else:
-            ProfileDatabase().rename_profile(self.current_field_string)
+            self.profile_database.rename_profile(self.current_field_string)
     
     def render(self,img:np.ndarray):
         img = super().render(img)
@@ -462,7 +464,7 @@ class AddProfilePopupPage(Page,RewardElement):
         
         self.name_exists_popup = NameExistsPopupPage()
         self.five_profiles_popup = FiveProfilesPopupPage()
-
+        self.profile_database = ProfileDatabase()
         self.add_child(self.name_exists_popup)
         self.add_child(self.five_profiles_popup)
 
@@ -500,17 +502,17 @@ class AddProfilePopupPage(Page,RewardElement):
     
     def set_current_field_string(self):
         self.register_selected_reward(["profile_name_clipboard","clicked"])
-        self.current_field_string = self.secure_random.choice(ProfileDatabase().profile_names)
+        self.current_field_string = self.secure_random.choice(self.profile_database.profile_names)
     
     def add_profile(self):
         if (self.current_field_string is None):
             return
-        elif (not(ProfileDatabase().is_adding_allowed())):
+        elif (not(self.profile_database.is_adding_allowed())):
             self.five_profiles_popup.open()
-        elif (ProfileDatabase().is_included(self.current_field_string)):
+        elif (self.profile_database.is_included(self.current_field_string)):
             self.name_exists_popup.open()
         else:    
-            ProfileDatabase().create_profile(self.current_field_string)
+            self.profile_database.create_profile(self.current_field_string)
             self.current_field_string = None
             self.close()
             

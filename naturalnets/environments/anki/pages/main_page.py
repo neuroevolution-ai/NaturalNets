@@ -365,7 +365,14 @@ class MainPage(Page,RewardElement):
     def render_deck_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, self.deck_database.current_deck.name, (326,122), font_scale = 0.5)
+        if (self.profile_page.current_profile is not None):
+            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (36,122), font_scale = 0.5)
+        
+        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (276,122), font_scale = 0.5)
+        
+        if (self.anki_login.current_anki_account is not None):
+            put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,122), font_scale = 0.5)
+        
         for i, deck in enumerate(self.deck_database.decks):
             put_text(img, deck.name, (148,296 + i * 30), font_scale = 0.5)
         return img
