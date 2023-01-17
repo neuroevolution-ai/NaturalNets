@@ -27,7 +27,7 @@ class NameExistsPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close)
+        self.ok_button = Button(self.OK_BB, self.close)
         self.add_widget(self.ok_button)
         
     @property
@@ -35,29 +35,29 @@ class NameExistsPopupPage(Page,RewardElement):
         return {
             "window": ["open","close"]
         }
+        
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close)
+        self.ok_button = Button(self.OK_BB, self.close)
     
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self):
         return self.get_state()[0]
 
     def render(self,img: np.ndarray):
-        if(self.is_open()):
-            to_render = cv2.imread(self._img_path)
-            img = render_onto_bb(img, self.get_bb(), to_render)
-            return img
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if(self.ok_button.is_clicked_by(click_position)):

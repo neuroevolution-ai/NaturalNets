@@ -1,10 +1,12 @@
 from math import floor
 import os
+import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
 from naturalnets.environments.anki import DeckDatabase
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
@@ -38,17 +40,18 @@ class ChooseDeckStudyPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
         self.add_deck_popup = AddDeckPopupPage()
         self.add_child(self.add_deck_popup)        
         
         self.current_index: int = 0
 
         self.study_button: Button = Button(self.STUDY_BB, self.study_deck)
-        self.add_button: Button = Button(self.ADD_BB,self.add_deck_popup.open)
+        self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
 
-        self.add_widgets([self.study_button,self.add_button,self.cancel_button,self.help_button])
+        self.add_widgets([self.study_button, self.add_button, self.cancel_button, self.help_button])
     
     @property
     def reward_template(self):
@@ -56,19 +59,19 @@ class ChooseDeckStudyPage(Page,RewardElement):
             "window": ["open", "close"],
             "index": [0, 1, 2, 3, 4],
             "help": 0,
-            "study": 0,
-        }
+            "study": 0
+        }        
     
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["window", "close"])
     
     def help(self):
-        print("Led to external website")
+        self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
 
     def is_open(self) -> int:
@@ -100,7 +103,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.current_index: int = 0
     
     def render(self,img: np.ndarray):
-        img = super().render(img)
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
         # Items have size (469,22)
         for i, deck in enumerate (DeckDatabase().decks):
             put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)),font_scale = 0.3)

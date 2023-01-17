@@ -5,6 +5,7 @@ from typing import List
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver, VoiceRecorder
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -84,7 +85,7 @@ class PreferencesPage(RewardElement,Page):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.PREFERENCES_BASIC_IMG_PATH)
         RewardElement.__init__(self)
-
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
         self.secure_random = random.SystemRandom()
         self.current_search_text = None        
         
@@ -96,10 +97,10 @@ class PreferencesPage(RewardElement,Page):
         self.close_button = Button(self.CLOSE_BB, self.close)
         self.help_button = Button(self.HELP_BB, self.help)
 
-        self.basic_switch_button = Button(self.BASIC_SWITCH_BB, self.set_state(1,1))
-        self.scheduling_switch_button = Button(self.SCHEDULING_SWITCH_BB, self.set_state(2,1))
-        self.network_switch_button = Button(self.NETWORK_SWITCH_BB, self.set_state(3,1))
-        self.backup_switch_button = Button(self.BACKUP_SWITCH_BB, self.set_state(4,1))
+        self.basic_switch_button = Button(self.BASIC_SWITCH_BB, self.set_basic)
+        self.scheduling_switch_button = Button(self.SCHEDULING_SWITCH_BB, self.set_scheduling)
+        self.network_switch_button = Button(self.NETWORK_SWITCH_BB, self.set_network)
+        self.backup_switch_button = Button(self.BACKUP_SWITCH_BB, self.set_backup)
         
         self.basic_window_english_ddi = DropdownItem(AnkiLanguages.ENGLISH, AnkiLanguages.ENGLISH.value)
         self.basic_window_german_ddi = DropdownItem(AnkiLanguages.GERMAN, AnkiLanguages.GERMAN.value)
@@ -178,10 +179,10 @@ class PreferencesPage(RewardElement,Page):
             "window": ["open","close"],
             
             "help": 0,
-            "basic_switch_button" : 0,
-            "scheduling_switch_button" : 0,
-            "network_switch_button" : 0,
-            "backup_switch_button" : 0,
+            "basic_switch_button": 0,
+            "scheduling_switch_button": 0,
+            "network_switch_button": 0,
+            "backup_switch_button": 0,
 
             "basic_window_show_play_buttons_checkbox" : [True,False],
             "basic_window_interrupt_audio_checkbox": [True,False],
@@ -230,10 +231,27 @@ class PreferencesPage(RewardElement,Page):
             "backups_window_increment_backups": 0,
             "backups_window_decrement_backups": 0
         }
-
-    def set_state(self,index: int,value: int):
-        self.get_state()[index] = value
-
+        
+    def set_basic(self):
+        for i in range (0,4):
+            self.get_state()[i] = 0
+        self.get_state()[0] = 1
+    
+    def set_scheduling(self):
+        for i in range (0,4):
+            self.get_state()[i] = 0
+        self.get_state()[1] = 1
+    
+    def set_network(self):
+        for i in range (0,4):
+            self.get_state()[i] = 0
+        self.get_state()[2] = 1
+    
+    def set_backup(self):
+        for i in range (0,4):
+            self.get_state()[i] = 0
+        self.get_state()[3] = 1
+    
     def increment_backup_number(self):
         if (self.backup_number < 100):
             self.backup_number += 1
@@ -245,16 +263,16 @@ class PreferencesPage(RewardElement,Page):
             self.register_selected_reward(["backups_window_decrement_backups"])
 
     def handle_click(self,click_position: np.ndarray):
-        if(self.basic_switch_button.is_clicked_by(click_position)):
+        if (self.basic_switch_button.is_clicked_by(click_position)):
             self.basic_switch_button.handle_click(click_position)
             self.register_selected_reward(["basic_switch_button"])
-        elif(self.scheduling_switch_button.is_clicked_by(click_position)):
+        elif (self.scheduling_switch_button.is_clicked_by(click_position)):
             self.scheduling_switch_button.handle_click(click_position)
             self.register_selected_reward(["scheduling_switch_button"])
-        elif(self.network_switch_button.is_clicked_by(click_position)):
+        elif (self.network_switch_button.is_clicked_by(click_position)):
             self.network_switch_button.handle_click(click_position)
             self.register_selected_reward(["network_switch_button"])
-        elif(self.backup_switch_button.is_clicked_by(click_position)):
+        elif (self.backup_switch_button.is_clicked_by(click_position)):
             self.backup_switch_button.handle_click(click_position)
             self.register_selected_reward(["backup_switch_button"])
         else:
@@ -271,6 +289,7 @@ class PreferencesPage(RewardElement,Page):
             self.handle_click_backups_window(click_position)
     
     def handle_click_basic_window(self,click_position: np.ndarray):
+        
         for widget in self.basic_window_widgets:
             if isinstance(widget, Dropdown) and widget.is_open():
                 if (widget.is_clicked_by(click_position)):
@@ -278,6 +297,7 @@ class PreferencesPage(RewardElement,Page):
                 else:
                     widget.close()
                 return
+        
         for widget in self.basic_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
@@ -345,7 +365,7 @@ class PreferencesPage(RewardElement,Page):
         self.register_selected_reward(["basic_window_put_text_button"])
 
     def help(self):
-        print("Led to external website")
+        self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
 
     def open(self):
@@ -363,61 +383,52 @@ class PreferencesPage(RewardElement,Page):
         if (self.get_state()[1] == 1):
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            for widget in self.basic_window_widgets:
-                img = widget.render(img)
         elif (self.get_state()[2] == 1):
             to_render = cv2.imread(self.PREFERENCES_SCHEDULING_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            for widget in self.scheduling_window_widgets:
-                img = widget.render(img)
         elif (self.get_state()[3] == 1):
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            for widget in self.network_window_widgets:
-                img = widget.render(img)
         elif (self.get_state()[4] == 1):
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            for widget in self.backups_window_widgets:
-                img = widget.render(img)
         return img
 
     def register_checkbox_reward_1(self):
-        self.register_selected_reward(["basic_window_show_play_buttons_checkbox", not(self.basic_window_show_play_buttons_checkbox.is_selected)])
-    
+        self.register_selected_reward(["basic_window_show_play_buttons_checkbox", not(self.basic_window_show_play_buttons_checkbox.is_selected())])
+        
     def register_checkbox_reward_2(self):
-        self.register_selected_reward(["basic_window_interrupt_audio_checkbox", not(self.basic_window_interrupt_audio_checkbox.is_selected)])
+        self.register_selected_reward(["basic_window_interrupt_audio_checkbox", not(self.basic_window_interrupt_audio_checkbox.is_selected())])
     
     def register_checkbox_reward_3(self):
-        self.register_selected_reward(["basic_window_paste_clipboard_images_checkbox", not(self.basic_window_interrupt_audio_checkbox.is_selected)])
+        self.register_selected_reward(["basic_window_paste_clipboard_images_checkbox", not(self.basic_window_interrupt_audio_checkbox.is_selected())])
 
     def register_checkbox_reward_4(self):
-        self.register_selected_reward(["basic_window_paste_without_shift_key_checkbox", not(self.basic_window_paste_clipboard_images_checkbox.is_selected)])        
+        self.register_selected_reward(["basic_window_paste_without_shift_key_checkbox", not(self.basic_window_paste_clipboard_images_checkbox.is_selected())])        
 
     def register_checkbox_reward_5(self):
-        self.register_selected_reward(["basic_window_night_mode_checkbox", not(self.basic_window_paste_without_shift_key_checkbox.is_selected)])
+        self.register_selected_reward(["basic_window_night_mode_checkbox", not(self.basic_window_paste_without_shift_key_checkbox.is_selected())])
 
     def register_checkbox_reward_6(self):
-        self.register_selected_reward(["scheduling_window_show_next_review_time_checkbox", not(self.scheduling_window_show_next_review_time_checkbox.is_selected)])
+        self.register_selected_reward(["scheduling_window_show_next_review_time_checkbox", not(self.scheduling_window_show_next_review_time_checkbox.is_selected())])
     
     def register_checkbox_reward_7(self):
-        self.register_selected_reward(["scheduling_window_remaining_card_count_checkbox", not(self.scheduling_window_remaining_card_count_checkbox.is_selected)])
+        self.register_selected_reward(["scheduling_window_remaining_card_count_checkbox", not(self.scheduling_window_remaining_card_count_checkbox.is_selected())])
     
     def register_checkbox_reward_8(self):
-        self.register_selected_reward(["scheduling_window_legacy_timezone_checkbox", not(self.scheduling_window_legacy_timezone_checkbox.is_selected)])
+        self.register_selected_reward(["scheduling_window_legacy_timezone_checkbox", not(self.scheduling_window_legacy_timezone_checkbox.is_selected())])
     
     def register_checkbox_reward_9(self):
-        self.register_selected_reward(["scheduling_window_v3_scheduler_checkbox", not(self.scheduling_window_v3_scheduler_checkbox.is_selected)])
+        self.register_selected_reward(["scheduling_window_v3_scheduler_checkbox", not(self.scheduling_window_v3_scheduler_checkbox.is_selected())])
     
     def register_checkbox_reward_10(self):
-        self.register_selected_reward(["network_window_synchronize_audio_and_image_checkbox", not(self.network_window_synchronize_audio_and_image_checkbox.is_selected)])
+        self.register_selected_reward(["network_window_synchronize_audio_and_image_checkbox", not(self.network_window_synchronize_audio_and_image_checkbox.is_selected())])
 
     def register_checkbox_reward_11(self):
-        self.register_selected_reward(["network_window_synchronize_on_profile_checkbox", not(self.network_window_synchronize_on_profile_checkbox.is_selected)])
+        self.register_selected_reward(["network_window_synchronize_on_profile_checkbox", not(self.network_window_synchronize_on_profile_checkbox.is_selected())])
     
     def register_checkbox_reward_12(self):
-        self.register_selected_reward(["network_window_periodically_synchronize_checkbox", not(self.network_window_periodically_synchronize_checkbox.is_selected)])
+        self.register_selected_reward(["network_window_periodically_synchronize_checkbox", not(self.network_window_periodically_synchronize_checkbox.is_selected())])
     
     def register_checkbox_reward_13(self):
-        self.register_selected_reward(["network_window_force_changes_in_one_direction_checkbox", not(self.network_window_force_changes_in_one_direction_checkbox.is_selected)])
-        
+        self.register_selected_reward(["network_window_force_changes_in_one_direction_checkbox", not(self.network_window_force_changes_in_one_direction_checkbox.is_selected())])

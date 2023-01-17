@@ -64,10 +64,12 @@ class AddCardPage(Page,RewardElement):
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "front_side_clipboard": ["set","reset"],
-            "back_side_clipboard": ["set","reset"],
-            "tag_clipboard": ["set","reset"],
+            "front_side_clipboard": 0,
+            "back_side_clipboard": 0,
+            "tag_clipboard": 0,
         }
+
+        
     
     def handle_click(self, click_position: np.ndarray) -> None:
         if(self.choose_deck.is_open()):
@@ -93,24 +95,23 @@ class AddCardPage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
-        print("BURAEREFNMDKE")
         self.reset_temporary_strings()
 
     def is_open(self):
         return self.get_state()[0]
     
     def set_front_side_clipboard(self):
-        self.register_selected_reward(["front_side_clipboard","set"])
+        self.register_selected_reward(["front_side_clipboard"])
         self.front_side_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         self.get_state()[1] = 1
     
     def set_back_side_clipboard(self):
-        self.register_selected_reward(["back_side_clipboard","set"])
+        self.register_selected_reward(["back_side_clipboard"])
         self.back_side_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         self.get_state()[2] = 1
 
     def set_tag_clipboard(self):
-        self.register_selected_reward(["tag_clipboard","set"])
+        self.register_selected_reward(["tag_clipboard"])
         self.tag_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         self.get_state()[3] = 1
 
@@ -118,12 +119,6 @@ class AddCardPage(Page,RewardElement):
         return self.back_side_clipboard_temporary_string is not None and self.front_side_clipboard_temporary_string is not None
     
     def reset_temporary_strings(self):
-        if(self.back_side_clipboard_temporary_string is not None):
-            self.register_selected_reward(["back_side_clipboard","reset"])
-        if(self.front_side_clipboard_temporary_string is not None):
-            self.register_selected_reward(["front_side_clipboard","reset"])
-        if(self.tag_clipboard_temporary_string is not None):
-            self.register_selected_reward(["tag_clipboard","reset"])
         self.back_side_clipboard_temporary_string = None
         self.front_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
@@ -135,7 +130,7 @@ class AddCardPage(Page,RewardElement):
         if(self.is_card_creatable()):
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
-            self.deck_database.decks[ChooseDeckPage().current_index].add_card(card)
+            self.deck_database.decks[self.choose_deck.current_index].add_card(card)
             self.reset_temporary_strings()
 
     def select_deck(self):

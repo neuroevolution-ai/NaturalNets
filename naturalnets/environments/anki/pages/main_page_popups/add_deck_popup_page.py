@@ -54,23 +54,22 @@ class AddDeckPopupPage(Page,RewardElement):
     @property
     def reward_template(self):
         return {
-            "window": [True,False],
-            "current_field_string": ["set","cleaned"],
+            "window": ["open","close"],
+            "set_clipboard": 0,
         }
 
     def close(self):
+        self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        self.register_selected_reward(["window", False])
-        self.register_selected_reward(["current_field_string","cleaned"])
-        self.current_field_string = None
+
     
     def open(self):
+        self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
-        self.register_selected_reward(["window", True])
 
     def set_deck_name_clipboard(self):
+        self.register_selected_reward(["set_clipboard"])
         self.current_field_string = self.secure_random.choice(self.deck_database.deck_names)
-        self.register_selected_reward(["current_field_string", "set"])
 
     def is_open(self):
         return self.get_state()[0]
@@ -96,7 +95,6 @@ class AddDeckPopupPage(Page,RewardElement):
 
         if (self.five_decks_popup.is_open()):
             img = self.five_decks_popup.render(img)
-            return img
         elif (self.name_exists_popup.is_open()):
             img = self.name_exists_popup.render(img)
         return img

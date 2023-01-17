@@ -49,17 +49,17 @@ class ChooseDeckPage(Page,RewardElement):
     @property
     def reward_template(self):
         return {
-            "window": [True, False],
-            "index": [0, 1, 2, 3, 4],
+            "window": ["open", "close"],
+            "index": [0, 1, 2, 3, 4]
         }
     
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window", True])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window", False])
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self) -> int:
         return self.get_state()[0]

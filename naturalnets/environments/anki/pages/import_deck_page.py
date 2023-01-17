@@ -59,8 +59,8 @@ class ImportDeckPage(Page,RewardElement):
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "help": "clicked",
-        }
+            "help": 0,
+        }        
     
     def handle_click(self, click_position: np.ndarray) -> None:
         if(self.leads_to_external_website_popup.is_open()):
@@ -68,6 +68,12 @@ class ImportDeckPage(Page,RewardElement):
             return
         if(self.import_deck_popup.is_open()):
             self.import_deck_popup.handle_click(click_position)
+            return
+        if(self.five_decks_popup.is_open()):
+            self.five_decks_popup.handle_click(click_position)
+            return
+        if(self.name_exists_popup.is_open()):
+            self.name_exists_popup.handle_click(click_position)
             return
         if (self.select_deck_button.is_clicked_by(click_position)):
             self.select_deck_button.handle_click(click_position)
@@ -79,22 +85,19 @@ class ImportDeckPage(Page,RewardElement):
             self.help_button.handle_click(click_position)
 
     def open(self):
+        self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
-
+        
     def close(self):
+        self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
-
+        
     def is_open(self):
         return self.get_state()[0]
     
     def help(self):    
         self.leads_to_external_website_popup.open()    
-
-    def choose_deck(self):
-        self.register_selected_reward(["deck","open"])
-        self.import_deck_popup.open()
+        self.register_selected_reward(["help"])
 
     def import_deck(self):
         if (self.import_deck_popup.current_import_name is None):
@@ -170,6 +173,9 @@ class ImportDeckPopupPage(Page,RewardElement):
         }
     
     def handle_click(self,click_position: np.ndarray):
+        if(self.leads_to_external_website_popup.is_open()):
+            self.leads_to_external_website_popup.handle_click(click_position)
+            return
         if (self.choose_button.is_clicked_by(click_position)):
             self.choose_button.handle_click(click_position)
         elif (self.help_button.is_clicked_by(click_position)):

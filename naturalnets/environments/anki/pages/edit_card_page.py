@@ -1,10 +1,11 @@
 import os
+import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki import DeckDatabase
 
@@ -32,6 +33,7 @@ class EditCardPage(RewardElement,Page):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.deck_database = DeckDatabase()
         
         self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit)
         self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit)
@@ -58,40 +60,41 @@ class EditCardPage(RewardElement,Page):
             "first_field_modified": 0,
             "second_field_modified": 0,
             "tags_field_modified": 0
-        }
+        }        
 
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
+        self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self):
         return self.get_state()[0]
     
     def front_text_edit(self):
-        if(not(DeckDatabase().current_deck.current_card.is_front_edited())):
-            DeckDatabase().current_deck.current_card.edit_front()
+        if(not(self.deck_database.current_deck.current_card.is_front_edited())):
+            self.deck_database.current_deck.current_card.edit_front()
             self.register_selected_reward(["first_field_modified"])
     
     def back_text_edit(self):
-        if(not(DeckDatabase().current_deck.current_card.is_back_edited())):
-            DeckDatabase().current_deck.current_card.edit_back()
+        if(not(self.deck_database.current_deck.current_card.is_back_edited())):
+            self.deck_database.current_deck.current_card.edit_back()
             self.register_selected_reward(["second_field_modified"])
         
     def tags_text_edit(self):
-        if(not(DeckDatabase().current_deck.current_card.is_tag_edited())):
-            DeckDatabase().current_deck.current_card.edit_tag()
+        if(not(self.deck_database.current_deck.current_card.is_tag_edited())):
+            self.deck_database.current_deck.current_card.edit_tag()
             self.register_selected_reward(["tags_field_modified"])
 
     def render(self,img: np.ndarray):
-        img = super().render(img)
-        if (DeckDatabase().current_deck.current_card.front is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.front}", (85, 198) ,font_scale = 0.3)
-        if (DeckDatabase().current_deck.current_card.back is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.back}", (85, 305) ,font_scale = 0.3)
-        if (DeckDatabase().current_deck.current_card.tag is not None):
-            put_text(img,f"{DeckDatabase().current_deck.current_card.tag}", (120, 478) ,font_scale = 0.3)
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        if (self.deck_database.current_deck.current_card.front is not None):
+            put_text(img,f"{self.deck_database.current_deck.current_card.front}", (85, 198) ,font_scale = 0.3)
+        if (self.deck_database.current_deck.current_card.back is not None):
+            put_text(img,f"{self.deck_database.current_deck.current_card.back}", (85, 305) ,font_scale = 0.3)
+        if (self.deck_database.current_deck.current_card.tag is not None):
+            put_text(img,f"{self.deck_database.current_deck.current_card.tag}", (120, 478) ,font_scale = 0.3)
         return img

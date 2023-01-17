@@ -1,15 +1,12 @@
 import os
 import cv2
-
 import numpy as np
-
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
-
 
 class AtLeastOneDeckPopupPage(Page, RewardElement):
     """
@@ -21,7 +18,7 @@ class AtLeastOneDeckPopupPage(Page, RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_deck_popup.png")
     WINDOW_BB = BoundingBox(200, 250, 318, 121)
     
-    OK_BUTTON_BB = BoundingBox(351, 322, 77, 22)
+    OK_BUTTON_BB = BoundingBox(349, 331, 77, 22)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -33,12 +30,12 @@ class AtLeastOneDeckPopupPage(Page, RewardElement):
         RewardElement.__init__(self)
         
         self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-        self.add_widgets([self.ok_button])
+        self.add_widget(self.ok_button)
 
     @property
     def reward_template(self):
         return {
-            "window": ["open", "close"]
+            "window": ["open","close"]
         }
     
     def handle_click(self, click_position: np.ndarray) -> None:

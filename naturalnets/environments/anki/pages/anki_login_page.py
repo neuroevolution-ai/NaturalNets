@@ -39,7 +39,6 @@ class AnkiLoginPage(Page,RewardElement):
         Page.__init__(self,self.STATE_LEN,self.WINDOW_BB,self.IMG_PATH)
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
-        
         self.failed_login = FailedLoginPopupPage()
         
         self.current_anki_account: AnkiAccount = None
@@ -56,13 +55,14 @@ class AnkiLoginPage(Page,RewardElement):
 
         self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
         self.set_reward_children([self.failed_login])
+
     @property
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "set_username": ["set","cleared"],
-            "set_password": ["set","cleared"],
-            "login": [True, False]
+            "set_username": 0,
+            "set_password": 0,
+            "login": 0
         }
     
     def is_strings_not_none(self):
@@ -86,25 +86,22 @@ class AnkiLoginPage(Page,RewardElement):
     def set_username_clipboard(self):
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(self.anki_username_list)
-        self.register_selected_reward(["set_username", "set"])
+        self.register_selected_reward(["set_username"])
 
     def set_password_clipboard(self):
         self.get_state()[2] = 1
         self.password_clipboard = self.secure_random.choice(self.anki_password_list)
-        self.register_selected_reward(["set_password", "set"])
+        self.register_selected_reward(["set_password"])
 
     def login(self):
-        if(self.is_allowed_login()):
-            self.register_selected_reward(["set_username", "cleared"])
-            self.register_selected_reward(["set_password", "cleared"])
-            self.register_selected_reward(["login", True])
+        if(self.is_allowed_login()):     
             self.current_anki_account = AnkiAccount(self.username_clipboard,self.password_clipboard)
-            self.close()
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[3] = 1
             self.get_state()[2] = 0
             self.get_state()[1] = 0
+            self.close()
         else:
             self.failed_login.open()
         
@@ -112,9 +109,6 @@ class AnkiLoginPage(Page,RewardElement):
         self.current_anki_account = None
         self.username_clipboard = None
         self.password_clipboard = None
-        self.register_selected_reward(["set_username", "cleared"])
-        self.register_selected_reward(["set_password", "cleared"])
-        self.register_selected_reward(["login", False])
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0
