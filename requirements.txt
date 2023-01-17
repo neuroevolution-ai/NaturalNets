@@ -15,4 +15,5 @@ pytest==7.2.1
 scipy==1.10.0
 tensorboardX==2.5.1
 tensorflow==2.11.0
+tqdm==4.64.1
 wandb==0.13.9

@@ -13,6 +13,7 @@ import click
 import h5py
 import numpy as np
 from attrs import asdict, define, field, validators
+from tqdm import tqdm
 
 from naturalnets.environments.i_environment import get_environment_class
 
@@ -57,6 +58,10 @@ class MonkeyTesterCfg:
     # Whether to store the chosen actions and rewards in a zipped NumPy archive. Should not be necessary, because the
     # monkey testers are seeded and therefore always produce the same results
     store_individual_monkey_data: bool = field(default=False, validator=validators.instance_of(bool))
+
+    # The chunk size equals the dataset sizes in the HDF5 file, i.e. after this size, the data is stored on disk,
+    # and memory is freed
+    chunk_size: int = field(default=250000, validator=[validators.instance_of(int), validators.gt(0)])
 
 
 class RandomMonkeyTester:
@@ -145,8 +150,6 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
             reward_sum=reward_sum
         )
 
-    logging.info(log_msg)
-
     return reward_sum
 
 
@@ -193,16 +196,31 @@ def main(config: Union[str, dict]):
     random_seeds = rng.choice(2**32, size=configuration.num_monkeys, replace=False)
 
     results = []
+    chunk_number = 0
+    total_number_of_rewards = 0
     with mp.Pool(configuration.num_processes) as p:
-        for i, (_dir, monkey_seed) in enumerate(zip(concrete_directories, random_seeds)):
+        progress_bar = tqdm(enumerate(zip(concrete_directories, random_seeds)), total=configuration.num_monkeys,
+                            unit="monkeys", desc=f"Monkey Testers")
+
+        for i, (_dir, monkey_seed) in progress_bar:
             results.append((i, int(monkey_seed), p.apply_async(run_episode, (configuration, _dir, int(monkey_seed)))))
 
-        # Wait for all processes to finish by getting the results from the processes
-        monkey_rewards = [[i, seed, r.get()] for i, seed, r in results]
-        assert len(monkey_rewards) == configuration.num_monkeys
+            # Use chunks to free system memory. Useful if a very large amount of monkey testers is used
+            if len(results) == configuration.chunk_size or i == (len(random_seeds) - 1):
+                # Wait for all processes to finish by getting the results from the processes
+                monkey_rewards = [[i, seed, r.get()] for i, seed, r in results]
+                total_number_of_rewards += len(monkey_rewards)
 
-        with h5py.File(os.path.join(main_chosen_directory, f"monkey-rewards.hdf5"), "w") as f:
-            f.create_dataset("monkey_rewards", data=monkey_rewards)
+                with h5py.File(os.path.join(main_chosen_directory, f"monkey-rewards.hdf5"), "a") as f:
+                    f.create_dataset(f"monkey-rewards-chunk-{chunk_number}", data=monkey_rewards)
+
+                chunk_number += 1
+                results.clear()
+                del monkey_rewards
+
+        progress_bar.close()
+
+    assert total_number_of_rewards == configuration.num_monkeys
 
     logging.info("Monkey Testing finished")
 
