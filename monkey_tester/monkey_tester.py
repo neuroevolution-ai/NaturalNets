@@ -7,12 +7,11 @@ import time
 from copy import deepcopy
 from datetime import datetime
 from functools import partial
-from socket import gethostname
 from typing import List, Union
 
 import click
+import h5py
 import numpy as np
-import wandb
 from attrs import asdict, define, field, validators
 
 from naturalnets.environments.i_environment import get_environment_class
@@ -30,7 +29,7 @@ def check_categorical(possible_arguments: List[str], instance, attribute, value)
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class MonkeyTesterCfg:
     # Number of monkey testers to start. Must be lower than 200.000 because this is the limit for rows in a WandB.Table
-    num_monkeys: int = field(validator=[validators.instance_of(int), validators.gt(0), validators.le(200000)])
+    num_monkeys: int = field(validator=[validators.instance_of(int), validators.gt(0)])
 
     # Number of processes to use, for parallel execution. Omitting this parameter will use all available
     # threads of that processor
@@ -57,14 +56,7 @@ class MonkeyTesterCfg:
 
     # Whether to store the chosen actions and rewards in a zipped NumPy archive. Should not be necessary, because the
     # monkey testers are seeded and therefore always produce the same results
-    store_monkey_tester_data: bool = field(default=False, validator=validators.instance_of(bool))
-
-    # Whether to use Weights & Biases logging
-    wandb_logging: bool = field(default=True, validator=validators.instance_of(bool))
-
-    # Weights & Biases Entity and Project, if the Weights & Biases logging is used
-    wandb_entity: str = field(default="neuroevolution-fzi", validator=validators.instance_of(str))
-    wandb_project: str = field(default="NaturalNets", validator=validators.instance_of(str))
+    store_individual_monkey_data: bool = field(default=False, validator=validators.instance_of(bool))
 
 
 class RandomMonkeyTester:
@@ -139,7 +131,7 @@ def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_se
 
     log_msg = f"Monkey Tester finished: Reward {reward_sum} - Started {time_started} - Ended {time_ended}"
 
-    if configuration.store_monkey_tester_data:
+    if configuration.store_individual_monkey_data:
         log_msg += f" - Directory {directory}"
 
         _save_monkey_tester_results(
@@ -181,11 +173,13 @@ def main(config: Union[str, dict]):
         datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     )
 
+    os.makedirs(main_chosen_directory)
+
     concrete_directories = [
         os.path.join(main_chosen_directory, f"monkey-{i}") for i in range(configuration.num_monkeys)
     ]
 
-    if configuration.store_monkey_tester_data:
+    if configuration.store_individual_monkey_data:
         for _dir in concrete_directories:
             # Test if any directory already exists and raise an error if that is the case. We do not want
             # to overwrite existing results.
@@ -205,22 +199,10 @@ def main(config: Union[str, dict]):
 
         # Wait for all processes to finish by getting the results from the processes
         monkey_rewards = [[i, seed, r.get()] for i, seed, r in results]
+        assert len(monkey_rewards) == configuration.num_monkeys
 
-    if configuration.wandb_logging:
-        monkey_config = asdict(configuration)
-
-        wandb.init(
-            entity=configuration.wandb_entity,
-            project=configuration.wandb_project,
-            name=f"{gethostname()}/{configuration.monkey_tester_type}/{os.path.basename(main_chosen_directory)}",
-            config=monkey_config,
-            tags=["monkey"]
-        )
-
-        monkey_table = wandb.Table(columns=["monkey_number", "seed", "reward_sum"], data=monkey_rewards)
-        wandb.log({"monkey_tester_results": monkey_table})
-
-        wandb.finish()
+        with h5py.File(os.path.join(main_chosen_directory, f"monkey-rewards.hdf5"), "w") as f:
+            f.create_dataset("monkey_rewards", data=monkey_rewards)
 
     logging.info("Monkey Testing finished")
 
