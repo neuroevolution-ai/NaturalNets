@@ -30,9 +30,6 @@ class CheckMediaPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.close_button: Button = Button(self.WINDOW_BB,self.close)
-        self.add_widget(self.close_button)
-
     @property
     def reward_template(self):
         return {

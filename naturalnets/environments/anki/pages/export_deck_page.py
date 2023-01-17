@@ -46,7 +46,7 @@ class ExportDeckPage(Page,RewardElement):
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
 
-        self.add_widgets([self.include_dropdown, self.export_button, self.cancel_button])
+        self.add_widget(self.include_dropdown)
 
     @property
     def reward_template(self):

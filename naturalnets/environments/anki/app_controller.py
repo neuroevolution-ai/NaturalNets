@@ -56,8 +56,7 @@ class AppController:
     def get_element_state_len(self, state_element: StateElement) -> int:
         accumulated_len = 0
         for child in state_element.get_children():
-            if (not(isinstance(child, Button))):
-                accumulated_len += self.get_element_state_len(child)
+            accumulated_len += self.get_element_state_len(child)
         accumulated_len += state_element.get_state_len()
         return accumulated_len
     

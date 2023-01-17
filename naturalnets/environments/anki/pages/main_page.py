@@ -120,8 +120,10 @@ class MainPage(Page,RewardElement):
         self.dropdowns: List[Dropdown] = [self.file_dropdown, self.edit_dropdown, self.tools_dropdown, self.help_dropdown]
         
         self.opened_dd: Dropdown = None
-        self.add_children(self.dropdowns)
-        self.add_widgets(self.dropdowns)
+        self.add_widget(self.file_dropdown)
+        self.add_widget(self.edit_dropdown)
+        self.add_widget(self.tools_dropdown)
+        self.add_widget(self.help_dropdown)
 
         self.decks_button = Button(self.DECKS_BUTTON_BB, self.stop_study)
         self.edit_button = Button(self.EDIT_BB, self.edit_card_page.open)
@@ -135,10 +137,6 @@ class MainPage(Page,RewardElement):
         self.remove_button = Button(self.REMOVE_BB, self.remove_card)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
         self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
-
-        self.add_widgets([self.study_button, self.add_card_button, self.sync_button,
-        self.get_shared_button, self.create_deck_button, self.import_file_button, self.edit_button,
-        self.show_answer_button, self.remove_button, self.next_button])
 
         self.main_page_widgets = [self.add_card_button, self.sync_button, self.study_button, self.get_shared_button,
         self.create_deck_button ,self.import_file_button, self.delete_button]
@@ -392,7 +390,6 @@ class MainPage(Page,RewardElement):
     
     def get_shared(self):
         self.leads_to_external_website_popup_page.open()
-        self.register_selected_reward(["get_shared"])
 
     def remove_card(self):
         self.deck_database.current_deck.cards.remove(self.deck_database.current_deck[self.deck_database.current_deck.study_index])

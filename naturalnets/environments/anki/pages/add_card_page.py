@@ -56,9 +56,6 @@ class AddCardPage(Page,RewardElement):
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
         self.add_button: Button = Button(self.ADD_BB, self.add_card)
         
-        self.add_widgets([self.select_button, self.front_text_button, self.back_text_button, self.tags_text_button
-            ,self.close_button, self.add_button])
-        
         self.set_reward_children([self.choose_deck])
     @property
     def reward_template(self):

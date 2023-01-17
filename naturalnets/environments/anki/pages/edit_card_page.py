@@ -39,10 +39,7 @@ class EditCardPage(RewardElement,Page):
         self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit)
         self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.tags_text_edit)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
-
-        self.add_widgets([self.front_text_button, self.back_text_button,
-            self.tags_text_button, self.close_button])
-
+        
     def handle_click(self, click_position: np.ndarray):
         if self.front_text_button.is_clicked_by(click_position):
             self.front_text_button.handle_click(click_position)

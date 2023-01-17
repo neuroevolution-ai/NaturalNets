@@ -38,8 +38,7 @@ class DeleteCurrentDeckPopupPage(Page,RewardElement):
         
         self.yes_button = Button(self.YES_BB,self.remove_deck)
         self.no_button = Button(self.NO_BB,self.close)
-        
-        self.add_widget([self.yes_button, self.no_button])
+    
     
     @property
     def reward_template(self):

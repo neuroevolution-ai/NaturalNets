@@ -44,8 +44,6 @@ class ChooseDeckPage(Page,RewardElement):
         self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
         
-        self.add_widgets([self.add_button, self.choose_button, self.close_button])
-
     @property
     def reward_template(self):
         return {

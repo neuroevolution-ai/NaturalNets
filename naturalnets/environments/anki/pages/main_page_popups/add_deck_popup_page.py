@@ -48,7 +48,6 @@ class AddDeckPopupPage(Page,RewardElement):
         self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
-        self.add_widgets([self.ok_button, self.text_button, self.cancel_button])
         self.set_reward_children([self.name_exists_popup, self.five_decks_popup])
     
     @property

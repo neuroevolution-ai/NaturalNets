@@ -162,8 +162,6 @@ class ImportDeckPopupPage(Page,RewardElement):
         self.help_button: Button = Button(self.HELP_BB, self.help)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
 
-        self.add_widgets([self.choose_button, self.help_button, self.close_button])
-
     @property
     def reward_template(self):
         return {

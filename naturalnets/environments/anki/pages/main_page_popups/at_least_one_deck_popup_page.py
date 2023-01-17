@@ -30,8 +30,7 @@ class AtLeastOneDeckPopupPage(Page, RewardElement):
         RewardElement.__init__(self)
         
         self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-        self.add_widget(self.ok_button)
-
+        
     @property
     def reward_template(self):
         return {

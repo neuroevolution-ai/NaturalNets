@@ -50,8 +50,6 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
-
-        self.add_widgets([self.study_button, self.add_button, self.cancel_button, self.help_button])
     
     @property
     def reward_template(self):

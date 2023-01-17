@@ -53,7 +53,6 @@ class AnkiLoginPage(Page,RewardElement):
         self.ok_button: Button = Button(self.OK_BB, self.login)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
-        self.add_widgets([self.username_button, self.password_button, self.cancel_button, self.ok_button])
         self.set_reward_children([self.failed_login])
 
     @property

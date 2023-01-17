@@ -27,9 +27,6 @@ class NameExistsPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB, self.close)
-        self.add_widget(self.ok_button)
-        
     @property
     def reward_template(self):
         return {

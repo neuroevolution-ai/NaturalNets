@@ -76,8 +76,6 @@ class ProfilePage(Page,RewardElement):
         self.current_index: int = 0
         self.current_profile: Profile = self.profile_database.profiles[self.current_index]
 
-        self.add_widgets([ self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.quit_button,
-            self.rename_button, self.add_button, self.open_button])
 
     @property
     def reward_template(self):
@@ -165,8 +163,6 @@ class DeleteProfilePopupPage(Page,RewardElement):
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
-        self.add_widgets([self.yes_button, self.no_button])
-
     @property
     def reward_template(self):
         return {
@@ -222,10 +218,6 @@ class DowngradePopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
-        self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
-        self.add_widget(self.ok_button)
-        
         
     @property
     def reward_template(self):
@@ -274,9 +266,6 @@ class FiveProfilesPopupPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.ok_button = Button(self.OK_BB,self.close)
-        self.add_widget(self.ok_button)
-    
     @property
     def reward_template(self):
         return {
@@ -326,7 +315,6 @@ class OpenBackupPopupPage(Page, RewardElement):
         
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
-        self.add_widgets([self.yes_button, self.no_button])
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -409,7 +397,6 @@ class RenameProfilePage(RewardElement,Page):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_child(self.name_exists_popup_page)
-        self.add_widgets([self.text_button, self.ok_button, self.cancel_button])
 
     @property
     def reward_template(self):
@@ -490,7 +477,6 @@ class AddProfilePopupPage(Page,RewardElement):
         self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string)
         self.ok_button: Button = Button(self.OK_BB, self.add_profile)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
-        self.add_widgets([self.text_button, self.ok_button, self.cancel_button])
 
     @property
     def reward_template(self):
@@ -562,9 +548,6 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
-        self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-        self.add_widget(self.ok_button)
 
     @property
     def reward_template(self):
