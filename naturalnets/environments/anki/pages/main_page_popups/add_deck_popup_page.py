@@ -54,19 +54,19 @@ class AddDeckPopupPage(Page,RewardElement):
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"],
+            "window": [True,False],
             "current_field_string": ["set","cleaned"],
         }
 
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
+        self.register_selected_reward(["window", False])
         self.register_selected_reward(["current_field_string","cleaned"])
         self.current_field_string = None
     
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
+        self.register_selected_reward(["window", True])
 
     def set_deck_name_clipboard(self):
         self.current_field_string = self.secure_random.choice(self.deck_database.deck_names)

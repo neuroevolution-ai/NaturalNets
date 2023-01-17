@@ -100,13 +100,18 @@ class DeckDatabase():
     def delete_deck(self,deck_name :str) -> None:
         if(self.is_included(deck_name)):
             self.decks.remove(self.fetch_deck(deck_name))
-
+            self.current_index = 0
+            self.current_deck = self.decks[self.current_index]
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
-        split_deck = deck_as_string.splitlines('\n')
+        split_deck = deck_as_string.splitlines(False)
         deck: Deck = Deck(deck_name)
+        print(split_deck)
         if(not(self.is_included(deck_name))):
             for line in split_deck:
-                line = line.split(" ")
+                if ("\t" in line):
+                    line = line.split("\t")
+                elif(" " in line):
+                    line = line.split(" ")
                 deck.add_card(Card(line[0],line[1]))
             return deck
     
@@ -125,7 +130,6 @@ class DeckDatabase():
         self.update_current_deck()
 
     def default_decks(self) -> None:
-        
         card_1 = Card("Front side", "Back side")
         card_2 = Card("This is a question", "This is the answer")
         deck_1 = Deck("Cool deck")

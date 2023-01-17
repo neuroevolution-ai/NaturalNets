@@ -9,6 +9,8 @@ from naturalnets.environments.anki import AnkiLoginPage
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
 from naturalnets.environments.anki import EditCardPage
 from naturalnets.environments.anki import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages.main_page_popups.at_least_one_deck_popup_page import AtLeastOneDeckPopupPage
+from naturalnets.environments.anki.pages.main_page_popups.delete_current_deck_check_popup_page import DeleteCurrentDeckPopupPage
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
@@ -48,6 +50,7 @@ class MainPage(Page,RewardElement):
     CREATE_DECK_BB = BoundingBox(305, 635, 85, 28)
     IMPORT_FILE_BB = BoundingBox(393, 635, 77, 28)
     STUDY_BB = BoundingBox(429, 164, 79, 30)
+    DELETE_DECK_BB = BoundingBox(433, 232, 68, 24)
 
     ADD_CARD_BB = BoundingBox(229, 31, 78, 29)
     DECKS_BUTTON_BB = BoundingBox(393, 32, 69, 27)
@@ -84,6 +87,8 @@ class MainPage(Page,RewardElement):
         self.edit_card_page = EditCardPage()
         self.deck_database = DeckDatabase()
         self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopupPage()
+        self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopupPage()
+        self.at_least_one_deck_popup_page = AtLeastOneDeckPopupPage()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
             self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.anki_login, self.add_deck_popup_page,
@@ -125,15 +130,16 @@ class MainPage(Page,RewardElement):
         self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
         self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
         self.show_answer_button = Button(self.SHOW_ANSWER_NEXT_BB, self.show_answer)
-        self.remove_button = Button(self.REMOVE_BB, self.remove_action)
+        self.remove_button = Button(self.REMOVE_BB, self.remove_card)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
+        self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
 
         self.add_widgets([self.study_button, self.add_card_button, self.sync_button,
         self.get_shared_button, self.create_deck_button, self.import_file_button, self.edit_button,
         self.show_answer_button, self.remove_button, self.next_button])
 
         self.main_page_widgets = [self.add_card_button,self.sync_button,self.study_button,self.get_shared_button,
-        self.create_deck_button,self.import_file_button]
+        self.create_deck_button,self.import_file_button, self.delete_button]
 
         self.study_page_widgets = [self.add_card_button, self.decks_button, self.sync_button, self.edit_button,
         self.show_answer_button, self.remove_button, self.next_button]
@@ -146,7 +152,7 @@ class MainPage(Page,RewardElement):
         }
 
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
-        self.add_card_page])
+        self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page])
 
     @property
     def reward_template(self):
@@ -223,9 +229,16 @@ class MainPage(Page,RewardElement):
         elif (self.leads_to_external_website_popup_page.is_open()):
             self.leads_to_external_website_popup_page.handle_click(click_position)
             return
+        elif (self.delete_current_deck_check_popup_page.is_open()):
+            self.delete_current_deck_check_popup_page.handle_click(click_position)
+            return
+        elif (self.at_least_one_deck_popup_page.is_open()):
+            self.at_least_one_deck_popup_page.handle_click(click_position)
+            return
         elif (self.DECKS_BB.is_point_inside(click_position)):
             self.change_current_deck_index(click_position)
             return
+        
         
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
@@ -267,10 +280,7 @@ class MainPage(Page,RewardElement):
         self.register_selected_reward(["anki_login"])
 
     def create_deck(self):
-        if(self.add_card_page.is_open()):
-            return
         self.add_deck_popup_page.open() 
-        self.register_selected_reward(["create_deck_button"])
 
     def import_file(self):
         self.import_deck_page.open()
@@ -360,15 +370,18 @@ class MainPage(Page,RewardElement):
             self.add_deck_popup_page.render(img)
         elif (self.leads_to_external_website_popup_page.is_open()):
             self.leads_to_external_website_popup_page.render(img)
+        elif (self.delete_current_deck_check_popup_page.is_open()):
+            self.delete_current_deck_check_popup_page.render(img)
+        elif (self.at_least_one_deck_popup_page.is_open()):
+            self.at_least_one_deck_popup_page.render(img)
         return img
 
     def render_deck_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
         if (self.profile_page.current_profile is not None):
-            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (36,122), font_scale = 0.5)
-        
-        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (276,122), font_scale = 0.5)
+            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (16,122), font_scale = 0.5)
+        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (226,122), font_scale = 0.5)
         
         if (self.anki_login.current_anki_account is not None):
             put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,122), font_scale = 0.5)
@@ -397,5 +410,11 @@ class MainPage(Page,RewardElement):
         self.leads_to_external_website_popup_page.open()
         self.register_selected_reward(["get_shared"])
 
-    def remove_action(self):
+    def remove_card(self):
         self.deck_database.current_deck.cards.remove(self.deck_database.current_deck[self.deck_database.current_deck.study_index])
+    
+    def remove_deck(self):
+        if(self.deck_database.decks_length() == 1):
+            self.at_least_one_deck_popup_page.open()
+            return
+        self.delete_current_deck_check_popup_page.open()
