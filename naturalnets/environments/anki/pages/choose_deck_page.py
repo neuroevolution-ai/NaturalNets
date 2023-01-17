@@ -1,10 +1,11 @@
 from math import floor
 import os
+import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -19,12 +20,11 @@ class ChooseDeckPage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck.png")
 
-    WINDOW_BB = BoundingBox(20, 20, 498, 375)
-    CHOOSE_BB = BoundingBox(210, 355, 91, 27)
-    ADD_BB = BoundingBox(311, 355, 91, 27)
-    HELP_BB = BoundingBox(413, 355, 91, 27)
-
-    DECK_BB = BoundingBox(33, 65, 472, 280)
+    WINDOW_BB = BoundingBox(160, 160, 498, 375)
+    CHOOSE_BB = BoundingBox(297, 494, 77, 27)
+    ADD_BB = BoundingBox(382, 494, 77, 27)
+    CLOSE_BB = BoundingBox(471, 495, 77, 27)
+    DECK_BB = BoundingBox(13, 65, 472, 280)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -34,7 +34,7 @@ class ChooseDeckPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        self.deck_database = DeckDatabase()
         self.add_deck_popup = AddDeckPopupPage()
         self.add_child(self.add_deck_popup)
 
@@ -42,16 +42,15 @@ class ChooseDeckPage(Page,RewardElement):
 
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck)
-        self.help_button: Button = Button(self.HELP_BB, self.help)
-
-        self.add_widgets([self.add_button, self.choose_button, self.help_button])
+        self.close_button: Button = Button(self.CLOSE_BB, self.close)
+        
+        self.add_widgets([self.add_button, self.choose_button, self.close_button])
 
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
             "index": [0, 1, 2, 3, 4],
-            "help": 0,
         }
     
     def open(self):
@@ -61,11 +60,7 @@ class ChooseDeckPage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
-    
-    def help(self):
-        print("Led to external website")
-        self.register_selected_reward(["help"])
-    
+
     def is_open(self) -> int:
         return self.get_state()[0]
 
@@ -75,33 +70,46 @@ class ChooseDeckPage(Page,RewardElement):
         # Top left corner (33,65)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = floor((click_point[1] - 65)/22)
+            click_index: int = floor((click_point[1] - 206) / 30)
             self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (33,65)
-       length = 22 * DeckDatabase().decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 472, length)
+       upper_left_point = (146,206)
+       length = 30 * self.deck_database.decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 398, length)
        return current_bounding_box
 
     def choose_deck(self):
-        DeckDatabase().set_current_index(self.current_index)
-        DeckDatabase().set_current_deck(DeckDatabase().decks[self.current_index])
-        self.register_selected_reward(["index", f"{self.current_index}"])
+        self.deck_database.set_current_index(self.current_index)
+        self.deck_database.set_current_deck(self.deck_database.decks[self.current_index])
         for i in range(1,6):
             self.get_state()[i] = 0
         self.get_state()[self.current_index + 1] = 1
+        self.close()
 
     def reset_index(self):
         self.current_index: int = 0
     
     def render(self,img: np.ndarray):
-        img = super().render(img)
-        # Items have size (469,22)
-        for i, deck in enumerate (DeckDatabase().decks):
-            put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)), font_scale = 0.3)
+        to_render = cv2.imread(self._img_path)
+        img = render_onto_bb(img, self.get_bb(), to_render)
+        if(self.add_deck_popup.is_open()):
+            img = self.add_deck_popup.render(img)
+        put_text(img, f" {self.deck_database.decks[self.current_index].name}", (170, 190), font_scale = 0.5)
+        for i, deck in enumerate (self.deck_database.decks):
+            put_text(img, f" {deck.name}", (170, 195 + 30 * (i + 1)), font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        "return super().handle_click(click_position)"
+        if (self.add_deck_popup.is_open()):
+            self.add_deck_popup.handle_click(click_position)
+            return
+        elif (self.add_button.is_clicked_by(click_position)):
+            self.add_button.handle_click(click_position)
+        elif (self.choose_button.is_clicked_by(click_position)):
+            self.choose_button.handle_click(click_position)
+        elif (self.close_button.is_clicked_by(click_position)):
+            self.close_button.handle_click(click_position)
+        elif (self.calculate_current_bounding_box().is_point_inside(click_position)):
+            self.change_current_deck_index(click_position)

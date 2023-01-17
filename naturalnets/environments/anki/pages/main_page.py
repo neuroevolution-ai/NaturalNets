@@ -267,6 +267,8 @@ class MainPage(Page,RewardElement):
         self.register_selected_reward(["anki_login"])
 
     def create_deck(self):
+        if(self.add_card_page.is_open()):
+            return
         self.add_deck_popup_page.open() 
         self.register_selected_reward(["create_deck_button"])
 

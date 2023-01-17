@@ -22,13 +22,13 @@ class AddCardPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "add_card.png")
 
-    WINDOW_BB = BoundingBox(100, 100, 566, 456)
-    SELECT_BB = BoundingBox(376, 60, 223, 26)
-    FRONT_TEXT_BB = BoundingBox(470, 276, 77, 26)
-    BACK_TEXT_BB = BoundingBox(470, 356, 77, 26)
-    TAGS_TEXT_BB = BoundingBox(475, 479, 77, 21)
-    CLOSE_BB = BoundingBox(390, 513, 77, 26)
-    ADD_BB = BoundingBox(216, 513, 77, 26)
+    WINDOW_BB = BoundingBox(130, 120, 566, 456)
+    SELECT_BB = BoundingBox(388, 130, 187, 23)
+    FRONT_TEXT_BB = BoundingBox(498, 299, 77, 26)
+    BACK_TEXT_BB = BoundingBox(498, 378, 77, 26)
+    TAGS_TEXT_BB = BoundingBox(504, 501, 77, 21)
+    CLOSE_BB = BoundingBox(414, 537, 77, 26)
+    ADD_BB = BoundingBox(242, 538, 77, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -45,6 +45,7 @@ class AddCardPage(Page,RewardElement):
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
         
+        self.deck_database = DeckDatabase()
         self.choose_deck = ChooseDeckPage()
         self.add_child(self.choose_deck)
                
@@ -57,7 +58,8 @@ class AddCardPage(Page,RewardElement):
         
         self.add_widgets([self.select_button, self.front_text_button, self.back_text_button, self.tags_text_button
             ,self.close_button, self.add_button])
-
+        
+        self.set_reward_children([self.choose_deck])
     @property
     def reward_template(self):
         return {
@@ -68,7 +70,10 @@ class AddCardPage(Page,RewardElement):
         }
     
     def handle_click(self, click_position: np.ndarray) -> None:
-        if(self.select_button.is_clicked_by(click_position)):
+        if(self.choose_deck.is_open()):
+            self.choose_deck.handle_click(click_position)
+            return
+        elif(self.select_button.is_clicked_by(click_position)):
             self.select_button.handle_click(click_position)
         elif(self.front_text_button.is_clicked_by(click_position)):
             self.front_text_button.handle_click(click_position)
@@ -88,6 +93,7 @@ class AddCardPage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
+        print("BURAEREFNMDKE")
         self.reset_temporary_strings()
 
     def is_open(self):
@@ -129,7 +135,7 @@ class AddCardPage(Page,RewardElement):
         if(self.is_card_creatable()):
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
-            DeckDatabase().decks[ChooseDeckPage().current_index].add_card(card)
+            self.deck_database.decks[ChooseDeckPage().current_index].add_card(card)
             self.reset_temporary_strings()
 
     def select_deck(self):
@@ -139,12 +145,12 @@ class AddCardPage(Page,RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.choose_deck.is_open()):
-            self.choose_deck.render()
+            self.choose_deck.render(img)
             return img
         if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.front_side_clipboard_temporary_string}", (150, 280) ,font_scale = 0.5)
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (159, 304) ,font_scale = 0.5)
         if (self.back_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.back_side_clipboard_temporary_string}", (150, 360) ,font_scale = 0.5)
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (159, 379) ,font_scale = 0.5)
         if (self.tag_clipboard_temporary_string is not None):
-            put_text(img, f"{self.tag_clipboard_temporary_string}", (165, 493) ,font_scale = 0.5)
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (192, 514) ,font_scale = 0.5)
         return img
