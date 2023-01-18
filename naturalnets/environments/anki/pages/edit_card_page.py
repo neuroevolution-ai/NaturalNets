@@ -88,10 +88,10 @@ class EditCardPage(RewardElement,Page):
     def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if (self.deck_database.current_deck.current_card.front is not None):
-            put_text(img,f"{self.deck_database.current_deck.current_card.front}", (85, 198) ,font_scale = 0.3)
-        if (self.deck_database.current_deck.current_card.back is not None):
-            put_text(img,f"{self.deck_database.current_deck.current_card.back}", (85, 305) ,font_scale = 0.3)
-        if (self.deck_database.current_deck.current_card.tag is not None):
-            put_text(img,f"{self.deck_database.current_deck.current_card.tag}", (120, 478) ,font_scale = 0.3)
+        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front is not None):
+            put_text(img,f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front}", (85, 198) ,font_scale = 0.3)
+        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back is not None):
+            put_text(img,f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back}", (85, 305) ,font_scale = 0.3)
+        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].tag is not None):
+            put_text(img,f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].tag}", (120, 478) ,font_scale = 0.3)
         return img

@@ -1,3 +1,4 @@
+import codecs
 from typing import List
 
 from naturalnets.environments.anki import Card
@@ -9,13 +10,12 @@ class Deck():
     def __init__(self,deck_name:str):
         self.name = deck_name
         self.cards: List[Card] = []
-        self.current_card: Card = None
         self.study_index: int= 0
         
     
     def is_duplicate(self,card: Card):
-        for current_card in self.cards:
-            if(current_card is card):
+        for card in self.cards:
+            if(card is card):
                 return True
         return False
 
@@ -79,7 +79,7 @@ class DeckDatabase():
     
     def import_deck(self,deck_import_name: str) -> None:
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
-        deck_file = open(path,"r")
+        deck_file = codecs.open(path,"r", encoding = 'utf-8')
         deck_as_string = deck_file.read()
         deck = self.convert_string_to_deck(deck_import_name,deck_as_string)
         if(not(self.is_included(deck_import_name)) and self.is_deck_length_allowed()):
@@ -88,7 +88,7 @@ class DeckDatabase():
 
     def export_deck(self,deck: Deck) -> None:
         if (not(self.is_file_exist(deck.name,EXPORTED_DECKS_PATH)) and (self.is_exporting_allowed(EXPORTED_DECKS_PATH)) ):
-            deck_file = open(EXPORTED_DECKS_PATH + f"{deck.name}.txt","w")
+            deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt", encoding= 'utf-8', mode='w+')
             for card in deck.cards:
                 deck_file.write(card.front + " " +card.back)
                 deck_file.write("\n")

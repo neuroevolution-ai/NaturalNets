@@ -12,6 +12,7 @@ from naturalnets.environments.anki import ResetCollectionPopupPage
 from naturalnets.environments.anki.pages.main_page_popups.at_least_one_deck_popup_page import AtLeastOneDeckPopupPage
 from naturalnets.environments.anki.pages.main_page_popups.delete_current_deck_check_popup_page import DeleteCurrentDeckPopupPage
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
+from naturalnets.environments.anki.pages.main_page_popups.no_card_popup_page import NoCardPopupPage
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -27,6 +28,8 @@ from naturalnets.environments.anki import ProfilePage
 from naturalnets.environments.anki import ExportDeckPage
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import AboutPage
+from PIL import Image, ImageDraw,ImageFont
+from naturalnets.environments.gui_app.enums import Color
 
 class MainPage(Page,RewardElement):
     
@@ -61,8 +64,8 @@ class MainPage(Page,RewardElement):
     TOOLS_DROPDOWN_BB = BoundingBox(90, 0, 53, 23)
     HELP_DROPDOWN_BB = BoundingBox(143, 0, 52, 23)
     
-    EDIT_BB = BoundingBox(10, 698, 100, 28)
-    SHOW_ANSWER_NEXT_BB = BoundingBox(379, 696, 115, 31)
+    EDIT_BB = BoundingBox(79, 647, 84, 28)
+    SHOW_ANSWER_NEXT_BB = BoundingBox(300, 647, 96, 29)
     REMOVE_BB = BoundingBox(764, 698, 100, 28)
 
     def __new__(cls):
@@ -90,15 +93,17 @@ class MainPage(Page,RewardElement):
         self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopupPage()
         self.at_least_one_deck_popup_page = AtLeastOneDeckPopupPage()
         self.reset_collection_popup_page = ResetCollectionPopupPage()
+        self.no_card_popup_page = NoCardPopupPage()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
             self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.anki_login, self.add_deck_popup_page,
-            self.edit_card_page, self.leads_to_external_website_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page]
+            self.edit_card_page, self.leads_to_external_website_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,
+            self.no_card_popup_page]
         
         self.add_children([self.profile_page, self.import_deck_page, self.export_deck_page, 
         self.choose_deck_study_page, self.check_media_page, self.preferences_page, self.about_page,
         self.add_card_page, self.add_deck_popup_page, self.edit_card_page, self.anki_login, self.leads_to_external_website_popup_page,
-        self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page])
+        self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,self.no_card_popup_page])
 
         self.switch_profile_ddi = DropdownItem(self.profile_page.open, "Switch Profile")
         self.import_ddi = DropdownItem(self.import_deck_page.open, "Import")
@@ -153,7 +158,7 @@ class MainPage(Page,RewardElement):
 
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
-        self.reset_collection_popup_page])
+        self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page])
 
     @property
     def reward_template(self):
@@ -228,11 +233,13 @@ class MainPage(Page,RewardElement):
         elif (self.at_least_one_deck_popup_page.is_open()):
             self.at_least_one_deck_popup_page.handle_click(click_position)
             return
-        elif (self.DECKS_BB.is_point_inside(click_position)):
+        elif (self.no_card_popup_page.is_open()):
+            self.no_card_popup_page.handle_click(click_position)
+            return
+        elif (self.DECKS_BB.is_point_inside(click_position) and self.get_state()[6] == 0):
             self.change_current_deck_index(click_position)
             return
-        
-        if self.opened_dd is not None:
+        elif self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
             if(current_value is not None):
@@ -245,11 +252,13 @@ class MainPage(Page,RewardElement):
                 if dropdown.is_open():
                     self.opened_dd = dropdown
                     self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
-                    
+                   
         if (self.get_state()[6] == 0):
+            print(self.get_state()[7])
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
                     widget.handle_click(click_position)
+                    return
         
         elif (self.get_state()[7] == 0):
             for widget in self.study_page_widgets:
@@ -257,6 +266,7 @@ class MainPage(Page,RewardElement):
                     pass
                 elif (widget.is_clicked_by(click_position)):
                     widget.handle_click(click_position)
+                    return
         
         elif (self.get_state()[7] == 1):
             for widget in self.study_page_widgets:
@@ -264,7 +274,8 @@ class MainPage(Page,RewardElement):
                     pass
                 elif (widget.is_clicked_by(click_position)):
                     widget.handle_click(click_position)
-        
+                    return
+
     def add_card(self):
         self.add_card_page.open()
 
@@ -289,7 +300,6 @@ class MainPage(Page,RewardElement):
             self.deck_database.set_current_index(click_index)
             self.get_state()[click_index] = 1
             self.register_selected_reward(["decks", click_index])
-            
 
     def calculate_current_bounding_box(self):
        upper_left_point = (106,275)
@@ -309,7 +319,10 @@ class MainPage(Page,RewardElement):
         return self.get_state()[0]
     
     def study(self):
-        self.get_state()[6] = 1
+        if(len(self.deck_database.current_deck.cards) == 0):
+            self.no_card_popup_page.open()
+        else:
+            self.get_state()[6] = 1
     
     def stop_study(self):
         self.get_state()[6] = 0
@@ -358,6 +371,8 @@ class MainPage(Page,RewardElement):
             img = self.delete_current_deck_check_popup_page.render(img)
         elif (self.at_least_one_deck_popup_page.is_open()):
             img = self.at_least_one_deck_popup_page.render(img)
+        elif (self.no_card_popup_page.is_open()):
+            img = self.no_card_popup_page.render(img)
         return img
 
     def render_deck_page(self,img: np.ndarray):
@@ -378,12 +393,12 @@ class MainPage(Page,RewardElement):
     def render_study_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        put_text(img, self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front, (340 ,120), font_scale = 0.5)
+        self.print_question_answer(img, f"Question : {self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front}", BoundingBox (116, 76, 600, 100))
         if (self.get_state()[7] == 1):
-            put_text(img, self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back, (340 ,160), font_scale = 0.5)
+            self.print_question_answer(img, f"Answer : {self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back}", BoundingBox (116, 166, 600, 100))
             button = cv2.imread(self.NEXT_BUTTON_PATH)
-            render_onto_bb(img, self.SHOW_ANSWER_NEXT_BB, button)
-        if (self.edit_card_page.open()):
+            render_onto_bb(img, BoundingBox (352, 646, 115, 29), button)
+        if (self.edit_card_page.is_open()):
             img = self.edit_card_page.render(img)
         return img
     
@@ -398,3 +413,20 @@ class MainPage(Page,RewardElement):
             self.at_least_one_deck_popup_page.open()
             return
         self.delete_current_deck_check_popup_page.open()
+
+    def print_question_answer(self, img: np.ndarray, text: str, bounding_box: BoundingBox):
+        
+        image = np.zeros((100, 600, 3), dtype=np.uint8)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  
+        pil_image = Image.fromarray(image)
+        
+        draw = ImageDraw.Draw(pil_image)
+        font = ImageFont.truetype("arial.ttf", 35)
+        draw.text((110, 30), text, font=font)
+        pil_image = np.invert(pil_image)
+        image = np.asarray(pil_image)
+
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        render_onto_bb(img, bounding_box, image)
+        
+        return img
