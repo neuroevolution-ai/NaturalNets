@@ -99,17 +99,18 @@ class MainPage(Page,RewardElement):
         self.reset_collection_popup_page = ResetCollectionPopupPage()
         self.no_card_popup_page = NoCardPopupPage()
         self.at_least_one_card_popup_page = AtLeastOneCardPopupPage()
+        self.choose_deck_study_page = ChooseDeckStudyPage()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
             self.check_media_page, self.preferences_page, self.about_page, self.add_card_page, self.anki_login, self.add_deck_popup_page,
             self.edit_card_page, self.leads_to_external_website_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,
-            self.no_card_popup_page, self.at_least_one_card_popup_page]
+            self.no_card_popup_page, self.at_least_one_card_popup_page, self.choose_deck_study_page]
         
         self.add_children([self.profile_page, self.import_deck_page, self.export_deck_page, 
         self.choose_deck_study_page, self.check_media_page, self.preferences_page, self.about_page,
         self.add_card_page, self.add_deck_popup_page, self.edit_card_page, self.anki_login, self.leads_to_external_website_popup_page,
         self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,self.no_card_popup_page,
-        self.at_least_one_card_popup_page])
+        self.at_least_one_card_popup_page, self.choose_deck_study_page])
 
         self.switch_profile_ddi = DropdownItem("Switch Profile", "Switch Profile")
         self.switch_profile_ddi.set_click_action(self.profile_page.open)
@@ -120,21 +121,23 @@ class MainPage(Page,RewardElement):
         self.exit_ddi = DropdownItem("Exit", "Exit")
         self.exit_ddi.set_click_action(self.reset_collection_popup_page.open)
 
-        self.study_deck_ddi = DropdownItem(self.choose_deck_study_page.open, "Study Deck")
-        self.check_media_ddi = DropdownItem(self.check_media_page.open, "Check Media")
-        self.preferences_ddi = DropdownItem(self.preferences_page.open, "Preferences")
-
+        self.study_deck_ddi = DropdownItem("Study Deck", "Study Deck")
+        self.study_deck_ddi.set_click_action(self.choose_deck_study_page.open)
+        self.check_media_ddi = DropdownItem("Check Media", "Check Media")
+        self.check_media_ddi.set_click_action(self.check_media_page.open)
+        self.preferences_ddi = DropdownItem("Preferences", "Preferences")
+        self.preferences_ddi.set_click_action(self.preferences_page.open)
+        
         self.show_anki_logo_ddi = DropdownItem("Show Anki Logo", "Show Anki Logo")
         self.show_anki_logo_ddi.set_click_action(self.set_logo_shown)
 
         self.guide_ddi = DropdownItem("Guide", "Guide")
-        self.support_ddi = DropdownItem("Support", "Support")
-        self.about_ddi = DropdownItem("About Page", "About Page")
-
         self.guide_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.support_ddi = DropdownItem("Support", "Support")
         self.support_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.about_ddi = DropdownItem("About Page", "About Page")
         self.about_ddi.set_click_action(self.about_page.open)
-
+  
         self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB_OFFSET, [self.switch_profile_ddi, self.import_ddi, self.export_ddi, self.exit_ddi])
         self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB_OFFSET, [self.show_anki_logo_ddi])
         self.tools_dropdown = Dropdown(self.TOOLS_DROPDOWN_BB_OFFSET, [self.study_deck_ddi, self.check_media_ddi, self.preferences_ddi])
@@ -159,6 +162,7 @@ class MainPage(Page,RewardElement):
         self.remove_button = Button(self.REMOVE_BB, self.remove_card)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
         self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
+        self.study_button_study_deck: Button = Button(BoundingBox(204, 485, 76, 24), self.study_deck)
 
         self.main_page_widgets = [self.add_card_button, self.sync_button, self.study_button, self.get_shared_button,
         self.create_deck_button ,self.import_file_button, self.delete_button]
@@ -184,7 +188,8 @@ class MainPage(Page,RewardElement):
 
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
-        self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page])
+        self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page,self.about_page,
+        self.check_media_page, self.choose_deck_study_page])
         
         self.is_logo_enabled = False
 
@@ -223,14 +228,17 @@ class MainPage(Page,RewardElement):
         if (self.profile_page.is_open()):
             self.profile_page.handle_click(click_position)
             return
+        elif (self.about_page.is_open()):
+            self.about_page.handle_click(click_position)
+            return
+        elif (self.check_media_page.is_open()):
+            self.check_media_page.handle_click(click_position)
+            return
         elif (self.import_deck_page.is_open()):
             self.import_deck_page.handle_click(click_position)
             return
         elif (self.export_deck_page.is_open()):
             self.export_deck_page.handle_click(click_position)
-            return
-        elif (self.choose_deck_study_page.is_open()):
-            self.choose_deck_study_page.handle_click(click_position)
             return
         elif (self.check_media_page.is_open()):
             self.check_media_page.handle_click(click_position)
@@ -246,6 +254,13 @@ class MainPage(Page,RewardElement):
             return
         elif (self.add_card_page.is_open()):
             self.add_card_page.handle_click(click_position)
+            return
+        elif (self.choose_deck_study_page.is_open()):
+            if (self.study_button_study_deck.is_clicked_by(click_position)):
+                self.study_button_study_deck.handle_click(click_position)
+                print("3432efwr")
+            else:
+                self.choose_deck_study_page.handle_click(click_position)
             return
         elif (self.anki_login.is_open()):
             self.anki_login.handle_click(click_position)
@@ -407,6 +422,12 @@ class MainPage(Page,RewardElement):
             img = self.no_card_popup_page.render(img)
         elif (self.at_least_one_card_popup_page.is_open()):
             img = self.at_least_one_card_popup_page.render(img)
+        elif (self.choose_deck_study_page.is_open()):
+            img = self.choose_deck_study_page.render(img)
+        elif (self.about_page.is_open()):
+            img = self.about_page.render(img)
+        elif (self.check_media_page.is_open()):
+            img = self.check_media_page.render(img)
         elif (self.opened_dd is not None):
             img = self.opened_dd.render(img)
         return img
@@ -464,3 +485,10 @@ class MainPage(Page,RewardElement):
     
     def set_logo_shown(self):
         self.is_logo_enabled = not(self.is_logo_enabled)
+
+    def study_deck(self) -> int:
+        if(self.choose_deck_study_page.current_index is not None):
+            self.deck_database.set_current_deck(self.deck_database.decks[self.choose_deck_study_page.current_index])
+            self.choose_deck_study_page.register_selected_reward(["study"])
+            self.choose_deck_study_page.close()
+            self.study()

@@ -18,8 +18,8 @@ class CheckMediaPage(Page,RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "check_media.png")
     
-    WINDOW_BB = BoundingBox(50, 50, 622, 499)
-    CLOSE_BB = BoundingBox(566, 509, 91, 26)
+    WINDOW_BB = BoundingBox(100, 100, 622, 499)
+    CLOSE_BB = BoundingBox(524, 560, 77, 22)
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -29,6 +29,8 @@ class CheckMediaPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
+        
+        self.close_button = Button(self.CLOSE_BB,self.close)
 
     @property
     def reward_template(self):

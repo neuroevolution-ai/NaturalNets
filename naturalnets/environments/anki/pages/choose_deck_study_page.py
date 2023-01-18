@@ -23,13 +23,13 @@ class ChooseDeckStudyPage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study.png")
     
-    WINDOW_BB = BoundingBox(20, 20, 498, 374)
-    STUDY_BB = BoundingBox(111, 354, 91, 26)
-    ADD_BB = BoundingBox(212, 354, 91, 26)
-    CANCEL_BB = BoundingBox(313, 354, 91, 26)
-    HELP_BB = BoundingBox(415, 354, 91, 26)
+    WINDOW_BB = BoundingBox(150, 150, 498, 374)
+    STUDY_BB = BoundingBox(204, 486, 77, 22)
+    ADD_BB = BoundingBox(289, 486, 77, 22)
+    CANCEL_BB = BoundingBox(375, 486, 77, 22)
+    HELP_BB = BoundingBox(462, 486, 77, 22)
 
-    DECK_BB = BoundingBox(33, 65 ,471 ,280)
+    DECK_BB = BoundingBox(141, 196 ,397 ,150)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -43,10 +43,10 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
         self.add_deck_popup = AddDeckPopupPage()
         self.add_child(self.add_deck_popup)        
-        
+        self.add_child(self.leads_to_external_website_popup)
         self.current_index: int = 0
-
-        self.study_button: Button = Button(self.STUDY_BB, self.study_deck)
+        
+        self.deck_database = DeckDatabase()
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
@@ -61,6 +61,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         }        
     
     def open(self):
+        self.current_index = 0
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -81,21 +82,16 @@ class ChooseDeckStudyPage(Page,RewardElement):
         # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1]- 65)/22)
+            click_index: int = floor((click_point[1]- 195) / 30)
+            print(click_index)
             self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (33,65)
-       length = 22 * DeckDatabase().decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 471, length)
+       upper_left_point = (140, 195)
+       length = 30 * self.deck_database.decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 401, length)
        return current_bounding_box
-
-    def study_deck(self):
-        if(self.current_index is not None):
-            DeckDatabase().set_current_deck(DeckDatabase().decks[self.current_index])
-            self.register_selected_reward(["study"])
-            self.close()
     
     def reset_index(self):
         self.current_index: int = 0
@@ -103,10 +99,31 @@ class ChooseDeckStudyPage(Page,RewardElement):
     def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
+        put_text(img,f"{self.deck_database.decks[self.current_index].name}", (170, 180), font_scale = 0.5)
         # Items have size (469,22)
-        for i, deck in enumerate (DeckDatabase().decks):
-            put_text(img, f" {deck.name}", (36, 65 + 22 * (i + 1)),font_scale = 0.3)
+        if(self.leads_to_external_website_popup.is_open()):
+            self.leads_to_external_website_popup.render(img)
+        elif(self.add_deck_popup.is_open()):
+            self.add_deck_popup.render(img)
+        for i, deck in enumerate (self.deck_database.decks):
+            if((self.add_deck_popup.is_open() or self.leads_to_external_website_popup.is_open()) and i >= 3):
+                continue
+            put_text(img, f" {deck.name}", (165, 186 + 30 * (i + 1)), font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        "return super().handle_click(click_position)"
+        if(self.leads_to_external_website_popup.is_open()):
+            self.leads_to_external_website_popup.handle_click(click_position)
+            return
+        if(self.add_deck_popup.is_open()):
+            self.add_deck_popup.handle_click(click_position)
+            return
+        elif(self.add_button.is_clicked_by(click_position)):
+            self.add_button.handle_click(click_position)
+        elif(self.cancel_button.is_clicked_by(click_position)):
+            self.cancel_button.handle_click(click_position)
+        elif(self.help_button.is_clicked_by(click_position)):
+            self.help_button.handle_click(click_position)
+        elif(self.calculate_current_bounding_box().is_point_inside(click_position)):
+            self.change_current_deck_index(click_position)
+        

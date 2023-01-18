@@ -16,9 +16,8 @@ class AboutPage(Page,RewardElement):
 
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(50, 50, 500, 416)
-    OK_BUTTON_BB = BoundingBox(449, 452, 46, 14)
-    COPY_DEBUG_INFO_BUTTON_BB = BoundingBox(449, 402, 51, 14)
+    WINDOW_BB = BoundingBox(60, 0, 708, 708)
+    OK_BUTTON_BB = BoundingBox(583, 669, 55, 21)
 
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
 
@@ -31,25 +30,18 @@ class AboutPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.copy_debug_info_button: Button = Button(self.COPY_DEBUG_INFO_BUTTON_BB, self.debug_info)
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
 
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "copy_debug_info": 0
         }
         
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-        elif self.copy_debug_info_button.is_clicked_by(click_position):
-            self.copy_debug_info_button.handle_click(click_position)
-
-    def debug_info(self):
-        self.register_selected_reward(["copy_debug_info"])
 
     def open(self):
         self.get_state()[0] = 1
