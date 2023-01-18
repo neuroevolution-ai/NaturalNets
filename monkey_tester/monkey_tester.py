@@ -74,32 +74,40 @@ class RandomMonkeyTester:
         return self.rng.uniform(low=-1.0, high=1.0, size=self.action_size).astype(np.float32)
 
 
-def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: int,
-                                time_started: str, time_ended: str, rewards: List, actions: List, reward_sum):
-    os.makedirs(directory, exist_ok=False)
+def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: Optional[int],
+                                time_started: str, time_ended: str, rewards: Optional[List], actions: Optional[List],
+                                reward_sum: Optional[int]):
+    os.makedirs(directory, exist_ok=True)
 
     monkey_tester_options = deepcopy(asdict(configuration))
-    monkey_tester_options["monkey_random_seed"] = monkey_random_seed
+
+    if monkey_random_seed is not None:
+        monkey_tester_options["monkey_random_seed"] = monkey_random_seed
 
     monkey_tester_options["time_started"] = time_started
     monkey_tester_options["time_ended"] = time_ended
 
-    np.savez(
-        os.path.join(directory, "data.npz"),
-        rewards=np.array(rewards, dtype=np.float32),
-        actions=np.array(actions, dtype=np.float32)
-    )
+    if rewards is not None and actions is not None:
+        np.savez(
+            os.path.join(directory, "data.npz"),
+            rewards=np.array(rewards, dtype=np.float32),
+            actions=np.array(actions, dtype=np.float32)
+        )
 
     with open(os.path.join(directory, "monkey_tester_options.json"), "w", encoding="utf-8") as f:
         json.dump(asdict(configuration), f, indent=4)
 
     with open(os.path.join(directory, "monkey_tester_details.json"), "w", encoding="utf-8") as f:
         monkey_tester_details = {
-            "reward_sum": reward_sum,
-            "monkey_random_seed": monkey_random_seed,
             "time_started": time_started,
             "time_ended": time_ended
         }
+
+        if monkey_random_seed is not None:
+            monkey_tester_details["monkey_random_seed"] = monkey_random_seed
+
+        if reward_sum is not None:
+            monkey_tester_details["reward_sum"] = reward_sum
 
         json.dump(monkey_tester_details, f, indent=4)
 
@@ -156,6 +164,8 @@ def run_episode(configuration: MonkeyTesterCfg, directory: Optional[str], monkey
 @click.command()
 @click.option("-c", "--config", type=str, help="Path to a configuration for a monkey tester")
 def main(config: Union[str, dict]):
+    time_started_monkey_testing = datetime.fromtimestamp(time.time())
+
     logger = logging.getLogger("")
     formatter = logging.Formatter("[%(asctime)s] - %(funcName)s - %(message)s", datefmt="%a, %d %b %Y %H:%M:%S")
 
@@ -248,7 +258,21 @@ def main(config: Union[str, dict]):
 
     assert total_number_of_rewards == configuration.num_monkeys
 
-    logging.info("Monkey Testing finished")
+    time_ended_monkey_testing = datetime.fromtimestamp(time.time())
+
+    _save_monkey_tester_results(
+        configuration=configuration,
+        directory=main_chosen_directory,
+        monkey_random_seed=None,
+        time_started=time_started_monkey_testing.strftime("%a, %d %b %Y %H:%M:%S"),
+        time_ended=time_ended_monkey_testing.strftime("%a, %d %b %Y %H:%M:%S"),
+        rewards=None,
+        actions=None,
+        reward_sum=None
+    )
+
+    logging.info(f"Monkey Testing finished, took "
+                 f"{(time_ended_monkey_testing - time_started_monkey_testing).total_seconds() / 60:.2f} hours")
 
 
 if __name__ == "__main__":
