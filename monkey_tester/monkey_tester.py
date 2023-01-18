@@ -205,6 +205,7 @@ def main(config: Union[str, dict]):
     results = []
     chunk_number = 0
     total_number_of_rewards = 0
+    total_number_of_chunks = configuration.num_monkeys // configuration.chunk_size
     with mp.Pool(configuration.num_processes) as p:
         if configuration.store_individual_monkey_data:
             enumerator = enumerate(zip(concrete_directories, random_seeds))
@@ -225,8 +226,8 @@ def main(config: Union[str, dict]):
             # Use chunks to free system memory. Useful if a very large amount of monkey testers is used
             if len(results) == configuration.chunk_size or i == (len(random_seeds) - 1):
                 progress_bar = tqdm(
-                    results, total=len(results), unit="monkeys", desc=f"Monkey Testers Chunk {chunk_number}",
-                    position=0
+                    results, total=len(results), unit="monkeys",
+                    desc=f"Monkey Testers Chunk {chunk_number}/{total_number_of_chunks}", position=0
                 )
 
                 # Wait for all processes to finish by getting the results from the processes
