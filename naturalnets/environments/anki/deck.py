@@ -12,23 +12,22 @@ class Deck():
         self.cards: List[Card] = []
         self.study_index: int= 0
         
-    
-    def is_duplicate(self,card: Card):
-        for card in self.cards:
-            if(card is card):
-                return True
-        return False
-
-    def add_card(self,card: Card):
-        if(not(self.is_duplicate(card))):
-            self.cards.append(card)
-        
     def increment_study_index(self):
-        if(self.study_index < len(self.cards)):
+        if(self.study_index < len(self.cards) - 1):
             self.study_index += 1 
         elif(self.study_index == len(self.cards)):
+            self.study_index = len(self.cards) - 1
+        else:
             self.study_index = 0
-
+    
+    def add_card(self,card: Card):
+        self.cards.append(card)
+    
+    def deck_length(self):
+        return len(self.cards)
+    
+    def remove_card(self):
+        self.cards.remove(self.cards[self.study_index])
 
 class DeckDatabase():
 
@@ -79,7 +78,7 @@ class DeckDatabase():
     
     def import_deck(self,deck_import_name: str) -> None:
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
-        deck_file = codecs.open(path,"r", encoding = 'utf-8')
+        deck_file = open(path,"r")
         deck_as_string = deck_file.read()
         deck = self.convert_string_to_deck(deck_import_name,deck_as_string)
         if(not(self.is_included(deck_import_name)) and self.is_deck_length_allowed()):
@@ -88,7 +87,7 @@ class DeckDatabase():
 
     def export_deck(self,deck: Deck) -> None:
         if (not(self.is_file_exist(deck.name,EXPORTED_DECKS_PATH)) and (self.is_exporting_allowed(EXPORTED_DECKS_PATH)) ):
-            deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt", encoding= 'utf-8', mode='w+')
+            deck_file = open(EXPORTED_DECKS_PATH + f"{deck.name}.txt","w")
             for card in deck.cards:
                 deck_file.write(card.front + " " +card.back)
                 deck_file.write("\n")
@@ -102,17 +101,20 @@ class DeckDatabase():
             self.decks.remove(self.fetch_deck(deck_name))
             self.current_index = 0
             self.current_deck = self.decks[self.current_index]
+    
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines(False)
         deck: Deck = Deck(deck_name)
         if(not(self.is_included(deck_name))):
             for line in split_deck:
-                if ("\t" in line):
-                    line = line.split("\t")
-                elif(" " in line):
-                    line = line.split(" ")
-                deck.add_card(Card(line[0],line[1]))
-            return deck
+                if ('\t' in line):
+                    line = line.split('\t')
+                    deck.add_card(Card(line[0],line[1]))
+                elif(' ' in line):
+                    line = line.split(' ')
+                    deck.add_card(Card(line[0],line[1]))
+        return deck
+        
     
     def reset_exported_decks(self) -> None:
         for file in os.scandir(EXPORTED_DECKS_PATH):
@@ -132,7 +134,8 @@ class DeckDatabase():
         card_1 = Card("Front side", "Back side")
         card_2 = Card("This is a question", "This is the answer")
         deck_1 = Deck("Cool deck")
-        deck_1.add_card(card_1)        
+        
+        deck_1.add_card(card_1)
         deck_1.add_card(card_2)
         
         deck_2 = Deck(DeckNames.DECK_NAME_1.value)

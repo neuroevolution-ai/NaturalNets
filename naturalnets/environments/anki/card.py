@@ -6,12 +6,18 @@ class Card():
         self.tag = None
 
     def is_front_edited(self) -> bool:
+        if self.front is None:
+            return False
         return "edited" in self.front
 
     def is_back_edited(self) -> bool:
+        if self.back is None:
+            return False
         return "edited" in self.back
     
     def is_tag_edited(self) -> bool:
+        if self.tag is None:
+            return False
         return "edited" in self.tag
 
     def edit_front(self) -> None:
