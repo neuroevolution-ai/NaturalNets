@@ -58,11 +58,16 @@ class MainPage(Page,RewardElement):
     DECKS_BUTTON_BB = BoundingBox(393, 32, 69, 27)
     SYNC_BB = BoundingBox(447, 30, 54, 29)
     
-    FILE_DROPDOWN_BB = BoundingBox(0, 0, 43, 23)
+    FILE_DROPDOWN_BB = BoundingBox(0, 0, 36, 23)
     EDIT_DROPDOWN_BB = BoundingBox(43, 0, 47, 23)
-    TOOLS_DROPDOWN_BB = BoundingBox(90, 0, 53, 23)
-    HELP_DROPDOWN_BB = BoundingBox(143, 0, 52, 23)
+    TOOLS_DROPDOWN_BB = BoundingBox(75, 0, 46, 23)
+    HELP_DROPDOWN_BB = BoundingBox(123, 0, 40, 23)
     
+    FILE_DROPDOWN_BB_OFFSET = BoundingBox(0, 23, 100, 23)
+    EDIT_DROPDOWN_BB_OFFSET = BoundingBox(43, 23, 100, 23)
+    TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(75, 23, 100, 23)
+    HELP_DROPDOWN_BB_OFFSET = BoundingBox(123, 23, 100, 23)
+
     EDIT_BB = BoundingBox(79, 647, 84, 28)
     SHOW_ANSWER_NEXT_BB = BoundingBox(300, 647, 96, 29)
     REMOVE_BB = BoundingBox(517, 647, 84, 28)
@@ -106,23 +111,34 @@ class MainPage(Page,RewardElement):
         self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,self.no_card_popup_page,
         self.at_least_one_card_popup_page])
 
-        self.switch_profile_ddi = DropdownItem(self.profile_page.open, "Switch Profile")
-        self.import_ddi = DropdownItem(self.import_deck_page.open, "Import")
-        self.export_ddi = DropdownItem(self.export_deck_page.open, "Export")
-        self.exit_ddi = DropdownItem(self.reset_collection_popup_page.reset_all, "Exit")
+        self.switch_profile_ddi = DropdownItem("Switch Profile", "Switch Profile")
+        self.switch_profile_ddi.set_click_action(self.profile_page.open)
+        self.import_ddi = DropdownItem("Import", "Import")
+        self.import_ddi.set_click_action(self.import_deck_page.open)
+        self.export_ddi = DropdownItem("Export", "Export")
+        self.export_ddi.set_click_action(self.export_deck_page.open)
+        self.exit_ddi = DropdownItem("Exit", "Exit")
+        self.exit_ddi.set_click_action(self.reset_collection_popup_page.open)
 
         self.study_deck_ddi = DropdownItem(self.choose_deck_study_page.open, "Study Deck")
         self.check_media_ddi = DropdownItem(self.check_media_page.open, "Check Media")
         self.preferences_ddi = DropdownItem(self.preferences_page.open, "Preferences")
 
-        self.guide_ddi = DropdownItem(None, "Guide")
-        self.support_ddi = DropdownItem(None, "Support")
-        self.about_ddi = DropdownItem(self.about_page.open, "About Page")
+        self.show_anki_logo_ddi = DropdownItem("Show Anki Logo", "Show Anki Logo")
+        self.show_anki_logo_ddi.set_click_action(self.set_logo_shown)
 
-        self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB, [self.switch_profile_ddi, self.import_ddi, self.export_ddi, self.exit_ddi])
-        self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB, [])
-        self.tools_dropdown = Dropdown(self.TOOLS_DROPDOWN_BB, [self.study_deck_ddi, self.check_media_ddi, self.preferences_ddi])
-        self.help_dropdown = Dropdown(self.HELP_DROPDOWN_BB, [self.guide_ddi, self.support_ddi, self.about_ddi])
+        self.guide_ddi = DropdownItem("Guide", "Guide")
+        self.support_ddi = DropdownItem("Support", "Support")
+        self.about_ddi = DropdownItem("About Page", "About Page")
+
+        self.guide_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.support_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.about_ddi.set_click_action(self.about_page.open)
+
+        self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB_OFFSET, [self.switch_profile_ddi, self.import_ddi, self.export_ddi, self.exit_ddi])
+        self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB_OFFSET, [self.show_anki_logo_ddi])
+        self.tools_dropdown = Dropdown(self.TOOLS_DROPDOWN_BB_OFFSET, [self.study_deck_ddi, self.check_media_ddi, self.preferences_ddi])
+        self.help_dropdown = Dropdown(self.HELP_DROPDOWN_BB_OFFSET, [self.guide_ddi, self.support_ddi, self.about_ddi])
         self.dropdowns: List[Dropdown] = [self.file_dropdown, self.edit_dropdown, self.tools_dropdown, self.help_dropdown]
         
         self.opened_dd: Dropdown = None
@@ -150,16 +166,27 @@ class MainPage(Page,RewardElement):
         self.study_page_widgets = [self.add_card_button, self.decks_button, self.sync_button, self.edit_button,
         self.show_answer_button, self.remove_button, self.next_button]
 
+        self.dropdown_bbs = [self.FILE_DROPDOWN_BB, self.EDIT_DROPDOWN_BB, self.TOOLS_DROPDOWN_BB ,self.HELP_DROPDOWN_BB]
+
         self.dropdowns_to_str = {
             self.file_dropdown: "file_dropdown",
             self.edit_dropdown: "edit_dropdown",
             self.tools_dropdown: "tools_dropdown",
             self.help_dropdown: "help"
         }
+        
+        self.bounding_boxes_to_dropdowns = {
+            self.FILE_DROPDOWN_BB: self.file_dropdown,
+            self.EDIT_DROPDOWN_BB: self.edit_dropdown,
+            self.TOOLS_DROPDOWN_BB: self.tools_dropdown,
+            self.HELP_DROPDOWN_BB: self.help_dropdown
+        }
 
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
         self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page])
+        
+        self.is_logo_enabled = False
 
     @property
     def reward_template(self):
@@ -173,7 +200,8 @@ class MainPage(Page,RewardElement):
                 "selected": ["Switch Profile","Import","Export","Exit"]
             },
             "edit_dropdown": {
-                "opened": 0
+                "opened": 0,
+                "selected": ["Show Anki Logo"]
             },
             "tools_dropdown":{
                 "opened": 0,
@@ -250,12 +278,12 @@ class MainPage(Page,RewardElement):
                 self.register_selected_reward([self.dropdowns_to_str[self.opened_dd], "selected", current_value])
             self.opened_dd = None
         
-        for dropdown in self.dropdowns:
-            if dropdown.is_clicked_by(click_position):
-                dropdown.handle_click(click_position)
-                if dropdown.is_open():
-                    self.opened_dd = dropdown
-                    self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
+        for bounding_box in self.dropdown_bbs:
+            if bounding_box.is_point_inside(click_position):
+                self.bounding_boxes_to_dropdowns[bounding_box].handle_click(click_position)
+                if self.bounding_boxes_to_dropdowns[bounding_box].is_open():
+                    self.opened_dd = self.bounding_boxes_to_dropdowns[bounding_box]
+                    self.register_selected_reward([self.dropdowns_to_str[self.bounding_boxes_to_dropdowns[bounding_box]], "opened"])
                    
         if (self.get_state()[6] == 0):
             for widget in self.main_page_widgets:
@@ -379,11 +407,17 @@ class MainPage(Page,RewardElement):
             img = self.no_card_popup_page.render(img)
         elif (self.at_least_one_card_popup_page.is_open()):
             img = self.at_least_one_card_popup_page.render(img)
+        elif (self.opened_dd is not None):
+            img = self.opened_dd.render(img)
         return img
+
 
     def render_deck_page(self,img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
+        anki_logo = cv2.imread(IMAGES_PATH + "anki_logo.png")
+        if(self.is_logo_enabled):
+            render_onto_bb(img, BoundingBox (657, 186, 128, 128), anki_logo)
         if (self.profile_page.current_profile is not None):
             put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (16,122), font_scale = 0.5)
         
@@ -427,3 +461,6 @@ class MainPage(Page,RewardElement):
             self.at_least_one_card_popup_page.open()
             return
         self.deck_database.current_deck.remove_card()
+    
+    def set_logo_shown(self):
+        self.is_logo_enabled = not(self.is_logo_enabled)

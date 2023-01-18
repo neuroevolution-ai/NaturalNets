@@ -65,7 +65,7 @@ class ResetCollectionPopupPage(Page, RewardElement):
     
     def reset_all(self):
         ProfileDatabase().reset_profiles()
-        DeckDatabase().reset_decks()
+        DeckDatabase().default_decks()
         ChooseDeckStudyPage().reset_index()
         ChooseDeckPage().reset_index()
         AddCardPage().reset_temporary_strings()

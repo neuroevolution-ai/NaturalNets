@@ -1,5 +1,5 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional
 
 import cv2
 import numpy as np
@@ -36,6 +36,7 @@ class DropdownItem(Widget):
         self._value = value
         self.get_state()[0] = 0  # is-selected state
         self.display_name = display_name
+        self.click_action = None
 
     def get_value(self):
         return self._value
@@ -50,12 +51,14 @@ class DropdownItem(Widget):
         self._is_visible = visible
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        """Currently unused method. May be used to perform on-click actions.
-        """
+        self.click_action()
 
     def set_selected(self, selected: int):
         self.get_state()[0] = selected
 
+    def set_click_action(self, click_action: Callable):
+        self.click_action = click_action
+    
     def is_selected(self) -> int:
         return self.get_state()[0]
 
@@ -121,6 +124,8 @@ class Dropdown(Widget):
             for item in self._update_item_bounding_boxes():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
+                    if(item.click_action is not None):
+                        item.click_action()
             # any click action closes dropdown if it was open
             self.close()
         else:
