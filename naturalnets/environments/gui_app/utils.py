@@ -94,7 +94,6 @@ def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping:
     return reward_mapping, running_index
 
 def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_size: int, dimension: Tuple[int, int, int]):
-        
         image = np.zeros(dimension, dtype=np.uint8)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  
         pil_image = Image.fromarray(image)
