@@ -8,5 +8,6 @@
         "include_fake_bug": false
     },
     "results_dir": "results_monkey/",
-    "store_individual_monkey_data": false
+    "store_individual_monkey_data": false,
+    "chunk_size": 250000
 }

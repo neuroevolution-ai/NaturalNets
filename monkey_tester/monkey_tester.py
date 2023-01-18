@@ -189,26 +189,34 @@ def main(config: Union[str, dict]):
             if os.path.exists(_dir):
                 raise RuntimeError(f"'{_dir}' already exists, please choose another directory")
 
+    logging.info("Sampling random seeds")
+
     # Do not seed this, as we want always different seeds for the monkey tester. This RNG is only used to randomly
     # generate seeds for the monkey tester, that we can save in the config to reproduce later
     rng = np.random.default_rng()
 
     random_seeds = rng.choice(2**32, size=configuration.num_monkeys, replace=False)
 
+    logging.info("Sampling finished, starting monkey tester processes")
+
     results = []
     chunk_number = 0
     total_number_of_rewards = 0
     with mp.Pool(configuration.num_processes) as p:
-        progress_bar = tqdm(enumerate(zip(concrete_directories, random_seeds)), total=configuration.num_monkeys,
-                            unit="monkeys", desc=f"Monkey Testers")
-
-        for i, (_dir, monkey_seed) in progress_bar:
+        for i, (_dir, monkey_seed) in enumerate(zip(concrete_directories, random_seeds)):
             results.append((i, int(monkey_seed), p.apply_async(run_episode, (configuration, _dir, int(monkey_seed)))))
 
             # Use chunks to free system memory. Useful if a very large amount of monkey testers is used
             if len(results) == configuration.chunk_size or i == (len(random_seeds) - 1):
+                progress_bar = tqdm(
+                    results, total=len(results), unit="monkeys", desc=f"Monkey Testers Chunk {chunk_number}"
+                )
+
                 # Wait for all processes to finish by getting the results from the processes
-                monkey_rewards = [[i, seed, r.get()] for i, seed, r in results]
+                monkey_rewards = [[i, seed, r.get()] for i, seed, r in progress_bar]
+
+                progress_bar.close()
+
                 total_number_of_rewards += len(monkey_rewards)
 
                 with h5py.File(os.path.join(main_chosen_directory, f"monkey-rewards.hdf5"), "a") as f:
@@ -218,12 +226,10 @@ def main(config: Union[str, dict]):
                 results.clear()
                 del monkey_rewards
 
-        progress_bar.close()
-
     assert total_number_of_rewards == configuration.num_monkeys
 
     logging.info("Monkey Testing finished")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
