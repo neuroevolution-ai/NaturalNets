@@ -200,7 +200,7 @@ def main(config: Union[str, dict]):
 
     random_seeds = rng.choice(2**32, size=configuration.num_monkeys, replace=False)
 
-    logging.info("Sampling finished, starting monkey tester processes")
+    logging.info("Sampling finished, starting monkey testers")
 
     results = []
     chunk_number = 0
@@ -211,7 +211,10 @@ def main(config: Union[str, dict]):
         else:
             enumerator = enumerate(random_seeds)
 
-        for i, enumerated_data in enumerator:
+        outer_progress_bar = tqdm(enumerator, total=configuration.num_monkeys, unit="proc",
+                                  desc=f"Monkey Testers Processes", position=0)
+
+        for i, enumerated_data in outer_progress_bar:
             if isinstance(enumerated_data, tuple):
                 _dir, monkey_seed = enumerated_data
             else:
@@ -222,7 +225,8 @@ def main(config: Union[str, dict]):
             # Use chunks to free system memory. Useful if a very large amount of monkey testers is used
             if len(results) == configuration.chunk_size or i == (len(random_seeds) - 1):
                 progress_bar = tqdm(
-                    results, total=len(results), unit="monkeys", desc=f"Monkey Testers Chunk {chunk_number}"
+                    results, total=len(results), unit="monkeys", desc=f"Monkey Testers Chunk {chunk_number}",
+                    position=0
                 )
 
                 # Wait for all processes to finish by getting the results from the processes
@@ -238,6 +242,8 @@ def main(config: Union[str, dict]):
                 chunk_number += 1
                 results.clear()
                 del monkey_rewards
+
+        outer_progress_bar.close()
 
     assert total_number_of_rewards == configuration.num_monkeys
 
