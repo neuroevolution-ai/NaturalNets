@@ -105,7 +105,6 @@ class DeckDatabase():
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines(False)
         deck: Deck = Deck(deck_name)
-        print(split_deck)
         if(not(self.is_included(deck_name))):
             for line in split_deck:
                 if ("\t" in line):

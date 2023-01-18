@@ -127,10 +127,11 @@ class AddCardPage(Page,RewardElement):
         if(self.is_card_creatable()):
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
-            self.deck_database.decks[self.choose_deck.current_index].add_card(card)
+            self.deck_database.decks[self.deck_database.current_index].add_card(card)
             self.reset_temporary_strings()
 
     def select_deck(self):
+        self.choose_deck.reset_index()
         self.choose_deck.open()
 
     def render(self,img: np.ndarray):

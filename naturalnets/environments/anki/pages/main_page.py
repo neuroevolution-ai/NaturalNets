@@ -232,7 +232,6 @@ class MainPage(Page,RewardElement):
             self.change_current_deck_index(click_position)
             return
         
-        
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
@@ -293,7 +292,7 @@ class MainPage(Page,RewardElement):
             
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (141,275)
+       upper_left_point = (106,275)
        length = 30 * self.deck_database.decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 458, length)
        return current_bounding_box

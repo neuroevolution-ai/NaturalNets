@@ -48,7 +48,7 @@ class ImportDeckPage(Page,RewardElement):
             self.five_decks_popup, self.leads_to_external_website_popup])
         self.deck_database = DeckDatabase()
 
-        self.select_deck_button = Button(self.SELECT_DECK_BB, self.import_deck_popup.open)
+        self.select_deck_button = Button(self.SELECT_DECK_BB, self.select_deck_popup)
         self.import_button = Button(self.IMPORT_BB, self.import_deck)
         self.close_button = Button(self.CLOSE_BB, self.close)
         self.help_button = Button(self.HELP_BB, self.help)
@@ -88,6 +88,11 @@ class ImportDeckPage(Page,RewardElement):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
         
+    def select_deck_popup(self):
+        self.import_deck_popup.reset_current_index()
+        self.import_deck_popup.open()
+
+
     def close(self):
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
@@ -166,7 +171,7 @@ class ImportDeckPopupPage(Page,RewardElement):
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "index": [0, 1, 2, 3, 4],
+            "index": [0, 1, 2],
             "help": 0,
         }
     
@@ -205,6 +210,7 @@ class ImportDeckPopupPage(Page,RewardElement):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1] - 195) / 30)
+            print(click_index)
             self.current_index: int = click_index
             self.register_selected_reward(["index", click_index])
 
@@ -217,6 +223,9 @@ class ImportDeckPopupPage(Page,RewardElement):
     def set_import_name(self):
         self.current_import_name = self.deck_database.deck_import_names[self.current_index]
         self.close()
+
+    def reset_current_index(self):
+        self.current_index = 0
 
     def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
