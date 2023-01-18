@@ -7,7 +7,7 @@ import time
 from copy import deepcopy
 from datetime import datetime
 from functools import partial
-from typing import List, Union
+from typing import List, Union, Optional
 
 import click
 import h5py
@@ -104,7 +104,7 @@ def _save_monkey_tester_results(configuration: MonkeyTesterCfg, directory: str, 
         json.dump(monkey_tester_details, f, indent=4)
 
 
-def run_episode(configuration: MonkeyTesterCfg, directory: str, monkey_random_seed: int):
+def run_episode(configuration: MonkeyTesterCfg, directory: Optional[str], monkey_random_seed: int):
     time_started = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %H:%M:%S")
 
     env_config = configuration.environment
@@ -178,9 +178,12 @@ def main(config: Union[str, dict]):
 
     os.makedirs(main_chosen_directory)
 
-    concrete_directories = [
-        os.path.join(main_chosen_directory, f"monkey-{i}") for i in range(configuration.num_monkeys)
-    ]
+    if configuration.store_individual_monkey_data:
+        concrete_directories = [
+            os.path.join(main_chosen_directory, f"monkey-{i}") for i in range(configuration.num_monkeys)
+        ]
+    else:
+        concrete_directories = None
 
     if configuration.store_individual_monkey_data:
         for _dir in concrete_directories:
@@ -203,7 +206,17 @@ def main(config: Union[str, dict]):
     chunk_number = 0
     total_number_of_rewards = 0
     with mp.Pool(configuration.num_processes) as p:
-        for i, (_dir, monkey_seed) in enumerate(zip(concrete_directories, random_seeds)):
+        if configuration.store_individual_monkey_data:
+            enumerator = enumerate(zip(concrete_directories, random_seeds))
+        else:
+            enumerator = enumerate(random_seeds)
+
+        for i, enumerated_data in enumerator:
+            if isinstance(enumerated_data, tuple):
+                _dir, monkey_seed = enumerated_data
+            else:
+                _dir, monkey_seed = None, enumerated_data
+
             results.append((i, int(monkey_seed), p.apply_async(run_episode, (configuration, _dir, int(monkey_seed)))))
 
             # Use chunks to free system memory. Useful if a very large amount of monkey testers is used
