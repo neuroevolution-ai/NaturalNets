@@ -24,9 +24,9 @@ class ResetCollectionPopupPage(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection.png")
 
-    BOUNDING_BOX = BoundingBox(20, 20, 400, 120)
-    YES_BUTTON_BB = BoundingBox(194, 106, 90, 26)
-    NO_BUTTON_BB = BoundingBox(296, 106, 90, 26)
+    BOUNDING_BOX = BoundingBox(170, 250, 399, 120)
+    YES_BUTTON_BB = BoundingBox(310, 330, 77, 24)
+    NO_BUTTON_BB = BoundingBox(394, 329, 77, 24)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
@@ -64,13 +64,8 @@ class ResetCollectionPopupPage(Page, RewardElement):
         return self.get_state()[0]
     
     def reset_all(self):
-        ProfileDatabase().reset_profiles()
+        ProfileDatabase().default_profiles()
         DeckDatabase().default_decks()
-        ChooseDeckStudyPage().reset_index()
-        ChooseDeckPage().reset_index()
-        AddCardPage().reset_temporary_strings()
-        AnkiLoginPage().reset()
-        ExportDeckPage().reset_current_deck()
         self.close()
     
     def render(self, img:np.ndarray):

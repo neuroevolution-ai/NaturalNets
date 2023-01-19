@@ -19,6 +19,7 @@ class ProfileDatabase():
         self.profiles = [Profile(ProfileNames.ALICE.value)]
         self.active_profile = self.profiles[0]
         self.current_index: int = 0
+        self.profile_page_index: int = 0
     
     def is_adding_allowed(self) -> bool :
         return self.profiles_length() < 5 
@@ -30,7 +31,8 @@ class ProfileDatabase():
         return len(self.profiles)
 
     def create_profile(self,profile_name: str) -> None:
-            self.profiles.insert(Profile(profile_name))
+        self.profiles.append(Profile(profile_name))
+        print(len(self.profiles))
 
     def rename_profile(self, new_name: str) -> None:
         self.active_profile.name = new_name
@@ -55,6 +57,6 @@ class ProfileDatabase():
         self.active_profile = self.profiles[self.current_index]
         
     def default_profiles(self) -> None:
-        self.profiles = [Profile(ProfileNames.ALICE), Profile(ProfileNames.BOB), Profile(ProfileNames.CAROL)]
+        self.profiles = [Profile(ProfileNames.ALICE.value), Profile(ProfileNames.BOB.value), Profile(ProfileNames.CAROL.value)]
         self.active_profile = self.profiles[1]
         self.current_index: int = 1

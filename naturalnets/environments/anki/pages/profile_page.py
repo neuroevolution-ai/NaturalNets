@@ -32,15 +32,14 @@ class ProfilePage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 528, 444)
-    OPEN_BB = BoundingBox(406, 13, 110, 26)
-    ADD_BB = BoundingBox(406, 49, 110, 26)
-    RENAME_BB = BoundingBox(406, 85, 110, 26)
-    DELETE_BB = BoundingBox(406, 121, 110, 26)
-    QUIT_BB = BoundingBox(406, 157, 110, 26)
-    OPEN_BACKUP_BB = BoundingBox(410, 373, 110, 26)
-    DOWNGRADE_QUIT_BB = BoundingBox(410, 409, 110, 26)
-    PROFILES_BB = BoundingBox(11, 11, 386, 423)
+    WINDOW_BB = BoundingBox(100, 100, 555, 466)
+    OPEN_BB = BoundingBox(448, 112, 96, 24)
+    ADD_BB = BoundingBox(448, 151, 96, 24)
+    RENAME_BB = BoundingBox(448, 190, 96, 24)
+    DELETE_BB = BoundingBox(448, 226, 96, 24)
+    OPEN_BACKUP_BB = BoundingBox(448, 488, 96, 24)
+    DOWNGRADE_QUIT_BB = BoundingBox(448, 526, 96, 24)
+    PROFILES_BB = BoundingBox(98, 112, 340, 440)
 
     #Profiles in the profiles_bb have the (heigth,width) (384,22)
 
@@ -68,14 +67,15 @@ class ProfilePage(Page,RewardElement):
         self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.downgrade_popup_page.open)
         self.open_backup_button = Button(self.OPEN_BACKUP_BB, self.reset_collection_popup_page.open)
         self.delete_button = Button(self.DELETE_BB, self.handle_delete)
-        self.quit_button = Button(self.QUIT_BB, None)
         self.rename_button = Button(self.RENAME_BB, self.rename_profile_page.open)
         self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open)
         self.open_button = Button(self.OPEN_BB, self.close)
         
-        self.current_index: int = 0
-        self.current_profile: Profile = self.profile_database.profiles[self.current_index]
+        self.profile_database.current_index: int = 0
+        self.current_profile: Profile = self.profile_database.profiles[self.profile_database.current_index]
 
+        self.set_reward_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
+            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup_page])
 
     @property
     def reward_template(self):
@@ -85,21 +85,18 @@ class ProfilePage(Page,RewardElement):
         }
 
     def change_current_deck_index(self, click_point:np.ndarray):
-        # Items have size (384,22)
-        # Box containing the items has size (386,423)
-        # Top left corner (11,11)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1] - 11)/22)
-            self.current_index: int = click_index
-            self.current_profile = self.profile_database.profiles[self.current_index]
+            click_index: int = floor((click_point[1] - 112) / 30)
+            self.profile_database.current_index: int = click_index
+            self.current_profile = self.profile_database.profiles[self.profile_database.current_index]
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (11,11)
-       length = 22 * DeckDatabase().decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 386, length)
+       upper_left_point = (97, 112)
+       length = 30 * self.profile_database.profiles_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 340, length)
        return current_bounding_box
     
     def open(self):
@@ -122,8 +119,9 @@ class ProfilePage(Page,RewardElement):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        for i, deck in enumerate(DeckDatabase().decks):
-            put_text(img, deck.name, (11, 11 + (i + 1) * 22), font_scale = 0.3)
+        put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (518, 278), font_scale = 0.35)
+        for i, profile in enumerate(self.profile_database.profiles):
+            put_text(img, f"{profile.name}", (125, 102 + (i + 1) * 30), font_scale = 0.5)
         if self.add_profile_popup_page.is_open():
             img = self.add_profile_popup_page.render(img)
         elif self.rename_profile_page.is_open():
@@ -139,17 +137,57 @@ class ProfilePage(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        """"""
+        if self.add_profile_popup_page.is_open():
+            self.add_profile_popup_page.handle_click(click_position)
+            return
+        elif self.rename_profile_page.is_open():
+            self.rename_profile_page.handle_click(click_position)
+            return
+        elif self.delete_profile_popup_page.is_open():
+            self.delete_profile_popup_page.handle_click(click_position)
+            return
+        elif self.reset_collection_popup_page.is_open():
+            self.reset_collection_popup_page.handle_click(click_position)
+            return
+        elif self.downgrade_popup_page.is_open():
+            self.downgrade_popup_page.handle_click(click_position)
+            return
+        elif self.at_least_one_profile_popup_page.is_open():
+            self.at_least_one_profile_popup_page.handle_click(click_position)
+            return
+        elif self.calculate_current_bounding_box().is_point_inside(click_position):
+            self.change_current_deck_index(click_position)
+            return
+        elif self.downgrade_and_quit_popup.is_clicked_by(click_position):
+            self.downgrade_and_quit_popup.handle_click(click_position)
+            return
+        elif self.open_backup_button.is_clicked_by(click_position):
+            self.open_backup_button.handle_click(click_position)
+            return
+        elif self.delete_button.is_clicked_by(click_position):
+            self.delete_button.handle_click(click_position)
+            return
+        elif self.rename_button.is_clicked_by(click_position):
+            self.rename_button.handle_click(click_position)
+            return
+        elif self.add_button.is_clicked_by(click_position):
+            self.add_button.handle_click(click_position)
+            return
+        elif self.open_button.is_clicked_by(click_position):
+            self.open_button.handle_click(click_position)
+            return
+
+
 class DeleteProfilePopupPage(Page,RewardElement):
     """
     State description:
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(35, 210, 530, 113)
+    WINDOW_BB = BoundingBox(110, 240, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_profile_popup.png")
-    YES_BUTTON_BB = BoundingBox(370, 285, 87, 24)
-    NO_BUTTON_BB = BoundingBox(465, 285, 87, 24)
+    YES_BUTTON_BB = BoundingBox(376, 316, 77, 24)
+    NO_BUTTON_BB = BoundingBox(459, 316, 77, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -190,7 +228,7 @@ class DeleteProfilePopupPage(Page,RewardElement):
 
     def delete_profile(self):
         if(self.profile_database.is_removing_allowed()):
-            self.profile_database.delete_profile(self.profile_database.profiles[ProfilePage().current_index])
+            self.profile_database.delete_profile()
             self.register_selected_reward(["delete_profile"])
             self.close()
     
@@ -203,12 +241,13 @@ class DowngradePopupPage(Page, RewardElement):
     
     """
     State description:
-        state[0]: if this window is open  
+        state[0]: if this window is open
+
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(30, 200, 472, 121)
+    WINDOW_BB = BoundingBox(130, 250, 471, 121)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(395, 280, 91, 26)
+    OK_BUTTON_BB = BoundingBox(402, 330, 98, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -218,7 +257,7 @@ class DowngradePopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+        self.ok_button = Button(self.OK_BUTTON_BB, self.close)
     @property
     def reward_template(self):
         return {
@@ -254,8 +293,8 @@ class FiveProfilesPopupPage(Page,RewardElement):
     
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_profiles_popup.png")
-    WINDOW_BB = BoundingBox(30, 200, 318, 121)
-    OK_BB = BoundingBox(242, 280, 92, 26)
+    WINDOW_BB = BoundingBox(190, 250, 318, 121)
+    OK_BB = BoundingBox(342, 331, 77, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -265,7 +304,8 @@ class FiveProfilesPopupPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        self.ok_button = Button(self.OK_BB, self.close)
+    
     @property
     def reward_template(self):
         return {
@@ -307,11 +347,6 @@ class OpenBackupPopupPage(Page, RewardElement):
         
         self.profile_database = ProfileDatabase()
         self.deck_database = DeckDatabase()
-        self.choose_deck_study_page = ChooseDeckStudyPage()
-        self.choose_deck_page = ChooseDeckPage()   
-        self.add_card_page = AddCardPage()
-        self.anki_login_page = AnkiLoginPage()
-        self.export_deck_page = ExportDeckPage()
         
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
@@ -348,12 +383,6 @@ class OpenBackupPopupPage(Page, RewardElement):
     def reset_all(self):
         self.profile_database.default_profiles()
         self.deck_database.default_decks()
-        self.choose_deck_study_page.reset_index()
-        self.choose_deck_page.reset_index()
-        self.add_card_page.reset_temporary_strings()
-        self.anki_login_page.default_login()
-        self.export_deck_page.reset_current_deck()
-        self.register_selected_reward(["set_to_default"])
         self.close()
     
     def render(self,img: np.ndarray):
@@ -372,10 +401,10 @@ class RenameProfilePage(RewardElement,Page):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(30, 200, 498, 111)
-    OK_BB = BoundingBox(323, 270, 91, 26)
-    TEXT_BB = BoundingBox(430, 238, 86, 22)
-    CANCEL_BB = BoundingBox(424, 270, 92, 27)
+    WINDOW_BB = BoundingBox(130, 250, 498, 111)
+    OK_BB = BoundingBox(359, 320, 75, 24)
+    TEXT_BB = BoundingBox(450, 290, 71, 21)
+    CANCEL_BB = BoundingBox(444, 322, 75, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -396,6 +425,7 @@ class RenameProfilePage(RewardElement,Page):
         self.ok_button: Button = Button(self.OK_BB, self.rename_profile)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
+        self.current_text = None
         self.add_child(self.name_exists_popup_page)
 
     @property
@@ -435,10 +465,12 @@ class RenameProfilePage(RewardElement,Page):
             self.name_exists_popup_page.open()
         else:
             self.profile_database.rename_profile(self.current_field_string)
+            self.close()
     
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
+        put_text(img,"" if self.current_field_string is None else f"{self.current_field_string}", (146 , 304), font_scale = 0.5)
         return img
 
 class AddProfilePopupPage(Page,RewardElement):
@@ -451,10 +483,10 @@ class AddProfilePopupPage(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(30, 200, 500, 111)
-    OK_BB = BoundingBox(322, 270, 91, 26)
-    TEXT_BB = BoundingBox(430, 238, 86, 22)
-    CANCEL_BB = BoundingBox(423, 270, 92, 27)
+    WINDOW_BB = BoundingBox(112, 252, 500, 111)
+    OK_BB = BoundingBox(343, 323, 78, 23)
+    TEXT_BB = BoundingBox(433, 290, 73, 20)
+    CANCEL_BB = BoundingBox(429, 324, 78, 23)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -478,6 +510,9 @@ class AddProfilePopupPage(Page,RewardElement):
         self.ok_button: Button = Button(self.OK_BB, self.add_profile)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
+        self.add_children([self.name_exists_popup, self.five_profiles_popup])
+        self.set_reward_children([self.name_exists_popup, self.five_profiles_popup])
+
     @property
     def reward_template(self):
         return {
@@ -486,6 +521,12 @@ class AddProfilePopupPage(Page,RewardElement):
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        if(self.name_exists_popup.is_open()):
+            self.name_exists_popup.handle_click(click_position)
+            return
+        if(self.five_profiles_popup.is_open()):
+            self.five_profiles_popup.handle_click(click_position)
+            return
         if(self.text_button.is_clicked_by(click_position)):
             self.text_button.handle_click(click_position)
         elif(self.ok_button.is_clicked_by(click_position)):
@@ -523,6 +564,11 @@ class AddProfilePopupPage(Page,RewardElement):
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
+        put_text(img, "" if self.current_field_string is None else self.current_field_string, (130,306), font_scale = 0.5)
+        if(self.five_profiles_popup.is_open()):
+            img = self.five_profiles_popup.render(img)
+        if(self.name_exists_popup.is_open()):
+            img = self.name_exists_popup.render(img)
         return img
 
     def is_open(self) -> int:
@@ -536,9 +582,9 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
-    WINDOW_BB = BoundingBox(30, 200, 318, 121)
+    WINDOW_BB = BoundingBox(200, 250, 318, 121)
     
-    OK_BUTTON_BB = BoundingBox(242, 281, 91, 26)
+    OK_BB = BoundingBox(350, 331, 76, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -548,6 +594,7 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.ok_button: Button = Button(self.OK_BB, self.close)
 
     @property
     def reward_template(self):

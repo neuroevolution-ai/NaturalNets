@@ -189,7 +189,7 @@ class MainPage(Page,RewardElement):
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
         self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page,self.about_page,
-        self.check_media_page, self.choose_deck_study_page, self.preferences_page])
+        self.check_media_page, self.choose_deck_study_page, self.preferences_page,self.profile_page])
         
         self.is_logo_enabled = False
 

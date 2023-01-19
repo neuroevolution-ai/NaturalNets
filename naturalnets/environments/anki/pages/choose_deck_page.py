@@ -52,10 +52,15 @@ class ChooseDeckPage(Page,RewardElement):
         }
     
     def open(self):
+        self.current_index: int = 0
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
     def close(self):
+        self.current_index: int = 0
+        self.get_state()[3] = 0
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
 

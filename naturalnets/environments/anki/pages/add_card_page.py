@@ -85,10 +85,19 @@ class AddCardPage(Page,RewardElement):
             self.add_button.handle_click(click_position)
 
     def open(self):
+        self.front_side_clipboard_temporary_string = None
+        self.back_side_clipboard_temporary_string = None
+        self.tag_clipboard_temporary_string = None
+        self.get_state()[3] = 0
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
         self.get_state()[0] = 1
         self.register_selected_reward(["window","open"])
 
     def close(self):
+        self.get_state()[3] = 0
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
         self.reset_temporary_strings()

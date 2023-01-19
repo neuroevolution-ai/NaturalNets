@@ -75,9 +75,6 @@ class ExportDeckPage(Page,RewardElement):
     def is_open(self):
         return self.get_state()[0]
 
-    def reset_current_deck(self):
-        self.include_dropdown.set_selected_item(self.include_dropdown.get_all_items()[0])
-
     def export_deck(self):
         self.register_selected_reward(["exported"])
         self.deck_database.export_deck(self.include_dropdown.get_selected_item().get_value())
