@@ -1,5 +1,6 @@
 """ Module containing classes relevant for the dropdown-widget."""
 from typing import Any, Callable, List, Optional
+from PIL import Image, ImageDraw
 
 import cv2
 import numpy as np
@@ -68,8 +69,11 @@ class DropdownItem(Widget):
         end_point = (x + width, y + height)
         color = Color.BLACK.value
         thickness = 2
+        
         cv2.rectangle(img, start_point, end_point, color, thickness)
-
+        points= [[x, y],[x, y + height],[x + width, y + height],[x + width, y]]
+        cv2.fillPoly(img, np.int32([points]), color = (240, 240, 240))
+        
         text_padding = 3 * thickness
         bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:

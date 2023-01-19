@@ -422,7 +422,7 @@ class RenameProfilePage(RewardElement,Page):
         self.register_selected_reward(["window", "open"])
     
     def set_current_field_string(self):
-        self.current_field_string = self.secure_random.choices(string.ascii_lowercase + string.digits, 10)
+        self.current_field_string = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
         self.register_selected_reward(["profile_name_clipboard"])
     
     def is_open(self) -> int:

@@ -39,7 +39,6 @@ class AddCardPage(Page,RewardElement):
         
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.secure_random = random.SystemRandom()
 
         self.front_side_clipboard_temporary_string = None
         self.back_side_clipboard_temporary_string = None

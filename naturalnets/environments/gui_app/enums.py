@@ -53,7 +53,6 @@ class Color(Enum):
     BROWN = (64, 37, 16)
     ORANGE = (0, 88, 255)
 
-
 class Base(Enum):
     """Represents a numeral base for the calculator."""
     DECIMAL = 0

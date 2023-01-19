@@ -110,7 +110,7 @@ class MainPage(Page,RewardElement):
         self.choose_deck_study_page, self.check_media_page, self.preferences_page, self.about_page,
         self.add_card_page, self.add_deck_popup_page, self.edit_card_page, self.anki_login, self.leads_to_external_website_popup_page,
         self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page, self.reset_collection_popup_page,self.no_card_popup_page,
-        self.at_least_one_card_popup_page, self.choose_deck_study_page])
+        self.at_least_one_card_popup_page, self.choose_deck_study_page, self.preferences_page])
 
         self.switch_profile_ddi = DropdownItem("Switch Profile", "Switch Profile")
         self.switch_profile_ddi.set_click_action(self.profile_page.open)
@@ -128,7 +128,7 @@ class MainPage(Page,RewardElement):
         self.preferences_ddi = DropdownItem("Preferences", "Preferences")
         self.preferences_ddi.set_click_action(self.preferences_page.open)
         
-        self.show_anki_logo_ddi = DropdownItem("Show Anki Logo", "Show Anki Logo")
+        self.show_anki_logo_ddi = DropdownItem("Anki Logo", "Anki Logo")
         self.show_anki_logo_ddi.set_click_action(self.set_logo_shown)
 
         self.guide_ddi = DropdownItem("Guide", "Guide")
@@ -189,7 +189,7 @@ class MainPage(Page,RewardElement):
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
         self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page,self.about_page,
-        self.check_media_page, self.choose_deck_study_page])
+        self.check_media_page, self.choose_deck_study_page, self.preferences_page])
         
         self.is_logo_enabled = False
 
@@ -206,7 +206,7 @@ class MainPage(Page,RewardElement):
             },
             "edit_dropdown": {
                 "opened": 0,
-                "selected": ["Show Anki Logo"]
+                "selected": ["Anki Logo"]
             },
             "tools_dropdown":{
                 "opened": 0,
@@ -258,7 +258,6 @@ class MainPage(Page,RewardElement):
         elif (self.choose_deck_study_page.is_open()):
             if (self.study_button_study_deck.is_clicked_by(click_position)):
                 self.study_button_study_deck.handle_click(click_position)
-                print("3432efwr")
             else:
                 self.choose_deck_study_page.handle_click(click_position)
             return
@@ -428,6 +427,8 @@ class MainPage(Page,RewardElement):
             img = self.about_page.render(img)
         elif (self.check_media_page.is_open()):
             img = self.check_media_page.render(img)
+        elif (self.preferences_page.is_open()):
+            img = self.preferences_page.render(img)
         elif (self.opened_dd is not None):
             img = self.opened_dd.render(img)
         return img
@@ -485,6 +486,8 @@ class MainPage(Page,RewardElement):
     
     def set_logo_shown(self):
         self.is_logo_enabled = not(self.is_logo_enabled)
+        self.register_selected_reward([self.dropdowns_to_str[self.edit_dropdown], "selected", "Anki Logo"])
+
 
     def study_deck(self) -> int:
         if(self.choose_deck_study_page.current_index is not None):
