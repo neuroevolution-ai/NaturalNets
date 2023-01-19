@@ -59,28 +59,27 @@ class PreferencesPage(RewardElement,Page):
     BASIC_WINDOW_USER_INTERFACE_INCREMENT = BoundingBox(170, 509, 18, 9)
     BASIC_WINDOW_USER_INTERFACE_DECREMENT = BoundingBox(170, 519, 18, 9)
 
-    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(37, 63, 16, 16)
-    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(37, 93, 16, 16)
-    SCHEDULING_SHOW_LEARNING_CARDS = BoundingBox(37, 120, 16, 16)
-    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(37, 149, 16, 16)
-    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(37, 178, 16, 16)
+    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(33, 93, 16, 16)
+    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(33, 125, 16, 16)
+    SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB = BoundingBox(33, 151, 16, 16)
+    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(33, 181, 16, 16)
+    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(33, 209, 16, 16)
 
-    SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(426, 238, 18, 9)
-    SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(426, 275, 18, 9)
-    SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB = BoundingBox(426, 313, 18, 9)
+    SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(362, 268, 18, 9)
+    SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(362, 308, 18, 9)
+    SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB = BoundingBox(362, 346, 18, 9)
     
-    SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB = BoundingBox(426, 247, 18, 9)
-    SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(426, 284, 18, 9)
-    SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(426, 322, 18, 9)
+    SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB = BoundingBox(362, 278, 18, 9)
+    SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(362, 318, 18, 9)
+    SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(362, 356, 18, 9)
 
-    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(41, 113, 16, 16)
-    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(41, 146, 16, 16)
-    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(41, 179, 16, 16)
-    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(41, 214, 16, 16)
-    NETWORK_WINDOW_MEDIA_LOG_BB = BoundingBox(42, 274, 91, 26)
+    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(34, 144, 16, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(34, 176, 16, 16)
+    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(34, 210, 16, 16)
+    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(34, 245, 16, 16)
 
-    BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(139, 117, 18, 9)
-    BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(139, 126, 18, 9)
+    BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(117, 147, 18, 9)
+    BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(117, 157, 18, 9)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -142,8 +141,9 @@ class PreferencesPage(RewardElement,Page):
         self.basic_window_night_mode_checkbox,self.basic_window_add_to_deck_dd,self.basic_window_put_text_button,self.basic_window_user_interface_increment_button,
         self.basic_window_user_interface_decrement_button,self.basic_window_voice_recorder_dd]
 
-        self.scheduling_window_show_next_review_time_checkbox = CheckBox(self.SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB)
+        self.scheduling_window_show_next_review_time_checkbox = CheckBox(self.SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB)
         self.scheduling_window_remaining_card_count_checkbox = CheckBox(self.SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB)
+        self.scheduling_window_show_learning_cards_checkbox = CheckBox(self.SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB)
         self.scheduling_window_legacy_timezone_checkbox = CheckBox(self.SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB)
         self.scheduling_window_v3_scheduler_checkbox = CheckBox(self.SCHEDULING_WINDOW_V3_SCHEDULER_BB)
         
@@ -154,19 +154,18 @@ class PreferencesPage(RewardElement,Page):
         self.scheduling_window_learn_ahead_decrement_button = Button(self.SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB, self.decrement_learn_ahead)
         self.scheduling_window_timebox_time_decrement_button = Button(self.SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB, self.decrement_timebox_time)
 
-        self.scheduling_window_widgets: List[Widget] = [self.scheduling_window_show_next_review_time_checkbox,self.scheduling_window_remaining_card_count_checkbox,
-        self.scheduling_window_legacy_timezone_checkbox,self.scheduling_window_v3_scheduler_checkbox,self.scheduling_window_next_day_increment_button,
-        self.scheduling_window_learn_ahead_increment_button,self.scheduling_window_timebox_time_increment_button,self.scheduling_window_next_day_decrement_button,
-        self.scheduling_window_learn_ahead_decrement_button,self.scheduling_window_timebox_time_decrement_button]
+        self.scheduling_window_widgets: List[Widget] = [self.scheduling_window_show_next_review_time_checkbox, self.scheduling_window_remaining_card_count_checkbox,
+        self.scheduling_window_legacy_timezone_checkbox, self.scheduling_window_v3_scheduler_checkbox, self.scheduling_window_next_day_increment_button,
+        self.scheduling_window_learn_ahead_increment_button, self.scheduling_window_timebox_time_increment_button, self.scheduling_window_next_day_decrement_button,
+        self.scheduling_window_learn_ahead_decrement_button, self.scheduling_window_timebox_time_decrement_button, self.scheduling_window_show_learning_cards_checkbox]
 
         self.network_window_synchronize_audio_and_image_checkbox = CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB)
         self.network_window_synchronize_on_profile_checkbox = CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB)
         self.network_window_periodically_synchronize_checkbox = CheckBox(self.NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB)
         self.network_window_force_changes_in_one_direction_checkbox = CheckBox(self.NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB)
-        self.network_window_media_log_button = Button(self.NETWORK_WINDOW_MEDIA_LOG_BB, None)
 
-        self.network_window_widgets: List[Widget] = [self.network_window_synchronize_audio_and_image_checkbox,self.network_window_synchronize_on_profile_checkbox,
-        self.network_window_periodically_synchronize_checkbox,self.network_window_force_changes_in_one_direction_checkbox,self.network_window_media_log_button]
+        self.network_window_widgets: List[Widget] = [self.network_window_synchronize_audio_and_image_checkbox, self.network_window_synchronize_on_profile_checkbox,
+        self.network_window_periodically_synchronize_checkbox,self.network_window_force_changes_in_one_direction_checkbox]
 
         self.backups_window_increment_backups = Button(self.BACKUPS_WINDOW_INCREMENT_BB, self.increment_backup_number)
         self.backups_window_decrement_backups = Button(self.BACKUPS_WINDOW_DECREMENT_BB, self.decrement_backup_number)
@@ -189,6 +188,7 @@ class PreferencesPage(RewardElement,Page):
             self.basic_window_night_mode_checkbox : "basic_window_night_mode_checkbox",
             self.scheduling_window_show_next_review_time_checkbox: "scheduling_window_show_next_review_time_checkbox",
             self.scheduling_window_remaining_card_count_checkbox: "scheduling_window_remaining_card_count_checkbox",
+            self.scheduling_window_show_learning_cards_checkbox: "scheduling_window_show_learning_cards_checkbox",
             self.scheduling_window_legacy_timezone_checkbox: "scheduling_window_legacy_timezone_checkbox",
             self.scheduling_window_v3_scheduler_checkbox: "network_window_force_changes_in_one_direction_checkbox",
             self.network_window_synchronize_audio_and_image_checkbox: "network_window_synchronize_audio_and_image_checkbox",
@@ -245,6 +245,7 @@ class PreferencesPage(RewardElement,Page):
 
             "scheduling_window_show_next_review_time_checkbox": [True,False],
             "scheduling_window_remaining_card_count_checkbox": [True,False],
+            "scheduling_window_show_learning_cards_checkbox": [True,False],
             "scheduling_window_legacy_timezone_checkbox": [True,False],
             "scheduling_window_v3_scheduler_checkbox": [True,False],
             
@@ -437,12 +438,22 @@ class PreferencesPage(RewardElement,Page):
         elif (self.get_state()[2] == 1):
             to_render = cv2.imread(self.PREFERENCES_SCHEDULING_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
+            for widget in self.scheduling_window_widgets:
+                if isinstance(widget,CheckBox):
+                    img = widget.render(img)
+            put_text(img, f"{self.next_day}" , (379, 281), font_scale = 0.4)
+            put_text(img, f"{self.learn_ahead}" , (379, 317), font_scale = 0.4)
+            put_text(img, f"{self.timebox_time}" , (379, 355), font_scale = 0.4)
         elif (self.get_state()[3] == 1):
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
+            for widget in self.network_window_widgets:
+                if isinstance(widget,CheckBox):
+                    img = widget.render(img)
         elif (self.get_state()[4] == 1):
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
+            put_text(img, f"{self.backup_number}" , (93, 161), font_scale = 0.4)
         if(self.leads_to_external_website_popup.is_open()):
             img = self.leads_to_external_website_popup.render(img)
         return img
