@@ -86,7 +86,7 @@ class DeckDatabase():
         deck_file.close()
 
     def export_deck(self,deck: Deck) -> None:
-        if (not(self.is_file_exist(deck.name,EXPORTED_DECKS_PATH)) and (self.is_exporting_allowed(EXPORTED_DECKS_PATH)) ):
+        if (not(self.is_file_exist(deck.name,EXPORTED_DECKS_PATH)) and (self.is_exporting_allowed()) ):
             deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt","w",encoding='utf-8')
             for card in deck.cards:
                 deck_file.write(card.front + " " +card.back)

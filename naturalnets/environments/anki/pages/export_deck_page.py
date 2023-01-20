@@ -22,10 +22,10 @@ class ExportDeckPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "export_deck_page.png")
     
     WINDOW_BB = BoundingBox(210, 200, 380, 278)
-    INCLUDE_DD_BB = BoundingBox(302, 247, 187, 21)
-    INCLUDE_DD_BB_OFFSET = BoundingBox(302, 268, 187, 21)
-    EXPORT_BB = BoundingBox(272, 339, 76, 25)
-    CANCEL_BB = BoundingBox(412, 437, 76, 25)
+    INCLUDE_DD_BB = BoundingBox(324, 250, 224, 24)
+    INCLUDE_DD_BB_OFFSET = BoundingBox(324, 274, 224, 24)
+    EXPORT_BB = BoundingBox(346, 443, 113, 27)
+    CANCEL_BB = BoundingBox(470, 443, 113, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -38,11 +38,9 @@ class ExportDeckPage(Page,RewardElement):
         self.deck_database = DeckDatabase()
         self.current_deck = None
 
-        dropdown_items = []
-        for deck in self.deck_database.decks:
-            dropdown_items.append(DropdownItem(deck,deck.name))
-
-        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, dropdown_items)
+        self.dropdown_items = []
+        self.initialise_dropdown()
+        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
 
@@ -70,6 +68,7 @@ class ExportDeckPage(Page,RewardElement):
                 self.cancel_button.handle_click(click_position)
 
     def open(self):
+        self.initialise_dropdown()
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -83,11 +82,19 @@ class ExportDeckPage(Page,RewardElement):
     def export_deck(self):
         self.register_selected_reward(["exported"])
         self.deck_database.export_deck(self.include_dropdown.get_selected_item().get_value())
+        self.close()
 
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (360,260), font_scale=0.4)
+        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (331, 265), font_scale=0.4)
         if (self.include_dropdown.is_open()):
             img = self.include_dropdown.render(img)
         return img
+
+    def initialise_dropdown(self):
+        self.dropdown_items = []
+        for deck in self.deck_database.decks:
+            print(deck.name)
+            self.dropdown_items.append(DropdownItem(deck,deck.name))
+        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)

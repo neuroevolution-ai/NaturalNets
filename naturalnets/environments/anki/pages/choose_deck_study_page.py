@@ -106,7 +106,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         elif(self.add_deck_popup.is_open()):
             self.add_deck_popup.render(img)
         for i, deck in enumerate (self.deck_database.decks):
-            if((self.add_deck_popup.is_open() or self.leads_to_external_website_popup.is_open()) and i >= 1):
+            if((self.add_deck_popup.is_open() and i >= 1) or (self.leads_to_external_website_popup.is_open() and i >= 3)):
                 continue
             put_text(img, f" {deck.name}", (200, 231 + 29 * i), font_scale = 0.5)
         return img

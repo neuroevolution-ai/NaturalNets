@@ -23,11 +23,10 @@ class ImportDeckPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_page.png")
 
     WINDOW_BB = BoundingBox(70, 60, 689, 584)
-    SELECT_DECK_BB = BoundingBox(386, 102, 236, 27)
-    HTML_BB = BoundingBox(44, 169, 16, 16)
-    IMPORT_BB = BoundingBox(385, 602, 77, 22)
-    CLOSE_BB = BoundingBox(470, 602, 77, 22)
-    HELP_BB = BoundingBox(557, 604, 77, 22)
+    SELECT_DECK_BB = BoundingBox(521, 101, 192, 45)
+    IMPORT_BB = BoundingBox(309, 595, 127, 29)
+    CLOSE_BB = BoundingBox(479, 595, 98, 29)
+    HELP_BB = BoundingBox(622, 595, 98, 29)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -39,7 +38,7 @@ class ImportDeckPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.import_deck_popup = ImportDeckPopupPage()
+        self.import_deck_popup = ImportDeckSelectPage()
         self.name_exists_popup = NameExistsPopup()
         self.five_decks_popup = FiveDecksPopup()
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
@@ -134,24 +133,24 @@ class ImportDeckPage(Page,RewardElement):
             img = self.name_exists_popup.render(img)
         return img
 
-class ImportDeckPopupPage(Page,RewardElement):
+class ImportDeckSelectPage(Page,RewardElement):
     """
     State description:
             state[0]: if this window is open
             state[i]: if the i-th item is selected i = {1,2,3}
     """
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_popup.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_select_page.png")
 
     WINDOW_BB = BoundingBox(150, 150, 499, 373)
-    CHOOSE_BB = BoundingBox(289, 485, 77, 22)
-    HELP_BB = BoundingBox(464, 485, 77, 22)
-    CLOSE_BB = BoundingBox(376, 485, 77, 22)
-    DECK_BB = BoundingBox(113, 145, 472, 280)
+    CHOOSE_BB = BoundingBox(289, 489, 116, 28)
+    CLOSE_BB = BoundingBox(434, 489, 96, 28)
+    HELP_BB = BoundingBox(546, 489, 98, 28)
+    DECK_BB = BoundingBox(183, 204, 420, 145)
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(ImportDeckPopupPage, cls).__new__(cls)
+            cls.instance = super(ImportDeckSelectPage, cls).__new__(cls)
         return cls.instance
     
     def __init__(self):
@@ -209,15 +208,14 @@ class ImportDeckPopupPage(Page,RewardElement):
         # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1] - 195) / 30)
-            print(click_index)
+            click_index: int = floor((click_point[1] - 205) / 30)
             self.current_index: int = click_index
             self.register_selected_reward(["index", click_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (137,195)
+       upper_left_point = (183, 205)
        length = 30 * self.deck_database.count_number_of_files(PREDEFINED_DECKS_PATH)
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 401, length)
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 421, length)
        return current_bounding_box
     
     def set_import_name(self):
@@ -233,7 +231,7 @@ class ImportDeckPopupPage(Page,RewardElement):
         if(self.leads_to_external_website_popup.is_open()):
             img = self.leads_to_external_website_popup.render(img)
         if(self.deck_database.deck_import_names[self.current_index] is not None):
-            put_text(img, f"{self.deck_database.deck_import_names[self.current_index]}", (171, 183), font_scale = 0.5)
+            put_text(img, f"{self.deck_database.deck_import_names[self.current_index]}", (189, 192), font_scale = 0.5)
         for i, deck_name in enumerate (self.deck_database.deck_import_names):
-            put_text(img, f"{deck_name}", (171, 188 + (30 * (i + 1))), font_scale = 0.5)
+            put_text(img, f"{deck_name}", (191, 225 + 30 * i), font_scale = 0.5)
         return img

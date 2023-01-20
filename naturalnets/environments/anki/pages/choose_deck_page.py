@@ -101,7 +101,7 @@ class ChooseDeckPage(Page,RewardElement):
             img = self.add_deck_popup.render(img)
         put_text(img, f" {self.deck_database.decks[self.current_index].name}", (210, 204), font_scale = 0.5)
         for i, deck in enumerate (self.deck_database.decks):
-            if(self.add_deck_popup.is_open() and i >= 3):
+            if(self.add_deck_popup.is_open() and i >= 1):
                 return img
             put_text(img, f" {deck.name}", (211, 243 + 29 * i), font_scale = 0.5)
         return img
