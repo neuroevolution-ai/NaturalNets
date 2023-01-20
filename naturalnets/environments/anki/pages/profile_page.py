@@ -27,14 +27,14 @@ class ProfilePage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
-    WINDOW_BB = BoundingBox(100, 100, 555, 466)
-    OPEN_BB = BoundingBox(448, 112, 96, 24)
-    ADD_BB = BoundingBox(448, 151, 96, 24)
-    RENAME_BB = BoundingBox(448, 190, 96, 24)
-    DELETE_BB = BoundingBox(448, 226, 96, 24)
-    OPEN_BACKUP_BB = BoundingBox(448, 488, 96, 24)
-    DOWNGRADE_QUIT_BB = BoundingBox(448, 526, 96, 24)
-    PROFILES_BB = BoundingBox(98, 112, 340, 440)
+    WINDOW_BB = BoundingBox(130, 150, 555, 466)
+    OPEN_BB = BoundingBox(564, 172, 107, 30)
+    ADD_BB = BoundingBox(564, 215, 107, 30)
+    RENAME_BB = BoundingBox(564, 258, 107, 30)
+    DELETE_BB = BoundingBox(564, 302, 107, 30)
+    OPEN_BACKUP_BB = BoundingBox(506, 529, 175, 30)
+    DOWNGRADE_QUIT_BB = BoundingBox(508, 582, 175, 30)
+    PROFILES_BB = BoundingBox(143, 166, 400, 145)
 
     #Profiles in the profiles_bb have the (heigth,width) (384,22)
 
@@ -82,16 +82,16 @@ class ProfilePage(Page,RewardElement):
     def change_current_deck_index(self, click_point:np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1] - 112) / 30)
+            click_index: int = floor((click_point[1] - 166) / 29)
             self.profile_database.current_index: int = click_index
             self.current_profile = self.profile_database.profiles[self.profile_database.current_index]
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (97, 112)
-       length = 30 * self.profile_database.profiles_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 340, length)
+       upper_left_point = (143, 166)
+       length = 29 * self.profile_database.profiles_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 400, length)
        return current_bounding_box
     
     def open(self):
@@ -114,9 +114,9 @@ class ProfilePage(Page,RewardElement):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (518, 278), font_scale = 0.35)
+        put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (507, 376), font_scale = 0.4)
         for i, profile in enumerate(self.profile_database.profiles):
-            put_text(img, f"{profile.name}", (125, 102 + (i + 1) * 30), font_scale = 0.5)
+            put_text(img, f"{profile.name}", (152, 189 + i * 30), font_scale = 0.5)
         if self.add_profile_popup_page.is_open():
             img = self.add_profile_popup_page.render(img)
         elif self.rename_profile_page.is_open():
@@ -179,10 +179,10 @@ class DeleteProfilePopup(Page,RewardElement):
         state[0]: if this window is open  
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(110, 240, 530, 113)
+    WINDOW_BB = BoundingBox(160, 300, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_profile_popup.png")
-    YES_BUTTON_BB = BoundingBox(376, 316, 77, 24)
-    NO_BUTTON_BB = BoundingBox(459, 316, 77, 24)
+    YES_BUTTON_BB = BoundingBox(474, 373, 86, 30)
+    NO_BUTTON_BB = BoundingBox(587, 373, 80, 30)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -240,9 +240,9 @@ class DowngradePopup(Page, RewardElement):
 
     """
     STATE_LEN = 1
-    WINDOW_BB = BoundingBox(130, 250, 471, 121)
+    WINDOW_BB = BoundingBox(160, 300, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(402, 330, 98, 27)
+    OK_BUTTON_BB = BoundingBox(585, 375, 82, 27)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -396,10 +396,10 @@ class RenameProfilePopup(RewardElement,Page):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(130, 250, 498, 111)
-    OK_BB = BoundingBox(359, 320, 75, 24)
-    TEXT_BB = BoundingBox(450, 290, 71, 21)
-    CANCEL_BB = BoundingBox(444, 322, 75, 24)
+    WINDOW_BB = BoundingBox(160, 305, 498, 111)
+    OK_BB = BoundingBox(404, 377, 60, 30)
+    TEXT_BB = BoundingBox(586, 339, 70, 26)
+    CANCEL_BB = BoundingBox(505, 380, 83, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -465,7 +465,7 @@ class RenameProfilePopup(RewardElement,Page):
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img,"" if self.current_field_string is None else f"{self.current_field_string}", (146 , 304), font_scale = 0.5)
+        put_text(img, "" if self.current_field_string is None else self.current_field_string, (191,359), font_scale = 0.5)
         return img
 
 class AddProfilePopup(Page,RewardElement):
@@ -478,10 +478,10 @@ class AddProfilePopup(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
     
-    WINDOW_BB = BoundingBox(112, 252, 500, 111)
-    OK_BB = BoundingBox(343, 323, 78, 23)
-    TEXT_BB = BoundingBox(433, 290, 73, 20)
-    CANCEL_BB = BoundingBox(429, 324, 78, 23)
+    WINDOW_BB = BoundingBox(160, 305, 498, 109)
+    OK_BB = BoundingBox(404, 377, 60, 30)
+    TEXT_BB = BoundingBox(586, 339, 70, 26)
+    CANCEL_BB = BoundingBox(505, 380, 83, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -559,7 +559,7 @@ class AddProfilePopup(Page,RewardElement):
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_field_string is None else self.current_field_string, (130,306), font_scale = 0.5)
+        put_text(img, "" if self.current_field_string is None else self.current_field_string, (191,359), font_scale = 0.5)
         if(self.five_profiles_popup.is_open()):
             img = self.five_profiles_popup.render(img)
         if(self.name_exists_popup.is_open()):

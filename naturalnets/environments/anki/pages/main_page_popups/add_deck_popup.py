@@ -21,10 +21,10 @@ class AddDeckPopup(Page,RewardElement):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "add_deck_popup.png")
     
-    WINDOW_BB = BoundingBox(136, 301, 498, 109)
-    OK_BB = BoundingBox(363, 373, 77, 23)
-    TEXT_BB = BoundingBox(453, 339, 76, 20)
-    CANCEL_BB = BoundingBox(452, 373, 76, 23)
+    WINDOW_BB = BoundingBox(150, 250, 498, 109)
+    OK_BB = BoundingBox(395, 323, 56, 30)
+    CANCEL_BB = BoundingBox(496, 325, 81, 22)
+    TEXT_BB = BoundingBox(577, 284, 68, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -90,7 +90,7 @@ class AddDeckPopup(Page,RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         
         if(self.current_field_string is not None):
-            put_text(img, f"{self.current_field_string}", (153, 354) ,font_scale = 0.4)
+            put_text(img, f"{self.current_field_string}", (181, 302) ,font_scale = 0.4)
 
         if (self.five_decks_popup.is_open()):
             img = self.five_decks_popup.render(img)

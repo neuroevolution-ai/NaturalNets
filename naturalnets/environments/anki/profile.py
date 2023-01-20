@@ -18,7 +18,6 @@ class ProfileDatabase():
         self.profile_names: Final = [ProfileNames.ALICE.value, ProfileNames.BOB.value, ProfileNames.CAROL.value, ProfileNames.DENNIS.value, ProfileNames.EVA.value]
         self.profiles = [Profile(ProfileNames.ALICE.value)]
         self.current_index: int = 0
-        self.profile_page_index: int = 0
     
     def is_adding_allowed(self) -> bool :
         return self.profiles_length() < 5 

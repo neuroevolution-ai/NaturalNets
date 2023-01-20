@@ -20,8 +20,8 @@ class FailedLoginPopup(Page,RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "failed_login_popup.png")
     
-    WINDOW_BB = BoundingBox(230, 270, 318, 121)
-    OK_BB = BoundingBox(374, 350, 77, 26)
+    WINDOW_BB = BoundingBox(250, 300, 318, 121)
+    OK_BB = BoundingBox(481, 384, 81, 31)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

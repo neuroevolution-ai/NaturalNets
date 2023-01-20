@@ -16,7 +16,7 @@ class NameExistsPopup(Page,RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "name_exists_popup.png")
     WINDOW_BB = BoundingBox(300, 300, 175, 118)
-    OK_BB = BoundingBox(313, 371, 79, 30)
+    OK_BB = BoundingBox(410, 389, 56, 22)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

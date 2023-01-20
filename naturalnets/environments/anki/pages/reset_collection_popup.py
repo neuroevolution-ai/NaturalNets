@@ -16,11 +16,11 @@ class ResetCollectionPopup(Page, RewardElement):
             state[0]: if this window is open
     """
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection_popup.png")
 
-    BOUNDING_BOX = BoundingBox(170, 250, 399, 120)
-    YES_BUTTON_BB = BoundingBox(310, 330, 77, 24)
-    NO_BUTTON_BB = BoundingBox(394, 329, 77, 24)
+    BOUNDING_BOX = BoundingBox(160, 300, 498, 111)
+    YES_BUTTON_BB = BoundingBox(450, 374, 87, 30)
+    NO_BUTTON_BB = BoundingBox(560, 375, 79, 30)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)

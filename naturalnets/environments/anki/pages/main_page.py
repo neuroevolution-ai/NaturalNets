@@ -14,6 +14,7 @@ from naturalnets.environments.anki.pages.main_page_popups.at_least_one_deck_popu
 from naturalnets.environments.anki.pages.main_page_popups.delete_current_deck_check_popup import DeleteCurrentDeckPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.pages.main_page_popups.no_card_popup import NoCardPopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -48,16 +49,16 @@ class MainPage(Page,RewardElement):
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
     DECKS_BB = BoundingBox(112, 244, 610, 196)
     
-    GET_SHARED_BB = BoundingBox(223, 635, 77, 28)
-    CREATE_DECK_BB = BoundingBox(305, 635, 85, 28)
-    IMPORT_FILE_BB = BoundingBox(393, 635, 77, 28)
-    STUDY_BB = BoundingBox(429, 164, 79, 30)
-    DELETE_DECK_BB = BoundingBox(433, 232, 68, 24)
-
-    ADD_CARD_BB = BoundingBox(298, 44, 155, 36)
     DECKS_BUTTON_BB = BoundingBox(481, 44, 155, 36)
-    SYNC_BB = BoundingBox(656, 44, 155, 36)
-    
+    CREATE_DECK_BB = BoundingBox(15, 727, 254, 48)
+    IMPORT_FILE_BB = BoundingBox(586, 726, 235, 48)
+    DELETE_DECK_BB = BoundingBox(303, 724, 252, 48)
+
+    STUDY_BB = BoundingBox(429, 164, 79, 30)
+    ADD_CARD_BB = BoundingBox(298, 44, 155, 36)
+    GET_SHARED_BB = BoundingBox(481, 45, 155, 36)
+    ANKI_LOGIN_BB = BoundingBox(656, 44, 155, 36)
+
     FILE_DROPDOWN_BB = BoundingBox(0, 0, 70, 29)
     EDIT_DROPDOWN_BB = BoundingBox(70, 0, 70, 29)
     TOOLS_DROPDOWN_BB = BoundingBox(140, 0, 70, 29)
@@ -93,6 +94,7 @@ class MainPage(Page,RewardElement):
         self.add_deck_popup_page = AddDeckPopup()
         self.edit_card_page = EditCardPage()
         self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
         self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopup()
         self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopup()
         self.at_least_one_deck_popup_page = AtLeastOneDeckPopup()
@@ -154,7 +156,7 @@ class MainPage(Page,RewardElement):
         self.edit_button = Button(self.EDIT_BB, self.edit_card_page.open)
         self.study_button: Button = Button(self.STUDY_BB, self.study)
         self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card)
-        self.sync_button:  Button = Button(self.SYNC_BB, self.login)
+        self.sync_button:  Button = Button(self.ANKI_LOGIN_BB, self.login)
         self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.get_shared)
         self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
         self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
@@ -437,9 +439,9 @@ class MainPage(Page,RewardElement):
         render_onto_bb(img, self.WINDOW_BB, frame)
         anki_logo = cv2.imread(IMAGES_PATH + "anki_logo.png")
         if(self.is_logo_enabled):
-            render_onto_bb(img, BoundingBox (657, 186, 128, 128), anki_logo)
+            render_onto_bb(img, BoundingBox (657, 450, 128, 128), anki_logo)
         if (self.profile_page.current_profile is not None):
-            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (16,132), font_scale = 0.4)
+            put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (16,132), font_scale = 0.4)
         
         put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (286,132), font_scale = 0.4)
         

@@ -23,11 +23,11 @@ class AnkiLoginPage(Page,RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login_page.png")
 
-    WINDOW_BB = BoundingBox(200, 200, 277, 244)
-    USERNAME_BB = BoundingBox(192, 283, 79, 28)
-    PASSWORD_BB = BoundingBox(295, 283, 79, 28)
-    OK_BB = BoundingBox(230, 407, 76, 26)
-    CANCEL_BB = BoundingBox(316, 407, 76, 26)
+    WINDOW_BB = BoundingBox(270, 250, 277, 244)
+    USERNAME_BB = BoundingBox(293, 311, 92, 24)
+    PASSWORD_BB = BoundingBox(430, 311, 88, 24)
+    OK_BB = BoundingBox(312, 456, 89, 31)
+    CANCEL_BB = BoundingBox(415, 456, 113, 31)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -123,9 +123,9 @@ class AnkiLoginPage(Page,RewardElement):
             img = self.failed_login.render(img)
             return img
         if(self.username_clipboard is not None):
-            put_text(img,f"{self.username_clipboard}", (295, 358) ,font_scale = 0.5)
+            put_text(img,f"{self.username_clipboard}", (356, 388) ,font_scale = 0.5)
         if(self.password_clipboard is not None):
-            put_text(img,f"{self.password_clipboard}", (295, 390) ,font_scale = 0.5)
+            put_text(img,f"{self.password_clipboard}", (356, 431) ,font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:

@@ -24,12 +24,12 @@ class ChooseDeckStudyPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study_page.png")
     
     WINDOW_BB = BoundingBox(150, 150, 498, 374)
-    STUDY_BB = BoundingBox(204, 486, 77, 22)
-    ADD_BB = BoundingBox(289, 486, 77, 22)
-    CANCEL_BB = BoundingBox(375, 486, 77, 22)
-    HELP_BB = BoundingBox(462, 486, 77, 22)
+    STUDY_BB = BoundingBox(204, 476, 111, 31)
+    ADD_BB = BoundingBox(293, 476, 87, 31)
+    CANCEL_BB = BoundingBox(405, 476, 111, 31)
+    HELP_BB = BoundingBox(534, 476, 95, 31)
 
-    DECK_BB = BoundingBox(141, 196 ,397 ,150)
+    DECK_BB = BoundingBox(194, 210, 407, 145)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -82,15 +82,15 @@ class ChooseDeckStudyPage(Page,RewardElement):
         # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1]- 195) / 30)
+            click_index: int = floor((click_point[1]- 210) / 29)
             print(click_index)
             self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (140, 195)
-       length = 30 * self.deck_database.decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 401, length)
+       upper_left_point = (194, 210)
+       length = 29 * self.deck_database.decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 407, length)
        return current_bounding_box
     
     def reset_index(self):
@@ -99,16 +99,16 @@ class ChooseDeckStudyPage(Page,RewardElement):
     def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img,f"{self.deck_database.decks[self.current_index].name}", (170, 180), font_scale = 0.5)
+        put_text(img,f"{self.deck_database.decks[self.current_index].name}", (181, 194), font_scale = 0.5)
         # Items have size (469,22)
         if(self.leads_to_external_website_popup.is_open()):
             self.leads_to_external_website_popup.render(img)
         elif(self.add_deck_popup.is_open()):
             self.add_deck_popup.render(img)
         for i, deck in enumerate (self.deck_database.decks):
-            if((self.add_deck_popup.is_open() or self.leads_to_external_website_popup.is_open()) and i >= 3):
+            if((self.add_deck_popup.is_open() or self.leads_to_external_website_popup.is_open()) and i >= 1):
                 continue
-            put_text(img, f" {deck.name}", (165, 186 + 30 * (i + 1)), font_scale = 0.5)
+            put_text(img, f" {deck.name}", (200, 231 + 29 * i), font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:

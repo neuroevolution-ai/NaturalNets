@@ -22,8 +22,8 @@ class DeleteCurrentDeckPopup(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_current_deck_popup.png")
     
     WINDOW_BB = BoundingBox(130, 270, 530, 113)
-    YES_BB = BoundingBox(394, 347, 77, 26)
-    NO_BB = BoundingBox(476, 346, 77, 26)
+    YES_BB = BoundingBox(444, 342, 87, 30)
+    NO_BB = BoundingBox(557, 342, 82, 30)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

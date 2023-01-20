@@ -21,10 +21,10 @@ class ChooseDeckPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_page.png")
 
     WINDOW_BB = BoundingBox(160, 160, 498, 375)
-    CHOOSE_BB = BoundingBox(297, 494, 77, 27)
-    ADD_BB = BoundingBox(382, 494, 77, 27)
-    CLOSE_BB = BoundingBox(471, 495, 77, 27)
-    DECK_BB = BoundingBox(13, 65, 472, 280)
+    CHOOSE_BB = BoundingBox(276, 496, 117, 32)
+    ADD_BB = BoundingBox(427, 496, 90, 30)
+    CLOSE_BB = BoundingBox(546, 497, 90, 31)
+    DECK_BB = BoundingBox(612, 366, 406, 145)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -73,13 +73,13 @@ class ChooseDeckPage(Page,RewardElement):
         # Top left corner (33,65)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = floor((click_point[1] - 206) / 30)
+            click_index: int = floor((click_point[1] - 222) / 29)
             self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (146,206)
-       length = 30 * self.deck_database.decks_length()
+       upper_left_point = (207,222)
+       length = 29 * self.deck_database.decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 398, length)
        return current_bounding_box
 
@@ -99,11 +99,11 @@ class ChooseDeckPage(Page,RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.add_deck_popup.is_open()):
             img = self.add_deck_popup.render(img)
-        put_text(img, f" {self.deck_database.decks[self.current_index].name}", (170, 190), font_scale = 0.5)
+        put_text(img, f" {self.deck_database.decks[self.current_index].name}", (210, 204), font_scale = 0.5)
         for i, deck in enumerate (self.deck_database.decks):
             if(self.add_deck_popup.is_open() and i >= 3):
                 return img
-            put_text(img, f" {deck.name}", (170, 195 + 30 * (i + 1)), font_scale = 0.5)
+            put_text(img, f" {deck.name}", (211, 243 + 29 * i), font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
