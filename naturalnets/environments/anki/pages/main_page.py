@@ -45,7 +45,7 @@ class MainPage(Page,RewardElement):
     IMG_PATH_STUDY = os.path.join(IMAGES_PATH, "study_page.png")
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
 
-    WINDOW_BB = BoundingBox(0, 0, 834, 709)
+    WINDOW_BB = BoundingBox(0, 0, 834, 834)
     DECKS_BB = BoundingBox(119, 277, 389, 150)
     
     GET_SHARED_BB = BoundingBox(223, 635, 77, 28)
@@ -189,7 +189,7 @@ class MainPage(Page,RewardElement):
         self.set_reward_children([self.anki_login, self.add_deck_popup_page, self.leads_to_external_website_popup_page,
         self.add_card_page, self.import_deck_page, self.delete_current_deck_check_popup_page, self.at_least_one_deck_popup_page,
         self.reset_collection_popup_page,self.edit_card_page,self.no_card_popup_page,self.at_least_one_card_popup_page,self.about_page,
-        self.check_media_page, self.choose_deck_study_page, self.preferences_page,self.profile_page])
+        self.check_media_page, self.choose_deck_study_page, self.preferences_page,self.profile_page, self.export_deck_page])
         
         self.is_logo_enabled = False
 

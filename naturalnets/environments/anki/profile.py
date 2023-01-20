@@ -17,7 +17,6 @@ class ProfileDatabase():
     def __init__(self):
         self.profile_names: Final = [ProfileNames.ALICE.value, ProfileNames.BOB.value, ProfileNames.CAROL.value, ProfileNames.DENNIS.value, ProfileNames.EVA.value]
         self.profiles = [Profile(ProfileNames.ALICE.value)]
-        self.active_profile = self.profiles[0]
         self.current_index: int = 0
         self.profile_page_index: int = 0
     
@@ -35,12 +34,13 @@ class ProfileDatabase():
         print(len(self.profiles))
 
     def rename_profile(self, new_name: str) -> None:
-        self.active_profile.name = new_name
+        self.profiles[self.current_index].name = new_name
     
     def delete_profile(self) -> None:
         for profile in self.profiles:
-            if profile.name == self.active_profile.name:
+            if profile.name == self.profiles[self.current_index].name:
                 self.profiles.remove(profile)
+                self.current_index = 0
 
     def is_included(self,name: str) -> bool:
         for profile_temp in self.profiles:
@@ -48,15 +48,11 @@ class ProfileDatabase():
                 return True      
         return False
 
-    def change_active_profile(self) -> None:
-        self.active_profile = self.profiles[self.current_index]
     
     def reset_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE)]
         self.current_index: int = 0
-        self.active_profile = self.profiles[self.current_index]
         
     def default_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE.value), Profile(ProfileNames.BOB.value), Profile(ProfileNames.CAROL.value)]
-        self.active_profile = self.profiles[1]
         self.current_index: int = 1

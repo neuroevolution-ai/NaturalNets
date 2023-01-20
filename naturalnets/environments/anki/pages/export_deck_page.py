@@ -5,7 +5,7 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown,DropdownItem
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -22,11 +22,11 @@ class ExportDeckPage(Page,RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "export_deck_page.png")
     
-    WINDOW_BB = BoundingBox(100, 100, 380, 278)
-    INCLUDE_DD_BB = BoundingBox(246, 145, 222, 24)
-    HTML_CHECKBOX_BB = BoundingBox(113, 179, 16, 16)
-    EXPORT_BB = BoundingBox(272, 339, 91, 26)
-    CANCEL_BB = BoundingBox(374, 338, 91, 26)
+    WINDOW_BB = BoundingBox(210, 200, 380, 278)
+    INCLUDE_DD_BB = BoundingBox(302, 247, 187, 21)
+    INCLUDE_DD_BB_OFFSET = BoundingBox(302, 268, 187, 21)
+    EXPORT_BB = BoundingBox(272, 339, 76, 25)
+    CANCEL_BB = BoundingBox(412, 437, 76, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -37,12 +37,13 @@ class ExportDeckPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.deck_database = DeckDatabase()
-        
+        self.current_deck = None
+
         dropdown_items = []
         for deck in self.deck_database.decks:
             dropdown_items.append(DropdownItem(deck,deck.name))
 
-        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB, dropdown_items)
+        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, dropdown_items)
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
 
@@ -56,8 +57,13 @@ class ExportDeckPage(Page,RewardElement):
         }
         
     def handle_click(self,click_position: np.ndarray):
+        if(self.INCLUDE_DD_BB.is_point_inside(click_position)):
+            self.include_dropdown.open()
+            return
         if (self.include_dropdown.is_open()):
             self.include_dropdown.handle_click(click_position)        
+            if self.include_dropdown.get_selected_item() is not None:
+                self.current_deck = self.include_dropdown.get_selected_item().get_value().name
         else:
             if(self.export_button.is_clicked_by(click_position)):
                 self.export_button.handle_click(click_position)
@@ -82,6 +88,7 @@ class ExportDeckPage(Page,RewardElement):
     def render(self,img:np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if (self.get_state()[1] == 1):
+        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (360,260), font_scale=0.4)
+        if (self.include_dropdown.is_open()):
             img = self.include_dropdown.render(img)
         return img

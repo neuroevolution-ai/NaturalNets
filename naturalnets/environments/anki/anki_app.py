@@ -18,7 +18,7 @@ class AppCfg:
 @register_environment_class
 class AnkiApp(IGUIEnvironment):
 
-    screen_width = 709
+    screen_width = 834
     screen_height = 834
 
     def __init__(self, configuration: dict, **kwargs):
