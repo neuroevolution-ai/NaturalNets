@@ -8,37 +8,38 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class NoCardPopupPage(Page, RewardElement):
+class FiveDecksPopup(Page,RewardElement):
+    
     """
     State description:
-        state[0]: if this popup is open
+        state[0]: if this window is open  
     """
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "no_card_popup.png")
-    WINDOW_BB = BoundingBox(200, 250, 316, 120)
+    IMG_PATH = os.path.join(IMAGES_PATH, "five_decks_popup.png")
     
-    OK_BUTTON_BB = BoundingBox(349, 331, 77, 22)
+    WINDOW_BB = BoundingBox(230, 290, 317, 121)
+    OK_BB = BoundingBox(374, 370, 77, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(NoCardPopupPage, cls).__new__(cls)
+            cls.instance = super(FiveDecksPopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
-        self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-        
+
+        self.ok_button = Button(self.OK_BB,self.close)
+    
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"]
+            "window": ["open", "close"]
         }
-    
+
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.ok_button.is_clicked_by(click_position):
+        if(self.ok_button.is_clicked_by(click_position)):
             self.ok_button.handle_click(click_position)
 
     def open(self):
@@ -49,10 +50,10 @@ class NoCardPopupPage(Page, RewardElement):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
 
-    def is_open(self) -> int:
+    def is_open(self):
         return self.get_state()[0]
 
-    def render(self, img: np.ndarray):
+    def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img

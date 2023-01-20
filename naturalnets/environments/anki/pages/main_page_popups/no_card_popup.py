@@ -8,21 +8,21 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class AtLeastOneCardPopupPage(Page, RewardElement):
+class NoCardPopup(Page, RewardElement):
     """
     State description:
         state[0]: if this popup is open
     """
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_card_popup.png")
-    WINDOW_BB = BoundingBox(200, 250, 318, 121)
+    IMG_PATH = os.path.join(IMAGES_PATH, "no_card_popup.png")
+    WINDOW_BB = BoundingBox(200, 250, 316, 120)
     
     OK_BUTTON_BB = BoundingBox(349, 331, 77, 22)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(AtLeastOneCardPopupPage, cls).__new__(cls)
+            cls.instance = super(NoCardPopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):

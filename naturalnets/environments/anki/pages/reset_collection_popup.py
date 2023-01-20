@@ -4,19 +4,13 @@ import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import ProfileDatabase
-from naturalnets.environments.anki import ChooseDeckStudyPage
-from naturalnets.environments.anki import AnkiLoginPage
-from naturalnets.environments.anki import AddCardPage
-from naturalnets.environments.anki import ChooseDeckPage
-from naturalnets.environments.anki import ExportDeckPage
-from naturalnets.environments.anki import ChooseDeckStudyPage
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class ResetCollectionPopupPage(Page, RewardElement):
+class ResetCollectionPopup(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open
@@ -37,7 +31,7 @@ class ResetCollectionPopupPage(Page, RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(ResetCollectionPopupPage, cls).__new__(cls)
+            cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
         return cls.instance
     
     @property

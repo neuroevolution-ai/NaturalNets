@@ -4,13 +4,8 @@ import string
 import cv2
 import numpy as np
 import os
-from naturalnets.environments.anki.pages.add_card_page import AddCardPage
-from naturalnets.environments.anki.pages.anki_login_page import AnkiLoginPage
-from naturalnets.environments.anki.pages.choose_deck_page import ChooseDeckPage
-from naturalnets.environments.anki.pages.choose_deck_study_page import ChooseDeckStudyPage
-from naturalnets.environments.anki.pages.export_deck_page import ExportDeckPage
-from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
-from naturalnets.environments.anki import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
+from naturalnets.environments.anki import ResetCollectionPopup
 from naturalnets.environments.anki.profile import Profile
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -53,12 +48,12 @@ class ProfilePage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.add_profile_popup_page = AddProfilePopupPage()
-        self.rename_profile_page = RenameProfilePage()
-        self.delete_profile_popup_page = DeleteProfilePopupPage()
-        self.reset_collection_popup_page = ResetCollectionPopupPage()
-        self.downgrade_popup_page = DowngradePopupPage()
-        self.at_least_one_profile_popup_page = AtLeastOneProfilePopupPage()
+        self.add_profile_popup_page = AddProfilePopup()
+        self.rename_profile_page = RenameProfilePopup()
+        self.delete_profile_popup_page = DeleteProfilePopup()
+        self.reset_collection_popup_page = ResetCollectionPopup()
+        self.downgrade_popup_page = DowngradePopup()
+        self.at_least_one_profile_popup_page = AtLeastOneProfilePopup()
         self.profile_database = ProfileDatabase()
         
         self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
@@ -178,7 +173,7 @@ class ProfilePage(Page,RewardElement):
             return
 
 
-class DeleteProfilePopupPage(Page,RewardElement):
+class DeleteProfilePopup(Page,RewardElement):
     """
     State description:
         state[0]: if this window is open  
@@ -191,7 +186,7 @@ class DeleteProfilePopupPage(Page,RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(DeleteProfilePopupPage, cls).__new__(cls)
+            cls.instance = super(DeleteProfilePopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
@@ -237,7 +232,7 @@ class DeleteProfilePopupPage(Page,RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
       
-class DowngradePopupPage(Page, RewardElement):
+class DowngradePopup(Page, RewardElement):
     
     """
     State description:
@@ -251,7 +246,7 @@ class DowngradePopupPage(Page, RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(DowngradePopupPage, cls).__new__(cls)
+            cls.instance = super(DowngradePopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
@@ -284,7 +279,7 @@ class DowngradePopupPage(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
 
-class FiveProfilesPopupPage(Page,RewardElement):
+class FiveProfilesPopup(Page,RewardElement):
 
     """
     State description:
@@ -298,7 +293,7 @@ class FiveProfilesPopupPage(Page,RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(FiveProfilesPopupPage, cls).__new__(cls)
+            cls.instance = super(FiveProfilesPopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
@@ -332,7 +327,7 @@ class FiveProfilesPopupPage(Page,RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
 
-class OpenBackupPopupPage(Page, RewardElement):
+class OpenBackupPopup(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
@@ -353,7 +348,7 @@ class OpenBackupPopupPage(Page, RewardElement):
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(OpenBackupPopupPage, cls).__new__(cls)
+            cls.instance = super(OpenBackupPopup, cls).__new__(cls)
         return cls.instance
     
     @property
@@ -390,7 +385,7 @@ class OpenBackupPopupPage(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
 
-class RenameProfilePage(RewardElement,Page):
+class RenameProfilePopup(RewardElement,Page):
     
     """
     State description:
@@ -408,7 +403,7 @@ class RenameProfilePage(RewardElement,Page):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(RenameProfilePage, cls).__new__(cls)
+            cls.instance = super(RenameProfilePopup, cls).__new__(cls)
         return cls.instance
     
     def __init__(self):
@@ -416,7 +411,7 @@ class RenameProfilePage(RewardElement,Page):
         RewardElement.__init__(self)
         
         self.profile_database = ProfileDatabase()
-        self.name_exists_popup_page = NameExistsPopupPage()
+        self.name_exists_popup_page = NameExistsPopup()
         
         self.secure_random = random.SystemRandom()
         self.current_field_string = None
@@ -473,7 +468,7 @@ class RenameProfilePage(RewardElement,Page):
         put_text(img,"" if self.current_field_string is None else f"{self.current_field_string}", (146 , 304), font_scale = 0.5)
         return img
 
-class AddProfilePopupPage(Page,RewardElement):
+class AddProfilePopup(Page,RewardElement):
 
     """
     State description:
@@ -490,15 +485,15 @@ class AddProfilePopupPage(Page,RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(AddProfilePopupPage, cls).__new__(cls)
+            cls.instance = super(AddProfilePopup, cls).__new__(cls)
         return cls.instance
     
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.name_exists_popup = NameExistsPopupPage()
-        self.five_profiles_popup = FiveProfilesPopupPage()
+        self.name_exists_popup = NameExistsPopup()
+        self.five_profiles_popup = FiveProfilesPopup()
         self.profile_database = ProfileDatabase()
         self.add_child(self.name_exists_popup)
         self.add_child(self.five_profiles_popup)
@@ -574,7 +569,7 @@ class AddProfilePopupPage(Page,RewardElement):
     def is_open(self) -> int:
         return self.get_state()[0]
 
-class AtLeastOneProfilePopupPage(Page, RewardElement):
+class AtLeastOneProfilePopup(Page, RewardElement):
     """
     State description:
         state[0]: if this popup is open
@@ -588,7 +583,7 @@ class AtLeastOneProfilePopupPage(Page, RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(AtLeastOneProfilePopupPage, cls).__new__(cls)
+            cls.instance = super(AtLeastOneProfilePopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):

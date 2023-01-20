@@ -16,7 +16,7 @@ class CheckMediaPage(Page,RewardElement):
     """
     
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "check_media.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "check_media_page.png")
     
     WINDOW_BB = BoundingBox(100, 100, 622, 499)
     CLOSE_BB = BoundingBox(524, 560, 77, 22)

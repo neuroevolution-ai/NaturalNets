@@ -2,7 +2,7 @@ from math import floor
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
+from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -18,7 +18,7 @@ class ChooseDeckPage(Page,RewardElement):
             state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
     """
     STATE_LEN = 6
-    IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_page.png")
 
     WINDOW_BB = BoundingBox(160, 160, 498, 375)
     CHOOSE_BB = BoundingBox(297, 494, 77, 27)
@@ -35,7 +35,7 @@ class ChooseDeckPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.deck_database = DeckDatabase()
-        self.add_deck_popup = AddDeckPopupPage()
+        self.add_deck_popup = AddDeckPopup()
         self.add_child(self.add_deck_popup)
 
         self.current_index: int = 0

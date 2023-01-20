@@ -14,10 +14,10 @@ from naturalnets.environments.anki.pages.check_media_page import CheckMediaPage
 from naturalnets.environments.anki.pages.choose_deck_study_page import ChooseDeckStudyPage
 from naturalnets.environments.anki.pages.edit_card_page import EditCardPage
 from naturalnets.environments.anki.pages.export_deck_page import ExportDeckPage
-from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
+from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.pages.preferences_page import PreferencesPage
 from naturalnets.environments.anki.pages.import_deck_page import ImportDeckPage
-from naturalnets.environments.anki.pages.reset_collection_popup_page import ResetCollectionPopupPage
+from naturalnets.environments.anki.pages.reset_collection_popup import ResetCollectionPopup
 from naturalnets.environments.anki.pages.profile_page import ProfilePage
 from naturalnets.environments.anki.pages.main_page import MainPage
 from naturalnets.environments.anki.app_controller import AppController

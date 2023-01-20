@@ -5,7 +5,7 @@ from typing import List
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver, VoiceRecorder
-from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -26,10 +26,10 @@ class PreferencesPage(RewardElement,Page):
     WINDOW_BB = BoundingBox(10, 40, 801, 601)
     STATE_LEN = 5
     
-    PREFERENCES_BASIC_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_basic.png")
-    PREFERENCES_SCHEDULING_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_scheduling.png")
-    PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network.png")
-    PREFERENCES_BACKUP_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_backup.png")
+    PREFERENCES_BASIC_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_basic_page.png")
+    PREFERENCES_SCHEDULING_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_scheduling_page.png")
+    PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network_page.png")
+    PREFERENCES_BACKUP_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_backup_page.png")
 
     CLOSE_BB = BoundingBox(513, 601, 76, 23)
     HELP_BB = BoundingBox(601, 601, 76, 23)
@@ -90,7 +90,7 @@ class PreferencesPage(RewardElement,Page):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.PREFERENCES_BASIC_IMG_PATH)
         RewardElement.__init__(self)
         self.get_state()[1] = 1
-        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
         self.current_search_text = None        
         self.open_dd = None
 

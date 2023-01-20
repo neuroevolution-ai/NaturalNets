@@ -7,7 +7,6 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown,DropdownItem
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki import DeckDatabase
 

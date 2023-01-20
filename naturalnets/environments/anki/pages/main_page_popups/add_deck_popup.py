@@ -2,8 +2,8 @@ import os
 import random
 import cv2
 import numpy as np
-from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup_page import FiveDecksPopupPage
-from naturalnets.environments.anki.pages.name_exists_popup_page import NameExistsPopupPage
+from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
+from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.gui_app.page import Page
@@ -12,7 +12,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class AddDeckPopupPage(Page,RewardElement):
+class AddDeckPopup(Page,RewardElement):
     """
     State description:
             state[0]: if this popup is open
@@ -28,15 +28,15 @@ class AddDeckPopupPage(Page,RewardElement):
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
-            cls.instance = super(AddDeckPopupPage, cls).__new__(cls)
+            cls.instance = super(AddDeckPopup, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.five_decks_popup = FiveDecksPopupPage()
-        self.name_exists_popup = NameExistsPopupPage()
+        self.five_decks_popup = FiveDecksPopup()
+        self.name_exists_popup = NameExistsPopup()
         self.deck_database = DeckDatabase()
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)

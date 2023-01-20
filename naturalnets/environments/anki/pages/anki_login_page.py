@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki import AnkiAccount
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.anki.pages.main_page_popups.failed_login_popup_page import FailedLoginPopupPage
+from naturalnets.environments.anki.pages.main_page_popups.failed_login_popup import FailedLoginPopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -21,7 +21,7 @@ class AnkiLoginPage(Page,RewardElement):
     """
     
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "anki_login.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "anki_login_page.png")
 
     WINDOW_BB = BoundingBox(200, 200, 277, 244)
     USERNAME_BB = BoundingBox(192, 283, 79, 28)
@@ -39,7 +39,7 @@ class AnkiLoginPage(Page,RewardElement):
         Page.__init__(self,self.STATE_LEN,self.WINDOW_BB,self.IMG_PATH)
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
-        self.failed_login = FailedLoginPopupPage()
+        self.failed_login = FailedLoginPopup()
         
         self.current_anki_account: AnkiAccount = None
         self.anki_username_list = ["account_1","account_2","account_3","account_4","account_5"]

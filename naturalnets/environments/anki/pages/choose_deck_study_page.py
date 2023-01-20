@@ -2,9 +2,9 @@ from math import floor
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
+from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import DeckDatabase
-from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
@@ -21,7 +21,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
     """
 
     STATE_LEN = 6
-    IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study_page.png")
     
     WINDOW_BB = BoundingBox(150, 150, 498, 374)
     STUDY_BB = BoundingBox(204, 486, 77, 22)
@@ -40,8 +40,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
-        self.add_deck_popup = AddDeckPopupPage()
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
+        self.add_deck_popup = AddDeckPopup()
         self.add_child(self.add_deck_popup)        
         self.add_child(self.leads_to_external_website_popup)
         self.current_index: int = 0

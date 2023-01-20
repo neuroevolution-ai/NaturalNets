@@ -20,15 +20,15 @@ class AddCardPage(Page,RewardElement):
     """
     
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "add_card.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "add_card_page.png")
 
     WINDOW_BB = BoundingBox(130, 120, 566, 456)
-    SELECT_BB = BoundingBox(388, 130, 187, 23)
-    FRONT_TEXT_BB = BoundingBox(498, 299, 77, 26)
-    BACK_TEXT_BB = BoundingBox(498, 378, 77, 26)
-    TAGS_TEXT_BB = BoundingBox(504, 501, 77, 21)
-    CLOSE_BB = BoundingBox(414, 537, 77, 26)
-    ADD_BB = BoundingBox(242, 538, 77, 26)
+    SELECT_BB = BoundingBox(508, 162, 167, 46)
+    FRONT_TEXT_BB = BoundingBox(580, 296, 111, 26)
+    BACK_TEXT_BB = BoundingBox(582, 407, 108, 24)
+    TAGS_TEXT_BB = BoundingBox(585, 494, 101, 23)
+    CLOSE_BB = BoundingBox(593, 539, 82, 25)
+    ADD_BB = BoundingBox(510, 538, 60, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -149,9 +149,9 @@ class AddCardPage(Page,RewardElement):
             self.choose_deck.render(img)
             return img
         if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.front_side_clipboard_temporary_string}", (159, 304) ,font_scale = 0.5)
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (198, 316) ,font_scale = 1)
         if (self.back_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.back_side_clipboard_temporary_string}", (159, 379) ,font_scale = 0.5)
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 429) ,font_scale = 1)
         if (self.tag_clipboard_temporary_string is not None):
-            put_text(img, f"{self.tag_clipboard_temporary_string}", (192, 514) ,font_scale = 0.5)
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 513) ,font_scale = 0.8)
         return img

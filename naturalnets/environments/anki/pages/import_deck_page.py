@@ -2,9 +2,9 @@ from math import floor
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki import NameExistsPopupPage
-from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopupPage
-from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
+from naturalnets.environments.anki import NameExistsPopup
+from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopup
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH, PREDEFINED_DECKS_PATH
 from naturalnets.environments.gui_app.page import Page
@@ -40,9 +40,9 @@ class ImportDeckPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.import_deck_popup = ImportDeckPopupPage()
-        self.name_exists_popup = NameExistsPopupPage()
-        self.five_decks_popup = FiveDecksPopupPage()
-        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
+        self.name_exists_popup = NameExistsPopup()
+        self.five_decks_popup = FiveDecksPopup()
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
         
         self.add_children([self.import_deck_popup, self.name_exists_popup,
             self.five_decks_popup, self.leads_to_external_website_popup])
@@ -160,7 +160,7 @@ class ImportDeckPopupPage(Page,RewardElement):
 
         self.current_index = 0
         self.deck_database = DeckDatabase()
-        self.leads_to_external_website_popup = LeadsToExternalWebsitePopupPage()
+        self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
         self.current_import_name: str = None
         
         self.choose_button: Button = Button(self.CHOOSE_BB, self.set_import_name)

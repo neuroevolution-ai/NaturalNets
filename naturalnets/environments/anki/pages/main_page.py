@@ -6,14 +6,14 @@ import numpy as np
 
 from naturalnets.environments.anki import AddCardPage
 from naturalnets.environments.anki import AnkiLoginPage
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopupPage
+from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import EditCardPage
-from naturalnets.environments.anki import ResetCollectionPopupPage
-from naturalnets.environments.anki.pages.main_page_popups.at_least_one_card_popup_page import AtLeastOneCardPopupPage
-from naturalnets.environments.anki.pages.main_page_popups.at_least_one_deck_popup_page import AtLeastOneDeckPopupPage
-from naturalnets.environments.anki.pages.main_page_popups.delete_current_deck_check_popup_page import DeleteCurrentDeckPopupPage
-from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup_page import LeadsToExternalWebsitePopupPage
-from naturalnets.environments.anki.pages.main_page_popups.no_card_popup_page import NoCardPopupPage
+from naturalnets.environments.anki import ResetCollectionPopup
+from naturalnets.environments.anki.pages.main_page_popups.at_least_one_card_popup import AtLeastOneCardPopup
+from naturalnets.environments.anki.pages.main_page_popups.at_least_one_deck_popup import AtLeastOneDeckPopup
+from naturalnets.environments.anki.pages.main_page_popups.delete_current_deck_check_popup import DeleteCurrentDeckPopup
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
+from naturalnets.environments.anki.pages.main_page_popups.no_card_popup import NoCardPopup
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -46,7 +46,7 @@ class MainPage(Page,RewardElement):
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
 
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
-    DECKS_BB = BoundingBox(119, 277, 389, 150)
+    DECKS_BB = BoundingBox(112, 244, 610, 196)
     
     GET_SHARED_BB = BoundingBox(223, 635, 77, 28)
     CREATE_DECK_BB = BoundingBox(305, 635, 85, 28)
@@ -54,19 +54,19 @@ class MainPage(Page,RewardElement):
     STUDY_BB = BoundingBox(429, 164, 79, 30)
     DELETE_DECK_BB = BoundingBox(433, 232, 68, 24)
 
-    ADD_CARD_BB = BoundingBox(229, 31, 78, 29)
-    DECKS_BUTTON_BB = BoundingBox(393, 32, 69, 27)
-    SYNC_BB = BoundingBox(447, 30, 54, 29)
+    ADD_CARD_BB = BoundingBox(298, 44, 155, 36)
+    DECKS_BUTTON_BB = BoundingBox(481, 44, 155, 36)
+    SYNC_BB = BoundingBox(656, 44, 155, 36)
     
-    FILE_DROPDOWN_BB = BoundingBox(0, 0, 36, 23)
-    EDIT_DROPDOWN_BB = BoundingBox(43, 0, 47, 23)
-    TOOLS_DROPDOWN_BB = BoundingBox(75, 0, 46, 23)
-    HELP_DROPDOWN_BB = BoundingBox(123, 0, 40, 23)
+    FILE_DROPDOWN_BB = BoundingBox(0, 0, 70, 29)
+    EDIT_DROPDOWN_BB = BoundingBox(70, 0, 70, 29)
+    TOOLS_DROPDOWN_BB = BoundingBox(140, 0, 70, 29)
+    HELP_DROPDOWN_BB = BoundingBox(210, 0, 70, 29)
     
-    FILE_DROPDOWN_BB_OFFSET = BoundingBox(0, 23, 100, 23)
-    EDIT_DROPDOWN_BB_OFFSET = BoundingBox(43, 23, 100, 23)
-    TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(75, 23, 100, 23)
-    HELP_DROPDOWN_BB_OFFSET = BoundingBox(123, 23, 100, 23)
+    FILE_DROPDOWN_BB_OFFSET = BoundingBox(0, 33, 100, 28)
+    EDIT_DROPDOWN_BB_OFFSET = BoundingBox(70, 33, 90, 28)
+    TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(140, 33, 90, 28)
+    HELP_DROPDOWN_BB_OFFSET = BoundingBox(210, 33, 90, 28)
 
     EDIT_BB = BoundingBox(79, 647, 84, 28)
     SHOW_ANSWER_NEXT_BB = BoundingBox(300, 647, 96, 29)
@@ -90,15 +90,15 @@ class MainPage(Page,RewardElement):
         self.about_page = AboutPage()
         self.add_card_page = AddCardPage()
         self.anki_login = AnkiLoginPage()
-        self.add_deck_popup_page = AddDeckPopupPage()
+        self.add_deck_popup_page = AddDeckPopup()
         self.edit_card_page = EditCardPage()
         self.deck_database = DeckDatabase()
-        self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopupPage()
-        self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopupPage()
-        self.at_least_one_deck_popup_page = AtLeastOneDeckPopupPage()
-        self.reset_collection_popup_page = ResetCollectionPopupPage()
-        self.no_card_popup_page = NoCardPopupPage()
-        self.at_least_one_card_popup_page = AtLeastOneCardPopupPage()
+        self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopup()
+        self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopup()
+        self.at_least_one_deck_popup_page = AtLeastOneDeckPopup()
+        self.reset_collection_popup_page = ResetCollectionPopup()
+        self.no_card_popup_page = NoCardPopup()
+        self.at_least_one_card_popup_page = AtLeastOneCardPopup()
         self.choose_deck_study_page = ChooseDeckStudyPage()
 
         self.pages: List[Page] = [self.profile_page, self.import_deck_page, self.export_deck_page, self.choose_deck_study_page,
@@ -336,11 +336,9 @@ class MainPage(Page,RewardElement):
         self.import_deck_page.open()
 
     def change_current_deck_index(self,click_point:np.ndarray):
-        # Items have size (458,30)
-        # Top left corner (141,275)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = floor((click_point[1] - 275) / 30)
+            click_index: int = floor((click_point[1] - 246) / 38)
             self.get_state()[self.deck_database.current_index] = 0
             self.deck_database.current_deck = self.deck_database.decks[click_index]
             self.deck_database.set_current_index(click_index)
@@ -348,9 +346,9 @@ class MainPage(Page,RewardElement):
             self.register_selected_reward(["decks", click_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (106,275)
-       length = 30 * self.deck_database.decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 458, length)
+       upper_left_point = (112,246)
+       length = 38 * self.deck_database.decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 610, length)
        return current_bounding_box
 
     def open(self):
@@ -441,15 +439,15 @@ class MainPage(Page,RewardElement):
         if(self.is_logo_enabled):
             render_onto_bb(img, BoundingBox (657, 186, 128, 128), anki_logo)
         if (self.profile_page.current_profile is not None):
-            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (16,122), font_scale = 0.5)
+            put_text(img, f"Current profile: {self.profile_page.current_profile.name}", (16,132), font_scale = 0.4)
         
-        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (226,122), font_scale = 0.5)
+        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (286,132), font_scale = 0.4)
         
         if (self.anki_login.current_anki_account is not None):
-            put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,122), font_scale = 0.5)
+            put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,132), font_scale = 0.4)
         
         for i, deck in enumerate(self.deck_database.decks):
-            put_text(img, deck.name, (148,296 + i * 30), font_scale = 0.5)
+            put_text(img, deck.name, (126 ,271 + i * 38), font_scale = 0.5)
         return img
 
     def render_study_page(self,image: np.ndarray):
