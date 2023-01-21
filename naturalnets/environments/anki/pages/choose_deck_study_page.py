@@ -83,7 +83,6 @@ class ChooseDeckStudyPage(Page,RewardElement):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1]- 210) / 29)
-            print(click_index)
             self.current_index: int = click_index
             self.register_selected_reward(["index", self.current_index])
 

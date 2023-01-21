@@ -63,7 +63,8 @@ class DeleteCurrentDeckPopup(Page,RewardElement):
         return self.get_state()[0]
 
     def remove_deck(self):
-        self.deck_database.delete_deck(self.deck_database.decks[self.deck_database.current_index])
+        
+        self.deck_database.delete_deck(self.deck_database.decks[self.deck_database.current_index].name)
         self.close()
 
     def render(self,img: np.ndarray):

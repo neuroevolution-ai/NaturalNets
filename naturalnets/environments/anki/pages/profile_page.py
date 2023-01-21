@@ -288,8 +288,8 @@ class FiveProfilesPopup(Page,RewardElement):
     
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_profiles_popup.png")
-    WINDOW_BB = BoundingBox(190, 250, 318, 121)
-    OK_BB = BoundingBox(342, 331, 77, 24)
+    WINDOW_BB = BoundingBox(230, 300, 317, 121)
+    OK_BB = BoundingBox(462, 384, 78, 31)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -323,64 +323,6 @@ class FiveProfilesPopup(Page,RewardElement):
         return self.get_state()[0]
     
     def render(self,img:np.ndarray):
-        to_render = cv2.imread(self._img_path)
-        img = render_onto_bb(img, self.get_bb(), to_render)
-        return img
-
-class OpenBackupPopup(Page, RewardElement):
-
-    STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH,"open_backup_popup.png")
-
-    WINDOW_BB = BoundingBox(30, 200, 400, 121)
-    YES_BUTTON_BB = BoundingBox(223, 280, 90, 26)
-    NO_BUTTON_BB = BoundingBox(326, 280, 90, 26)
-
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
-        
-        self.profile_database = ProfileDatabase()
-        self.deck_database = DeckDatabase()
-        
-        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
-        self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
-    
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(OpenBackupPopup, cls).__new__(cls)
-        return cls.instance
-    
-    @property
-    def reward_template(self):
-        return {
-            "window": ["open", "close"],
-            "set_to_default": 0
-        }
-
-    def handle_click(self, click_position: np.ndarray) -> None:
-        if self.yes_button.is_clicked_by(click_position):
-            self.yes_button.handle_click(click_position)
-        elif self.no_button.is_clicked_by(click_position):
-            self.no_button.handle_click(click_position)
-
-    def open(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["window", "open"])
-
-    def close(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["window", "close"])
-
-    def is_open(self) -> int:
-        return self.get_state()[0]
-    
-    def reset_all(self):
-        self.profile_database.default_profiles()
-        self.deck_database.default_decks()
-        self.close()
-    
-    def render(self,img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
@@ -441,6 +383,7 @@ class RenameProfilePopup(RewardElement,Page):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
+        self.current_field_string = None
     
     def open(self):
         self.get_state()[0] = 1
@@ -579,7 +522,7 @@ class AtLeastOneProfilePopup(Page, RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
     WINDOW_BB = BoundingBox(200, 250, 318, 121)
     
-    OK_BB = BoundingBox(350, 331, 76, 25)
+    OK_BB = BoundingBox(418, 327, 78, 30)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

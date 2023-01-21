@@ -29,5 +29,7 @@ class Card():
             self.back += " edited"
 
     def edit_tag(self) -> None:
+        if(self.tag is None):
+            self.tag = ""
         if (not(self.is_tag_edited())):
-            self.tag = "edited"
+            self.tag += " edited"

@@ -11,6 +11,7 @@ class Deck():
         self.name = deck_name
         self.cards: List[Card] = []
         self.study_index: int = 0
+        self.is_answer_shown = False
         
     def increment_study_index(self):
         if(self.study_index < len(self.cards) - 1):
@@ -28,7 +29,8 @@ class Deck():
     
     def remove_card(self):
         self.cards.remove(self.cards[self.study_index])
-        self.study_index -= 1
+        if(self.study_index == self.deck_length()):
+            self.study_index -= 1
 
 class DeckDatabase():
 
@@ -98,8 +100,9 @@ class DeckDatabase():
 
     def delete_deck(self,deck_name :str) -> None:
         if(self.is_included(deck_name)):
-            self.decks.remove(self.fetch_deck(deck_name))
             self.current_index = 0
+            self.decks.remove(self.fetch_deck(deck_name))
+
     
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines(False)

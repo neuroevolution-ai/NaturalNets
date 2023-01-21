@@ -23,7 +23,7 @@ class PreferencesPage(RewardElement,Page):
             state[j]: i-th sub-window is selected j = {1,2,3,4}  
     """
     
-    WINDOW_BB = BoundingBox(10, 40, 801, 601)
+    WINDOW_BB = BoundingBox(20, 80, 801, 601)
     STATE_LEN = 5
     
     PREFERENCES_BASIC_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_basic_page.png")
@@ -31,55 +31,55 @@ class PreferencesPage(RewardElement,Page):
     PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network_page.png")
     PREFERENCES_BACKUP_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_backup_page.png")
 
-    CLOSE_BB = BoundingBox(513, 601, 76, 23)
-    HELP_BB = BoundingBox(601, 601, 76, 23)
+    CLOSE_BB = BoundingBox(571, 637, 100, 30)
+    HELP_BB = BoundingBox(695, 638, 95, 30)
     
-    BASIC_SWITCH_BB = BoundingBox(22, 58, 62, 23)
-    SCHEDULING_SWITCH_BB = BoundingBox(84, 58, 63, 23)
-    NETWORK_SWITCH_BB = BoundingBox(147, 58, 63, 23)
-    BACKUP_SWITCH_BB = BoundingBox(211, 58, 63, 23)
+    BASIC_SWITCH_BB = BoundingBox(62, 117, 145, 41)
+    SCHEDULING_SWITCH_BB = BoundingBox(209, 117, 145, 41)
+    NETWORK_SWITCH_BB = BoundingBox(355, 117, 145, 41)
+    BACKUP_SWITCH_BB = BoundingBox(501, 117, 145, 41)
 
-    BASIC_WINDOW_DD_1_BB = BoundingBox(35, 96, 734, 24)
-    BASIC_WINDOW_DD_2_BB = BoundingBox(35, 138, 734, 24)
-    BASIC_WINDOW_DD_3_BB = BoundingBox(35, 357, 734, 24)
-    BASIC_WINDOW_DD_4_BB = BoundingBox(35, 396, 734, 24)
+    BASIC_WINDOW_DD_1_BB = BoundingBox(90, 176, 644, 29)
+    BASIC_WINDOW_DD_2_BB = BoundingBox(90, 225, 644, 29)
+    BASIC_WINDOW_DD_3_BB = BoundingBox(90, 412, 644, 29)
+    BASIC_WINDOW_DD_4_BB = BoundingBox(90, 462, 644, 29)
 
-    BASIC_WINDOW_DD_1_BB_OFFSET = BoundingBox(35, 120, 734, 24)
-    BASIC_WINDOW_DD_2_BB_OFFSET = BoundingBox(35, 162, 734, 24)
-    BASIC_WINDOW_DD_3_BB_OFFSET = BoundingBox(35, 381, 734, 24)
-    BASIC_WINDOW_DD_4_BB_OFFSET = BoundingBox(35, 420, 734, 24)
+    BASIC_WINDOW_DD_1_BB_OFFSET = BoundingBox(90, 205, 644, 29)
+    BASIC_WINDOW_DD_2_BB_OFFSET = BoundingBox(90, 254, 644, 29)
+    BASIC_WINDOW_DD_3_BB_OFFSET = BoundingBox(90, 441, 644, 29)
+    BASIC_WINDOW_DD_4_BB_OFFSET = BoundingBox(90, 491, 644, 29)
 
-    BASIC_WINDOW_1_CHECKBOX_BB = BoundingBox(37, 180, 16, 16)
-    BASIC_WINDOW_2_CHECKBOX_BB = BoundingBox(37, 216, 16, 16)
-    BASIC_WINDOW_3_CHECKBOX_BB = BoundingBox(37, 252, 16, 16)
-    BASIC_WINDOW_4_CHECKBOX_BB = BoundingBox(37, 288, 16, 16)
-    BASIC_WINDOW_5_CHECKBOX_BB = BoundingBox(37, 325, 16, 16)
+    BASIC_WINDOW_1_CHECKBOX_BB = BoundingBox(90, 276, 16, 16)
+    BASIC_WINDOW_2_CHECKBOX_BB = BoundingBox(90, 303, 16, 16)
+    BASIC_WINDOW_3_CHECKBOX_BB = BoundingBox(90, 330, 16, 16)
+    BASIC_WINDOW_4_CHECKBOX_BB = BoundingBox(90, 357, 16, 16)
+    BASIC_WINDOW_5_CHECKBOX_BB = BoundingBox(90, 383, 16, 16)
 
-    BASIC_WINDOW_SEARCH_TEXT_BB = BoundingBox(586, 466, 74, 22)
-    BASIC_WINDOW_USER_INTERFACE_INCREMENT = BoundingBox(170, 509, 18, 9)
-    BASIC_WINDOW_USER_INTERFACE_DECREMENT = BoundingBox(170, 519, 18, 9)
+    BASIC_WINDOW_SEARCH_TEXT_BB = BoundingBox(653, 524, 94, 31)
+    BASIC_WINDOW_USER_INTERFACE_INCREMENT = BoundingBox(317, 576, 13, 9)
+    BASIC_WINDOW_USER_INTERFACE_DECREMENT = BoundingBox(317, 585, 13, 9)
 
-    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(33, 93, 16, 16)
-    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(33, 125, 16, 16)
-    SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB = BoundingBox(33, 151, 16, 16)
-    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(33, 181, 16, 16)
-    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(33, 209, 16, 16)
+    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(81, 181, 16, 16)
+    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(81, 223, 16, 16)
+    SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB = BoundingBox(81, 269, 16, 16)
+    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(81, 319, 16, 16)
+    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(81, 360, 16, 16)
 
-    SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(362, 268, 18, 9)
-    SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(362, 308, 18, 9)
-    SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB = BoundingBox(362, 346, 18, 9)
+    SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(415, 414, 12, 9)
+    SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(415, 455, 12, 9)
+    SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB = BoundingBox(415, 496, 18, 9)
     
-    SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB = BoundingBox(362, 278, 18, 9)
-    SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(362, 318, 18, 9)
-    SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(362, 356, 18, 9)
+    SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB = BoundingBox(415, 426, 12, 9)
+    SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(415, 464, 12, 9)
+    SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(415, 505, 12, 9)
 
-    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(34, 144, 16, 16)
-    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(34, 176, 16, 16)
-    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(34, 210, 16, 16)
-    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(34, 245, 16, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(75, 241, 16, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(75, 284, 16, 16)
+    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(75, 327, 16, 16)
+    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(75, 368, 16, 16)
 
-    BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(117, 147, 18, 9)
-    BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(117, 157, 18, 9)
+    BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(294, 195, 12, 9)
+    BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(295, 205, 12, 9)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -425,14 +425,14 @@ class PreferencesPage(RewardElement,Page):
         if (self.get_state()[1] == 1):
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.user_interface}", (163, 522), font_scale = 0.4)
-            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}" , (43, 481), font_scale = 0.4)
+            put_text(img, f"{self.user_interface}", (283, 590), font_scale = 0.4)
+            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}" , (97, 544), font_scale = 0.4)
             for widget in self.basic_window_widgets:
                 if isinstance(widget,CheckBox):
                     img = widget.render(img)
             for dd in self.basic_window_dropdowns:
                 if dd.get_selected_item() is not None:
-                    put_text(img, dd.get_selected_item().display_name, (self.dropdowns_to_bbs[dd].x + 10,(self.dropdowns_to_bbs[dd].y + 18) ),font_scale=0.5)
+                    put_text(img, dd.get_selected_item().display_name, (self.dropdowns_to_bbs[dd].x + 10,(self.dropdowns_to_bbs[dd].y + 19) ),font_scale=0.5)
             if self.open_dd is not None:
                 img = self.open_dd.render(img)
         elif (self.get_state()[2] == 1):
@@ -441,9 +441,9 @@ class PreferencesPage(RewardElement,Page):
             for widget in self.scheduling_window_widgets:
                 if isinstance(widget,CheckBox):
                     img = widget.render(img)
-            put_text(img, f"{self.next_day}" , (379, 281), font_scale = 0.4)
-            put_text(img, f"{self.learn_ahead}" , (379, 317), font_scale = 0.4)
-            put_text(img, f"{self.timebox_time}" , (379, 355), font_scale = 0.4)
+            put_text(img, f"{self.next_day}" , (381, 427), font_scale = 0.4)
+            put_text(img, f"{self.learn_ahead}" , (381, 468), font_scale = 0.4)
+            put_text(img, f"{self.timebox_time}" , (381, 510), font_scale = 0.4)
         elif (self.get_state()[3] == 1):
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
@@ -453,7 +453,7 @@ class PreferencesPage(RewardElement,Page):
         elif (self.get_state()[4] == 1):
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.backup_number}" , (93, 161), font_scale = 0.4)
+            put_text(img, f"{self.backup_number}" , (255, 208), font_scale = 0.4)
         if(self.leads_to_external_website_popup.is_open()):
             img = self.leads_to_external_website_popup.render(img)
         return img

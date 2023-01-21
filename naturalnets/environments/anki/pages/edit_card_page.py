@@ -93,5 +93,5 @@ class EditCardPage(RewardElement,Page):
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back is not None):
             print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}", bounding_box =  BoundingBox (225, 336, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}", bounding_box =  BoundingBox (225, 483, 160, 36) , font_size = 25, dimension = (36, 160, 3))
+            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}", bounding_box =  BoundingBox (225, 483, 300, 36) , font_size = 25, dimension = (36, 300, 3))
         return image
