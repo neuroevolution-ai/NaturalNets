@@ -45,6 +45,7 @@ class MainPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "main_page.png")
     IMG_PATH_STUDY = os.path.join(IMAGES_PATH, "study_page.png")
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
+    DECKS_BUTTON_PATH = os.path.join(IMAGES_PATH, "decks_button.png")
 
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
     DECKS_BB = BoundingBox(112, 244, 610, 196)
@@ -54,7 +55,7 @@ class MainPage(Page,RewardElement):
     IMPORT_FILE_BB = BoundingBox(586, 726, 235, 48)
     DELETE_DECK_BB = BoundingBox(303, 724, 252, 48)
 
-    STUDY_BB = BoundingBox(429, 164, 79, 30)
+    STUDY_BB = BoundingBox(281, 458, 260, 50)
     ADD_CARD_BB = BoundingBox(298, 44, 155, 36)
     GET_SHARED_BB = BoundingBox(481, 45, 155, 36)
     ANKI_LOGIN_BB = BoundingBox(656, 44, 155, 36)
@@ -69,9 +70,9 @@ class MainPage(Page,RewardElement):
     TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(140, 33, 90, 28)
     HELP_DROPDOWN_BB_OFFSET = BoundingBox(210, 33, 90, 28)
 
-    EDIT_BB = BoundingBox(79, 647, 84, 28)
-    SHOW_ANSWER_NEXT_BB = BoundingBox(300, 647, 96, 29)
-    REMOVE_BB = BoundingBox(517, 647, 84, 28)
+    EDIT_BB = BoundingBox(71, 773, 88, 37)
+    SHOW_ANSWER_NEXT_BB = BoundingBox(312, 773, 178, 37)
+    REMOVE_BB = BoundingBox(624, 773, 129, 35)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -157,7 +158,7 @@ class MainPage(Page,RewardElement):
         self.study_button: Button = Button(self.STUDY_BB, self.study)
         self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card)
         self.sync_button:  Button = Button(self.ANKI_LOGIN_BB, self.login)
-        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.get_shared)
+        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.leads_to_external_website_popup_page.open)
         self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
         self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
         self.show_answer_button = Button(self.SHOW_ANSWER_NEXT_BB, self.show_answer)
@@ -305,6 +306,7 @@ class MainPage(Page,RewardElement):
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
                     widget.handle_click(click_position)
+                    print(widget.get_bb())
                     return
         
         elif (self.get_state()[7] == 0):
@@ -313,6 +315,7 @@ class MainPage(Page,RewardElement):
                     pass
                 elif (widget.is_clicked_by(click_position)):
                     widget.handle_click(click_position)
+                    print(widget.get_bb())
                     return
         
         elif (self.get_state()[7] == 1):
@@ -342,7 +345,6 @@ class MainPage(Page,RewardElement):
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = floor((click_point[1] - 246) / 38)
             self.get_state()[self.deck_database.current_index] = 0
-            self.deck_database.current_deck = self.deck_database.decks[click_index]
             self.deck_database.set_current_index(click_index)
             self.get_state()[click_index] = 1
             self.register_selected_reward(["decks", click_index])
@@ -365,7 +367,7 @@ class MainPage(Page,RewardElement):
         return self.get_state()[0]
     
     def study(self):
-        if(len(self.deck_database.current_deck.cards) == 0):
+        if(len(self.deck_database.decks[self.deck_database.current_index].cards) == 0):
             self.no_card_popup_page.open()
         else:
             self.get_state()[6] = 1
@@ -376,7 +378,7 @@ class MainPage(Page,RewardElement):
     def next_card(self):
         self.get_state()[7] = 0
         self.register_selected_reward(["next_card"])
-        self.deck_database.current_deck.increment_study_index()
+        self.deck_database.decks[self.deck_database.current_index].increment_study_index()
 
     def show_answer(self):
         self.get_state()[7] = 1
@@ -393,26 +395,37 @@ class MainPage(Page,RewardElement):
     def render_onto_current(self,img: np.ndarray):
         if (self.profile_page.is_open()):
             img = self.profile_page.render(img)
+            print("1")
         elif (self.import_deck_page.is_open()):
             img = self.import_deck_page.render(img)
+            print("2")
         elif (self.export_deck_page.is_open()):
             img = self.export_deck_page.render(img)
+            print("3")
         elif (self.choose_deck_study_page.is_open()):
             img = self.choose_deck_study_page.render(img)
+            print("4")
         elif (self.check_media_page.is_open()):
             img = self.check_media_page.render(img)
+            print("5")
         elif (self.preferences_page.is_open()):
             img = self.preferences_page.render(img)
+            print("6")
         elif (self.about_page.is_open()):
             img = self.about_page.render(img)
+            print("7")
         elif (self.add_card_page.is_open()):
             img = self.add_card_page.render(img)
+            print("8")
         elif (self.anki_login.is_open()):
             img = self.anki_login.render(img)
+            print("9")
         elif (self.add_deck_popup_page.is_open()):    
             img = self.add_deck_popup_page.render(img)
+            print("10")
         elif (self.leads_to_external_website_popup_page.is_open()):
             img = self.leads_to_external_website_popup_page.render(img)
+            print("11")
         elif (self.delete_current_deck_check_popup_page.is_open()):
             img = self.delete_current_deck_check_popup_page.render(img)
         elif (self.at_least_one_deck_popup_page.is_open()):
@@ -443,7 +456,7 @@ class MainPage(Page,RewardElement):
         if (self.profile_page.current_profile is not None):
             put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (16,132), font_scale = 0.4)
         
-        put_text(img, f"Current deck: {self.deck_database.current_deck.name}", (286,132), font_scale = 0.4)
+        put_text(img, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}", (286,132), font_scale = 0.4)
         
         if (self.anki_login.current_anki_account is not None):
             put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,132), font_scale = 0.4)
@@ -455,22 +468,23 @@ class MainPage(Page,RewardElement):
     def render_study_page(self,image: np.ndarray):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(image, self.WINDOW_BB, frame)
-        put_text(image, f"Current deck: {self.deck_database.current_deck.name}",(484, 112),font_scale = 0.5)
-        put_text(image, f"Current card number: {self.deck_database.current_deck.study_index + 1}",(484, 142),font_scale = 0.5)
-        put_text(image, f"Number of cards: {self.deck_database.current_deck.deck_length()}",(484, 172),font_scale = 0.5)
-        print_non_ascii(img = image, text = f"Question : {self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front}",bounding_box = BoundingBox(36, 76, 400, 100), font_size = 20, dimension = (100, 400, 3))
+        decks_button = cv2.imread(self.DECKS_BUTTON_PATH)
+        render_onto_bb(image, BoundingBox (479, 43, 157, 40), decks_button)
+        put_text(image, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}",(484, 112),font_scale = 0.5)
+        put_text(image, f"Current card number: {self.deck_database.decks[self.deck_database.current_index].study_index + 1}",(484, 142),font_scale = 0.5)
+        put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",(484, 172),font_scale = 0.5)
+        print_non_ascii(img = image, text = f"Question : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",bounding_box = BoundingBox(42, 232, 600, 100), font_size = 35, dimension = (100, 600, 3))
+        if(self.leads_to_external_website_popup_page.is_open()):
+            image = self.leads_to_external_website_popup_page.render(image)
         if (self.get_state()[7] == 1):
-            print_non_ascii(img = image, text = f"Answer : {self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back}",bounding_box =  BoundingBox(36, 166, 400, 100), font_size = 20, dimension = (100, 400, 3))
-            button = cv2.imread(self.NEXT_BUTTON_PATH)
-            render_onto_bb(image, BoundingBox (352, 646, 115, 29), button)
+            print_non_ascii(img = image, text = f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",bounding_box =  BoundingBox(42, 332, 600, 100), font_size = 35, dimension = (100, 600, 3))
+            next_button = cv2.imread(self.NEXT_BUTTON_PATH)
+            render_onto_bb(image, BoundingBox (311, 772, 182, 39), next_button)
         if (self.edit_card_page.is_open()):
             image = self.edit_card_page.render(image)
         if (self.at_least_one_card_popup_page.is_open()):
             image = self.at_least_one_card_popup_page.render(image)
         return image
-    
-    def get_shared(self):
-        self.leads_to_external_website_popup_page.open()
     
     def remove_deck(self):
         if(self.deck_database.decks_length() == 1):
@@ -479,10 +493,10 @@ class MainPage(Page,RewardElement):
         self.delete_current_deck_check_popup_page.open()
 
     def remove_card(self):
-        if(self.deck_database.current_deck.deck_length() == 1):
+        if(self.deck_database.decks[self.deck_database.current_index].deck_length() == 1):
             self.at_least_one_card_popup_page.open()
             return
-        self.deck_database.current_deck.remove_card()
+        self.deck_database.decks[self.deck_database.current_index].remove_card()
     
     def set_logo_shown(self):
         self.is_logo_enabled = not(self.is_logo_enabled)
@@ -491,7 +505,6 @@ class MainPage(Page,RewardElement):
 
     def study_deck(self) -> int:
         if(self.choose_deck_study_page.current_index is not None):
-            self.deck_database.set_current_deck(self.deck_database.decks[self.choose_deck_study_page.current_index])
             self.choose_deck_study_page.register_selected_reward(["study"])
             self.choose_deck_study_page.close()
             self.study()

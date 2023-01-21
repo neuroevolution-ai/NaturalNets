@@ -80,12 +80,11 @@ class ChooseDeckPage(Page,RewardElement):
     def calculate_current_bounding_box(self):
        upper_left_point = (207,222)
        length = 29 * self.deck_database.decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 398, length)
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 403, length)
        return current_bounding_box
 
     def choose_deck(self):
         self.deck_database.set_current_index(self.current_index)
-        self.deck_database.set_current_deck(self.deck_database.decks[self.current_index])
         for i in range(1,6):
             self.get_state()[i] = 0
         self.get_state()[self.current_index + 1] = 1

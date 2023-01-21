@@ -10,7 +10,7 @@ class Deck():
     def __init__(self,deck_name:str):
         self.name = deck_name
         self.cards: List[Card] = []
-        self.study_index: int= 0
+        self.study_index: int = 0
         
     def increment_study_index(self):
         if(self.study_index < len(self.cards) - 1):
@@ -28,6 +28,7 @@ class Deck():
     
     def remove_card(self):
         self.cards.remove(self.cards[self.study_index])
+        self.study_index -= 1
 
 class DeckDatabase():
 
@@ -46,7 +47,6 @@ class DeckDatabase():
         self.deck_import_names = [DeckImportName.DUTCH_NUMBERS.value, DeckImportName.GERMAN_NUMBERS.value, DeckImportName.ITALIAN_NUMBERS.value]
         self.decks: List[Deck] = [Deck(DeckNames.DECK_NAME_1.value),Deck(DeckNames.DECK_NAME_2.value),Deck(DeckNames.DECK_NAME_3.value)]
         self.current_index: int = 0
-        self.current_deck: Deck = self.decks[self.current_index]
 
     def decks_length(self) -> int:
         return len(self.decks)
@@ -100,7 +100,6 @@ class DeckDatabase():
         if(self.is_included(deck_name)):
             self.decks.remove(self.fetch_deck(deck_name))
             self.current_index = 0
-            self.current_deck = self.decks[self.current_index]
     
     def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
         split_deck = deck_as_string.splitlines(False)
@@ -120,15 +119,11 @@ class DeckDatabase():
         for file in os.scandir(EXPORTED_DECKS_PATH):
             if file.is_file():
                 os.remove(file)
-
-    def set_current_deck(self,deck: Deck) -> None:
-        self.current_deck = deck
     
     def reset_decks(self) -> None:
         self.reset_exported_decks()
         self.decks = [Deck(DeckNames.DECK_NAME_1.value)]
         self.current_index: int = 0
-        self.update_current_deck()
 
     def default_decks(self) -> None:
         card_1 = Card("Front side", "Back side")
@@ -143,10 +138,6 @@ class DeckDatabase():
         deck_2.add_card(card_3)
 
         self.decks = [deck_1,deck_2]
-        self.update_current_deck()
-
-    def update_current_deck(self) -> None:
-        self.current_deck = self.decks[self.current_index]
 
     def set_current_index(self,index: int) -> None:
         self.current_index = index

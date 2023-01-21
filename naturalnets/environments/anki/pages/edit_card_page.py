@@ -20,10 +20,10 @@ class EditCardPage(RewardElement,Page):
     STATE_LEN = 1
 
     WINDOW_BB = BoundingBox(150, 100, 499, 500)
-    FRONT_TEXT_BB = BoundingBox(456, 253, 76, 27)
-    BACK_TEXT_BB = BoundingBox(456, 327, 76, 27)
-    TAGS_TEXT_BB = BoundingBox(459, 521, 74, 18)
-    CLOSE_BB = BoundingBox(461, 557, 76, 27)
+    FRONT_TEXT_BB = BoundingBox(545, 221, 89, 28)
+    BACK_TEXT_BB = BoundingBox(545, 353, 89, 28)
+    TAGS_TEXT_BB = BoundingBox(545, 483, 89, 28)
+    CLOSE_BB = BoundingBox(534, 556, 99, 29)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -71,27 +71,27 @@ class EditCardPage(RewardElement,Page):
         return self.get_state()[0]
     
     def front_text_edit(self):
-        if(not(self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].is_front_edited())):
-            self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].edit_front()
+        if(not(self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].is_front_edited())):
+            self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].edit_front()
             self.register_selected_reward(["first_field_modified"])
     
     def back_text_edit(self):
-        if(not(self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].is_back_edited())):
-            self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].edit_back()
+        if(not(self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].is_back_edited())):
+            self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].edit_back()
             self.register_selected_reward(["second_field_modified"])
         
     def tags_text_edit(self):
-        if(not(self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].is_tag_edited())):
-            self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].edit_tag()
+        if(not(self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].is_tag_edited())):
+            self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].edit_tag()
             self.register_selected_reward(["tags_field_modified"])
 
     def render(self,image: np.ndarray):
         to_render = cv2.imread(self._img_path)
         image = render_onto_bb(image, self.get_bb(), to_render)
-        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].front}", bounding_box =  BoundingBox (175, 230, 250, 40) ,font_size = 13, dimension = (40, 250, 3))
-        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].back}", bounding_box =  BoundingBox (175, 305, 250, 40) ,font_size = 13, dimension = (40, 250, 3))
-        if (self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].tag is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.current_deck.cards[self.deck_database.current_deck.study_index].tag}", bounding_box =  BoundingBox (210, 521, 160, 17) , font_size = 13, dimension = (17, 160, 3))
+        if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front is not None):
+            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}", bounding_box =  BoundingBox (225, 203, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
+        if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back is not None):
+            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}", bounding_box =  BoundingBox (225, 336, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
+        if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag is not None):
+            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}", bounding_box =  BoundingBox (225, 483, 160, 36) , font_size = 25, dimension = (36, 160, 3))
         return image

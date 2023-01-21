@@ -79,7 +79,7 @@ class ProfilePage(Page,RewardElement):
             "selected_profile_index": [0, 1, 2, 3, 4]
         }
 
-    def change_current_deck_index(self, click_point:np.ndarray):
+    def change_current_profile_index(self, click_point:np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1] - 166) / 29)
@@ -151,7 +151,7 @@ class ProfilePage(Page,RewardElement):
             self.at_least_one_profile_popup_page.handle_click(click_position)
             return
         elif self.calculate_current_bounding_box().is_point_inside(click_position):
-            self.change_current_deck_index(click_position)
+            self.change_current_profile_index(click_position)
             return
         elif self.downgrade_and_quit_popup.is_clicked_by(click_position):
             self.downgrade_and_quit_popup.handle_click(click_position)

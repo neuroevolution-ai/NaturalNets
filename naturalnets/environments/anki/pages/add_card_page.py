@@ -4,6 +4,7 @@ import string
 import cv2
 import numpy as np
 from naturalnets.environments.anki import ChooseDeckPage
+from naturalnets.environments.anki.pages.main_page_popups.front_and_backside_popup import FrontAndBacksidePopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
@@ -46,7 +47,9 @@ class AddCardPage(Page,RewardElement):
         
         self.deck_database = DeckDatabase()
         self.choose_deck = ChooseDeckPage()
+        self.front_and_backside_popup = FrontAndBacksidePopup()
         self.add_child(self.choose_deck)
+        self.add_child(self.front_and_backside_popup)
                
         self.select_button: Button = Button(self.SELECT_BB, self.select_deck)
         self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard)
@@ -55,7 +58,7 @@ class AddCardPage(Page,RewardElement):
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
         self.add_button: Button = Button(self.ADD_BB, self.add_card)
         
-        self.set_reward_children([self.choose_deck])
+        self.set_reward_children([self.choose_deck, self.front_and_backside_popup])
     @property
     def reward_template(self):
         return {
@@ -70,6 +73,9 @@ class AddCardPage(Page,RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if(self.choose_deck.is_open()):
             self.choose_deck.handle_click(click_position)
+            return
+        if(self.front_and_backside_popup.is_open()):
+            self.front_and_backside_popup.handle_click(click_position)
             return
         elif(self.select_button.is_clicked_by(click_position)):
             self.select_button.handle_click(click_position)
@@ -137,6 +143,8 @@ class AddCardPage(Page,RewardElement):
             card.tag = self.tag_clipboard_temporary_string
             self.deck_database.decks[self.deck_database.current_index].add_card(card)
             self.reset_temporary_strings()
+        else:
+            self.front_and_backside_popup.open()
 
     def select_deck(self):
         self.choose_deck.reset_index()
@@ -147,6 +155,14 @@ class AddCardPage(Page,RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.choose_deck.is_open()):
             self.choose_deck.render(img)
+            return img
+        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}",(180,230),font_scale=0.7)
+        if(self.front_and_backside_popup.is_open()):
+            self.front_and_backside_popup.render(img)
+            if (self.back_side_clipboard_temporary_string is not None):
+                put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 429) ,font_scale = 1)
+            if (self.tag_clipboard_temporary_string is not None):
+                put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 513) ,font_scale = 0.8)
             return img
         if (self.front_side_clipboard_temporary_string is not None):
             put_text(img, f"{self.front_side_clipboard_temporary_string}", (198, 316) ,font_scale = 1)
