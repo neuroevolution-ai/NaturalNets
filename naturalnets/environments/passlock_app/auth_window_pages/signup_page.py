@@ -1,18 +1,15 @@
 import os
-import time
 from typing import List
 import cv2
-
 import numpy as np
-from traitlets import EventHandler
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page, Widget
+from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
-from naturalnets.environments.passlock_app.utils import draw_rectangle_from_bb
+from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
+from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
+from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.passlock_app.widgets.textfield import Textfield
+
 
 class SignupPage(Page, RewardElement):
     '''
@@ -21,28 +18,28 @@ class SignupPage(Page, RewardElement):
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img/signup_window.png")
-    EMAIL_TEXTFIELD_BB = BoundingBox(288, 368, 1344, 75)
-    PASSWORD_TEXTFIELD_BB = BoundingBox(288, 518, 1344-75, 75)
-    SHOW_PW_BUTTON_BB = BoundingBox(288+1344-75, 518, 75, 75) 
-    SIGNUP_BUTTON_BB = BoundingBox(288, 659, 657, 66)
-    LOGIN_BUTTON_BB = BoundingBox(975, 659, 657, 66)
+    EMAIL_TEXTFIELD_BB = BoundingBox(288, 293, 1344, 75)
+    PASSWORD_TEXTFIELD_BB = BoundingBox(288, 443, 1269, 75)
+    SHOW_PW_BUTTON_BB = BoundingBox(1557, 443, 75, 75) 
+    SIGNUP_BUTTON_BB = BoundingBox(288, 593, 657, 66)
+    LOGIN_BUTTON_BB = BoundingBox(975, 593, 657, 66)
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.enter_email_textfield = RadioButton(self.EMAIL_TEXTFIELD_BB, None, lambda: self.enter_email_text())
-        self.enter_pw_textfield = RadioButton(self.PASSWORD_TEXTFIELD_BB, None, lambda: self.enter_password_text())
-        self.show_pw_radiobutton = RadioButton(self.SHOW_PW_BUTTON_BB, None, lambda: self.show_pw())
+        self.enter_email_textfield = Textfield(self.EMAIL_TEXTFIELD_BB)
+        self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB)
+        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB)
         self.signup_button = Button(self.SIGNUP_BUTTON_BB, lambda: self.signup())
         self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())
 
-        self.buttons: List[Button] = [self.signup_button, self.login_button]
-
-        self.radio_button_group = RadioButtonGroup([self.enter_email_textfield, self.enter_pw_textfield, self.show_pw_radiobutton])
+        self.buttons: List[Button] = [self.signup_button, self.login_button,self.show_pw_button]
+        self.textfields: List[Textfield] = [self.enter_email_textfield, self.enter_pw_textfield]
         
-        self.widgets: List[Widget] = [self.radio_button_group]
-        self.add_widgets(self.widgets)
+        self.add_widget(self.enter_email_textfield)
+        self.add_widget(self.enter_pw_textfield)
+        self.add_widget(self.show_pw_button)
         print("SignupPage init")
 
     @property
@@ -54,33 +51,6 @@ class SignupPage(Page, RewardElement):
 
         }
 
-    def enter_email_text(self):
-        '''
-        This function is called when the email textfield is clicked.
-        '''
-        if(self.enter_email_textfield.is_selected()):
-            self.enter_email_textfield.set_selected(False)
-        else:
-            self.enter_email_textfield.set_selected(True)
-
-    def enter_password_text(self):
-        '''
-        This function is called when the password textfield is clicked.
-        '''
-        if(self.enter_pw_textfield.is_selected()):
-            self.enter_pw_textfield.set_selected(False)
-        else:
-            self.enter_pw_textfield.set_selected(True)
-
-    def show_pw(self):
-        '''
-        This function is called when the show password button is clicked.
-        '''
-        if(self.show_pw_radiobutton.is_selected()):
-            self.show_pw_radiobutton.set_selected(False)
-        else:
-            self.show_pw_radiobutton.set_selected(True)       
-           
     def render(self, img):
         """
         Renders the page onto the given image. 
@@ -91,36 +61,24 @@ class SignupPage(Page, RewardElement):
         """
     
         to_render = cv2.imread(self.IMG_PATH)
-
-        if(self.enter_email_textfield.is_selected()):
-            path = os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email.png")
-            to_render = cv2.imread(path)
         
-        if(self.enter_pw_textfield.is_selected()):
-            path = os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pw.png")
-            to_render = cv2.imread(path)
+        if(textfield_check([self.enter_email_textfield])):
+            to_render = combine_path_for_image("signup_page_img/signup_window_email.png")
         
-        if(self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected()):
-            path = os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pw.png")
-            to_render = cv2.imread(path)
+        if(textfield_check([self.enter_pw_textfield])):
+            to_render = combine_path_for_image("signup_page_img/signup_window_pw.png")
+
+        if(textfield_check([self.enter_email_textfield, self.enter_pw_textfield])):
+            to_render = combine_path_for_image("signup_page_img/signup_window_email_pw.png")
+
+        if(textfield_check([self.enter_pw_textfield]) and self.show_pw_button.showing_password):
+            to_render = combine_path_for_image("signup_page_img/signup_window_pwshown.png")
+
+        if(textfield_check([self.enter_email_textfield, self.enter_pw_textfield]) and self.show_pw_button.showing_password):
+            to_render = combine_path_for_image("signup_page_img/signup_window_email_pwshown.png")
         
-        if(self.show_pw_radiobutton.is_selected()  
-            and self.enter_pw_textfield.is_selected()):
-            path = os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pwshown.png")
-            to_render = cv2.imread(path)
-
-        if(self.show_pw_radiobutton.is_selected() 
-            and self.enter_email_textfield.is_selected() 
-            and self.enter_pw_textfield.is_selected()):
-            path = os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pwshown.png")
-            to_render = cv2.imread(path)
-   
-        for button in self.buttons:
-            draw_rectangle_from_bb(to_render, button._bounding_box, (0, 255, 0), 2)
-
-        for rbg in self.radio_button_group.radio_buttons:
-            draw_rectangle_from_bb(to_render, rbg._bounding_box, (0, 255, 0), 2)
-
+        draw_rectangles_around_clickables([self.buttons, self.textfields], to_render)
+               
         img = to_render
         return img
 
@@ -142,7 +100,7 @@ class SignupPage(Page, RewardElement):
         '''    
         self.enter_email_textfield.set_selected(False)
         self.enter_pw_textfield.set_selected(False)
-        self.show_pw_radiobutton.set_selected(False)
+        self.show_pw_button.showing_password = False
         
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -152,7 +110,6 @@ class SignupPage(Page, RewardElement):
         args: click_position: the position of the click
         returns: True if the click resullts in a login or signup
         '''
-        
         for button in self.buttons:
             if button.is_clicked_by(click_position):
 
@@ -162,10 +119,15 @@ class SignupPage(Page, RewardElement):
                         return True
                 else:
                     button.handle_click(click_position)
-                    
                 break
         
-        self.radio_button_group.handle_click(click_position)
+        for textfield in self.textfields:
+            if textfield.is_clicked_by(click_position):
+                textfield.handle_click(click_position)
+                break
+        
+        
+
         
        
    

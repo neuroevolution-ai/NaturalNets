@@ -57,14 +57,11 @@ class PasslockAppController:
 
         return current_index
 
-    
-
     def reset(self):
         self.home_window.reset()
         self.home_window.close()
-
-        
         self.auth_window.reset()
+        self.auth_window.open()
 
         self.reset_reward_array()
 
@@ -73,8 +70,7 @@ class PasslockAppController:
 
         self.assign_state(self.home_window, 0, [])
         self.assign_state(self.auth_window, 0, [])
-        self.auth_window.open()
-
+             
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
 
@@ -150,7 +146,8 @@ class PasslockAppController:
             if(self.auth_window.handle_click(click_position)):
                 self.sign_up()
         else:
-            self.home_window.handle_click(click_position)
+            if(self.home_window.handle_click(click_position)):
+                self.log_out()
 
         reward = np.count_nonzero(previous_reward_array != self.reward_array)
 
@@ -178,5 +175,9 @@ class PasslockAppController:
         self.home_window.set_current_page(self.home_window.manual)
 
     def log_out(self):
+        self.home_window.reset()
+        self.auth_window.reset()
         self.home_window.close()
         self.auth_window.open()
+        self.auth_window.set_current_page(self.auth_window.login)
+        

@@ -22,7 +22,6 @@ class BoundingBox:
         """
         x = point[0]
         y = point[1]
-
         return self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2
 
     def get_as_tuple(self):

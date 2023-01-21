@@ -17,15 +17,17 @@ from naturalnets.environments.passlock_app.main_window_pages.manual_page import 
 from naturalnets.environments.passlock_app.main_window_pages.search_page import SearchPage
 from naturalnets.environments.passlock_app.main_window_pages.settings_page import SettingsPage
 
+
 class AuthenticationWindow(StateElement, Clickable, RewardElement):
     """The Authentication Window of the app, containing the different Authentication-pages, one for
         for login and one for signup.
 
        State description:
-            state[i]: represents the selected/shown status of page i, i in {0,1}.
+            state[0]: represents the open/closed status of the Authentication window.
+            state[i]: represents the selected/shown status of page i, i in {0,1,2}.
     """
 
-    STATE_LEN = 2
+    STATE_LEN = 3
     IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img\signup_window.png") 
     APP_BOUNDING_BOX = BoundingBox(0, 0, 1920, 987)
 
@@ -37,7 +39,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         self.signup = SignupPage()
 
         self.pages: List[Page] = [self.login, self.signup]
-        assert len(self.pages) == self.get_state_len()
+        assert len(self.pages) == self.get_state_len() - 1
 
         self.current_page = None
 
@@ -56,7 +58,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         Returns the reward template for the Authentication window. TODO: finish this
         '''
         return {
-            "settings_window": ["open", "close"],
+            "auth_window": ["open", "close"],
             "page_selected": ["login", "signup"]
         }
 
@@ -71,6 +73,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         if self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page)] = 1
+            self.open()
             self.current_page = page
 
             # noinspection PyTypeChecker
@@ -83,23 +86,24 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         self.login.reset()
         self.signup.reset()
         self.set_current_page(self.signup)
-        #self.set_current_tab(self.text_printer_settings)
+        
 
     def is_open(self) -> int:
         """Returns if the settings window is open."""
         return self.get_state()[0]
 
     def open(self):
-        """Opens the settings window."""
-        self.register_selected_reward(["settings_window", "open"])
+        """Opens the auth window."""
+        self.register_selected_reward(["auth_window", "open"])
 
         self.get_state()[0] = 1
 
     def close(self):
         """Closes the settings window."""
-        self.register_selected_reward(["settings_window", "close"])
+        self.register_selected_reward(["auth_window", "close"])
 
         self.get_state()[0] = 0
+
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -111,21 +115,19 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         args: click_position: the position of the click.
         returns: True if a login or signup was successful
         '''
-        if(self.get_state()[0] == 0):
-            if(self.login.handle_click(click_position)):
-                return True
-        else:
-            if(self.signup.handle_click(click_position)):
-                return True
+
+        if(self.current_page.handle_click(click_position)):
+            return True
+
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """ 
         Renders the main window and all its children onto the given image.
         """
 
-        if(self.get_state()[0] == 1):
+        if(self.current_page == self.signup):
             img = self.signup.render(img)
-        else:
+        elif(self.current_page == self.login):
             img = self.login.render(img)
         
         return img
@@ -135,4 +137,6 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
+
+    
     

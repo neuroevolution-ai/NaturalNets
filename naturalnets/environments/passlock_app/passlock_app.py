@@ -188,7 +188,7 @@ class PasslockApp(IEnvironment):
                 # Keycode 27 is the ESC key
                 if key == 27:
                     cv2.destroyAllWindows()
-                    c
+                    
 
                 if self.clicked:
                     # The user clicked, thus use the position for a step() and render the new image
