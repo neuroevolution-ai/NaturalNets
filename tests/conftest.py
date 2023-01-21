@@ -127,13 +127,11 @@ def _get_env_config_and_class(chosen_env: str) -> Tuple[dict, Type[IEnvironment]
         env_config = {
             "type": GUI_APP_ENV,
             "number_time_steps": 200,
-            "include_fake_bug": False
         }
     elif chosen_env == ANKI_APP_ENV:
         env_config = {
             "type": ANKI_APP_ENV,
             "number_time_steps": 200,
-            "include_fake_bug": False
         }
     elif chosen_env == MUJOCO_ENV:
         env_config = {

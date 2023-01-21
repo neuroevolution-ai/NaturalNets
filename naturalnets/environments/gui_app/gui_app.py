@@ -22,7 +22,7 @@ class AppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
 
-
+@register_environment_class
 class GUIApp(IGUIEnvironment):
 
     screen_width: int = 448

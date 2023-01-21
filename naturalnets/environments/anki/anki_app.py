@@ -20,14 +20,6 @@ class FakeBugOptions(enum.Enum):
 class AppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-
-    def __attrs_post_init__(self):
-        if self.include_fake_bug:
-            assert self.fake_bugs is not None and len(self.fake_bugs) > 0, ("'include_fake_bug' is set to True, please "
-                                                                            "provide a list of fake bugs using 'fake_"
-                                                                            "bugs'.")
-
-
     
 @register_environment_class
 class AnkiApp(IGUIEnvironment):
