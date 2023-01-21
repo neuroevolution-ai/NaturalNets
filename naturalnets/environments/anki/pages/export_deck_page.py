@@ -111,7 +111,6 @@ class ExportDeckPage(Page,RewardElement):
     def initialise_dropdown(self):
         self.dropdown_items = []
         for deck in self.deck_database.decks:
-            print(deck.name)
             self.dropdown_items.append(DropdownItem(deck,deck.name))
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
 

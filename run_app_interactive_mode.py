@@ -85,7 +85,7 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
 
 @click.command()
-@click.option("-c", "--config", "config_id", default = 0, type=int, help="Config number (1: GUIApp, else: DummyApp)")
+@click.option("-c", "--config", "config_id", default = 1, type=int, help="Config number (1: GUIApp, else: DummyApp)")
 @click.option("-p/-no-p", "--screenshot/--no-screenshot", "save_screenshots",
               default=True, type=bool, help="Save screenshots?")
 @click.option("-s/-no-s", "--state/--no-state", "save_state_vector", default=True, type=bool, help="Save state vector?")
@@ -95,7 +95,8 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
         config = {
             "environment": {
                 "type": "AnkiApp",
-                "number_time_steps": 10,
+                "number_time_steps": 100,
+                "include_fake_bug": False
             }
         }
     elif config_id == 1:

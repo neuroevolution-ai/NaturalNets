@@ -30,7 +30,6 @@ class ProfileDatabase():
 
     def create_profile(self,profile_name: str) -> None:
         self.profiles.append(Profile(profile_name))
-        print(len(self.profiles))
 
     def rename_profile(self, new_name: str) -> None:
         self.profiles[self.current_index].name = new_name

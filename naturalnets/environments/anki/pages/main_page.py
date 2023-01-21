@@ -311,7 +311,6 @@ class MainPage(Page,RewardElement):
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
                     widget.handle_click(click_position)
-                    print(widget.get_bb())
                     return
         
         elif (self.get_state()[7] == 0):
@@ -320,7 +319,6 @@ class MainPage(Page,RewardElement):
                     pass
                 elif (widget.is_clicked_by(click_position)):
                     widget.handle_click(click_position)
-                    print(widget.get_bb())
                     return
         
         elif (self.get_state()[7] == 1):
