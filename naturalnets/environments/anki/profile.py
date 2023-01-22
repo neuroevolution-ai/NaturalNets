@@ -1,11 +1,12 @@
 from typing import Final
 from naturalnets.environments.anki import ProfileNames
+from naturalnets.environments.anki.deck import DeckDatabase
 
 class Profile():
     
     def __init__(self, profile_name: str):
         self.name = profile_name
-        self.decks = []
+        self.deck_database = DeckDatabase()
     
 class ProfileDatabase():
 
@@ -45,7 +46,6 @@ class ProfileDatabase():
             if profile_temp.name == name:
                 return True      
         return False
-
     
     def reset_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE)]

@@ -5,6 +5,7 @@ import numpy as np
 from naturalnets.environments.anki import NameExistsPopup
 from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH, PREDEFINED_DECKS_PATH
 from naturalnets.environments.gui_app.page import Page
@@ -45,7 +46,9 @@ class ImportDeckPage(Page,RewardElement):
         
         self.add_children([self.import_deck_popup, self.name_exists_popup,
             self.five_decks_popup, self.leads_to_external_website_popup])
-        self.deck_database = DeckDatabase()
+        
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
 
         self.select_deck_button = Button(self.SELECT_DECK_BB, self.select_deck_popup)
         self.import_button = Button(self.IMPORT_BB, self.import_deck)
@@ -62,6 +65,7 @@ class ImportDeckPage(Page,RewardElement):
         }        
     
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database 
         if(self.leads_to_external_website_popup.is_open()):
             self.leads_to_external_website_popup.handle_click(click_position)
             return
@@ -84,13 +88,13 @@ class ImportDeckPage(Page,RewardElement):
             self.help_button.handle_click(click_position)
 
     def open(self):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
         
     def select_deck_popup(self):
         self.import_deck_popup.reset_current_index()
         self.import_deck_popup.open()
-
 
     def close(self):
         self.register_selected_reward(["window", "close"])
@@ -109,14 +113,17 @@ class ImportDeckPage(Page,RewardElement):
         elif (not(self.deck_database.is_deck_length_allowed())):
             self.five_decks_popup.open()
             return
-        elif (self.deck_database.is_included(self.deck_database.deck_import_names[self.import_deck_popup.current_index])):
+        elif (self.deck_database.is_included(self.import_deck_popup.current_import_name)):
             self.name_exists_popup.open()
             return
         else:
             self.deck_database.import_deck(self.import_deck_popup.current_import_name)
+            for deck in self.deck_database.decks:
+                print(deck.name)
             self.close()
     
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.import_deck_popup.current_import_name is not None):
@@ -158,10 +165,12 @@ class ImportDeckSelectPage(Page,RewardElement):
         RewardElement.__init__(self)
 
         self.current_index = 0
-        self.deck_database = DeckDatabase()
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
         self.current_import_name: str = None
-        
+
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         self.choose_button: Button = Button(self.CHOOSE_BB, self.set_import_name)
         self.help_button: Button = Button(self.HELP_BB, self.help)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)

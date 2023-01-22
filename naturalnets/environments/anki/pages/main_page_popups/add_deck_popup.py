@@ -6,6 +6,7 @@ from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup impor
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki import DeckDatabase
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -37,7 +38,8 @@ class AddDeckPopup(Page,RewardElement):
         
         self.five_decks_popup = FiveDecksPopup()
         self.name_exists_popup = NameExistsPopup()
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
 
@@ -61,10 +63,10 @@ class AddDeckPopup(Page,RewardElement):
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
 
-    
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
 
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
@@ -86,6 +88,7 @@ class AddDeckPopup(Page,RewardElement):
             self.close()
     
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         
@@ -99,6 +102,7 @@ class AddDeckPopup(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if(self.five_decks_popup.is_open()):
            self.five_decks_popup.handle_click(click_position)
            return

@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -33,7 +34,9 @@ class EditCardPage(RewardElement,Page):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         
         self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit)
         self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit)
@@ -41,6 +44,7 @@ class EditCardPage(RewardElement,Page):
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
         
     def handle_click(self, click_position: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if self.front_text_button.is_clicked_by(click_position):
             self.front_text_button.handle_click(click_position)
         elif self.back_text_button.is_clicked_by(click_position):
@@ -62,7 +66,8 @@ class EditCardPage(RewardElement,Page):
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
-
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+    
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
@@ -86,6 +91,7 @@ class EditCardPage(RewardElement,Page):
             self.register_selected_reward(["tags_field_modified"])
 
     def render(self,image: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         image = render_onto_bb(image, self.get_bb(), to_render)
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front is not None):

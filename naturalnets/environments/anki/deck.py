@@ -38,11 +38,6 @@ class DeckDatabase():
     # Restrict the max number of decks and exported files by 5
     # 
 
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(DeckDatabase, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         
         self.deck_names = [DeckNames.DECK_NAME_1.value, DeckNames.DECK_NAME_2.value, DeckNames.DECK_NAME_3.value, DeckNames.DECK_NAME_4.value, DeckNames.DECK_NAME_5.value]

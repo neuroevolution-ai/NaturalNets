@@ -5,6 +5,7 @@ import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -34,7 +35,9 @@ class ChooseDeckPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         self.add_deck_popup = AddDeckPopup()
         self.add_child(self.add_deck_popup)
 
@@ -52,6 +55,7 @@ class ChooseDeckPage(Page,RewardElement):
         }
     
     def open(self):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.current_index: int = 0
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
@@ -94,6 +98,7 @@ class ChooseDeckPage(Page,RewardElement):
         self.current_index: int = 0
     
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.add_deck_popup.is_open()):
@@ -106,6 +111,7 @@ class ChooseDeckPage(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if (self.add_deck_popup.is_open()):
             self.add_deck_popup.handle_click(click_position)
             return

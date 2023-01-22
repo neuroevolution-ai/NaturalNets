@@ -2,7 +2,6 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -25,7 +24,7 @@ class ResetCollectionPopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
-   
+        self.profile_database = ProfileDatabase()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
@@ -58,8 +57,9 @@ class ResetCollectionPopup(Page, RewardElement):
         return self.get_state()[0]
     
     def reset_all(self):
-        ProfileDatabase().default_profiles()
-        DeckDatabase().default_decks()
+        self.profile_database.default_profiles()
+        for profile in self.profile_database.profiles:
+            profile.deck_database.default_decks()
         self.close()
     
     def render(self, img:np.ndarray):

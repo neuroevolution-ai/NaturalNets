@@ -4,6 +4,7 @@ import numpy as np
 from naturalnets.environments.anki.constants import EXPORTED_DECKS_PATH, IMAGES_PATH
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -38,7 +39,9 @@ class ExportDeckPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         self.current_deck = None
         self.five_decks_popup = FiveDecksPopup()
         self.name_exists_popup = NameExistsPopup()
@@ -63,6 +66,7 @@ class ExportDeckPage(Page,RewardElement):
         }
         
     def handle_click(self,click_position: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if (self.include_dropdown.is_open()):
             self.include_dropdown.handle_click(click_position)
         if(self.name_exists_popup.is_open()):
@@ -83,6 +87,7 @@ class ExportDeckPage(Page,RewardElement):
                 self.reset_exported_decks_button.handle_click(click_position)
 
     def open(self):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.initialise_dropdown()
         self.current_deck = None
         self.get_state()[0] = 1
@@ -109,6 +114,7 @@ class ExportDeckPage(Page,RewardElement):
             self.close()
 
     def render(self,img:np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (331, 265), font_scale = 0.4)

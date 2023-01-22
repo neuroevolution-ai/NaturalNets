@@ -28,7 +28,6 @@ from naturalnets.environments.anki import PreferencesPage
 from naturalnets.environments.anki import ImportDeckPage
 from naturalnets.environments.anki import ProfilePage
 from naturalnets.environments.anki import ExportDeckPage
-from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import AboutPage
 
 class MainPage(Page,RewardElement):
@@ -94,8 +93,10 @@ class MainPage(Page,RewardElement):
         self.anki_login = AnkiLoginPage()
         self.add_deck_popup_page = AddDeckPopup()
         self.edit_card_page = EditCardPage()
-        self.deck_database = DeckDatabase()
+        
         self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopup()
         self.delete_current_deck_check_popup_page = DeleteCurrentDeckPopup()
         self.at_least_one_deck_popup_page = AtLeastOneDeckPopup()
@@ -228,6 +229,7 @@ class MainPage(Page,RewardElement):
 
 
     def handle_click(self, click_position: np.ndarray):       
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if (self.profile_page.is_open()):
             self.profile_page.handle_click(click_position)
             return
@@ -345,6 +347,7 @@ class MainPage(Page,RewardElement):
         self.import_deck_page.open()
 
     def change_current_deck_index(self,click_point:np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = floor((click_point[1] - 246) / 38)
@@ -357,6 +360,7 @@ class MainPage(Page,RewardElement):
        upper_left_point = (112,246)
        length = 38 * self.deck_database.decks_length()
        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 610, length)
+       print(length)
        return current_bounding_box
 
     def open(self):
@@ -392,6 +396,7 @@ class MainPage(Page,RewardElement):
         self.register_selected_reward(["show_answer"])
     
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if(self.get_state()[6] == 1):
             img = self.render_study_page(img)
         elif(self.get_state()[6] == 0):

@@ -14,7 +14,6 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki import ProfileDatabase
-from naturalnets.environments.anki import DeckDatabase
 
 class ProfilePage(Page,RewardElement):
     """
@@ -101,6 +100,8 @@ class ProfilePage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
     
     def is_open(self):
         return self.get_state()[0]
@@ -112,6 +113,7 @@ class ProfilePage(Page,RewardElement):
             self.delete_profile_popup_page.open()
 
     def render(self, img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (507, 376), font_scale = 0.4)
@@ -132,6 +134,7 @@ class ProfilePage(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if self.add_profile_popup_page.is_open():
             self.add_profile_popup_page.handle_click(click_position)
             return

@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki import ChooseDeckPage
 from naturalnets.environments.anki.pages.main_page_popups.front_and_backside_popup import FrontAndBacksidePopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
@@ -45,7 +46,8 @@ class AddCardPage(Page,RewardElement):
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
         
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.choose_deck = ChooseDeckPage()
         self.front_and_backside_popup = FrontAndBacksidePopup()
         self.add_child(self.choose_deck)
@@ -71,6 +73,7 @@ class AddCardPage(Page,RewardElement):
         
     
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if(self.choose_deck.is_open()):
             self.choose_deck.handle_click(click_position)
             return
@@ -94,6 +97,7 @@ class AddCardPage(Page,RewardElement):
         self.front_side_clipboard_temporary_string = None
         self.back_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0
@@ -151,6 +155,7 @@ class AddCardPage(Page,RewardElement):
         self.choose_deck.open()
 
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.choose_deck.is_open()):

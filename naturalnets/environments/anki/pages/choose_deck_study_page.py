@@ -5,6 +5,7 @@ import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
+from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
@@ -46,7 +47,9 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.add_child(self.leads_to_external_website_popup)
         self.current_index: int = 0
         
-        self.deck_database = DeckDatabase()
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
@@ -62,6 +65,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
     
     def open(self):
         self.current_index = 0
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -96,6 +100,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.current_index: int = 0
     
     def render(self,img: np.ndarray):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img,f"{self.deck_database.decks[self.current_index].name}", (181, 194), font_scale = 0.5)
@@ -111,6 +116,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if(self.leads_to_external_website_popup.is_open()):
             self.leads_to_external_website_popup.handle_click(click_position)
             return
