@@ -1,20 +1,45 @@
-from typing import List
 import os
-import cv2
+from typing import List
 
+import cv2
 import numpy as np
+
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangle_from_bb, draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.gui_app.widgets.button import (
+    Button, ShowPasswordButton)
+from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
+                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.utils import (
+    combine_path_for_image, draw_rectangle_from_bb,
+    draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
 class SearchPage(Page, RewardElement):
+    '''
+    The search page of the Passlock app.
 
+    State Description:
+        The Search Page has no state itself, but it has a state for each of its widgets with a inherent state.
+        0: Search textfield is selected.
+        1: Show all button is selected.
+        2: Test1 button is selected.
+        3: Test2 button is selected.
+        4: Test3 button is selected.
+        5: Test1 copy button is selected.
+        6: Test2 copy button is selected.
+        7: Test3 copy button is selected.
+        8: Test1 edit button is selected.
+        9: Test2 edit button is selected.
+        10: Test3 edit button is selected.
+        11: Test1 delete button is selected.
+        12: Test2 delete button is selected.
+        13: Test3 delete button is selected.
+    '''
+
+    ### Constants###
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "search_page_img\search_page.png")
     SEARCH_TEXTFIELD_BB = BoundingBox(280, 23, 1350, 75)
@@ -95,11 +120,17 @@ class SearchPage(Page, RewardElement):
 
     @property
     def reward_template(self):
+        '''
+        Returns the reward template for the page.
+        '''
         return {
 
         }
 
     def reset(self):
+        '''
+        Resets the page to its default state.
+        '''
         self.search_textfield.set_selected(False)
         self.show_all_button.showing_password = False
         self.test1_button.showing_password = False
@@ -108,9 +139,15 @@ class SearchPage(Page, RewardElement):
         self.opened_password = [0, 0, 0]
 
     def reset_search_text(self):
+        '''
+        Resets the search textfield to its default state.
+        '''
         self.search_textfield.set_selected(False)
 
     def close_other_passwords(self, password_button):
+        '''
+        Closes all other password buttons except the given one.
+        '''
         for button in self.password_buttons:
             if button != password_button:
                 button.showing_password = False
@@ -152,6 +189,11 @@ class SearchPage(Page, RewardElement):
         return img
 
     def handle_click(self, click_position: np.ndarray):
+        '''
+        Handles clicks on the page.
+
+        args: click_position - the position of the click
+        '''
 
         if (self.is_popup_open()):
             self.get_open_popup().handle_click(click_position)
@@ -192,19 +234,33 @@ class SearchPage(Page, RewardElement):
                 break
 
     def is_popup_open(self):
+        '''
+        Returns true if a popup is open.
+        returns: bool
+        '''
         if (self.edit_popup.is_open()):
             return True
         return False
 
     def get_open_popup(self):
+        '''
+        Returns the open popup.
+        returns: Popup
+        '''
         if self.edit_popup.is_open():
             return self.edit_popup
 
     def copy_password(self):
+        '''
+        Method for copying the password.
+        '''
         print("copy password")
         pass
 
     def delete_password(self):
+        '''
+        Method for deleting the password.
+        '''
         print("delete password")
         pass
 
@@ -215,6 +271,8 @@ class SearchEditPopUp(Page, RewardElement):
        State description:
             state[0]: the opened-state of this popup.
     """
+
+    ### CONSTANTS ###
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     IMG_PATH = os.path.join(

@@ -1,21 +1,38 @@
-from typing import List
 import os
+from typing import List
+
 import cv2
 import numpy as np
+
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
+                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.utils import (
+    combine_path_for_image, draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
 class AutoPage(Page, RewardElement):
+    '''
+    The AutoPage is the page where the user can generate a password. The actual generation of the passwords is only modelled. 
+    No actual password is generated and the UI is not changed on generation of a password.
 
+    State Description:
+        The Auto Page has no state itself, but it has a state for each of its widgets with a inherent state.
+        0: Auto textfield is selected
+        1: Password textfield is selected
+        2: The length of the password
+        3: Whether or not to use letters
+        4: Whether or not to use numbers
+        5: Whether or not to use special characters
+    '''
+
+    ### Constants###
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "auto_page_img\\auto_page.png")
     NAME_OF_PW_TEXTFIELD_BB = BoundingBox(280, 155, 1479, 75)
@@ -39,7 +56,7 @@ class AutoPage(Page, RewardElement):
         self.copy_pw_button = Button(
             self.COPY_PW_BB, lambda: self.copy_password())
         self.reset_pw_button = Button(
-            self.RESET_PW_BB, lambda: self.reset_password())
+            self.RESET_PW_BB, lambda: self.enter_password_textfield.reset())
         self.create_pw_button = Button(
             self.GENERATE_PW_BB, lambda: self.generate_password())
         self.pw_length_slider = Slider(self.PW_LENGTH_BB, 3)
@@ -71,6 +88,9 @@ class AutoPage(Page, RewardElement):
 
     @property
     def reward_template(self):
+        '''
+        Returns the reward template for this page.
+        '''
         return {
 
         }
@@ -110,6 +130,9 @@ class AutoPage(Page, RewardElement):
         return img
 
     def reset(self):
+        '''
+        Resets the page to its initial state.
+        '''
         self.enter_nameof_password_textfield.reset()
         self.enter_password_textfield.reset()
 
@@ -126,11 +149,13 @@ class AutoPage(Page, RewardElement):
                 break
 
     def copy_password(self):
+        '''
+        Method to copy the password to the clipboard.
+        '''
         print("copied password")
-        pass
-
-    def reset_password(self):
-        self.enter_password_textfield.reset()
 
     def generate_password(self):
+        '''
+        Method to generate a password. Currently just resets the page.
+        '''
         self.reset()

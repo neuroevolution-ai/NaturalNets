@@ -1,25 +1,32 @@
-from typing import List
 import os
-import cv2
+from typing import List
 
+import cv2
 import numpy as np
-from naturalnets.environments.gui_app import widgets
+
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH
-from naturalnets.environments.passlock_app.constants import WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangle_from_bb, draw_rectangles_around_clickables
+from naturalnets.environments.gui_app.widgets.button import (
+    Button, ShowPasswordButton)
+from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
+                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.utils import (
+    combine_path_for_image, draw_rectangle_from_bb,
+    draw_rectangles_around_clickables)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
 class SettingsPage(Page, RewardElement):
+    '''
+    The settings page of the app.
 
+    State Description:
+    '''
+
+    ### CONSTANTS ###
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "settings_page_img\settings_page.png")
-
     CHANGE_COLOR_BB = BoundingBox(175, 275, 175, 60)
     SYNC_PW_BB = BoundingBox(175, 365, 300, 60)
     AUTO_SYNC_BB = BoundingBox(1780, 480, 100, 60)
@@ -83,15 +90,24 @@ class SettingsPage(Page, RewardElement):
 
     @property
     def reward_template(self):
+        '''
+        Returns the reward template for the page.
+        '''
         return {
 
         }
 
     def enter_zoom_level(self):
+        '''
+        Enters the zoom level. Currently not implemented.
+        '''
         print("Enter zoom level")
         pass
 
     def is_popup_open(self):
+        '''
+        Returns True if a popup is open.
+        '''
 
         if (self.about_popup.is_open()):
             return True
@@ -103,6 +119,9 @@ class SettingsPage(Page, RewardElement):
         return False
 
     def get_open_popup(self):
+        '''
+        Returns the open popup.
+        '''
 
         if self.about_popup.is_open():
             return self.about_popup
@@ -162,14 +181,15 @@ class SettingsPage(Page, RewardElement):
                     break
 
     def open_youtube_link(self):
+        '''
+        Opens the youtube link. Currently not implemented.
+        '''
         print("Open youtube link")
 
     def log_out(self):
+        '''
+        Logs out. Currently not implemented.'''
         print("Log out")
-
-    def nothing(self):
-        print("Nothing")
-
 
 class SettingsPageChangeColourPopUp(Page, RewardElement):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
