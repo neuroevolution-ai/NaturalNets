@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import EXPORTED_DECKS_PATH, IMAGES_PATH
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
+from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -40,7 +41,8 @@ class ExportDeckPage(Page,RewardElement):
         self.deck_database = DeckDatabase()
         self.current_deck = None
         self.five_decks_popup = FiveDecksPopup()
-
+        self.name_exists_popup = NameExistsPopup()
+        
         self.dropdown_items = []
         self.initialise_dropdown()
         
@@ -49,6 +51,8 @@ class ExportDeckPage(Page,RewardElement):
         self.cancel_button = Button(self.CANCEL_BB, self.close)
         self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_exported_decks)
         
+        self.add_child(self.five_decks_popup)
+        self.add_child(self.name_exists_popup)
         self.add_widget(self.include_dropdown)
 
     @property
@@ -61,6 +65,8 @@ class ExportDeckPage(Page,RewardElement):
     def handle_click(self,click_position: np.ndarray):
         if (self.include_dropdown.is_open()):
             self.include_dropdown.handle_click(click_position)
+        if(self.name_exists_popup.is_open()):
+            self.name_exists_popup.handle_click(click_position)
         if (self.INCLUDE_DD_BB.is_point_inside(click_position)):
             self.include_dropdown.open()
             return       
@@ -93,7 +99,12 @@ class ExportDeckPage(Page,RewardElement):
         self.register_selected_reward(["exported"])
         if (self.deck_database.count_number_of_files(EXPORTED_DECKS_PATH) == 5):
             self.five_decks_popup.open()
+        elif(self.include_dropdown.get_selected_item() is None):
+            return
+        elif(self.deck_database.is_file_exist(self.include_dropdown.get_selected_item().get_value().name, EXPORTED_DECKS_PATH)):
+            self.name_exists_popup.open()
         else:
+            print(self.include_dropdown.get_selected_item().get_value().name)
             self.deck_database.export_deck(self.include_dropdown.get_selected_item().get_value())
             self.close()
 
@@ -104,6 +115,8 @@ class ExportDeckPage(Page,RewardElement):
         put_text(img, f"Number of exported decks: {self.deck_database.count_number_of_files(EXPORTED_DECKS_PATH)}", (260, 320), font_scale = 0.5)
         if(self.five_decks_popup.is_open()):
             img = self.five_decks_popup.render(img)
+        if(self.name_exists_popup.is_open()):
+            img = self.name_exists_popup.render(img)
         if (self.include_dropdown.is_open()):
             img = self.include_dropdown.render(img)
         return img
