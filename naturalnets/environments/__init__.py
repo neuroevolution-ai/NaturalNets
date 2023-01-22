@@ -6,3 +6,4 @@ from naturalnets.environments.gym_environments import GeneralGymEnvironment
 from naturalnets.environments.challenger_neural_network import ChallengerNeuralNetwork
 from naturalnets.environments.dummy_app.dummy_app import DummyApp
 from naturalnets.environments.gui_app.gui_app import GUIApp
+from naturalnets.environments.password_manager_app.password_manager_app import PasswordManager
