@@ -41,39 +41,51 @@ class SearchPage(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB)
-        self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text())
+        self.show_all_button = ShowPasswordButton(
+            self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text())
         self.test1_button = ShowPasswordButton(self.TEST1_BUTTON_BB)
         self.test2_button = ShowPasswordButton(self.TEST2_BUTTON_BB)
         self.test3_button = ShowPasswordButton(self.TEST3_BUTTON_BB)
 
-        self.test1_copy_button = Button(self.TEST1_COPY_BB, lambda: self.copy_password())
-        self.test2_copy_button = Button(self.TEST2_COPY_BB, lambda: self.copy_password())
-        self.test3_copy_button = Button(self.TEST3_COPY_BB, lambda: self.copy_password())
+        self.test1_copy_button = Button(
+            self.TEST1_COPY_BB, lambda: self.copy_password())
+        self.test2_copy_button = Button(
+            self.TEST2_COPY_BB, lambda: self.copy_password())
+        self.test3_copy_button = Button(
+            self.TEST3_COPY_BB, lambda: self.copy_password())
 
         self.edit_popup = SearchEditPopUp()
-        self.test1_edit_button = Button(self.TEST1_EDIT_BB, lambda: self.edit_popup.open_popup())
-        self.test2_edit_button = Button(self.TEST2_EDIT_BB, lambda: self.edit_popup.open_popup())
-        self.test3_edit_button = Button(self.TEST3_EDIT_BB, lambda: self.edit_popup.open_popup())
+        self.test1_edit_button = Button(
+            self.TEST1_EDIT_BB, lambda: self.edit_popup.open_popup())
+        self.test2_edit_button = Button(
+            self.TEST2_EDIT_BB, lambda: self.edit_popup.open_popup())
+        self.test3_edit_button = Button(
+            self.TEST3_EDIT_BB, lambda: self.edit_popup.open_popup())
 
-        self.test1_delete_button = Button(self.TEST1_DELETE_BB, lambda: self.delete_password())
-        self.test2_delete_button = Button(self.TEST2_DELETE_BB, lambda: self.delete_password())
-        self.test3_delete_button = Button(self.TEST3_DELETE_BB, lambda: self.delete_password())
+        self.test1_delete_button = Button(
+            self.TEST1_DELETE_BB, lambda: self.delete_password())
+        self.test2_delete_button = Button(
+            self.TEST2_DELETE_BB, lambda: self.delete_password())
+        self.test3_delete_button = Button(
+            self.TEST3_DELETE_BB, lambda: self.delete_password())
 
         self.widgets: List[Widget] = [self.search_textfield, self.show_all_button, self.test1_button, self.test2_button, self.test3_button,
                                       self.test1_copy_button, self.test2_copy_button, self.test3_copy_button,
                                       self.test1_edit_button, self.test2_edit_button, self.test3_edit_button,
                                       self.test1_delete_button, self.test2_delete_button, self.test3_delete_button]
-        
+
         self.buttons: List[Widget] = [self.show_all_button, self.test1_button, self.test2_button, self.test3_button,
                                       self.test1_copy_button, self.test2_copy_button, self.test3_copy_button,
                                       self.test1_edit_button, self.test2_edit_button, self.test3_edit_button,
                                       self.test1_delete_button, self.test2_delete_button, self.test3_delete_button]
-        
+
         self.textfields: List[Widget] = [self.search_textfield]
 
-        self.textsearchwidgets: List[Widget] = [self.search_textfield, self.show_all_button]
-        self.password_buttons: List[Widget] = [self.test1_button, self.test2_button, self.test3_button]
-        self.opened_password: np.ndarray = [0,0,0]
+        self.textsearchwidgets: List[Widget] = [
+            self.search_textfield, self.show_all_button]
+        self.password_buttons: List[Widget] = [
+            self.test1_button, self.test2_button, self.test3_button]
+        self.opened_password: np.ndarray = [0, 0, 0]
 
         self.set_reward_children([self.edit_popup])
         self.add_child(self.edit_popup)
@@ -86,14 +98,14 @@ class SearchPage(Page, RewardElement):
         return {
 
         }
-    	
+
     def reset(self):
         self.search_textfield.set_selected(False)
         self.show_all_button.showing_password = False
         self.test1_button.showing_password = False
         self.test2_button.showing_password = False
         self.test3_button.showing_password = False
-        self.opened_password = [0,0,0]
+        self.opened_password = [0, 0, 0]
 
     def reset_search_text(self):
         self.search_textfield.set_selected(False)
@@ -111,16 +123,13 @@ class SearchPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-
-        
-
         state = (
-            textfield_check([self.search_textfield]), 
-            self.test1_button.is_password_shown(), 
+            textfield_check([self.search_textfield]),
+            self.test1_button.is_password_shown(),
             self.test2_button.is_password_shown(),
             self.test3_button.is_password_shown(),
             self.show_all_button.is_password_shown()
-            )
+        )
 
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchtype.png"),
@@ -133,54 +142,57 @@ class SearchPage(Page, RewardElement):
 
         to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
 
-        if(self.is_popup_open()):
+        if (self.is_popup_open()):
             to_render = self.get_open_popup().render(to_render)
 
-        draw_rectangles_around_clickables([self.buttons, self.textfields], to_render)
+        draw_rectangles_around_clickables(
+            [self.buttons, self.textfields], to_render)
 
         img = to_render
         return img
 
     def handle_click(self, click_position: np.ndarray):
 
-        if(self.is_popup_open()):
+        if (self.is_popup_open()):
             self.get_open_popup().handle_click(click_position)
             return
-        
+
         for widget in self.textsearchwidgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
-                break   
+                break
 
-        if(self.show_all_button.is_password_shown() or self.search_textfield.is_selected()):
+        if (self.show_all_button.is_password_shown() or self.search_textfield.is_selected()):
             self.handle_password_click(click_position)
-            return 
-        
+            return
 
     def handle_password_click(self, click_position: np.ndarray):
         '''
         Handles clicks on the indvidudal password buttons.
         '''
         for button in self.password_buttons:
-            if button.is_clicked_by(click_position):     
+            if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
                 self.close_other_passwords(button)
 
         specific_buttons = []
         if self.test1_button.is_password_shown():
-            specific_buttons += [self.test1_copy_button, self.test1_edit_button, self.test1_delete_button]
+            specific_buttons += [self.test1_copy_button,
+                                 self.test1_edit_button, self.test1_delete_button]
         if self.test2_button.is_password_shown():
-            specific_buttons += [self.test2_copy_button, self.test2_edit_button, self.test2_delete_button]
+            specific_buttons += [self.test2_copy_button,
+                                 self.test2_edit_button, self.test2_delete_button]
         if self.test3_button.is_password_shown():
-            specific_buttons += [self.test3_copy_button, self.test3_edit_button, self.test3_delete_button]
+            specific_buttons += [self.test3_copy_button,
+                                 self.test3_edit_button, self.test3_delete_button]
 
         for button in specific_buttons:
-            if button.is_clicked_by(click_position):     
+            if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
                 break
 
     def is_popup_open(self):
-        if(self.edit_popup.is_open()):
+        if (self.edit_popup.is_open()):
             return True
         return False
 
@@ -196,6 +208,7 @@ class SearchPage(Page, RewardElement):
         print("delete password")
         pass
 
+
 class SearchEditPopUp(Page, RewardElement):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
@@ -204,7 +217,8 @@ class SearchEditPopUp(Page, RewardElement):
     """
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
-    IMG_PATH = os.path.join(IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
 
     COLOR1_BB = BoundingBox(47, 87, 315, 114)
     COLOR2_BB = BoundingBox(47, 87, 315, 114)
@@ -223,9 +237,10 @@ class SearchEditPopUp(Page, RewardElement):
 
     def render(self, img):
 
-        to_render = cv2.imread(self.IMG_PATH)  
-        
-        to_render = combine_path_for_image("search_page_img\search_page_popup.png")
+        to_render = cv2.imread(self.IMG_PATH)
+
+        to_render = combine_path_for_image(
+            "search_page_img\search_page_popup.png")
         draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
         img = to_render
 
@@ -241,15 +256,13 @@ class SearchEditPopUp(Page, RewardElement):
     def open_popup(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["popup", "open"])
-        
+
     def close_popup(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["popup", "close"])
 
     def handle_click(self, click_position: np.ndarray):
-        if(self.is_open()):
-            if(self.BOUNDING_BOX.is_point_inside(click_position)):
+        if (self.is_open()):
+            if (self.BOUNDING_BOX.is_point_inside(click_position)):
                 self.close_popup()
                 return
-        
-

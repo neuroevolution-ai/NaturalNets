@@ -17,6 +17,7 @@ from naturalnets.environments.passlock_app.main_window_pages.settings_page impor
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.passlock_app.utils import draw_rectangle_from_bb, draw_rectangles_around_clickables
 
+
 class HomeWindow(StateElement, Clickable, RewardElement):
     """The main window of the app, containing the menu as well as the respective pages
     (manual page, auto page, search page and setting page).
@@ -36,7 +37,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     SETTINGS_BUTTON_BB = BoundingBox(20, 350, 80, 80)
     SYNC_BUTTON_BB = BoundingBox(9, 112, 99, 22)
     DARK_LIGHT_BB = BoundingBox(9, 112, 99, 22)
-    
+
     MANUAL_BUTTON_BB = BoundingBox(140, 0, 155, 70)
     AUTO_BUTTON_BB = BoundingBox(295, 0, 150, 70)
 
@@ -51,11 +52,11 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.search = SearchPage()
         self.settings = SettingsPage()
 
-        self.pages: List[Page] = [self.manual, self.auto,self.search, self.settings]
+        self.pages: List[Page] = [self.manual,
+                                  self.auto, self.search, self.settings]
         assert len(self.pages) == self.get_state_len() - 1
 
         self.current_page = None
-
 
         self.is_darkmode = False
         self.change_mode_button = Button(
@@ -64,17 +65,21 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         )
 
         self.buttons = [
-            Button(self.HOME_BUTTON_BB, lambda: self.set_current_page(self.manual)),
-            Button(self.SEARCH_BUTTON_BB, lambda: self.set_current_page(self.search)),
-            Button(self.SETTINGS_BUTTON_BB, lambda: self.set_current_page(self.settings)),
-            Button(self.MANUAL_BUTTON_BB, lambda: self.set_current_page(self.manual)),
+            Button(self.HOME_BUTTON_BB,
+                   lambda: self.set_current_page(self.manual)),
+            Button(self.SEARCH_BUTTON_BB,
+                   lambda: self.set_current_page(self.search)),
+            Button(self.SETTINGS_BUTTON_BB,
+                   lambda: self.set_current_page(self.settings)),
+            Button(self.MANUAL_BUTTON_BB,
+                   lambda: self.set_current_page(self.manual)),
             Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto)),
             self.change_mode_button
         ]
-        
 
         self.add_children([self.manual, self.auto, self.search, self.settings])
-        self.set_reward_children([self.manual, self.auto, self.search, self.settings])
+        self.set_reward_children(
+            [self.manual, self.auto, self.search, self.settings])
 
         self.pages_to_str: Dict[Page, str] = {
             self.manual: "manual",
@@ -82,15 +87,14 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             self.search: "search",
             self.settings: "settings"
         }
-    
+
     @property
     def reward_template(self):
         return {
             "home_window": ["open", "close"],
             "page_selected": ["manual", "auto", "search", "settings"]
         }
-        
-    
+
     def reset(self):
         self.manual.reset()
         self.auto.reset()
@@ -115,7 +119,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return self.get_state()[0]
 
     def get_current_page(self):
-        return self.current_page    
+        return self.current_page
 
     def set_current_page(self, page: Page):
         """Sets the currently selected/shown page, setting the respective
@@ -128,18 +132,20 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         if self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page) + 1] = 1
-            self.open() # open the home window if it is closed
-            
-            self.settings.reset() # reset the setings page after switching to another page so the popups are closed
+            self.open()  # open the home window if it is closed
+
+            # reset the setings page after switching to another page so the popups are closed
+            self.settings.reset()
             self.current_page = page
-            
+
             # noinspection PyTypeChecker
-            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
+            self.register_selected_reward(
+                ["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
         """
-        return self.current_page.is_dropdown_open() or self.current_page.is_popup_open() 
+        return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Let the current page process the click, if the current page blocks clicks
@@ -147,29 +153,27 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         # is inside the bounding box of the current page.
         # Note that the settings menu button is handled in the AppController class.
 
-        if(self.current_page == self.manual or self.current_page == self.auto):
+        if (self.current_page == self.manual or self.current_page == self.auto):
             if self.current_page_blocks_click() or PAGES_UI_AREA_BB.is_point_inside(click_position):
                 self.current_page.handle_click(click_position)
                 return
 
             # Check if menu is clicked
-            if((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position) 
-                or PAGES_SELECT_AREA_TOP_BB.is_point_inside(click_position))):
+            if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position)
+                    or PAGES_SELECT_AREA_TOP_BB.is_point_inside(click_position))):
 
                 self.handle_menu_click(click_position)
-                return 
-        else: 
-            
+                return
+        else:
+
             if self.current_page_blocks_click() or WINDOW_AREA_BB.is_point_inside(click_position):
-                if(self.current_page.handle_click(click_position)):
+                if (self.current_page.handle_click(click_position)):
                     return True
 
             # Check if menu is clicked
-            if((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position))):
+            if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position))):
                 self.handle_menu_click(click_position)
                 return
-
-             
 
     def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
@@ -180,29 +184,29 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         """
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                
+
                 button.handle_click(click_position)
-                break  
+                break
 
     def render(self, img: np.ndarray):
         """ Renders the main window and all its children onto the given image.
         """
-  
-        if(self.get_state()[1] == 1):
+
+        if (self.get_state()[1] == 1):
             img = self.manual.render(img)
-        if(self.get_state()[2] == 1):
+        if (self.get_state()[2] == 1):
             img = self.auto.render(img)
-        if(self.get_state()[3] == 1):
+        if (self.get_state()[3] == 1):
             img = self.search.render(img)
-        if(self.get_state()[4] == 1):
+        if (self.get_state()[4] == 1):
             img = self.settings.render(img)
 
-        #draw_rectangle_from_bb(img, PAGES_UI_AREA_BB, (0,255,0), 2)
-        #draw_rectangles_around_clickables([self.buttons], img)
+        # draw_rectangle_from_bb(img, PAGES_UI_AREA_BB, (0,255,0), 2)
+        # draw_rectangles_around_clickables([self.buttons], img)
         return img
-        
+
     def get_bb(self) -> BoundingBox:
-                                                                                                                                                                                                                                               
+
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:

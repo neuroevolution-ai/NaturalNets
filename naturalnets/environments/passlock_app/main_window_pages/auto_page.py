@@ -32,12 +32,16 @@ class AutoPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.enter_nameof_password_textfield = Textfield(self.NAME_OF_PW_TEXTFIELD_BB)
+        self.enter_nameof_password_textfield = Textfield(
+            self.NAME_OF_PW_TEXTFIELD_BB)
         self.enter_password_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB)
 
-        self.copy_pw_button = Button(self.COPY_PW_BB, lambda: self.copy_password())
-        self.reset_pw_button = Button(self.RESET_PW_BB, lambda: self.reset_password())
-        self.create_pw_button = Button(self.GENERATE_PW_BB, lambda: self.generate_password())
+        self.copy_pw_button = Button(
+            self.COPY_PW_BB, lambda: self.copy_password())
+        self.reset_pw_button = Button(
+            self.RESET_PW_BB, lambda: self.reset_password())
+        self.create_pw_button = Button(
+            self.GENERATE_PW_BB, lambda: self.generate_password())
         self.pw_length_slider = Slider(self.PW_LENGTH_BB, 3)
         self.pw_length_slider.set_slider_value(0)
 
@@ -46,10 +50,14 @@ class AutoPage(Page, RewardElement):
         self.use_special_chars_checkbox = CheckBox(self.USE_SPECIAL_CHARS_BB)
 
         self.sliders: List[Slider] = [self.pw_length_slider]
-        self.checkboxes: List[CheckBox] = [self.use_letters_checkbox, self.use_numbers_checkbox, self.use_special_chars_checkbox]
-        self.textfields: List[Textfield] = [self.enter_nameof_password_textfield, self.enter_password_textfield]	
-        self.buttons: List[Button] = [self.copy_pw_button, self.reset_pw_button, self.create_pw_button]
-        self.widgets: List[Widget] = [self.use_letters_checkbox, self.use_numbers_checkbox, self.use_special_chars_checkbox]
+        self.checkboxes: List[CheckBox] = [self.use_letters_checkbox,
+                                           self.use_numbers_checkbox, self.use_special_chars_checkbox]
+        self.textfields: List[Textfield] = [
+            self.enter_nameof_password_textfield, self.enter_password_textfield]
+        self.buttons: List[Button] = [self.copy_pw_button,
+                                      self.reset_pw_button, self.create_pw_button]
+        self.widgets: List[Widget] = [self.use_letters_checkbox,
+                                      self.use_numbers_checkbox, self.use_special_chars_checkbox]
         self.clickables = self.sliders + self.checkboxes + self.textfields + self.buttons
 
         self.add_widget(self.pw_length_slider)
@@ -77,14 +85,14 @@ class AutoPage(Page, RewardElement):
         """
 
         state = (
-            self.pw_length_slider.get_slider_value(), 
-            self.use_letters_checkbox.is_selected(), 
-            self.use_numbers_checkbox.is_selected(), 
-            self.use_special_chars_checkbox.is_selected(), 
-            textfield_check([self.enter_nameof_password_textfield]), 
+            self.pw_length_slider.get_slider_value(),
+            self.use_letters_checkbox.is_selected(),
+            self.use_numbers_checkbox.is_selected(),
+            self.use_special_chars_checkbox.is_selected(),
+            textfield_check([self.enter_nameof_password_textfield]),
             textfield_check([self.enter_password_textfield])
-            )
-        
+        )
+
         img_paths = {
             (1, 0, 0, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_slidermiddle.png"),
             (2, 0, 0, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_sliderend.png"),
@@ -111,7 +119,7 @@ class AutoPage(Page, RewardElement):
 
         args: click_position - the position of the click
         '''
-      
+
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
                 clickable.handle_click(click_position)
@@ -119,7 +127,7 @@ class AutoPage(Page, RewardElement):
 
     def copy_password(self):
         print("copied password")
-        pass 
+        pass
 
     def reset_password(self):
         self.enter_password_textfield.reset()

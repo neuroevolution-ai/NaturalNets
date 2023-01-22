@@ -71,7 +71,12 @@ class ManualPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-        state = (textfield_check([self.enter_nameof_password_textfield]), textfield_check([self.enter_secret_password_textfield]), self.show_password_button.showing_password)
+        state = (
+            textfield_check([self.enter_nameof_password_textfield]), 
+            textfield_check([self.enter_secret_password_textfield]), 
+            self.show_password_button.showing_password
+            )
+        
         img_paths = {
             (True, False, False): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_nopw.png"),
             (False, True, False): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_pw.png"),

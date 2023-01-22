@@ -20,7 +20,7 @@ class SignupPage(Page, RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img/signup_window.png")
     EMAIL_TEXTFIELD_BB = BoundingBox(288, 293, 1344, 75)
     PASSWORD_TEXTFIELD_BB = BoundingBox(288, 443, 1269, 75)
-    SHOW_PW_BUTTON_BB = BoundingBox(1557, 443, 75, 75) 
+    SHOW_PW_BUTTON_BB = BoundingBox(1557, 443, 75, 75)
     SIGNUP_BUTTON_BB = BoundingBox(288, 593, 657, 66)
     LOGIN_BUTTON_BB = BoundingBox(975, 593, 657, 66)
 
@@ -31,12 +31,16 @@ class SignupPage(Page, RewardElement):
         self.enter_email_textfield = Textfield(self.EMAIL_TEXTFIELD_BB)
         self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB)
-        self.signup_button = Button(self.SIGNUP_BUTTON_BB, lambda: self.signup())
+        self.signup_button = Button(
+            self.SIGNUP_BUTTON_BB, lambda: self.signup())
         self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())
 
-        self.buttons: List[Button] = [self.signup_button, self.login_button,self.show_pw_button]
-        self.textfields: List[Textfield] = [self.enter_email_textfield, self.enter_pw_textfield]
-        
+        self.buttons: List[Button] = [self.signup_button,
+                                      self.login_button, self.show_pw_button]
+        self.textfields: List[Textfield] = [
+            self.enter_email_textfield, self.enter_pw_textfield]
+        self.clickables = self.buttons + self.textfields
+
         self.add_widget(self.enter_email_textfield)
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
@@ -59,26 +63,23 @@ class SignupPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-    
-        to_render = cv2.imread(self.IMG_PATH)
-        
-        if(textfield_check([self.enter_email_textfield])):
-            to_render = combine_path_for_image("signup_page_img/signup_window_email.png")
-        
-        if(textfield_check([self.enter_pw_textfield])):
-            to_render = combine_path_for_image("signup_page_img/signup_window_pw.png")
 
-        if(textfield_check([self.enter_email_textfield, self.enter_pw_textfield])):
-            to_render = combine_path_for_image("signup_page_img/signup_window_email_pw.png")
+        state = (
+            textfield_check([self.enter_email_textfield]),
+            textfield_check([self.enter_pw_textfield]),
+            self.show_pw_button.showing_password
+        )
 
-        if(textfield_check([self.enter_pw_textfield]) and self.show_pw_button.showing_password):
-            to_render = combine_path_for_image("signup_page_img/signup_window_pwshown.png")
+        img_paths = {
+            (True, False, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email.png"),
+            (False, True, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pw.png"),
+            (True, True, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pw.png"),
+            (False, True, True): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pwshown.png"),
+            (True, True, True): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pwshown.png")
+        }
 
-        if(textfield_check([self.enter_email_textfield, self.enter_pw_textfield]) and self.show_pw_button.showing_password):
-            to_render = combine_path_for_image("signup_page_img/signup_window_email_pwshown.png")
-        
-        draw_rectangles_around_clickables([self.buttons, self.textfields], to_render)
-               
+        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
+        draw_rectangles_around_clickables([self.clickables], to_render)
         img = to_render
         return img
 
@@ -86,7 +87,7 @@ class SignupPage(Page, RewardElement):
         '''
         This function is called when the login button is clicked.
         '''
-        print("login")     
+        print("login")
 
     def signup(self):
         '''
@@ -97,11 +98,11 @@ class SignupPage(Page, RewardElement):
     def reset(self):
         '''
         This function is called to reset the signup page.
-        '''    
+        '''
         self.enter_email_textfield.set_selected(False)
         self.enter_pw_textfield.set_selected(False)
         self.show_pw_button.showing_password = False
-        
+
     def handle_click(self, click_position: np.ndarray):
         '''
         This function is called when the user clicks on the signup page. 
@@ -110,27 +111,14 @@ class SignupPage(Page, RewardElement):
         args: click_position: the position of the click
         returns: True if the click resullts in a login or signup
         '''
-        for button in self.buttons:
-            if button.is_clicked_by(click_position):
 
-                if(button == self.signup_button or button == self.login_button):
-                    if(self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected()):
-                        button.handle_click(click_position)
+        for clickable in self.clickables:
+            if clickable.is_clicked_by(click_position):
+
+                if (clickable == self.signup_button or clickable == self.login_button):
+                    if (self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected()):
+                        clickable.handle_click(click_position)
                         return True
                 else:
-                    button.handle_click(click_position)
-                break
-        
-        for textfield in self.textfields:
-            if textfield.is_clicked_by(click_position):
-                textfield.handle_click(click_position)
-                break
-        
-        
-
-        
-       
-   
-            
-        
-    
+                    clickable.handle_click(click_position)
+                    break

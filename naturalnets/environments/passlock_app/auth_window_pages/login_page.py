@@ -12,6 +12,7 @@ from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_
 from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangle_from_bb, draw_rectangles_around_clickables, textfield_check
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
+
 class LoginPage(Page, RewardElement):
     '''
     The login page of the authentication window.
@@ -19,8 +20,8 @@ class LoginPage(Page, RewardElement):
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "login_page_img/login_page.png")
-    ENTER_PW_TEXTFIELD_BB = BoundingBox(288, 292, 1269, 75) 
-    SHOW_PW_BUTTON_BB = BoundingBox(1557, 292, 75, 75) 
+    ENTER_PW_TEXTFIELD_BB = BoundingBox(288, 292, 1269, 75)
+    SHOW_PW_BUTTON_BB = BoundingBox(1557, 292, 75, 75)
     LOGIN_BUTTON_BB = BoundingBox(903, 465, 112, 112)
 
     def __init__(self):
@@ -34,7 +35,9 @@ class LoginPage(Page, RewardElement):
 
         self.buttons: List[Button] = [self.login_button, self.show_pw_button]
         self.textfields: List[Textfield] = [self.enter_pw_textfield]
-        self.widgets: List[Widget] = [self.enter_pw_textfield, self.show_pw_button] 
+        self.clickables = self.buttons + self.textfields
+        self.widgets: List[Widget] = [
+            self.enter_pw_textfield, self.show_pw_button]
 
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
@@ -53,7 +56,7 @@ class LoginPage(Page, RewardElement):
         '''
         This function is called when the login button is clicked.
         '''
-        print("login")   
+        print("login")
 
     def render(self, img):
         """
@@ -63,27 +66,28 @@ class LoginPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-    
-        to_render = cv2.imread(self.IMG_PATH)
-  
-        if(textfield_check([self.enter_pw_textfield])):
-            to_render = combine_path_for_image("login_page_img/login_page_pw.png")
-            
-        if(textfield_check([self.enter_pw_textfield]) and self.show_pw_button.showing_password):
-            to_render = combine_path_for_image("login_page_img/login_page_showpw.png")
-   
-        draw_rectangles_around_clickables([self.buttons, self.textfields], to_render)
+        state = (
+            textfield_check([self.enter_pw_textfield]),
+            self.show_pw_button.is_password_shown()
+        )
 
+        img_paths = {
+            (True, False): os.path.join(IMAGES_PATH, "login_page_img/login_page_pw.png"),
+            (True, True): os.path.join(IMAGES_PATH, "login_page_img/login_page_showpw.png")
+        }
+
+        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
+        draw_rectangles_around_clickables(
+            [self.buttons, self.textfields], to_render)
         img = to_render
         return img
 
     def reset(self):
         '''
         This function is called to reset the login page.
-        '''    
+        '''
         self.enter_pw_textfield.set_selected(False)
         self.show_pw_button.showing_password = False
-        
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -93,24 +97,12 @@ class LoginPage(Page, RewardElement):
         args: click_position: the position of the click
         returns: True if the click resullts in a login 
         '''
-        
-        for button in self.buttons:
-            if button.is_clicked_by(click_position):
+        for clickable in self.clickables:
+            if clickable.is_clicked_by(click_position):
 
-                if(button == self.login_button):
-                    if(self.enter_pw_textfield.is_selected()):
-                        button.handle_click(click_position)
-                        return True
+                if (clickable == self.login_button and self.enter_pw_textfield.is_selected()):
+                    clickable.handle_click(click_position)
+                    return True
                 else:
-                    button.handle_click(click_position)
-                    
-                break
-        
-        for textfield in self.textfields:
-            if textfield.is_clicked_by(click_position):
-                textfield.handle_click(click_position)
-                break
-        
-     
-
-    
+                    clickable.handle_click(click_position)
+                    break

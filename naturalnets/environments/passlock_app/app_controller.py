@@ -13,7 +13,7 @@ class PasslockAppController:
 
         self.home_window = HomeWindow()
         self.auth_window = AuthenticationWindow()
-        
+
         self._total_state_len = 0
         self._total_state_len += self.get_element_state_len(self.home_window)
         self._total_state_len += self.get_element_state_len(self.auth_window)
@@ -31,7 +31,7 @@ class PasslockAppController:
 
     def calculate_reward_count(self, reward_count, reward_element: RewardElement):
         reward_count += reward_element.get_reward_count()
-        
+
         for child in reward_element.get_reward_children():
             reward_count = self.calculate_reward_count(reward_count, child)
 
@@ -39,17 +39,20 @@ class PasslockAppController:
 
     def reset_reward_array(self):
         reward_count = self.calculate_reward_count(0, self.home_window)
-        reward_count = self.calculate_reward_count(reward_count, self.auth_window)
+        reward_count = self.calculate_reward_count(
+            reward_count, self.auth_window)
 
         self.reward_array = np.zeros(reward_count, dtype=np.uint8)
 
         last_reward_index = self.assign_reward(0, self.home_window)
-        last_reward_index = self.assign_reward(last_reward_index, self.auth_window)
+        last_reward_index = self.assign_reward(
+            last_reward_index, self.auth_window)
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
         reward_count = reward_element.get_reward_count()
-        reward_element.assign_reward_slice(self.reward_array[current_index:current_index + reward_count])
+        reward_element.assign_reward_slice(
+            self.reward_array[current_index:current_index + reward_count])
         current_index += reward_count
 
         for reward_child in reward_element.get_reward_children():
@@ -70,7 +73,7 @@ class PasslockAppController:
 
         self.assign_state(self.home_window, 0, [])
         self.assign_state(self.auth_window, 0, [])
-             
+
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
 
@@ -141,12 +144,12 @@ class PasslockAppController:
         """Delegates click-handling to the clicked component.
         """
         previous_reward_array = copy(self.reward_array)
-        
+
         if self.auth_window.is_open():
-            if(self.auth_window.handle_click(click_position)):
+            if (self.auth_window.handle_click(click_position)):
                 self.sign_up()
         else:
-            if(self.home_window.handle_click(click_position)):
+            if (self.home_window.handle_click(click_position)):
                 self.log_out()
 
         reward = np.count_nonzero(previous_reward_array != self.reward_array)
@@ -161,7 +164,7 @@ class PasslockAppController:
             img (np.ndarray): The cv2 image to render onto.
         """
 
-        if(self.auth_window.is_open()):
+        if (self.auth_window.is_open()):
             img = self.auth_window.render(img)
 
         if self.home_window.is_open():
@@ -180,4 +183,3 @@ class PasslockAppController:
         self.home_window.close()
         self.auth_window.open()
         self.auth_window.set_current_page(self.auth_window.login)
-        

@@ -28,7 +28,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
     """
 
     STATE_LEN = 3
-    IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img\signup_window.png") 
+    IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img\signup_window.png")
     APP_BOUNDING_BOX = BoundingBox(0, 0, 1920, 987)
 
     def __init__(self):
@@ -44,14 +44,13 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
 
         self.add_children([self.login, self.signup])
-        self.set_reward_children([self.login, self.signup])    
+        self.set_reward_children([self.login, self.signup])
 
         self.pages_to_str: Dict[Page, str] = {
             self.login: "login",
             self.signup: "signup",
         }
-        
-    
+
     @property
     def reward_template(self):
         '''
@@ -77,7 +76,8 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
             self.current_page = page
 
             # noinspection PyTypeChecker
-            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
+            self.register_selected_reward(
+                ["page_selected", self.pages_to_str[self.current_page]])
 
     def reset(self):
         '''
@@ -86,7 +86,6 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         self.login.reset()
         self.signup.reset()
         self.set_current_page(self.signup)
-        
 
     def is_open(self) -> int:
         """Returns if the settings window is open."""
@@ -104,7 +103,6 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
 
         self.get_state()[0] = 0
 
-
     def handle_click(self, click_position: np.ndarray):
         '''
         Handles a click on the Authentication window. 
@@ -116,27 +114,23 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         returns: True if a login or signup was successful
         '''
 
-        if(self.current_page.handle_click(click_position)):
+        if (self.current_page.handle_click(click_position)):
             return True
-
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """ 
         Renders the main window and all its children onto the given image.
         """
 
-        if(self.current_page == self.signup):
+        if (self.current_page == self.signup):
             img = self.signup.render(img)
-        elif(self.current_page == self.login):
+        elif (self.current_page == self.login):
             img = self.login.render(img)
-        
+
         return img
-    
+
     def get_bb(self) -> BoundingBox:
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
-
-    
-    

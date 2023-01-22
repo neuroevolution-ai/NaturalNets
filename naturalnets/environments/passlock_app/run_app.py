@@ -14,4 +14,3 @@ if __name__ == "__main__":
     app = PasslockApp(config)
     app.reset()
     app.interactive_mode()
-    

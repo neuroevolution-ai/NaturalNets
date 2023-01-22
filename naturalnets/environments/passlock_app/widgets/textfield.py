@@ -26,13 +26,13 @@ class Textfield(Widget):
         if self.has_click_action():
             self._click_action()
 
-        #this implementation of a textfield works like a radio button click it once and the text field is selected and the text is rendered 
-        #click it again and the text is no longer rendered
-        if(self.is_selected()):
+        # this implementation of a textfield works like a radio button click it once and the text field is selected and the text is rendered
+        # click it again and the text is no longer rendered
+        if (self.is_selected()):
             self.set_selected(False)
         else:
             self.set_selected(True)
-    
+
     def has_click_action(self):
         return self._click_action is not None
 
@@ -43,18 +43,13 @@ class Textfield(Widget):
         return self.get_state()[0]
 
     def enter_value(self):
-        if(self.is_selected()):
+        if (self.is_selected()):
             self.set_selected(False)
         else:
             self.set_selected(True)
 
     def render(self, img: np.ndarray) -> np.ndarray:
         return super().render(img)
-    
+
     def reset(self):
         self.set_selected(False)
-
-    
-
-
-    
