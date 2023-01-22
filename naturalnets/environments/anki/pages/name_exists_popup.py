@@ -33,7 +33,6 @@ class NameExistsPopup(Page,RewardElement):
             "window": ["open","close"]
         }
         
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

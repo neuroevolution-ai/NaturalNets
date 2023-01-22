@@ -12,7 +12,6 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki import Card
 class AddCardPage(Page,RewardElement):
     """
@@ -50,6 +49,7 @@ class AddCardPage(Page,RewardElement):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.choose_deck = ChooseDeckPage()
         self.front_and_backside_popup = FrontAndBacksidePopup()
+        
         self.add_child(self.choose_deck)
         self.add_child(self.front_and_backside_popup)
                
@@ -61,6 +61,7 @@ class AddCardPage(Page,RewardElement):
         self.add_button: Button = Button(self.ADD_BB, self.add_card)
         
         self.set_reward_children([self.choose_deck, self.front_and_backside_popup])
+
     @property
     def reward_template(self):
         return {
@@ -68,9 +69,8 @@ class AddCardPage(Page,RewardElement):
             "front_side_clipboard": 0,
             "back_side_clipboard": 0,
             "tag_clipboard": 0,
+            "add_card": 0
         }
-
-        
     
     def handle_click(self, click_position: np.ndarray) -> None:
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
@@ -94,23 +94,16 @@ class AddCardPage(Page,RewardElement):
             self.add_button.handle_click(click_position)
 
     def open(self):
-        self.front_side_clipboard_temporary_string = None
-        self.back_side_clipboard_temporary_string = None
-        self.tag_clipboard_temporary_string = None
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
-        self.get_state()[3] = 0
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
+        self.reset_temporary_strings()
+        
         self.get_state()[0] = 1
         self.register_selected_reward(["window","open"])
 
     def close(self):
-        self.get_state()[3] = 0
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
+        self.reset_temporary_strings()
+        
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
-        self.reset_temporary_strings()
 
     def is_open(self):
         return self.get_state()[0]
@@ -146,6 +139,7 @@ class AddCardPage(Page,RewardElement):
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
             self.deck_database.decks[self.deck_database.current_index].add_card(card)
+            self.register_selected_reward(["add_card"])
             self.reset_temporary_strings()
         else:
             self.front_and_backside_popup.open()
@@ -158,11 +152,11 @@ class AddCardPage(Page,RewardElement):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if(self.choose_deck.is_open()):
+        if (self.choose_deck.is_open()):
             self.choose_deck.render(img)
             return img
-        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}",(180,230),font_scale=0.7)
-        if(self.front_and_backside_popup.is_open()):
+        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}", (180,230) ,font_scale = 0.7)
+        if (self.front_and_backside_popup.is_open()):
             self.front_and_backside_popup.render(img)
             if (self.back_side_clipboard_temporary_string is not None):
                 put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 429) ,font_scale = 1)

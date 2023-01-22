@@ -3,7 +3,6 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
-from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -55,8 +54,10 @@ class ChooseDeckPage(Page,RewardElement):
         }
     
     def open(self):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.current_index: int = 0
+        self.get_state()[3] = 0
+        self.get_state()[2] = 0
+        self.get_state()[1] = 0
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -72,13 +73,14 @@ class ChooseDeckPage(Page,RewardElement):
         return self.get_state()[0]
 
     def change_current_deck_index(self,click_point:np.ndarray):
-        # Items have size (469,22)
-        # Box containing the items has size (472,280)
-        # Top left corner (33,65)
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
             click_index: int = floor((click_point[1] - 222) / 29)
+            if(click_index >= self.deck_database.decks_length()):
+                return
+            self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
+            self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):

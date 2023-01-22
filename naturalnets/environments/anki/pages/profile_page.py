@@ -35,8 +35,6 @@ class ProfilePage(Page,RewardElement):
     DOWNGRADE_QUIT_BB = BoundingBox(508, 582, 175, 30)
     PROFILES_BB = BoundingBox(143, 166, 400, 145)
 
-    #Profiles in the profiles_bb have the (heigth,width) (384,22)
-
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(ProfilePage, cls).__new__(cls)
@@ -52,11 +50,11 @@ class ProfilePage(Page,RewardElement):
         self.delete_profile_popup_page = DeleteProfilePopup()
         self.reset_collection_popup_page = ResetCollectionPopup()
         self.downgrade_popup_page = DowngradePopup()
-        self.at_least_one_profile_popup_page = AtLeastOneProfilePopup()
+        self.at_least_one_profile_popup = AtLeastOneProfilePopup()
         self.profile_database = ProfileDatabase()
         
         self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
-            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup_page])
+            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup])
         
         self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.downgrade_popup_page.open)
         self.open_backup_button = Button(self.OPEN_BACKUP_BB, self.reset_collection_popup_page.open)
@@ -69,7 +67,7 @@ class ProfilePage(Page,RewardElement):
         self.current_profile: Profile = self.profile_database.profiles[self.profile_database.current_index]
 
         self.set_reward_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
-            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup_page])
+            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup])
 
     @property
     def reward_template(self):
@@ -82,6 +80,9 @@ class ProfilePage(Page,RewardElement):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1] - 166) / 29)
+            if(click_index >= self.profile_database.profiles_length()):
+                return
+            self.get_state()[self.profile_database.current_index + 1] = 0
             self.profile_database.current_index: int = click_index
             self.current_profile = self.profile_database.profiles[self.profile_database.current_index]
             self.get_state()[click_index + 1] = 1
@@ -100,15 +101,13 @@ class ProfilePage(Page,RewardElement):
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window","close"])
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
-
     
     def is_open(self):
         return self.get_state()[0]
 
     def handle_delete(self):
         if(not(self.profile_database.is_removing_allowed())):
-            self.at_least_one_profile_popup_page.open()
+            self.at_least_one_profile_popup.open()
         else:
             self.delete_profile_popup_page.open()
 
@@ -129,8 +128,8 @@ class ProfilePage(Page,RewardElement):
             img = self.reset_collection_popup_page.render(img)
         elif self.downgrade_popup_page.is_open():
             img = self.downgrade_popup_page.render(img)
-        elif self.at_least_one_profile_popup_page.is_open():
-            img = self.at_least_one_profile_popup_page.render(img)
+        elif self.at_least_one_profile_popup.is_open():
+            img = self.at_least_one_profile_popup.render(img)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -150,8 +149,8 @@ class ProfilePage(Page,RewardElement):
         elif self.downgrade_popup_page.is_open():
             self.downgrade_popup_page.handle_click(click_position)
             return
-        elif self.at_least_one_profile_popup_page.is_open():
-            self.at_least_one_profile_popup_page.handle_click(click_position)
+        elif self.at_least_one_profile_popup.is_open():
+            self.at_least_one_profile_popup.handle_click(click_position)
             return
         elif self.calculate_current_bounding_box().is_point_inside(click_position):
             self.change_current_profile_index(click_position)
@@ -256,6 +255,7 @@ class DowngradePopup(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.ok_button = Button(self.OK_BUTTON_BB, self.close)
+        
     @property
     def reward_template(self):
         return {

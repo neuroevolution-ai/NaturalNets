@@ -349,8 +349,6 @@ class PreferencesPage(RewardElement,Page):
         for widget in self.scheduling_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
-                if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget],widget.get_state()[0]])
     
     def handle_click_network_window(self,click_position: np.ndarray):
         for widget in self.network_window_widgets:

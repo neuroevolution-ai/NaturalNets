@@ -3,7 +3,6 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
-from naturalnets.environments.anki import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -49,6 +48,9 @@ class ChooseDeckStudyPage(Page,RewardElement):
         
         self.profile_database = ProfileDatabase()
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        
+        #study button is implemented in the main page because implementing study function causes circular import dependency between 
+        #main page and this page
 
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
@@ -81,13 +83,14 @@ class ChooseDeckStudyPage(Page,RewardElement):
         return self.get_state()[0]
 
     def change_current_deck_index(self,click_point:np.ndarray):
-        # Items have size (469,22)
-        # Box containing the items has size (471,280)
-        # Top left corner (13,45)
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
             click_index: int = floor((click_point[1]- 210) / 29)
+            if(click_index >= self.deck_database.decks_length()):
+                return
+            self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
+            self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
     def calculate_current_bounding_box(self):
@@ -104,7 +107,6 @@ class ChooseDeckStudyPage(Page,RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img,f"{self.deck_database.decks[self.current_index].name}", (181, 194), font_scale = 0.5)
-        # Items have size (469,22)
         if(self.leads_to_external_website_popup.is_open()):
             self.leads_to_external_website_popup.render(img)
         elif(self.add_deck_popup.is_open()):

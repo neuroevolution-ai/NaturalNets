@@ -11,7 +11,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown,DropdownItem
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki import DeckDatabase
 
 
 class ExportDeckPage(Page,RewardElement):
@@ -62,32 +61,34 @@ class ExportDeckPage(Page,RewardElement):
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "exported": 0
+            "exported": 0,
+            "reset": 0
         }
         
     def handle_click(self,click_position: np.ndarray):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if (self.include_dropdown.is_open()):
             self.include_dropdown.handle_click(click_position)
-        if(self.name_exists_popup.is_open()):
+        if (self.name_exists_popup.is_open()):
             self.name_exists_popup.handle_click(click_position)
+            return
+        if (self.five_decks_popup.is_open()):
+            self.five_decks_popup.handle_click(click_position)
+            return
         if (self.INCLUDE_DD_BB.is_point_inside(click_position)):
             self.include_dropdown.open()
             return       
         if self.include_dropdown.get_selected_item() is not None:
-                self.current_deck = self.include_dropdown.get_selected_item().get_value().name
-        if (self.five_decks_popup.is_open()):
-            self.five_decks_popup.handle_click(click_position) 
+            self.current_deck = self.include_dropdown.get_selected_item().get_value().name
         else:
-            if(self.export_button.is_clicked_by(click_position)):
+            if (self.export_button.is_clicked_by(click_position)):
                 self.export_button.handle_click(click_position)
-            elif(self.cancel_button.is_clicked_by(click_position)):
+            elif (self.cancel_button.is_clicked_by(click_position)):
                 self.cancel_button.handle_click(click_position)
-            elif(self.reset_exported_decks_button.is_clicked_by(click_position)):
+            elif (self.reset_exported_decks_button.is_clicked_by(click_position)):
                 self.reset_exported_decks_button.handle_click(click_position)
 
     def open(self):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.initialise_dropdown()
         self.current_deck = None
         self.get_state()[0] = 1
@@ -109,7 +110,6 @@ class ExportDeckPage(Page,RewardElement):
         elif(self.deck_database.is_file_exist(self.include_dropdown.get_selected_item().get_value().name, EXPORTED_DECKS_PATH)):
             self.name_exists_popup.open()
         else:
-            print(self.include_dropdown.get_selected_item().get_value().name)
             self.deck_database.export_deck(self.include_dropdown.get_selected_item().get_value())
             self.close()
 
@@ -135,3 +135,4 @@ class ExportDeckPage(Page,RewardElement):
 
     def reset_exported_decks(self):
         self.deck_database.reset_exported_decks()
+        self.register_selected_reward(["reset"])

@@ -40,6 +40,7 @@ class AddDeckPopup(Page,RewardElement):
         self.name_exists_popup = NameExistsPopup()
         self.profile_database = ProfileDatabase()
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
 
@@ -57,6 +58,7 @@ class AddDeckPopup(Page,RewardElement):
         return {
             "window": ["open","close"],
             "set_clipboard": 0,
+            "add_new_deck": 0
         }
 
     def close(self):
@@ -66,7 +68,6 @@ class AddDeckPopup(Page,RewardElement):
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
 
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
@@ -84,6 +85,7 @@ class AddDeckPopup(Page,RewardElement):
             self.name_exists_popup.open()
         else:
             self.deck_database.create_deck(self.current_field_string)
+            self.register_selected_reward(["add_new_deck"])
             self.current_field_string = None
             self.close()
     
@@ -91,10 +93,8 @@ class AddDeckPopup(Page,RewardElement):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        
         if(self.current_field_string is not None):
             put_text(img, f"{self.current_field_string}", (181, 302) ,font_scale = 0.4)
-
         if (self.five_decks_popup.is_open()):
             img = self.five_decks_popup.render(img)
         elif (self.name_exists_popup.is_open()):
@@ -103,15 +103,15 @@ class AddDeckPopup(Page,RewardElement):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
-        if(self.five_decks_popup.is_open()):
+        if (self.five_decks_popup.is_open()):
            self.five_decks_popup.handle_click(click_position)
            return
-        elif(self.name_exists_popup.is_open()):
+        elif (self.name_exists_popup.is_open()):
             self.name_exists_popup.handle_click(click_position)
             return
-        elif(self.ok_button.is_clicked_by(click_position)):
+        elif (self.ok_button.is_clicked_by(click_position)):
             self.ok_button.handle_click(click_position)
-        elif(self.text_button.is_clicked_by(click_position)):
+        elif (self.text_button.is_clicked_by(click_position)):
             self.text_button.handle_click(click_position)
-        elif(self.cancel_button.is_clicked_by(click_position)):
+        elif (self.cancel_button.is_clicked_by(click_position)):
             self.cancel_button.handle_click(click_position)
