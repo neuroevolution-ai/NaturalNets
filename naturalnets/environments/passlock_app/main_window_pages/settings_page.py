@@ -14,6 +14,7 @@ from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
 from naturalnets.environments.passlock_app.utils import (
     combine_path_for_image, draw_rectangle_from_bb,
     draw_rectangles_around_clickables)
+from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -108,7 +109,6 @@ class SettingsPage(Page, RewardElement):
         '''
         Returns True if a popup is open.
         '''
-
         if (self.about_popup.is_open()):
             return True
         if (self.sync_popup.is_open()):
@@ -122,7 +122,6 @@ class SettingsPage(Page, RewardElement):
         '''
         Returns the open popup.
         '''
-
         if self.about_popup.is_open():
             return self.about_popup
 
@@ -143,13 +142,13 @@ class SettingsPage(Page, RewardElement):
 
         to_render = cv2.imread(self.IMG_PATH)
 
-        if (self.is_popup_open()):
-            to_render = self.get_open_popup().render(to_render)
-
         if (self.auto_sync_onoffbutton.showing_password == True):
             to_render = combine_path_for_image(
                 "settings_page_img\settings_page_onoff.png")
-
+        
+        if (self.is_popup_open()):
+            to_render = self.get_open_popup().render(to_render)
+            
         draw_rectangles_around_clickables([self.clickables], to_render)
         img = to_render
         return img
@@ -191,185 +190,51 @@ class SettingsPage(Page, RewardElement):
         Logs out. Currently not implemented.'''
         print("Log out")
 
-class SettingsPageChangeColourPopUp(Page, RewardElement):
+
+class SettingsPageChangeColourPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
        State description:
             state[0]: the opened-state of this popup.
     """
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
-    IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
-
-    COLOR1_BB = BoundingBox(47, 87, 315, 114)
-    COLOR2_BB = BoundingBox(47, 87, 315, 114)
-    COLOR3_BB = BoundingBox(47, 87, 315, 114)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.IMG_PATH = os.path.join(
+            IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
+        self.BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
-        self.color1_button = Button(self.COLOR1_BB, lambda: self.nothing())
-        self.color2_button = Button(self.COLOR2_BB, lambda: self.nothing())
-        self.color3_button = Button(self.COLOR3_BB, lambda: self.nothing())
-        self.buttons: List[Button] = [self.color1_button,
-                                      self.color2_button, self.color3_button]
         print("SettingsPageChangeColourPopUp created")
 
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
 
-    def render(self, img):
-
-        to_render = cv2.imread(self.IMG_PATH)
-
-        to_render = combine_path_for_image(
-            "settings_page_img\settings_page_colour_popup.png")
-        draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
-        img = to_render
-
-        return img
-
-    def reset(self):
-        self.close_popup()
-
-    def is_open(self) -> int:
-        """Returns the opened-state of this popup."""
-        return self.get_state()[0]
-
-    def open_popup(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close_popup(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def handle_click(self, click_position: np.ndarray):
-
-        if (self.is_open()):
-            if (self.BOUNDING_BOX.is_point_inside(click_position)):
-                self.close_popup()
-                return
-
-    def nothing(self):
-        print("Nothing")
-
-
-class SettingsPageSyncPopUp(Page, RewardElement):
+class SettingsPageSyncPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
        State description:
             state[0]: the opened-state of this popup.
     """
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
-    IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
+        self.IMG_PATH = os.path.join(
+            IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
         print("CalculatorSettingsPopup created")
 
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
 
-    def reset(self):
-        self.close_popup()
-
-    def is_open(self) -> int:
-        """Returns the opened-state of this popup."""
-        return self.get_state()[0]
-
-    def open_popup(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close_popup(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def handle_click(self, click_position: np.ndarray):
-
-        if (self.is_open()):
-            if (self.BOUNDING_BOX.is_point_inside(click_position)):
-                self.close_popup()
-                return
-
-    def render(self, img):
-
-        to_render = cv2.imread(self.IMG_PATH)
-
-        to_render = combine_path_for_image(
-            "settings_page_img\settings_page_sny_popup.png")
-        draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
-        img = to_render
-
-        return img
-
-
-class SettingsPageAboutPopUp(Page, RewardElement):
+class SettingsPageAboutPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
        State description:
             state[0]: the opened-state of this popup.
     """
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
-    IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        self.BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
+        self.IMG_PATH = os.path.join(
+            IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
         print("CalculatorSettingsPopup created")
-
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-    def reset(self):
-        self.close_popup()
-
-    def is_open(self) -> int:
-        """Returns the opened-state of this popup."""
-
-        return self.get_state()[0]
-
-    def open_popup(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close_popup(self):
-        self.get_state()[0] = 0
-
-        self.register_selected_reward(["popup", "close"])
-
-    def handle_click(self, click_position: np.ndarray):
-
-        if (self.is_open()):
-            if (self.BOUNDING_BOX.is_point_inside(click_position)):
-                self.close_popup()
-                return
-
-    def render(self, img):
-
-        to_render = cv2.imread(self.IMG_PATH)
-
-        to_render = combine_path_for_image(
-            "settings_page_img\settings_page_about_popup.png")
-        draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
-        img = to_render
-
-        return img

@@ -134,7 +134,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             self.get_state()[self.pages.index(page) + 1] = 1
             self.open()  # open the home window if it is closed
 
-            # reset the setings page after switching to another page so the popups are closed
+            #TODO reset the setings and search page after switching to another page so the popups are closed
+            self.search.reset()
             self.settings.reset()
             self.current_page = page
 
@@ -189,7 +190,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
                 break
 
     def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
+        """ 
+        Renders the main window and all its children onto the given image.
         """
 
         if (self.get_state()[1] == 1):

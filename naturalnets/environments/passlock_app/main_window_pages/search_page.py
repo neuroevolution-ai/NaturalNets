@@ -12,8 +12,8 @@ from naturalnets.environments.gui_app.widgets.button import (
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.utils import (
-    combine_path_for_image, draw_rectangle_from_bb,
     draw_rectangles_around_clickables, textfield_check)
+from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -110,8 +110,7 @@ class SearchPage(Page, RewardElement):
             self.search_textfield, self.show_all_button]
         self.password_buttons: List[Widget] = [
             self.test1_button, self.test2_button, self.test3_button]
-        self.opened_password: np.ndarray = [0, 0, 0]
-
+      
         self.set_reward_children([self.edit_popup])
         self.add_child(self.edit_popup)
         self.add_widget(self.search_textfield)
@@ -136,8 +135,8 @@ class SearchPage(Page, RewardElement):
         self.test1_button.showing_password = False
         self.test2_button.showing_password = False
         self.test3_button.showing_password = False
-        self.opened_password = [0, 0, 0]
-
+        self.edit_popup.reset()
+        
     def reset_search_text(self):
         '''
         Resets the search textfield to its default state.
@@ -264,63 +263,17 @@ class SearchPage(Page, RewardElement):
         print("delete password")
         pass
 
-
-class SearchEditPopUp(Page, RewardElement):
+class SearchEditPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
 
        State description:
             state[0]: the opened-state of this popup.
     """
-
-    ### CONSTANTS ###
-    STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
-    IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
-
-    COLOR1_BB = BoundingBox(47, 87, 315, 114)
-    COLOR2_BB = BoundingBox(47, 87, 315, 114)
-    COLOR3_BB = BoundingBox(47, 87, 315, 114)
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+        self.BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
+        self.IMG_PATH = os.path.join(
+            IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
         print("SearchEditPopUp created")
 
-    @property
-    def reward_template(self):
-        return {
-            "popup": ["open", "close"]
-        }
-
-    def render(self, img):
-
-        to_render = cv2.imread(self.IMG_PATH)
-
-        to_render = combine_path_for_image(
-            "search_page_img\search_page_popup.png")
-        draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
-        img = to_render
-
-        return img
-
-    def reset(self):
-        self.close_popup()
-
-    def is_open(self) -> int:
-        """Returns the opened-state of this popup."""
-        return self.get_state()[0]
-
-    def open_popup(self):
-        self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
-
-    def close_popup(self):
-        self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
-
-    def handle_click(self, click_position: np.ndarray):
-        if (self.is_open()):
-            if (self.BOUNDING_BOX.is_point_inside(click_position)):
-                self.close_popup()
-                return
