@@ -221,7 +221,7 @@ class SettingsPageSyncPopUp(PopUp):
         self.BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
         self.IMG_PATH = os.path.join(
             IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
-        print("CalculatorSettingsPopup created")
+        print("SettingsPageSyncPopUp created")
 
 
 class SettingsPageAboutPopUp(PopUp):
@@ -237,4 +237,4 @@ class SettingsPageAboutPopUp(PopUp):
         self.BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
         self.IMG_PATH = os.path.join(
             IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
-        print("CalculatorSettingsPopup created")
+        print("SettingsPageAboutPopUp created")
