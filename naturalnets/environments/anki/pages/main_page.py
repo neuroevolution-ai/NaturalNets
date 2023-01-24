@@ -223,7 +223,8 @@ class MainPage(Page,RewardElement):
             "study": 0,
             "remove_card": 0,
             "remove_deck": 0,
-            "stop_study": 0
+            "stop_study": 0,
+            "logo_shown": [True, False]
         }
 
     def get_dropdown_index(self):
@@ -498,6 +499,7 @@ class MainPage(Page,RewardElement):
         self.deck_database.decks[self.deck_database.current_index].remove_card()
     
     def set_logo_shown(self):
+        self.register_selected_reward(["logo_shown", not(self.is_logo_enabled)])
         self.is_logo_enabled = not(self.is_logo_enabled)
 
     def open_choose_deck_study_page(self):
