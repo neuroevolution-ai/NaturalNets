@@ -12,7 +12,7 @@ from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.utils import (
-    combine_path_for_image, draw_rectangles_around_clickables, textfield_check)
+    draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 

@@ -8,6 +8,9 @@ from naturalnets.environments.passlock_app.home_window import HomeWindow
 
 
 class PasslockAppController:
+    '''
+    T
+    '''
 
     def __init__(self):
 
@@ -173,6 +176,8 @@ class PasslockAppController:
         return img
 
     def sign_up(self):
+        self.home_window.reset()
+        self.auth_window.reset()
         self.auth_window.close()
         self.home_window.open()
         self.home_window.set_current_page(self.home_window.manual)

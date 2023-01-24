@@ -100,7 +100,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.auto.reset()
         self.search.reset()
         self.settings.reset()
-        self.set_current_page(self.manual)
+        self.current_page = None
+        self.get_state()[:] = 0
 
     def close(self):
         """Closes the home window."""
@@ -208,7 +209,6 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return img
 
     def get_bb(self) -> BoundingBox:
-
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:

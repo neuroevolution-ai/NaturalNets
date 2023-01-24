@@ -110,7 +110,7 @@ class SearchPage(Page, RewardElement):
             self.search_textfield, self.show_all_button]
         self.password_buttons: List[Widget] = [
             self.test1_button, self.test2_button, self.test3_button]
-      
+
         self.set_reward_children([self.edit_popup])
         self.add_child(self.edit_popup)
         self.add_widget(self.search_textfield)
@@ -136,7 +136,7 @@ class SearchPage(Page, RewardElement):
         self.test2_button.showing_password = False
         self.test3_button.showing_password = False
         self.edit_popup.reset()
-        
+
     def reset_search_text(self):
         '''
         Resets the search textfield to its default state.
@@ -170,6 +170,8 @@ class SearchPage(Page, RewardElement):
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchtype.png"),
             (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone_option1.png"),
+            (True, False, True, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone_option1.png"),
+            (True, False, False, True, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone_option1.png"),                                                
             (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone.png"),
             (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_option1.png"),
             (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_option2.png"),
@@ -204,12 +206,12 @@ class SearchPage(Page, RewardElement):
                 break
 
         if (self.show_all_button.is_password_shown() or self.search_textfield.is_selected()):
-            self.handle_password_click(click_position)
+            self.handle_all_password_click(click_position)
             return
 
-    def handle_password_click(self, click_position: np.ndarray):
+    def handle_all_password_click(self, click_position: np.ndarray):
         '''
-        Handles clicks on the indvidudal password buttons.
+        Handles clicks on the individual password buttons.
         '''
         for button in self.password_buttons:
             if button.is_clicked_by(click_position):
@@ -263,17 +265,18 @@ class SearchPage(Page, RewardElement):
         print("delete password")
         pass
 
+
 class SearchEditPopUp(PopUp):
-    """Popup for the calculator settings (pops up when no operator-checkbox is selected).
+    """Popup for the Editing passwords on the search page. Pops up when the edit button is clicked.
 
        State description:
             state[0]: the opened-state of this popup.
     """
+
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
         self.BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
         self.IMG_PATH = os.path.join(
-            IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
+            IMAGES_PATH, "search_page_img\search_page_editpopup.png")
         print("SearchEditPopUp created")
-
