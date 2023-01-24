@@ -39,18 +39,21 @@ class ChooseDeckPage(Page,RewardElement):
 
         self.add_deck_popup = AddDeckPopup()
         self.add_child(self.add_deck_popup)
-
+        
         self.current_index: int = 0
 
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.choose_button: Button = Button(self.CHOOSE_BB, self.choose_deck)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
+
+        self.set_reward_children([self.add_deck_popup])
         
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
-            "index": [0, 1, 2, 3, 4]
+            "index": [0, 1, 2, 3, 4],
+            "choose_deck": 0
         }
     
     def open(self):
@@ -62,12 +65,13 @@ class ChooseDeckPage(Page,RewardElement):
         self.register_selected_reward(["window", "open"])
 
     def close(self):
+        self.register_selected_reward(["window", "close"])
         self.current_index: int = 0
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0
         self.get_state()[0] = 0
-        self.register_selected_reward(["window", "close"])
+        
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -90,6 +94,7 @@ class ChooseDeckPage(Page,RewardElement):
        return current_bounding_box
 
     def choose_deck(self):
+        self.register_selected_reward(["choose_deck"])
         self.deck_database.set_current_index(self.current_index)
         for i in range(1,6):
             self.get_state()[i] = 0

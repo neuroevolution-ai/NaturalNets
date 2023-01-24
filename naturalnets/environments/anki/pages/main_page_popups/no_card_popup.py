@@ -46,8 +46,9 @@ class NoCardPopup(Page, RewardElement):
         self.register_selected_reward(["window", "open"])
 
     def close(self):
-        self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
+        self.get_state()[0] = 0
+
 
     def is_open(self) -> int:
         return self.get_state()[0]

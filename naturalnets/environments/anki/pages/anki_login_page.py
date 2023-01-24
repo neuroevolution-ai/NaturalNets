@@ -52,7 +52,8 @@ class AnkiLoginPage(Page,RewardElement):
         self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard)
         self.ok_button: Button = Button(self.OK_BB, self.login)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
-
+        
+        self.add_child(self.failed_login)
         self.set_reward_children([self.failed_login])
 
     @property
@@ -76,12 +77,12 @@ class AnkiLoginPage(Page,RewardElement):
         self.register_selected_reward(["window", "open"])
 
     def close(self):
+        self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
         self.get_state()[1] = 0
         self.get_state()[2] = 0
         self.username_clipboard = None
         self.password_clipboard = None
-        self.register_selected_reward(["window", "close"])
 
     def is_open(self):
         return self.get_state()[0]
@@ -98,6 +99,7 @@ class AnkiLoginPage(Page,RewardElement):
 
     def login(self):
         if(self.is_allowed_login()):     
+            self.register_selected_reward(["login"])
             self.current_anki_account = AnkiAccount(self.username_clipboard, self.password_clipboard)
             self.username_clipboard = None
             self.password_clipboard = None

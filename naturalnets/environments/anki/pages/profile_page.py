@@ -372,7 +372,8 @@ class RenameProfilePopup(RewardElement,Page):
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "profile_name_clipboard": 0
+            "profile_name_clipboard": 0,
+            "rename": 0
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -406,6 +407,7 @@ class RenameProfilePopup(RewardElement,Page):
             self.name_exists_popup_page.open()
         else:
             self.profile_database.rename_profile(self.current_field_string)
+            self.register_selected_reward(["rename"])
             self.close()
     
     def render(self,img:np.ndarray):
@@ -458,7 +460,8 @@ class AddProfilePopup(Page,RewardElement):
     def reward_template(self):
         return {
             "window": ["open","close"],
-            "profile_name_clipboard": 0
+            "profile_name_clipboard": 0,
+            "add_profile": 0
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -500,6 +503,7 @@ class AddProfilePopup(Page,RewardElement):
         else:    
             self.profile_database.create_profile(self.current_field_string)
             self.current_field_string = None
+            self.register_selected_reward(["add_profile"])
             self.close()
             
     def render(self,img:np.ndarray):

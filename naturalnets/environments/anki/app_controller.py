@@ -106,8 +106,6 @@ class AppController:
         return self._total_state_len
     
     def handle_click(self, click_position: np.ndarray):
-        print(click_position[0])
-        print(click_position[1])
         previous_reward_array = copy(self.reward_array)
         self.main_page.handle_click(click_position)
         reward = np.count_nonzero(previous_reward_array != self.reward_array)

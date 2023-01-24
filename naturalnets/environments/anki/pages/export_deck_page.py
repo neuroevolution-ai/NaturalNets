@@ -56,17 +56,21 @@ class ExportDeckPage(Page,RewardElement):
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
         self.add_widget(self.include_dropdown)
+        self.set_reward_children([self.five_decks_popup,self.name_exists_popup])
 
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
+            "dropdown":{
+                "opened": 0,
+                "selected": [0, 1, 2, 3, 4]
+            },
             "exported": 0,
             "reset": 0
         }
         
     def handle_click(self,click_position: np.ndarray):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if (self.include_dropdown.is_open()):
             self.include_dropdown.handle_click(click_position)
         if (self.name_exists_popup.is_open()):
@@ -74,12 +78,14 @@ class ExportDeckPage(Page,RewardElement):
             return
         if (self.five_decks_popup.is_open()):
             self.five_decks_popup.handle_click(click_position)
-            return
-        if (self.INCLUDE_DD_BB.is_point_inside(click_position)):
-            self.include_dropdown.open()
             return       
         if self.include_dropdown.get_selected_item() is not None:
             self.current_deck = self.include_dropdown.get_selected_item().get_value().name
+            self.register_selected_reward(["dropdown", "selected", self.include_dropdown.get_all_items().index(self.include_dropdown.get_selected_item())])
+        if (self.INCLUDE_DD_BB.is_point_inside(click_position)):
+            self.register_selected_reward(["dropdown","opened"])
+            self.include_dropdown.open()
+            return
         else:
             if (self.export_button.is_clicked_by(click_position)):
                 self.export_button.handle_click(click_position)
@@ -89,14 +95,16 @@ class ExportDeckPage(Page,RewardElement):
                 self.reset_exported_decks_button.handle_click(click_position)
 
     def open(self):
+        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         self.initialise_dropdown()
         self.current_deck = None
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
     def close(self):
-        self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
+        self.get_state()[0] = 0
+        
 
     def is_open(self):
         return self.get_state()[0]
@@ -114,7 +122,6 @@ class ExportDeckPage(Page,RewardElement):
             self.close()
 
     def render(self,img:np.ndarray):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (331, 265), font_scale = 0.4)

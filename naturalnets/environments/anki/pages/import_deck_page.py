@@ -171,12 +171,15 @@ class ImportDeckSelectPage(Page,RewardElement):
         self.help_button: Button = Button(self.HELP_BB, self.help)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
 
+        self.set_reward_children([self.leads_to_external_website_popup])
+
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
             "index": [0, 1, 2],
             "help": 0,
+            "import_name": 0
         }
     
     def handle_click(self,click_position: np.ndarray):
@@ -225,6 +228,7 @@ class ImportDeckSelectPage(Page,RewardElement):
        return current_bounding_box
     
     def set_import_name(self):
+        self.register_selected_reward(["import_name"])
         self.current_import_name = self.deck_database.deck_import_names[self.current_index]
         self.close()
 

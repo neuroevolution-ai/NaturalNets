@@ -55,6 +55,8 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
+
+        self.set_reward_children([self.add_deck_popup,self.leads_to_external_website_popup])
     
     @property
     def reward_template(self):
@@ -72,8 +74,9 @@ class ChooseDeckStudyPage(Page,RewardElement):
         self.register_selected_reward(["window", "open"])
 
     def close(self):
-        self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
+        self.get_state()[0] = 0
+        
     
     def help(self):
         self.leads_to_external_website_popup.open()

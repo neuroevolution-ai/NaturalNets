@@ -1,23 +1,23 @@
 from naturalnets.train import train
 def main():
     configuration = {
-        "number_generations": 5000,
+        "number_generations": 100,
         "number_validation_runs": 50,
         "number_rounds": 5,
         "maximum_env_seed": 100000,
         "global_seed": 0,
         "environment": {
             "type": "AnkiApp",
-            "number_time_steps": 200
+            "number_time_steps": 50
         },
         "brain": {
             "type": "LSTM",
-            "hidden_layers": [30],
+            "hidden_layers": [5],
             "use_bias": True
         },
         "optimizer": {
             "type": "CmaEsDeap",
-            "population_size": 200,
+            "population_size": 5,
             "sigma": 0.5
         },
         "enhancer": {

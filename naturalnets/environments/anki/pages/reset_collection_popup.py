@@ -37,6 +37,7 @@ class ResetCollectionPopup(Page, RewardElement):
     def reward_template(self):
         return {
             "popup": ["open", "close"],
+            "reset_all": 0
         }
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -60,6 +61,7 @@ class ResetCollectionPopup(Page, RewardElement):
         self.profile_database.default_profiles()
         for profile in self.profile_database.profiles:
             profile.deck_database.default_decks()
+        self.register_selected_reward(["reset_all"])
         self.close()
     
     def render(self, img:np.ndarray):

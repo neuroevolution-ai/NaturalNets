@@ -20,7 +20,7 @@ class PreferencesPage(RewardElement,Page):
     """
     State description:
             state[0]: if this window is open
-            state[j]: i-th sub-window is selected j = {1,2,3,4}  
+            state[j]: i-th sub-window is open j = {1,2,3,4}  
     """
     
     WINDOW_BB = BoundingBox(20, 80, 801, 601)
@@ -190,7 +190,7 @@ class PreferencesPage(RewardElement,Page):
             self.scheduling_window_remaining_card_count_checkbox: "scheduling_window_remaining_card_count_checkbox",
             self.scheduling_window_show_learning_cards_checkbox: "scheduling_window_show_learning_cards_checkbox",
             self.scheduling_window_legacy_timezone_checkbox: "scheduling_window_legacy_timezone_checkbox",
-            self.scheduling_window_v3_scheduler_checkbox: "network_window_force_changes_in_one_direction_checkbox",
+            self.scheduling_window_v3_scheduler_checkbox: "scheduling_window_v3_scheduler_checkbox",
             self.network_window_synchronize_audio_and_image_checkbox: "network_window_synchronize_audio_and_image_checkbox",
             self.network_window_synchronize_on_profile_checkbox: "network_window_synchronize_on_profile_checkbox",
             self.network_window_periodically_synchronize_checkbox: "network_window_periodically_synchronize_checkbox",
@@ -203,7 +203,7 @@ class PreferencesPage(RewardElement,Page):
             self.basic_window_add_to_deck_dd: self.BASIC_WINDOW_DD_3_BB,
             self.basic_window_voice_recorder_dd: self.BASIC_WINDOW_DD_4_BB,
         }
-
+        self.add_child(self.leads_to_external_website_popup)
         self.set_reward_children([self.leads_to_external_website_popup])
     @property
     def reward_template(self):
@@ -331,12 +331,15 @@ class PreferencesPage(RewardElement,Page):
     def handle_click_basic_window(self,click_position: np.ndarray):
         if self.open_dd is not None:
             self.open_dd.handle_click(click_position)
+            if(self.open_dd.get_selected_item() is not None):
+                self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "selected", self.open_dd.get_selected_item().get_value().value])
             self.open_dd = None
             return
             
         for dd in self.basic_window_dropdowns:
             if self.dropdowns_to_bbs[dd].is_point_inside(click_position):
                 self.open_dd = dd
+                self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "opened"])
                 self.close_all_dropdowns()
                 self.open_dd.open()
                 return
@@ -344,21 +347,28 @@ class PreferencesPage(RewardElement,Page):
         for widget in self.basic_window_widgets:
             if (widget.is_clicked_by(click_position) and not(isinstance(widget, Dropdown))):
                     widget.handle_click(click_position)
+                    if isinstance(widget, CheckBox):
+                        self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
                     
     def handle_click_scheduling_window(self,click_position: np.ndarray):
         for widget in self.scheduling_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
-    
+                if isinstance(widget, CheckBox):
+                    self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
+
     def handle_click_network_window(self,click_position: np.ndarray):
         for widget in self.network_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
+                if isinstance(widget, CheckBox):
+                    self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
         
     def handle_click_backups_window(self,click_position: np.ndarray):
         for widget in self.backups_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
+                
     
     def increment_user_interface(self):
         if (self.user_interface < 200):

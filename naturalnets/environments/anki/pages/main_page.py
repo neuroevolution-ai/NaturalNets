@@ -219,7 +219,11 @@ class MainPage(Page,RewardElement):
             "help":{
                 "opened": 0,
                 "selected": ["Guide", "Support", "About Page"]
-            }
+            },
+            "study": 0,
+            "remove_card": 0,
+            "remove_deck": 0,
+            "stop_study": 0
         }
 
     def get_dropdown_index(self):
@@ -374,10 +378,12 @@ class MainPage(Page,RewardElement):
         if(len(self.deck_database.decks[self.deck_database.current_index].cards) == 0):
             self.no_card_popup_page.open()
         else:
+            self.register_selected_reward(["study"])
             self.get_state()[6] = 1
             self.get_state()[7] = (1 if self.deck_database.decks[self.deck_database.current_index].is_answer_shown else 0)
     
     def stop_study(self):
+        self.register_selected_reward(["stop_study"])
         self.get_state()[6] = 0
 
     def next_card(self):
@@ -481,12 +487,14 @@ class MainPage(Page,RewardElement):
         if(self.deck_database.decks_length() == 1):
             self.at_least_one_deck_popup_page.open()
             return
+        self.register_selected_reward(["remove_deck"])
         self.delete_current_deck_check_popup_page.open()
 
     def remove_card(self):
         if(self.deck_database.decks[self.deck_database.current_index].deck_length() == 1):
             self.at_least_one_card_popup_page.open()
             return
+        self.register_selected_reward(["remove_card"])
         self.deck_database.decks[self.deck_database.current_index].remove_card()
     
     def set_logo_shown(self):

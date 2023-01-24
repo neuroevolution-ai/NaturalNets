@@ -8,7 +8,6 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb, print_non_ascii
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.anki import DeckDatabase
 
 class EditCardPage(RewardElement,Page):
     
@@ -69,8 +68,9 @@ class EditCardPage(RewardElement,Page):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
     
     def close(self):
-        self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
+        self.get_state()[0] = 0
+        
 
     def is_open(self):
         return self.get_state()[0]
