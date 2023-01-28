@@ -33,11 +33,16 @@ class MainWindow(StateElement, Clickable, RewardElement):
             state[i]: represents the selected/shown status of page i, i in {0,..,3}.
     """
 
+    # Each state represents the number of accounts that exists (with a max. of 3)
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
 
+    # Each state represents which specific accounts exists
+    STATE_IMG = 7
+
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(4, 25, 110, 118)
+    ACCOUNT_AREA_BB = BoundingBox()
 
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(9, 28, 99, 22)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(9, 56, 99, 22)
@@ -50,6 +55,9 @@ class MainWindow(StateElement, Clickable, RewardElement):
     ACCOUNT_BUTTON_BB = BoundingBox(9, 112, 99, 22)
     HELP_BUTTON_BB = BoundingBox(9, 112, 99, 22)
     RESET_SEARCH_BUTTON_BB = BoundingBox(9, 112, 99, 22)
+    ACCOUNT_ONE_BB = BoundingBox()
+    ACCOUNT_TWO_BB = BoundingBox()
+    ACCOUNT_TWO_BB = BoundingBox()
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
@@ -178,7 +186,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
         # Let the current page process the click, if the current page blocks clicks
         # to the main page (e.g. due to open dropdowns) or the click
         # is inside the bounding box of the current page.
-        # Note that the settings menu button is handled in the AppController class.
         if self.current_page_blocks_click():
             self.current_page.handle_click(click_position)
             return

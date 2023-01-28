@@ -145,8 +145,7 @@ class AppController:
         return reward
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """Calls the main window rendering method and the settings window rendering method,
-        if the settings window is open.
+        """Calls the main window rendering method.
 
         Args:
             img (np.ndarray): The cv2 image to render onto.
