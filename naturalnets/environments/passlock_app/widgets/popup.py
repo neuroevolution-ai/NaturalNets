@@ -23,23 +23,22 @@ class PopUp(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.IMG_PATH = self.IMG_PATH
-        self.BOUNDING_BOX = self.BOUNDING_BOX
-
-
+        
+        
     @property
     def reward_template(self):
         return {
             "popup": ["open", "close"]
         }
 
-    def render(self, img):
+    def render(self, img: np.ndarray)-> np.ndarray:
         '''
         Renders the popup on the given image.
         '''
-        to_render = cv2.imread(self.IMG_PATH)
-        draw_rectangle_from_bb(to_render, self.BOUNDING_BOX, (0, 0, 255), 2)
-        img = to_render
+        #to_render = cv2.imread(self.IMG_PATH)
+        img = super().render(img)
+        draw_rectangle_from_bb(img, self.BOUNDING_BOX, (0, 0, 255), 2)
+        #img = to_render
 
         return img
 

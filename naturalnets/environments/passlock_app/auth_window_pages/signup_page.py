@@ -3,11 +3,12 @@ from typing import List
 import cv2
 import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
+from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.passlock_app.utils import draw_rectangles_around_clickables, textfield_check
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -41,6 +42,13 @@ class SignupPage(Page, RewardElement):
             self.enter_email_textfield, self.enter_pw_textfield]
         self.clickables = self.buttons + self.textfields
 
+        self.reward_widgets_to_str = {
+            self.enter_email_textfield: "enter_email_textfield",
+            self.enter_pw_textfield: "enter_pw_textfield",
+            self.show_pw_button: "show_pw_button",
+
+        }
+
         self.add_widget(self.enter_email_textfield)
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
@@ -49,10 +57,12 @@ class SignupPage(Page, RewardElement):
     @property
     def reward_template(self):
         '''
-        The reward template for the signup page. TODO: finish template
+        The reward template for the signup page. 
         '''
         return {
-
+            "enter_email_textfield": [False, True],
+            "enter_pw_textfield": [False, True],
+            "show_pw_button": [False, True],
         }
 
     def render(self, img):
@@ -63,24 +73,9 @@ class SignupPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-
-        state = (
-            textfield_check([self.enter_email_textfield]),
-            textfield_check([self.enter_pw_textfield]),
-            self.show_pw_button.showing_password
-        )
-
-        img_paths = {
-            (True, False, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email.png"),
-            (False, True, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pw.png"),
-            (True, True, False): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pw.png"),
-            (False, True, True): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_pwshown.png"),
-            (True, True, True): os.path.join(IMAGES_PATH, "signup_page_img/signup_window_email_pwshown.png")
-        }
-
-        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
-        draw_rectangles_around_clickables([self.clickables], to_render)
-        img = to_render
+        img = super().render(img)
+        draw_rectangles_around_clickables([self.clickables], img)
+        
         return img
 
     def login(self):
@@ -115,10 +110,16 @@ class SignupPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
+                # If the user clicks on the signup or login button, trigger a login/signup
                 if (clickable == self.signup_button or clickable == self.login_button):
+                    # but only if the password and email textfields are selected
                     if (self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected()):
                         clickable.handle_click(click_position)
                         return True
                 else:
+                    # If the clickable has a selected state, register the reward when it is selected
+                    if (isinstance(clickable, StateElement)):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
                     break

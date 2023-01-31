@@ -49,7 +49,7 @@ class CheckBox(Widget):
 
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_selected():
-            width = height = 14  # width, height of the square part of the checkbox
+            width = height = self._bounding_box.height  # width, height of the square part of the checkbox
             thickness = 2
             cross_color = Color.BLACK.value
 

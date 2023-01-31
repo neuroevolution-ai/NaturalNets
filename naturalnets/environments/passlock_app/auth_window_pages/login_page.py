@@ -6,6 +6,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
 from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
@@ -38,6 +39,11 @@ class LoginPage(Page, RewardElement):
         self.clickables = self.buttons + self.textfields
         self.widgets: List[Widget] = [
             self.enter_pw_textfield, self.show_pw_button]
+        
+        self.reward_widgets_to_str = {
+            self.enter_pw_textfield: "enter_pw_textfield",
+            self.show_pw_button: "show_pw_button",
+        }
 
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
@@ -46,10 +52,11 @@ class LoginPage(Page, RewardElement):
     @property
     def reward_template(self):
         '''
-        The reward template for the signup page. TODO: finish template
+        The reward template for the signup page. 
         '''
         return {
-
+            "enter_pw_textfield": [False, True],
+            "show_pw_button": [False, True]
         }
 
     def login(self):
@@ -66,20 +73,10 @@ class LoginPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-        state = (
-            textfield_check([self.enter_pw_textfield]),
-            self.show_pw_button.is_password_shown()
-        )
-
-        img_paths = {
-            (True, False): os.path.join(IMAGES_PATH, "login_page_img/login_page_pw.png"),
-            (True, True): os.path.join(IMAGES_PATH, "login_page_img/login_page_showpw.png")
-        }
-
-        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
+        img = super().render(img)
         draw_rectangles_around_clickables(
-            [self.buttons, self.textfields], to_render)
-        img = to_render
+            [self.buttons, self.textfields], img)
+        
         return img
 
     def reset(self):
@@ -100,9 +97,14 @@ class LoginPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
+                ##If the user clicks on the login button, check if the password textfield is selected
+                ##If it is, then login  
                 if (clickable == self.login_button and self.enter_pw_textfield.is_selected()):
                     clickable.handle_click(click_position)
                     return True
                 else:
+                    ##If the clickable has a state, register the reward when it is selected
+                    if(isinstance(clickable, StateElement)):
+                        self.register_selected_reward([self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
                     break

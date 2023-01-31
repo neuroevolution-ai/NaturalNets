@@ -7,13 +7,13 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.utils import (
-    combine_path_for_image, draw_rectangle_from_bb,
-    draw_rectangles_around_clickables)
+    combine_path_for_image, draw_rectangles_around_clickables)
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -64,16 +64,9 @@ class SettingsPage(Page, RewardElement):
         self.add_child(self.about_popup)
         self.add_child(self.sync_popup)
         self.add_child(self.change_colour_popup)
+
         self.set_reward_children(
             [self.about_popup, self.sync_popup, self.change_colour_popup])
-
-        self.widgets: List[Widget] = [
-            self.change_color_button,
-            self.sync_pw_button,
-            self.about_button,
-            self.yt_button,
-            self.log_out_button
-        ]
 
         self.textfields: List[Textfield] = [self.zoom_textfield]
         self.buttons: List[Button] = [self.change_color_button,
@@ -83,6 +76,11 @@ class SettingsPage(Page, RewardElement):
                                       self.log_out_button, self.auto_sync_onoffbutton]
 
         self.clickables = self.textfields + self.buttons
+
+        self.reward_widgets_to_str = {
+            self.auto_sync_onoffbutton: "auto_sync_onoffbutton",
+            self.zoom_textfield: "zoom_textfield"
+        }
 
         self.add_widget(self.auto_sync_onoffbutton)
         self.add_widget(self.zoom_textfield)
@@ -95,7 +93,8 @@ class SettingsPage(Page, RewardElement):
         Returns the reward template for the page.
         '''
         return {
-
+            "auto_sync_onoffbutton": [False, True],
+            "zoom_textfield": [False, True]
         }
 
     def enter_zoom_level(self):
@@ -139,18 +138,12 @@ class SettingsPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-
-        to_render = cv2.imread(self.IMG_PATH)
-
-        if (self.auto_sync_onoffbutton.showing_password == True):
-            to_render = combine_path_for_image(
-                "settings_page_img\settings_page_onoff.png")
-        
         if (self.is_popup_open()):
-            to_render = self.get_open_popup().render(to_render)
-            
-        draw_rectangles_around_clickables([self.clickables], to_render)
-        img = to_render
+            img = self.get_open_popup().render(img)
+            return img
+
+        img = super().render(img)
+        draw_rectangles_around_clickables([self.clickables], img)
         return img
 
     def reset(self):
@@ -172,12 +165,18 @@ class SettingsPage(Page, RewardElement):
 
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
+
+                # If the logout button is clicked, return True
                 if (clickable == self.log_out_button):
                     clickable.handle_click(click_position)
                     return True
-                else:
-                    clickable.handle_click(click_position)
-                    break
+                # If the clickable has a selected state, register the reward when it is selected
+                elif (isinstance(clickable, StateElement)):
+                    self.register_selected_reward(
+                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+
+                clickable.handle_click(click_position)
+                break
 
     def open_youtube_link(self):
         '''
@@ -197,13 +196,13 @@ class SettingsPageChangeColourPopUp(PopUp):
        State description:
             state[0]: the opened-state of this popup.
     """
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
+    BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.IMG_PATH = os.path.join(
-            IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
-        self.BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
         print("SettingsPageChangeColourPopUp created")
 
@@ -214,13 +213,14 @@ class SettingsPageSyncPopUp(PopUp):
        State description:
             state[0]: the opened-state of this popup.
     """
+    BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
-        self.IMG_PATH = os.path.join(
-            IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
+
         print("SettingsPageSyncPopUp created")
 
 
@@ -231,10 +231,12 @@ class SettingsPageAboutPopUp(PopUp):
             state[0]: the opened-state of this popup.
     """
 
+    BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
+
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
-        self.IMG_PATH = os.path.join(
-            IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
+
         print("SettingsPageAboutPopUp created")

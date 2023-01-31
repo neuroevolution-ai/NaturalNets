@@ -1,6 +1,6 @@
 import os
 from typing import List
-
+from typing import Any
 import cv2
 import numpy as np
 
@@ -46,6 +46,9 @@ class AutoPage(Page, RewardElement):
     USE_SPECIAL_CHARS_BB = BoundingBox(293, 749, 28, 28)
 
     def __init__(self):
+        '''
+        Initializes the AutoPage.
+        '''
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
@@ -77,6 +80,15 @@ class AutoPage(Page, RewardElement):
                                       self.use_numbers_checkbox, self.use_special_chars_checkbox]
         self.clickables = self.sliders + self.checkboxes + self.textfields + self.buttons
 
+        self.reward_widgets_to_str = {
+            self.enter_nameof_password_textfield: "enter_nameof_password_textfield",
+            self.enter_password_textfield: "enter_password_textfield",
+            self.pw_length_slider: "pw_length_slider",
+            self.use_letters_checkbox: "use_letters_checkbox",
+            self.use_numbers_checkbox: "use_numbers_checkbox",
+            self.use_special_chars_checkbox: "use_special_chars_checkbox",
+        }
+
         self.add_widget(self.pw_length_slider)
         self.add_widget(self.use_letters_checkbox)
         self.add_widget(self.use_numbers_checkbox)
@@ -92,10 +104,17 @@ class AutoPage(Page, RewardElement):
         Returns the reward template for this page.
         '''
         return {
+            "enter_nameof_password_textfield": [False, True],
+            "enter_password_textfield": [False, True],
+            # is manually set to 3 for the different states of the slider because this is setup before the slider is created
+            "pw_length_slider": [i for i in range(3)],
+            "use_letters_checkbox": [False, True],
+            "use_numbers_checkbox": [False, True],
+            "use_special_chars_checkbox": [False, True],
 
         }
 
-    def render(self, img):
+    def render(self, img:np.ndarray) -> np.ndarray:
         """
         Renders the page onto the given image. 
         The image changes depending on the state of the page.
@@ -103,30 +122,9 @@ class AutoPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-
-        state = (
-            self.pw_length_slider.get_slider_value(),
-            self.use_letters_checkbox.is_selected(),
-            self.use_numbers_checkbox.is_selected(),
-            self.use_special_chars_checkbox.is_selected(),
-            textfield_check([self.enter_nameof_password_textfield]),
-            textfield_check([self.enter_password_textfield])
-        )
-
-        img_paths = {
-            (1, 0, 0, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_slidermiddle.png"),
-            (2, 0, 0, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_sliderend.png"),
-            (0, 1, 0, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_pw_cb1.png"),
-            (0, 1, 1, 0, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_pw_cb2.png"),
-            (0, 1, 1, 1, False, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_pw_cb3.png"),
-            (0, 0, 0, 0, True, False): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_namepw.png"),
-            (0, 0, 0, 0, False, True): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_pw.png"),
-            (0, 0, 0, 0, True, True): os.path.join(IMAGES_PATH, "auto_page_img\\auto_page_namepw_pw.png"),
-        }
-
-        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
-        draw_rectangles_around_clickables([self.clickables], to_render)
-        img = to_render
+        
+        img = super().render(img)
+        draw_rectangles_around_clickables([self.clickables], img)
         return img
 
     def reset(self):
@@ -145,6 +143,16 @@ class AutoPage(Page, RewardElement):
 
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
+
+                # if the clickable is a slider, we need to register the reward for the slider value
+                if (isinstance(clickable, Slider)):
+                    self.register_selected_reward(
+                        [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
+                # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
+                elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
+                    self.register_selected_reward(
+                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+
                 clickable.handle_click(click_position)
                 break
 

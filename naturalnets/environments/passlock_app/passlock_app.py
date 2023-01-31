@@ -34,7 +34,7 @@ class AppCfg:
 class PasslockApp(IEnvironment):
 
     screen_width: int = 1920
-    screen_height: int = 1080
+    screen_height: int = 987
 
     def __init__(self, configuration: dict, **kwargs):
 
@@ -71,6 +71,8 @@ class PasslockApp(IEnvironment):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
+        #TODO: Umrechnung für Koordinaten zwischen mit [-1, 1] und [0, screen_width/screen_height]
+    
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         # self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         # self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)

@@ -8,6 +8,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
@@ -53,6 +54,13 @@ class ManualPage(Page, RewardElement):
             self.enter_nameof_password_textfield, self.enter_secret_password_textfield]
         self.clickables = self.buttons + self.textfields
 
+        self.reward_widgets_to_str = {
+            self.enter_nameof_password_textfield: "enter_nameof_password_textfield",
+            self.enter_secret_password_textfield: "enter_secret_password_textfield",
+            self.show_password_button: "show_password_button",
+        }
+
+
         self.add_widget(self.enter_nameof_password_textfield)
         self.add_widget(self.enter_secret_password_textfield)
         self.add_widget(self.show_password_button)
@@ -64,6 +72,9 @@ class ManualPage(Page, RewardElement):
         Returns the reward template for this page.
         '''
         return {
+            "enter_nameof_password_textfield": [False, True],
+            "enter_secret_password_textfield": [False, True],
+            "show_password_button": [False, True],
 
         }
 
@@ -83,10 +94,14 @@ class ManualPage(Page, RewardElement):
         '''
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
+
+                #If the clickable has a selected state, register the reward when it is selected
+                if(isinstance(clickable, StateElement)):
+                    self.register_selected_reward([self.reward_widgets_to_str[clickable], clickable.is_selected()])
                 clickable.handle_click(click_position)
                 break
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray)-> np.ndarray:
         """
         Renders the page onto the given image. 
         The image changes depending on the state of the page.
@@ -94,24 +109,11 @@ class ManualPage(Page, RewardElement):
         args: img - the image to render onto
         returns: the rendered image
         """
-        state = (
-            textfield_check([self.enter_nameof_password_textfield]),
-            textfield_check([self.enter_secret_password_textfield]),
-            self.show_password_button.showing_password
-        )
 
-        img_paths = {
-            (True, False, False): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_nopw.png"),
-            (False, True, False): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_pw.png"),
-            (True, True, False): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_nopw_pw.png"),
-            (False, True, True): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_pwshown.png"),
-            (True, True, True): os.path.join(IMAGES_PATH, "manual_page_img\manual_page_nopw_pwshwon.png"),
-        }
-
-        to_render = cv2.imread(img_paths.get(state, self.IMG_PATH))
+        img = super().render(img)
         draw_rectangles_around_clickables(
-            [self.buttons, self.textfields], to_render)
-        img = to_render
+            [self.clickables], img)
+        
         return img
 
     def create_pw(self):

@@ -63,11 +63,12 @@ class PasslockAppController:
 
         return current_index
 
-    def reset(self):
+    def reset(self) -> np.ndarray:
         self.home_window.reset()
         self.home_window.close()
         self.auth_window.reset()
         self.auth_window.open()
+        
 
         self.reset_reward_array()
 
@@ -76,6 +77,7 @@ class PasslockAppController:
 
         self.assign_state(self.home_window, 0, [])
         self.assign_state(self.auth_window, 0, [])
+        
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.

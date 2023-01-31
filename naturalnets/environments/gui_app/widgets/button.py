@@ -1,4 +1,5 @@
 from typing import Callable
+import cv2
 
 import numpy as np
 
@@ -52,11 +53,25 @@ class ShowPasswordButton(Widget, Button):
         self._bounding_box = bounding_box
     
     def render(self, img: np.ndarray) -> np.ndarray:
-        return super().render(img)
+        if self.is_selected():
+            width = height = self._bounding_box.height  # width, height of the square part of the checkbox
+            thickness = 2
+            cross_color = (0, 0, 0)
+
+            x, y = self.get_bb().get_as_tuple()[0:2]
+            # Modify x, y, width, height s.t. the cross does not surpass the box-limits
+            x += 2
+            y += 2
+            width -= 4
+            height -= 4
+
+            cv2.line(img, (x, y), (x + width, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (x + width, y), (x, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
+        return img
 
     def has_click_action(self) -> bool:
         if self._click_action is not None:
             return True
     
-    def is_password_shown(self) -> bool:
+    def is_selected(self) -> bool:
         return self.showing_password
