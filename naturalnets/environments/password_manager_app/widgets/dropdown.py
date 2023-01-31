@@ -4,10 +4,10 @@ from typing import Any, List, Optional
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.gui_app.page import Widget
-from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
+from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.password_manager_app.enums import Color
+from naturalnets.environments.password_manager_app.page import Widget
+from naturalnets.environments.password_manager_app.utils import get_group_bounding_box, put_text
 
 
 class DropdownItem(Widget):

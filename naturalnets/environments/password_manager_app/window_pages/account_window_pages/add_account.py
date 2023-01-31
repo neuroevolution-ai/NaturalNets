@@ -16,34 +16,34 @@ class AddAccount(Page, RewardElement):
     """todo"""
 
     STATE_LEN = 2
-    IMG_PATH = os.path.join(IMAGES_PATH, "")
+    IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_empty")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 
-    HIDE_PASSWORD_BB = BoundingBox()
+    HIDE_PASSWORD_BB = BoundingBox(0, 0, 448, 448)
 
-    OK_BUTTON_BB = BoundingBox()
-    CLOSE_BUTTON_BB = BoundingBox()
-    GENERATE_BUTTON_BB = BoundingBox()
-    LAUNCH_URL_BUTTON_BB = BoundingBox()
+    OK_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    CLOSE_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    GENERATE_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
 
-    COPY_ACCOUNT_BUTTON_BB = BoundingBox()
-    COPY_USER_ID_BUTTON_BB = BoundingBox()
-    COPY_PASSWORD_BUTTON_BB = BoundingBox()
-    COPY_URL_BUTTON_BB = BoundingBox()
-    COPY_NOTES_BUTTON_BB = BoundingBox()
+    COPY_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_USER_ID_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_NOTES_BUTTON_BB = BoundingBox(0, 0, 448, 448)
 
-    PAST_ACCOUNT_BUTTON_BB = BoundingBox()
-    PAST_USER_ID_BUTTON_BB = BoundingBox()
-    PAST_PASSWORD_BUTTON_BB = BoundingBox()
-    PAST_URL_BUTTON_BB = BoundingBox()
-    PAST_NOTES_BUTTON_BB = BoundingBox()
+    PAST_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_USER_ID_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_NOTES_BUTTON_BB = BoundingBox(0, 0, 448, 448)
 
-    ACCOUNT_DD_BB = BoundingBox()
-    USER_ID_DD_BB = BoundingBox()
-    PASSWORD_DD_BB = BoundingBox()
-    URL_DD_BB = BoundingBox()
-    NOTES_DD_BB = BoundingBox()
+    ACCOUNT_DD_BB = BoundingBox(0, 0, 448, 448)
+    USER_ID_DD_BB = BoundingBox(0, 0, 448, 448)
+    PASSWORD_DD_BB = BoundingBox(0, 0, 448, 448)
+    URL_DD_BB = BoundingBox(0, 0, 448, 448)
+    NOTES_DD_BB = BoundingBox(0, 0, 448, 448)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
@@ -132,3 +132,13 @@ class AddAccount(Page, RewardElement):
 
     def past(self):
         "TODO"
+
+    def handle_click(self, click_position: np.ndarray = None):
+        pass
+
+    @property
+    def reward_template(self):
+        return {
+            "tire_20_setting": [False, True],
+            "tire_22_setting": [False, True]
+        }

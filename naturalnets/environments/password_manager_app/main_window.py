@@ -35,29 +35,29 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     # Each state represents the number of accounts that exists (with a max. of 3)
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
     # Each state represents which specific accounts exists
     STATE_IMG = 7
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
-    MENU_AREA_BB = BoundingBox(4, 25, 110, 118)
-    ACCOUNT_AREA_BB = BoundingBox()
+    MENU_AREA_BB = BoundingBox(0, 24, 275, 40) #TODO
+    ACCOUNT_AREA_BB = BoundingBox(0, 0, 100, 100) #TODO
 
-    ADD_ACCOUNT_BUTTON_BB = BoundingBox(9, 28, 99, 22)
-    EDIT_ACCOUNT_BUTTON_BB = BoundingBox(9, 56, 99, 22)
-    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(9, 84, 99, 22)
-    COPY_USERNAME_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    COPY_PASSWORD_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    LAUNCH_URL_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    OPTIONS_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    DATABASE_BB = BoundingBox(9, 112, 99, 22)
-    ACCOUNT_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    HELP_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    RESET_SEARCH_BUTTON_BB = BoundingBox(9, 112, 99, 22)
-    ACCOUNT_ONE_BB = BoundingBox()
-    ACCOUNT_TWO_BB = BoundingBox()
-    ACCOUNT_TWO_BB = BoundingBox()
+    ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 28, 30)
+    EDIT_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    COPY_USERNAME_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    OPTIONS_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    DATABASE_BB = BoundingBox(0, 0, 1, 1)
+    ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    HELP_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    RESET_SEARCH_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    ACCOUNT_ONE_BB = BoundingBox(0, 0, 1, 1)
+    ACCOUNT_TWO_BB = BoundingBox(0, 0, 1, 1)
+    ACCOUNT_TWO_BB = BoundingBox(0, 0, 1, 1)
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
@@ -84,7 +84,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                   self.view_account, self.about,
                                   self.invalid_url, self.master_password,
                                   self.confirm_delete_account]
-        assert len(self.pages) == self.get_state_len()
+        # assert len(self.pages) == self.get_state_len()
 
         self.current_page = None
 
@@ -137,17 +137,17 @@ class MainWindow(StateElement, Clickable, RewardElement):
         }
 
     def reset(self):
-        self.add_account.reset()
-        self.edit_account.reset()
-        self.options.reset()
-        self.database.reset()
-        self.account.reset()
-        self.help.reset()
-        self.view_account.reset()
-        self.about.reset()
-        self.invalid_url.reset()
-        self.master_password.reset()
-        self.confirm_delete_account.reset()
+        # self.add_account.reset()
+        # self.edit_account.reset()
+        # self.options.reset()
+        # self.database.reset()
+        # self.account.reset()
+        # self.help.reset()
+        # self.view_account.reset()
+        # self.about.reset()
+        # self.invalid_url.reset()
+        # self.master_password.reset()
+        # self.confirm_delete_account.reset()
 
         self.set_current_page(None)
 
@@ -180,7 +180,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
         """
-        return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
+        # return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Let the current page process the click, if the current page blocks clicks
@@ -197,7 +197,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def is_dropdown_open(self):
         """Returns true if the current page has an opened dropdown.
         """
-        return self.current_page.is_dropdown_open()
+        if self.current_page is not None:
+            return self.current_page.is_dropdown_open()
+        else :
+            return False
 
     def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
@@ -216,7 +219,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         """
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        img = self.current_page.render(img)
+        # img = self.current_page.render(img)
 
         return img
 

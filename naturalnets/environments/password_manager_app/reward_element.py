@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.utils import generate_reward_mapping_from_template
+from naturalnets.environments.password_manager_app.utils import generate_reward_mapping_from_template
 
 
 class RewardElement(abc.ABC):

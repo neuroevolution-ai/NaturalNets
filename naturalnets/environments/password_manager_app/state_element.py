@@ -3,8 +3,8 @@ from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.exception import ArgumentError
-from naturalnets.environments.gui_app.interfaces import Renderable
+from naturalnets.environments.password_manager_app.exception import ArgumentError
+from naturalnets.environments.password_manager_app.interfaces import Renderable
 
 
 class StateElement(Renderable):

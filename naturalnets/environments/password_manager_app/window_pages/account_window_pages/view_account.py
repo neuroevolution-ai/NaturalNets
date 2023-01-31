@@ -7,6 +7,7 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
+from naturalnets.environments.password_manager_app.widgets.button import Button
 from naturalnets.environments.password_manager_app.widgets.check_box import CheckBox
 from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
 
@@ -19,24 +20,30 @@ class ViewAccount(Page, RewardElement):
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 
-    HIDE_PASSWORD_BB = BoundingBox()
+    HIDE_PASSWORD_BB = BoundingBox(0, 0, 448, 448)
 
-    OK_BUTTON_BB = BoundingBox()
-    CLOSE_BUTTON_BB = BoundingBox()
-    GENERATE_BUTTON_BB = BoundingBox()
-    LAUNCH_URL_BUTTON_BB = BoundingBox()
+    OK_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    CLOSE_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    GENERATE_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
 
-    COPY_ACCOUNT_BUTTON_BB = BoundingBox()
-    COPY_USER_ID_BUTTON_BB = BoundingBox()
-    COPY_PASSWORD_BUTTON_BB = BoundingBox()
-    COPY_URL_BUTTON_BB = BoundingBox()
-    COPY_NOTES_BUTTON_BB = BoundingBox()
+    COPY_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_USER_ID_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    COPY_NOTES_BUTTON_BB = BoundingBox(0, 0, 448, 448)
 
-    ACCOUNT_DD_BB = BoundingBox()
-    USER_ID_DD_BB = BoundingBox()
-    PASSWORD_DD_BB = BoundingBox()
-    URL_DD_BB = BoundingBox()
-    NOTES_DD_BB = BoundingBox()
+    PAST_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_USER_ID_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_URL_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+    PAST_NOTES_BUTTON_BB = BoundingBox(0, 0, 448, 448)
+
+    ACCOUNT_DD_BB = BoundingBox(0, 0, 448, 448)
+    USER_ID_DD_BB = BoundingBox(0, 0, 448, 448)
+    PASSWORD_DD_BB = BoundingBox(0, 0, 448, 448)
+    URL_DD_BB = BoundingBox(0, 0, 448, 448)
+    NOTES_DD_BB = BoundingBox(0, 0, 448, 448)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
@@ -85,6 +92,23 @@ class ViewAccount(Page, RewardElement):
 
         self.add_widget(self.checkbox)
 
+        self.buttons = [
+            Button(self.OK_BUTTON_BB, lambda: self.set_current_page(self.add_account)),
+            Button(self.CLOSE_BUTTON_BB, lambda: self.set_current_page(self.edit_account)),
+            Button(self.GENERATE_BUTTON_BB, lambda: self.set_current_page(self.confirm_delete_account)),
+            Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(None)),
+            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.set_current_page(None)),
+            Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.set_current_page(None)),
+            Button(self.COPY_USER_ID_BUTTON_BB, lambda: self.set_current_page(self.options)),
+            Button(self.COPY_URL_BUTTON_BB, lambda: self.set_current_page(self.database)),
+            Button(self.COPY_NOTES_BUTTON_BB, lambda: self.set_current_page(self.account)),
+            Button(self.PAST_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.help)),
+            Button(self.PAST_USER_ID_BUTTON_BB, lambda: self.set_current_page(None)),
+            Button(self.PAST_PASSWORD_BUTTON_BB, lambda: self.set_current_page(self.account)),
+            Button(self.PAST_URL_BUTTON_BB, lambda: self.set_current_page(self.help)),
+            Button(self.PAST_NOTES_BUTTON_BB, lambda: self.set_current_page(None)),
+        ]
+
     def set_hide_password(self, is_checked):
         "TODO"
 
@@ -96,3 +120,25 @@ class ViewAccount(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
 
         return img
+    
+    def ok(self):
+        "TODO"
+
+    def close(self):
+        "TODO"
+
+    def copy(self, fieldToCopy: str):
+        "TODO"
+
+    def past(self):
+        "TODO"
+
+    def handle_click(self, click_position: np.ndarray = None):
+        pass
+
+    @property
+    def reward_template(self):
+        return {
+            "tire_20_setting": [False, True],
+            "tire_22_setting": [False, True]
+        }

@@ -2,12 +2,9 @@ from copy import copy
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.main_window import MainWindow
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.settings_window import SettingsWindow
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.password_manager_app.main_window import MainWindow
+from naturalnets.environments.password_manager_app.reward_element import RewardElement
+from naturalnets.environments.password_manager_app.state_element import StateElement
 
 
 class AppController:
