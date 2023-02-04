@@ -1,17 +1,19 @@
-from ast import List
 import logging
 import os
 import time
 from typing import Dict, Optional
-from attr import define, field, validators
+
 import cv2
 import jsonlines
 import numpy as np
+from attr import define, field, validators
+
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.i_environment import IEnvironment, register_environment_class
-from naturalnets.environments.passlock_app.app_controller import PasslockAppController
-from naturalnets.tools.utils import rescale_values
+from naturalnets.environments.i_environment import (IEnvironment,
+                                                    register_environment_class)
+from naturalnets.environments.passlock_app.app_controller import \
+    PasslockAppController
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -71,16 +73,15 @@ class PasslockApp(IEnvironment):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
-        #TODO: Umrechnung für Koordinaten zwischen mit [-1, 1] und [0, screen_width/screen_height]
-    
+        # TODO: Umrechnung für Koordinaten zwischen mit [-1, 1] und [0, screen_width/screen_height]
+
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         # self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         # self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         # click_coordinates = np.array([self.click_position_x, self.click_position_y])
         click_coordinates = np.array([action[0], action[1]])
-        # print(click_coordinates)
-
+        
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations

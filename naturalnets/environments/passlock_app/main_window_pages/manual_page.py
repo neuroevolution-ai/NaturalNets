@@ -2,7 +2,6 @@
 import os
 from typing import List
 
-import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -14,7 +13,7 @@ from naturalnets.environments.gui_app.widgets.button import (
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables, textfield_check)
+    draw_rectangles_around_clickables)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -104,7 +103,6 @@ class ManualPage(Page, RewardElement):
     def render(self, img: np.ndarray)-> np.ndarray:
         """
         Renders the page onto the given image. 
-        The image changes depending on the state of the page.
 
         args: img - the image to render onto
         returns: the rendered image

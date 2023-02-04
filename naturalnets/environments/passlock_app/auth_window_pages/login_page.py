@@ -1,22 +1,31 @@
-from typing import List
 import os
-import cv2
+from typing import List
 
 import numpy as np
+
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangle_from_bb, draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.gui_app.widgets.button import (
+    Button, ShowPasswordButton)
+from naturalnets.environments.gui_app.widgets.radio_button_group import (
+    RadioButton, RadioButtonGroup)
+from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
+                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.utils import (
+    draw_rectangles_around_clickables)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
 class LoginPage(Page, RewardElement):
     '''
     The login page of the authentication window.
+
+    State Description:
+    The Login Page has no state itself, but it contains the following widgets which have state:
+        0: Password textfield is selected
+        1: Whether or not the password is shown     
     '''
 
     STATE_LEN = 0
@@ -39,7 +48,7 @@ class LoginPage(Page, RewardElement):
         self.clickables = self.buttons + self.textfields
         self.widgets: List[Widget] = [
             self.enter_pw_textfield, self.show_pw_button]
-        
+
         self.reward_widgets_to_str = {
             self.enter_pw_textfield: "enter_pw_textfield",
             self.show_pw_button: "show_pw_button",
@@ -65,10 +74,9 @@ class LoginPage(Page, RewardElement):
         '''
         print("login")
 
-    def render(self, img):
+    def render(self, img) -> np.ndarray:
         """
         Renders the page onto the given image. 
-        The image changes depending on the state of the page.
 
         args: img - the image to render onto
         returns: the rendered image
@@ -76,7 +84,7 @@ class LoginPage(Page, RewardElement):
         img = super().render(img)
         draw_rectangles_around_clickables(
             [self.buttons, self.textfields], img)
-        
+
         return img
 
     def reset(self):
@@ -86,7 +94,7 @@ class LoginPage(Page, RewardElement):
         self.enter_pw_textfield.set_selected(False)
         self.show_pw_button.showing_password = False
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         This function is called when the user clicks on the login page. 
         If the user clicks on a button, the button's function is called.
@@ -97,14 +105,15 @@ class LoginPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
-                ##If the user clicks on the login button, check if the password textfield is selected
-                ##If it is, then login  
+                # If the user clicks on the login button, check if the password textfield is selected
+                # If it is, then login
                 if (clickable == self.login_button and self.enter_pw_textfield.is_selected()):
                     clickable.handle_click(click_position)
                     return True
                 else:
-                    ##If the clickable has a state, register the reward when it is selected
-                    if(isinstance(clickable, StateElement)):
-                        self.register_selected_reward([self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                    # If the clickable has a state, register the reward when it is selected
+                    if (isinstance(clickable, StateElement)):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
                     break

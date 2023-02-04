@@ -1,20 +1,30 @@
 import os
 from typing import List
-import cv2
+
 import numpy as np
+
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.utils import draw_rectangles_around_clickables, textfield_check
+from naturalnets.environments.gui_app.widgets.button import (
+    Button, ShowPasswordButton)
+from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
+                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.utils import (
+    draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
 class SignupPage(Page, RewardElement):
     '''
     The signup page of the authentication window.
+
+    State Description:
+    The Sigup Page has no state itself, but it contains the following widgets which have state:
+        0: Email textfield is selected
+        1: Password textfield is selected
+        2: Whether or not the password is shown
     '''
 
     STATE_LEN = 0
@@ -68,14 +78,13 @@ class SignupPage(Page, RewardElement):
     def render(self, img):
         """
         Renders the page onto the given image. 
-        The image changes depending on the state of the page.
 
         args: img - the image to render onto
         returns: the rendered image
         """
         img = super().render(img)
         draw_rectangles_around_clickables([self.clickables], img)
-        
+
         return img
 
     def login(self):

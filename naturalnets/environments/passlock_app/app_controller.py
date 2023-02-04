@@ -9,7 +9,7 @@ from naturalnets.environments.passlock_app.home_window import HomeWindow
 
 class PasslockAppController:
     '''
-    T
+    The controller for the Passlock App.
     '''
 
     def __init__(self):
@@ -33,6 +33,9 @@ class PasslockAppController:
         self.reset_reward_array()
 
     def calculate_reward_count(self, reward_count, reward_element: RewardElement):
+        '''
+        Calculates the total number of rewards in the reward tree.
+        '''
         reward_count += reward_element.get_reward_count()
 
         for child in reward_element.get_reward_children():
@@ -41,6 +44,9 @@ class PasslockAppController:
         return reward_count
 
     def reset_reward_array(self):
+        '''
+        Resets the reward array.
+        '''
         reward_count = self.calculate_reward_count(0, self.home_window)
         reward_count = self.calculate_reward_count(
             reward_count, self.auth_window)
@@ -53,6 +59,9 @@ class PasslockAppController:
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
+        '''
+        Assigns a slice of the reward array to the given reward element.
+        '''
         reward_count = reward_element.get_reward_count()
         reward_element.assign_reward_slice(
             self.reward_array[current_index:current_index + reward_count])
@@ -63,13 +72,15 @@ class PasslockAppController:
 
         return current_index
 
-    def reset(self) -> np.ndarray:
+    def reset(self):
+        '''
+        Resets the app.
+        '''
         self.home_window.reset()
         self.home_window.close()
         self.auth_window.reset()
         self.auth_window.open()
         
-
         self.reset_reward_array()
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
@@ -178,6 +189,7 @@ class PasslockAppController:
         return img
 
     def sign_up(self):
+        
         self.home_window.reset()
         self.auth_window.reset()
         self.auth_window.close()

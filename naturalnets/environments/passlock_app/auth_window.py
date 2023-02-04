@@ -1,21 +1,18 @@
 import os
 from typing import Dict, List
-import cv2
+
 import numpy as np
+
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import get_group_bounding_box, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.passlock_app.auth_window_pages.login_page import LoginPage
-from naturalnets.environments.passlock_app.auth_window_pages.signup_page import SignupPage
+from naturalnets.environments.passlock_app.auth_window_pages.login_page import \
+    LoginPage
+from naturalnets.environments.passlock_app.auth_window_pages.signup_page import \
+    SignupPage
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH
-from naturalnets.environments.passlock_app.main_window_pages.auto_page import AutoPage
-from naturalnets.environments.passlock_app.main_window_pages.manual_page import ManualPage
-from naturalnets.environments.passlock_app.main_window_pages.search_page import SearchPage
-from naturalnets.environments.passlock_app.main_window_pages.settings_page import SettingsPage
 
 
 class AuthenticationWindow(StateElement, Clickable, RewardElement):
@@ -54,7 +51,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
     @property
     def reward_template(self):
         '''
-        Returns the reward template for the Authentication window. TODO: finish this
+        Returns the reward template for the Authentication window.
         '''
         return {
             "auth_window": ["open", "close"],
@@ -130,7 +127,13 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         return img
 
     def get_bb(self) -> BoundingBox:
+        '''
+        Returns the bounding box of the Authentication window.
+        '''
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
+        '''
+        Sets the bounding box of the Authentication window.
+        '''
         self._bounding_box = bounding_box

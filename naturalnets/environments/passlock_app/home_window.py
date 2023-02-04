@@ -1,21 +1,25 @@
-from typing import Dict, List
 import os
-import cv2
+from typing import Dict, List
 
 import numpy as np
+
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH, PAGES_SELECT_AREA_SIDE_BB, PAGES_SELECT_AREA_TOP_BB, PAGES_UI_AREA_BB, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.main_window_pages.auto_page import AutoPage
-from naturalnets.environments.passlock_app.main_window_pages.manual_page import ManualPage
-from naturalnets.environments.passlock_app.main_window_pages.search_page import SearchPage
-from naturalnets.environments.passlock_app.main_window_pages.settings_page import SettingsPage
 from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.passlock_app.utils import draw_rectangle_from_bb, draw_rectangles_around_clickables
+from naturalnets.environments.passlock_app.constants import (
+    IMAGES_PATH, PAGES_SELECT_AREA_SIDE_BB, PAGES_SELECT_AREA_TOP_BB,
+    PAGES_UI_AREA_BB, WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.main_window_pages.auto_page import \
+    AutoPage
+from naturalnets.environments.passlock_app.main_window_pages.manual_page import \
+    ManualPage
+from naturalnets.environments.passlock_app.main_window_pages.search_page import \
+    SearchPage
+from naturalnets.environments.passlock_app.main_window_pages.settings_page import \
+    SettingsPage
 
 
 class HomeWindow(StateElement, Clickable, RewardElement):
@@ -58,12 +62,6 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
         self.current_page = None
 
-        self.is_darkmode = False
-        self.change_mode_button = Button(
-            self.DARK_LIGHT_BB,
-            lambda: self.set_darkmode()
-        )
-
         self.buttons = [
             Button(self.HOME_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
@@ -73,8 +71,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
                    lambda: self.set_current_page(self.settings)),
             Button(self.MANUAL_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
-            Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto)),
-            self.change_mode_button
+            Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto))
         ]
 
         self.add_children([self.manual, self.auto, self.search, self.settings])
@@ -96,6 +93,9 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         }
 
     def reset(self):
+        '''
+        Resets the home window to its initial state.
+        '''
         self.manual.reset()
         self.auto.reset()
         self.search.reset()
@@ -120,6 +120,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return self.get_state()[0]
 
     def get_current_page(self):
+        '''Returns the currently selected/shown page.'''
         return self.current_page
 
     def set_current_page(self, page: Page):
@@ -135,7 +136,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             self.get_state()[self.pages.index(page) + 1] = 1
             self.open()  # open the home window if it is closed
 
-            #TODO reset the setings and search page after switching to another page so the popups are closed
+            # TODO reset the setings and search page after switching to another page so the popups are closed
             self.search.reset()
             self.settings.reset()
             self.current_page = page
@@ -150,11 +151,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        # Let the current page process the click, if the current page blocks clicks
-        # to the main page (e.g. due to open dropdowns) or the click
-        # is inside the bounding box of the current page.
-        # Note that the settings menu button is handled in the AppController class.
-
+        """Handles a click on the home window."""
         if (self.current_page == self.manual or self.current_page == self.auto):
             if self.current_page_blocks_click() or PAGES_UI_AREA_BB.is_point_inside(click_position):
                 self.current_page.handle_click(click_position)
@@ -204,15 +201,13 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         if (self.get_state()[4] == 1):
             img = self.settings.render(img)
 
-        # draw_rectangle_from_bb(img, PAGES_UI_AREA_BB, (0,255,0), 2)
-        # draw_rectangles_around_clickables([self.buttons], img)
         return img
 
     def get_bb(self) -> BoundingBox:
+        '''Returns the bounding box of the home window.'''
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
+        '''Sets the bounding box of the home window.'''
         self._bounding_box = bounding_box
 
-    def get_darkmode(self) -> bool:
-        return self.is_darkmode

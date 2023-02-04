@@ -268,7 +268,7 @@ class SearchPage(Page, RewardElement):
                 button.handle_click(click_position)
                 break
 
-    def is_popup_open(self):
+    def is_popup_open(self) -> bool:
         '''
         Returns true if a popup is open.
         returns: bool
@@ -277,7 +277,7 @@ class SearchPage(Page, RewardElement):
             return True
         return False
 
-    def get_open_popup(self):
+    def get_open_popup(self) -> PopUp:
         '''
         Returns the open popup.
         returns: Popup
@@ -290,14 +290,14 @@ class SearchPage(Page, RewardElement):
         Method for copying the password.
         '''
         print("copy password")
-        pass
+        
 
     def delete_password(self):
         '''
         Method for deleting the password.
         '''
         print("delete password")
-        pass
+        
 
 
 class SearchEditPopUp(PopUp):

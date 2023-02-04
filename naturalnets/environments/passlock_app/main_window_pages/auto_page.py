@@ -1,7 +1,6 @@
 import os
 from typing import List
-from typing import Any
-import cv2
+
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -11,8 +10,8 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables, textfield_check)
+from naturalnets.environments.passlock_app.utils import \
+    draw_rectangles_around_clickables
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -23,7 +22,7 @@ class AutoPage(Page, RewardElement):
     No actual password is generated and the UI is not changed on generation of a password.
 
     State Description:
-        The Auto Page has no state itself, but it has a state for each of its widgets with a inherent state.
+        The Auto Page has no state itself, but it contains the following widgets which have state:
         0: Auto textfield is selected
         1: Password textfield is selected
         2: The length of the password
@@ -144,17 +143,23 @@ class AutoPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
-                # if the clickable is a slider, we need to register the reward for the slider value
-                if (isinstance(clickable, Slider)):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
-                # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
-                elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                if(clickable == self.create_pw_button and self.enter_password_textfield.is_selected() and self.enter_nameof_password_textfield.is_selected()):
+                    self.generate_password()
+                    clickable.handle_click(click_position)
+                    return
+                else: 
+                    # if the clickable is a slider, we need to register the reward for the slider value
+                    if (isinstance(clickable, Slider)):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
+                    # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
+                    elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
 
-                clickable.handle_click(click_position)
-                break
+
+                    clickable.handle_click(click_position)
+                    break
 
     def copy_password(self):
         '''

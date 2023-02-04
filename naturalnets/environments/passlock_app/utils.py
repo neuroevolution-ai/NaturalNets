@@ -25,6 +25,9 @@ def draw_rectangle_from_bb(img, bounding_box: BoundingBox, color: Tuple[int, int
 
 
 def draw_rectangles_around_clickables(lists: List[List[Widget]], to_render: np.ndarray) -> np.ndarray:
+    '''
+    Draws rectangles around all the clickable widgets in the given list of lists of widgets.
+    '''
 
     for list in lists:
 
@@ -33,13 +36,10 @@ def draw_rectangles_around_clickables(lists: List[List[Widget]], to_render: np.n
                 to_render, innerlist._bounding_box, (0, 255, 0), 2)
 
 
-def combine_path_for_image(image_path):
-    path = os.path.join(IMAGES_PATH, image_path)
-    to_render = cv2.imread(path)
-    return to_render
-
-
 def textfield_check(conditions: List[Textfield]):
+    '''
+    Checks if the given textfields are selected.
+    '''
 
     passed = False
 

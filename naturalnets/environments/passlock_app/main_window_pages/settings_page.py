@@ -1,19 +1,17 @@
 import os
 from typing import List
 
-import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page, Widget
+from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    combine_path_for_image, draw_rectangles_around_clickables)
+from naturalnets.environments.passlock_app.utils import draw_rectangles_around_clickables
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -23,6 +21,9 @@ class SettingsPage(Page, RewardElement):
     The settings page of the app.
 
     State Description:
+    The Settings Page has no state itself, but it has a state for each of its widgets with a inherent state.
+        0: The State of the auto_sync_button
+        1: The State of the zoom_textfield
     '''
 
     ### CONSTANTS ###
@@ -69,6 +70,7 @@ class SettingsPage(Page, RewardElement):
             [self.about_popup, self.sync_popup, self.change_colour_popup])
 
         self.textfields: List[Textfield] = [self.zoom_textfield]
+
         self.buttons: List[Button] = [self.change_color_button,
                                       self.sync_pw_button,
                                       self.about_button,
@@ -102,9 +104,9 @@ class SettingsPage(Page, RewardElement):
         Enters the zoom level. Currently not implemented.
         '''
         print("Enter zoom level")
-        pass
+        
 
-    def is_popup_open(self):
+    def is_popup_open(self) -> bool:
         '''
         Returns True if a popup is open.
         '''
@@ -117,7 +119,7 @@ class SettingsPage(Page, RewardElement):
 
         return False
 
-    def get_open_popup(self):
+    def get_open_popup(self) -> PopUp:
         '''
         Returns the open popup.
         '''
@@ -130,10 +132,9 @@ class SettingsPage(Page, RewardElement):
         if self.change_colour_popup.is_open():
             return self.change_colour_popup
 
-    def render(self, img):
+    def render(self, img) -> np.ndarray:
         """
         Renders the page onto the given image. 
-        The image changes depending on the state of the page.
 
         args: img - the image to render onto
         returns: the rendered image
@@ -147,11 +148,14 @@ class SettingsPage(Page, RewardElement):
         return img
 
     def reset(self):
+        '''
+        Resets the page.
+        '''
         self.about_popup.reset()
         self.change_colour_popup.reset()
         self.sync_popup.reset()
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         Handles a click on the page.
 

@@ -1,17 +1,16 @@
 import os
 
-import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH
-from naturalnets.environments.passlock_app.utils import combine_path_for_image, draw_rectangle_from_bb
+from naturalnets.environments.passlock_app.utils import draw_rectangle_from_bb
 
 
 class PopUp(Page, RewardElement):
-    """Popup for the calculator settings (pops up when no operator-checkbox is selected).
+    """A popup that can be opened and closed. It is a page, so it can be rendered on an image.
 
        State description:
             state[0]: the opened-state of this popup.
@@ -23,26 +22,32 @@ class PopUp(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
-        
-        
+
     @property
     def reward_template(self):
         return {
             "popup": ["open", "close"]
         }
 
-    def render(self, img: np.ndarray)-> np.ndarray:
+    def render(self, img: np.ndarray) -> np.ndarray:
         '''
         Renders the popup on the given image.
+
+        Args: 
+            img: The image to render the popup on.
+        Returns:
+            The image with the rendered popup.
         '''
-        #to_render = cv2.imread(self.IMG_PATH)
+
         img = super().render(img)
         draw_rectangle_from_bb(img, self.BOUNDING_BOX, (0, 0, 255), 2)
-        #img = to_render
 
         return img
 
     def reset(self):
+        '''
+        Resets the popup to its initial state.
+        '''
         self.close_popup()
 
     def is_open(self) -> int:
@@ -50,10 +55,16 @@ class PopUp(Page, RewardElement):
         return self.get_state()[0]
 
     def open_popup(self):
+        '''
+        Opens the popup.
+        '''
         self.get_state()[0] = 1
         self.register_selected_reward(["popup", "open"])
 
     def close_popup(self):
+        '''
+        Closes the popup.
+        '''
         self.get_state()[0] = 0
         self.register_selected_reward(["popup", "close"])
 
@@ -64,4 +75,3 @@ class PopUp(Page, RewardElement):
         if (self.is_open()):
             if (self.BOUNDING_BOX.is_point_inside(click_position)):
                 self.close_popup()
-                return
