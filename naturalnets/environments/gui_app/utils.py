@@ -15,11 +15,15 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     Returns:
         np.ndarray: the img containing to_render
     """
+    
     x = bounding_box.x
     y = bounding_box.y
     width = bounding_box.width
     height = bounding_box.height
+    
+    img.shape = (height, width, 3)
     img[y:y + height, x:x + width] = to_render
+    
     return img
 
 
