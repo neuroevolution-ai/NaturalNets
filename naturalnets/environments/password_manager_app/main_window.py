@@ -3,6 +3,7 @@ from typing import List
 
 import cv2
 import numpy as np
+from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
 
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
@@ -37,8 +38,9 @@ class MainWindow(StateElement, Clickable, RewardElement):
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
-    # Each state represents which specific accounts exists
-    STATE_IMG = 7
+    # Each state represents which specific accounts exists with a max. of 8 different states
+    STATE_IMG = 0
+    ACCOUNT_SELECTED = 0
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(0, 24, 275, 40) #TODO
@@ -66,7 +68,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self._bounding_box = self.BOUNDING_BOX
         self.current_page = None
 
-        self.add_account = AddAccount(self.current_page)
+        self.add_account = AddAccount()
         self.edit_account = EditAccount()
         self.view_account = ViewAccount()
         self.confirm_delete_account = ConfirmDeleteAccount()
@@ -163,6 +165,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         if page == None:
             self.get_state()[:] = 0
             self.current_page = None
+            self.refresh_image()
 
             # noinspection PyTypeChecker
             self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
@@ -216,6 +219,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def render(self, img: np.ndarray):
         """ Renders the main window and all its children onto the given image.
         """
+        
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if (self.current_page is not None):
@@ -228,3 +232,54 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
+
+    def refresh_image(self):
+        self.STATE_IMG = AccountManager.current_state()
+        print(self.STATE_IMG)
+        self.new_path = ''
+
+        if self.STATE_IMG == 0:
+            self.new_path = "main_window/main_window_0_accounts.png"
+        elif self.STATE_IMG == 1:
+            self.ACCOUNT_SELECTED = 1
+            self.new_path = "main_window/main_window_Hanna_account.png"
+        elif self.STATE_IMG == 2:
+            self.ACCOUNT_SELECTED = 1
+            self.new_path = "main_window/main_window_Klaus_accounts.png"
+        elif self.STATE_IMG == 3:
+            self.ACCOUNT_SELECTED = 1
+            self.new_path = "main_window/main_window_Mariam_accounts.png"
+        elif self.STATE_IMG == 4:
+            if self.ACCOUNT_SELECTED == 0:
+                self.new_path = "main_window/main_window_2_accounts_H_K.png"
+            elif self.ACCOUNT_SELECTED == 1:
+                self.new_path = "main_window/main_window_2_accounts_H_K_1_selected.png"
+            elif self.ACCOUNT_SELECTED == 2:
+                self.new_path = "main_window/main_window_2_accounts_H_K_2_selected.png"
+        elif self.STATE_IMG == 5:
+            if self.ACCOUNT_SELECTED == 0:
+                self.new_path = "main_window/main_window_2_accounts_H_M.png"
+            elif self.ACCOUNT_SELECTED == 1:
+                self.new_path = "main_window/main_window_2_accounts_H_M_1_selected.png"
+            elif self.ACCOUNT_SELECTED == 2:
+                self.new_path = "main_window/main_window_2_accounts_H_M_2_selected.png"
+        elif self.STATE_IMG == 6:
+            if self.ACCOUNT_SELECTED == 0:
+                self.new_path = "main_window/main_window_2_accounts_K_M.png"
+            elif self.ACCOUNT_SELECTED == 1:
+                self.new_path = "main_window/main_window_2_accounts_K_M_1_selected.png"
+            elif self.ACCOUNT_SELECTED == 2:
+                self.new_path = "main_window/main_window_2_accounts_K_M_2_selected.png"
+        else:
+            if self.ACCOUNT_SELECTED == 0:
+                self.new_path = "main_window/main_window_3_accounts.png"
+            elif self.ACCOUNT_SELECTED == 1:
+                self.new_path = "main_window/main_window_3_accounts_1_selected.png"
+            elif self.ACCOUNT_SELECTED == 2:
+                self.new_path = "main_window/main_window_3_accounts_2_selected.png"
+            elif self.ACCOUNT_SELECTED == 3:
+                self.new_path = "main_window/main_window_3_accounts_3_selected.png"
+            
+        print('PAth set to:' + self.new_path)
+        self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
+

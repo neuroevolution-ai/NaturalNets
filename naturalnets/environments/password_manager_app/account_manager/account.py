@@ -1,4 +1,7 @@
 
+from typing import Optional
+
+
 class Account:
 
     account_name: str
@@ -7,7 +10,7 @@ class Account:
     url: str
     notes: str
 
-    def __init__(self, account_name: str, user_id: str, password: str, url: str, notes: str) -> None:
+    def __init__(self, account_name: str, user_id: Optional[str], password: Optional[str], url: Optional[str], notes: Optional[str]) -> None:
         self.account_name = account_name
         self.user_id = user_id
         self.password = password

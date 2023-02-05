@@ -3,6 +3,7 @@ from copy import copy
 import numpy as np
 
 from naturalnets.environments.password_manager_app.main_window import MainWindow
+from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.state_element import StateElement
 
@@ -12,17 +13,18 @@ class AppController:
     and delegates clicks to the app components (acts as the click- and render-root of the app).
     """
 
+    main_window = MainWindow()
+
     def __init__(self):
-        self.main_window = MainWindow()
 
         self._total_state_len = 0
-        self._total_state_len += self.get_element_state_len(self.main_window)
+        self._total_state_len += self.get_element_state_len(AppController.main_window)
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
         states_info = []
-        self.assign_state(self.main_window, 0, states_info)
+        self.assign_state(AppController.main_window, 0, states_info)
         self._states_info = states_info
 
         self.reward_array = None
@@ -37,11 +39,11 @@ class AppController:
         return reward_count
 
     def reset_reward_array(self):
-        reward_count = self.calculate_reward_count(0, self.main_window)
+        reward_count = self.calculate_reward_count(0, AppController.main_window)
 
         self.reward_array = np.zeros(reward_count, dtype=np.uint8)
 
-        last_reward_index = self.assign_reward(0, self.main_window)
+        last_reward_index = self.assign_reward(0, AppController.main_window)
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
@@ -55,14 +57,14 @@ class AppController:
         return current_index
 
     def reset(self):
-        self.main_window.reset()
+        AppController.main_window.reset()
 
         self.reset_reward_array()
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
 
-        self.assign_state(self.main_window, 0, [])
+        self.assign_state(AppController.main_window, 0, [])
 
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
@@ -135,7 +137,7 @@ class AppController:
         """
         previous_reward_array = copy(self.reward_array)
 
-        self.main_window.handle_click(click_position)
+        AppController.main_window.handle_click(click_position)
 
         reward = np.count_nonzero(previous_reward_array != self.reward_array)
 
@@ -147,5 +149,6 @@ class AppController:
         Args:
             img (np.ndarray): The cv2 image to render onto.
         """
-        img = self.main_window.render(img)
+        img = AppController.main_window.render(img)
         return img
+    
