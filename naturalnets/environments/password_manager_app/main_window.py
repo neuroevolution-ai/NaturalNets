@@ -64,9 +64,9 @@ class MainWindow(StateElement, Clickable, RewardElement):
         RewardElement.__init__(self)
 
         self._bounding_box = self.BOUNDING_BOX
+        self.current_page = None
 
-
-        self.add_account = AddAccount()
+        self.add_account = AddAccount(self.current_page)
         self.edit_account = EditAccount()
         self.view_account = ViewAccount()
         self.confirm_delete_account = ConfirmDeleteAccount()
@@ -85,8 +85,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                   self.invalid_url, self.master_password,
                                   self.confirm_delete_account]
         # assert len(self.pages) == self.get_state_len()
-
-        self.current_page = None
 
         self.buttons = [
             Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.add_account)),
@@ -180,19 +178,20 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
         """
-        # return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
+        return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Let the current page process the click, if the current page blocks clicks
         # to the main page (e.g. due to open dropdowns) or the click
         # is inside the bounding box of the current page.
-        if self.current_page_blocks_click():
+        if self.current_page is not None:
             self.current_page.handle_click(click_position)
             return
-        # Check if menu is clicked
-        if self.MENU_AREA_BB.is_point_inside(click_position):
-            self.handle_menu_click(click_position)
-            return
+        else:
+            # Check if menu is clicked
+            if self.MENU_AREA_BB.is_point_inside(click_position):
+                self.handle_menu_click(click_position)
+                return
 
     def is_dropdown_open(self):
         """Returns true if the current page has an opened dropdown.
@@ -219,7 +218,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
         """
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        # img = self.current_page.render(img)
+        if (self.current_page is not None):
+            img = self.current_page.render(img)
 
         return img
 
