@@ -14,9 +14,9 @@ class AccountManager:
                 AccountManager.currentAccounts.append(account)
 
     @staticmethod
-    def deleteAccount(account: Account):
+    def deleteAccount(account_name: str):
         for current_account in AccountManager.currentAccounts:
-            if current_account.getAccountName() == account.getAccountName():
+            if current_account.getAccountName() == account_name:
                 AccountManager.currentAccounts.remove(current_account)
 
     @staticmethod
@@ -31,37 +31,37 @@ class AccountManager:
     @staticmethod
     def current_state():
         if (AccountManager.currentAccounts is None):
-            return 0
+            return [0, 0]
         len_current_accounts = len(AccountManager.currentAccounts)
 
         if (len_current_accounts == 0):
-            return 0
+            return [0, 0]
         elif (len_current_accounts == 3):
-            return 7
+            return [7, 0]
         elif (len_current_accounts == 1):
             name = AccountManager.currentAccounts[0].getAccountName()
             if name == NAME_ONE:
-                return 1
+                return [1, 1]
             elif name == NAME_TWO:
-                return 2
+                return [2, 1]
             else:
-                return 3
-        else:
+                return [3, 1]
+        elif (len_current_accounts == 2):
             name = AccountManager.currentAccounts[0].getAccountName()
             if name == NAME_ONE:
                 if AccountManager.currentAccounts[1].getAccountName() == NAME_TWO:
-                    return 4
+                    return [4, 0]
                 else:
-                    return 5
+                    return [5, 0]
             elif AccountManager.currentAccounts[1].getAccountName() == NAME_TWO:
                 if name == NAME_ONE:
-                    return 4
+                    return [4, 0]
                 else:
-                    return 6
+                    return [6, 0]
             else:
                 if AccountManager.currentAccounts[1].getAccountName() == NAME_ONE:
-                    return 5
+                    return [5, 0]
                 else:
-                    return 6
+                    return [6, 0]
         
 
