@@ -35,7 +35,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     """
 
     # Each state represents the number of accounts that exists (with a max. of 3)
-    STATE_LEN = 4
+    STATE_LEN = 11
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
     # 1. Each state represents which specific accounts exists with a max. of 8 different states 
@@ -48,7 +48,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 28, 30)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(69, 25, 26, 30)
     COPY_USERNAME_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 1, 1)
@@ -92,7 +92,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.buttons = [
             Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.add_account)),
             Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.edit_account)),
-            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.confirm_delete_account)),
+            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.delete_account()),
             Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.set_current_page(None)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.set_current_page(None)),
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.set_current_page(None)),

@@ -54,26 +54,27 @@ class AddAccount(Page, RewardElement):
         self.name_one = DropdownItem(NAME_ONE, NAME_ONE)
         self.name_two = DropdownItem(NAME_TWO, NAME_TWO)
         self.name_three = DropdownItem(NAME_THREE, NAME_THREE)
-        self.dropdown_account = Dropdown(self.ACCOUNT_DD_BB, [self.name_one,
+        self.empty = DropdownItem(None, '')
+        self.dropdown_account = Dropdown(self.ACCOUNT_DD_BB, [self.empty, self.name_one,
                                                    self.name_two,
                                                    self.name_three])
 
-        self.dropdown_user_id = Dropdown(self.USER_ID_DD_BB, [self.name_one,
+        self.dropdown_user_id = Dropdown(self.USER_ID_DD_BB, [self.empty, self.name_one,
                                                    self.name_two,
                                                    self.name_three])
         
         self.password_one = DropdownItem("1234", "1234")
         self.password_two = DropdownItem("qwer", "qwer")
         self.password_three = DropdownItem("asdf", "asdf")
-        self.dropdown_password = Dropdown(self.PASSWORD_DD_BB, [self.password_one,
+        self.dropdown_password = Dropdown(self.PASSWORD_DD_BB, [self.empty, self.password_one,
                                                    self.password_two,
                                                    self.password_three])
 
-        self.dropdown_url = Dropdown(self.URL_DD_BB, [self.name_one,
+        self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one,
                                                    self.name_two,
                                                    self.name_three])
 
-        self.dropdown_notes = Dropdown(self.NOTES_DD_BB, [self.name_one,
+        self.dropdown_notes = Dropdown(self.NOTES_DD_BB, [self.empty, self.name_one,
                                                    self.name_two,
                                                    self.name_three])
     
