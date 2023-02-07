@@ -33,7 +33,7 @@ class IOptimizer(abc.ABC):
         self.config_dict = configuration
 
     @abc.abstractmethod
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         pass
 
     @abc.abstractmethod

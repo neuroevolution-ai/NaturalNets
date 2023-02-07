@@ -71,7 +71,7 @@ class MuLambdaDeap(IOptimizer):
         self.toolbox.register("mutate", fct_mutation_learned)
         self.select = tools.selBest
 
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         self.offspring = varOr(self.population, self.toolbox, self.configuration.lambda_, 1 - self.configuration.mutpb,
                                self.configuration.mutpb)
 
