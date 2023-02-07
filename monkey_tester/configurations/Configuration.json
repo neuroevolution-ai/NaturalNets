@@ -1,14 +1,13 @@
 {
-    "num_monkeys": 1,
-    "num_processes": 1,
+    "num_monkeys": 200,
+    "num_processes": 8,
     "monkey_tester_type": "random-clicks",
     "environment": {
-        "type": "AnkiApp",
-        "number_time_steps": 200
+        "type": "GUIApp",
+        "number_time_steps": 200,
+        "include_fake_bug": false
     },
     "results_dir": "results_monkey/",
-    "store_monkey_tester_data": true,
-    "wandb_logging": false,
-    "wandb_entity": "neuroevolution-fzi",
-    "wandb_project": "NaturalNets"
+    "store_individual_monkey_data": false,
+    "chunk_size": 250000
 }
