@@ -4,7 +4,7 @@ import time
 import os
 from typing import Optional, Dict, List
 
-from attr import define, field, validators
+from attrs import define, field, validators
 import cv2
 import numpy as np
 import jsonlines
