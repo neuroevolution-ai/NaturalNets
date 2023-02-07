@@ -70,7 +70,7 @@ class MainPage(Page,RewardElement):
     HELP_DROPDOWN_BB_OFFSET = BoundingBox(210, 33, 90, 28)
 
     EDIT_BB = BoundingBox(71, 773, 88, 37)
-    SHOW_ANSWER_NEXT_BB = BoundingBox(312, 773, 178, 37)
+    SHOW_ANSWER_NEXT_BB = BoundingBox(312, 773, 140, 34)
     REMOVE_BB = BoundingBox(624, 773, 129, 35)
 
     def __new__(cls):
@@ -166,7 +166,7 @@ class MainPage(Page,RewardElement):
         self.remove_button = Button(self.REMOVE_BB, self.remove_card)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
         self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
-        self.study_button_study_deck: Button = Button(BoundingBox(204, 485, 76, 24), self.study_deck)
+        self.study_button_study_deck: Button = Button(self.choose_deck_study_page.STUDY_BB, self.study_deck)
 
         self.main_page_widgets = [self.add_card_button, self.sync_button, self.study_button, self.get_shared_button,
         self.create_deck_button ,self.import_file_button, self.delete_button]
@@ -467,7 +467,7 @@ class MainPage(Page,RewardElement):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(image, self.WINDOW_BB, frame)
         decks_button = cv2.imread(self.DECKS_BUTTON_PATH)
-        render_onto_bb(image, BoundingBox (479, 43, 157, 40), decks_button)
+        render_onto_bb(image, BoundingBox (479, 43, 158, 40), decks_button)
         put_text(image, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}",(484, 112),font_scale = 0.5)
         put_text(image, f"Current card number: {self.deck_database.decks[self.deck_database.current_index].study_index + 1}",(484, 142),font_scale = 0.5)
         put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",(484, 172),font_scale = 0.5)
@@ -477,7 +477,7 @@ class MainPage(Page,RewardElement):
         if (self.get_state()[7] == 1):
             print_non_ascii(img = image, text = f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",bounding_box =  BoundingBox(42, 332, 600, 100), font_size = 35, dimension = (100, 600, 3))
             next_button = cv2.imread(self.NEXT_BUTTON_PATH)
-            render_onto_bb(image, BoundingBox (311, 772, 182, 39), next_button)
+            render_onto_bb(image, BoundingBox (311, 772, 140, 34), next_button)
         if (self.edit_card_page.is_open()):
             image = self.edit_card_page.render(image)
         if (self.at_least_one_card_popup_page.is_open()):

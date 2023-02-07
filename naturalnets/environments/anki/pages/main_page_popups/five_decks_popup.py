@@ -18,8 +18,8 @@ class FiveDecksPopup(Page,RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "five_decks_popup.png")
     
-    WINDOW_BB = BoundingBox(230, 290, 317, 121)
-    OK_BB = BoundingBox(461, 375, 82, 31)
+    WINDOW_BB = BoundingBox(230, 290, 318, 121)
+    OK_BB = BoundingBox(458, 379, 80, 23)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

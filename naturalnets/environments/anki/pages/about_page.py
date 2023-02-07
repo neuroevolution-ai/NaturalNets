@@ -17,7 +17,7 @@ class AboutPage(Page,RewardElement):
     """
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
-    OK_BUTTON_BB = BoundingBox(693, 772, 106, 53)
+    OK_BUTTON_BB = BoundingBox(713, 793, 118, 36)
 
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
 

@@ -18,7 +18,7 @@ class AtLeastOneCardPopup(Page, RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_card_popup.png")
     WINDOW_BB = BoundingBox(250, 300, 318, 121)
     
-    OK_BUTTON_BB = BoundingBox(466, 381, 80, 27)
+    OK_BUTTON_BB = BoundingBox(476, 339, 81, 23)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

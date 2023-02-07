@@ -26,8 +26,8 @@ class ExportDeckPage(Page,RewardElement):
     WINDOW_BB = BoundingBox(210, 200, 380, 278)
     INCLUDE_DD_BB = BoundingBox(324, 250, 224, 24)
     INCLUDE_DD_BB_OFFSET = BoundingBox(324, 274, 224, 24)
-    EXPORT_BB = BoundingBox(346, 443, 113, 27)
-    CANCEL_BB = BoundingBox(470, 443, 113, 27)
+    EXPORT_BB = BoundingBox(346, 443, 113, 29)
+    CANCEL_BB = BoundingBox(470, 443, 113, 29)
     RESET_BB = BoundingBox(218, 441, 110, 29)
 
     def __new__(cls):

@@ -21,7 +21,7 @@ class LeadsToExternalWebsitePopup(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "leads_to_external_website_popup.png")
     
     WINDOW_BB = BoundingBox(230, 290, 277, 121)
-    OK_BB = BoundingBox(417, 372, 79, 31)
+    OK_BB = BoundingBox(440, 383, 52, 20)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

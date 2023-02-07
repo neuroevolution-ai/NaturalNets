@@ -58,7 +58,8 @@ class AnkiApp(IGUIEnvironment):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
-
+        print(self.click_position_x)
+        print(self.click_position_y)
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 

@@ -23,13 +23,13 @@ class ChooseDeckStudyPage(Page,RewardElement):
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study_page.png")
     
-    WINDOW_BB = BoundingBox(150, 150, 498, 374)
-    STUDY_BB = BoundingBox(204, 476, 111, 31)
-    ADD_BB = BoundingBox(293, 476, 87, 31)
-    CANCEL_BB = BoundingBox(405, 476, 111, 31)
-    HELP_BB = BoundingBox(534, 476, 95, 31)
+    WINDOW_BB = BoundingBox(150, 150, 498, 375)
+    STUDY_BB = BoundingBox(172, 483, 107, 27)
+    ADD_BB = BoundingBox(287, 483, 107, 27)
+    CANCEL_BB = BoundingBox(405, 483, 107, 27)
+    HELP_BB = BoundingBox(519, 483, 107, 27)
 
-    DECK_BB = BoundingBox(194, 210, 407, 145)
+    DECK_BB = BoundingBox(194, 210, 410, 150)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -88,7 +88,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
     def change_current_deck_index(self,click_point:np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1]- 210) / 29)
+            click_index: int = floor((click_point[1]- 210) / 30)
             if(click_index >= self.deck_database.decks_length()):
                 return
             self.get_state()[self.current_index + 1] = 0
@@ -117,7 +117,7 @@ class ChooseDeckStudyPage(Page,RewardElement):
         for i, deck in enumerate (self.deck_database.decks):
             if((self.add_deck_popup.is_open() and i >= 1) or (self.leads_to_external_website_popup.is_open() and i >= 3)):
                 continue
-            put_text(img, f" {deck.name}", (200, 231 + 29 * i), font_scale = 0.5)
+            put_text(img, f" {deck.name}", (200, 231 + 30 * i), font_scale = 0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:

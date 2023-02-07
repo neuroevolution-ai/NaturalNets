@@ -19,7 +19,7 @@ class CheckMediaPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "check_media_page.png")
     
     WINDOW_BB = BoundingBox(100, 100, 622, 499)
-    CLOSE_BB = BoundingBox(616, 567, 78, 28)
+    CLOSE_BB = BoundingBox(619, 562, 81, 24)
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):
