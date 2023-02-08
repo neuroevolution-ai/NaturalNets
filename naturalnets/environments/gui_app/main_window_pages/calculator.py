@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -76,7 +76,7 @@ class Calculator(Page, RewardElement):
         # Does not need to be added as child, because buttons do not have a state
         self.button = Button(self.BUTTON_BB, self.calculate)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
         self.base = None
         self.current_result = None
 
@@ -240,6 +240,9 @@ class Calculator(Page, RewardElement):
     def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
         if self.popup.is_open():
             return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
 
         clickable_elements.extend(self.dropdowns)
         clickable_elements.append(self.button)

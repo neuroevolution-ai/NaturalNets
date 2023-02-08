@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -120,7 +120,7 @@ class TextPrinterSettings(Page, RewardElement):
 
         self.add_widgets(self.dropdowns)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
 
         # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
@@ -232,7 +232,7 @@ class TextPrinterSettings(Page, RewardElement):
             return self.popup.get_clickable_elements()
 
         if self.opened_dd is not None:
-            return [self.opened_dd]
+            return self.opened_dd.get_visible_items()
 
         clickable_elements.extend(self.dropdowns)
         clickable_elements.extend(self.rbg.get_radio_buttons())

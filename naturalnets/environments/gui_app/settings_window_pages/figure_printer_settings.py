@@ -329,6 +329,6 @@ class FigureCheckboxesPopup(Page, RewardElement):
 
     def get_clickable_elements(self) -> List[Clickable]:
         if self.dropdown_opened:
-            return [self.dropdown]
+            return self.dropdown.get_visible_items()
 
         return [self.dropdown, self.apply_button]

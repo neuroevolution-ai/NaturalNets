@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import cv2
 import numpy as np
@@ -6,6 +7,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color, Figure
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -155,6 +157,15 @@ class FigurePrinter(Page, RewardElement):
 
         if self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()
+
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.dropdown_opened:
+            return self.dropdown.get_visible_items()
+
+        clickable_elements.append(self.dropdown)
+        clickable_elements.append(self._draw_figure_button)
+
+        return clickable_elements
 
     def render(self, img: np.ndarray):
         super().render(img)

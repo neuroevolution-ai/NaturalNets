@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -83,7 +83,7 @@ class CalculatorSettings(Page, RewardElement):
                                                    self.base_16_ddi])
         self.add_widget(self.dropdown)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
 
         self.popup = CalculatorSettingsPopup(self)
         self.add_child(self.popup)
@@ -163,7 +163,7 @@ class CalculatorSettings(Page, RewardElement):
             return self.popup.get_clickable_elements()
 
         if self.opened_dd is not None:
-            return [self.opened_dd]
+            return self.opened_dd.get_visible_items()
 
         clickable_elements.extend(self.operator_checkboxes)
         clickable_elements.append(self.dropdown)
@@ -268,6 +268,6 @@ class CalculatorSettingsPopup(Page, RewardElement):
 
     def get_clickable_elements(self) -> List[Clickable]:
         if self.dropdown_opened:
-            return [self.dropdown]
+            return self.dropdown.get_visible_items()
 
         return [self.dropdown, self.apply_button]
