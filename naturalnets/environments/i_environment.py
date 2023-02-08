@@ -62,3 +62,7 @@ class IGUIEnvironment(IEnvironment):
     @abc.abstractmethod
     def render_image(self) -> np.ndarray:
         pass
+
+    @abc.abstractmethod
+    def get_observation_dict(self) -> dict:
+        pass
