@@ -205,7 +205,7 @@ class Calculator(Page, RewardElement):
         if current_clickable == self.button:
             # The coordinates point to the middle of the "Calculate" button, which is never occupied by an opened
             # dropdown or anything else -> thus always valid
-            new_click_position = np.array([272, 416], dtype=np.int)
+            new_click_position = np.array([272, 416], dtype=np.int32)
         else:
             # Top left of any widget is fine
             new_click_position = current_clickable.get_bb().get_click_point_inside_bb()

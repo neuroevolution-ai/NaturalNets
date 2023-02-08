@@ -174,7 +174,7 @@ class FigurePrinter(Page, RewardElement):
         if current_clickable == self._draw_figure_button:
             # That is a click position which is always clickable. It is on the lower part of the "Draw Figure" Button.
             # If the dropdown has three items and is opened, then the upper half of the button is overlapped.
-            new_click_position = np.array([270, 422], dtype=np.int)
+            new_click_position = np.array([270, 422], dtype=np.int32)
         else:
             new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
 

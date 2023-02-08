@@ -215,7 +215,7 @@ class FigurePrinterSettings(Page, RewardElement):
         # is selected, the upper left corner (which is returned by get_click_point_inside_bb()) would overlap with the
         # apply button, and thus the apply button is clicked instead of the selected house checkbox.
         if self.is_popup_open() and current_clickable == self.figure_to_checkbox[Figure.HOUSE]:
-            return current_minimal_distance, current_clickable, np.array([243, 182], dtype=np.int)
+            return current_minimal_distance, current_clickable, np.array([243, 182], dtype=np.int32)
 
         return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 

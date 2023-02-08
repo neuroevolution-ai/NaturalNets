@@ -38,7 +38,7 @@ class BoundingBox:
         return math.sqrt(dx * dx + dy * dy)
 
     def get_click_point_inside_bb(self) -> np.ndarray:
-        return np.array([self.x1, self.y1], dtype=np.int)
+        return np.array([self.x1, self.y1], dtype=np.int32)
 
     def get_as_tuple(self):
         """Returns the BoundingBox values as a Tuple (x, y, width, height)."""

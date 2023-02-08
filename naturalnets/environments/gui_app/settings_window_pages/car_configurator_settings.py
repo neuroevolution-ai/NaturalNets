@@ -256,7 +256,7 @@ class CarConfiguratorSettings(Page, RewardElement):
         # get_click_point_inside_bb() the upper left corner of the bounding box is returned, which then falls on the
         # confirm button.
         if self.is_popup_open() and current_clickable == self.interior_sport:
-            return current_minimal_distance, current_clickable, np.array([298, 152], dtype=np.int)
+            return current_minimal_distance, current_clickable, np.array([298, 152], dtype=np.int32)
 
         return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 
