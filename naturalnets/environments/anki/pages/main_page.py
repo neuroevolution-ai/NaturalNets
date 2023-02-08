@@ -49,29 +49,30 @@ class MainPage(Page,RewardElement):
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
     DECKS_BB = BoundingBox(112, 244, 610, 196)
     
-    DECKS_BUTTON_BB = BoundingBox(481, 44, 155, 36)
-    CREATE_DECK_BB = BoundingBox(15, 727, 254, 48)
-    IMPORT_FILE_BB = BoundingBox(586, 726, 235, 48)
-    DELETE_DECK_BB = BoundingBox(303, 724, 252, 48)
-
-    STUDY_BB = BoundingBox(281, 458, 260, 50)
-    ADD_CARD_BB = BoundingBox(298, 44, 155, 36)
-    GET_SHARED_BB = BoundingBox(481, 45, 155, 36)
-    ANKI_LOGIN_BB = BoundingBox(656, 44, 155, 36)
-
-    FILE_DROPDOWN_BB = BoundingBox(0, 0, 70, 29)
-    EDIT_DROPDOWN_BB = BoundingBox(70, 0, 70, 29)
-    TOOLS_DROPDOWN_BB = BoundingBox(140, 0, 70, 29)
-    HELP_DROPDOWN_BB = BoundingBox(210, 0, 70, 29)
+    DECKS_BUTTON_BB = BoundingBox(502, 46, 131, 30)
+    CREATE_DECK_BB = BoundingBox(117, 727, 129, 26)
+    DELETE_DECK_BB = BoundingBox(345, 727, 129, 26)
+    IMPORT_FILE_BB = BoundingBox(583, 727, 129, 26)
     
-    FILE_DROPDOWN_BB_OFFSET = BoundingBox(0, 33, 100, 28)
-    EDIT_DROPDOWN_BB_OFFSET = BoundingBox(70, 33, 90, 28)
-    TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(140, 33, 90, 28)
-    HELP_DROPDOWN_BB_OFFSET = BoundingBox(210, 33, 90, 28)
 
-    EDIT_BB = BoundingBox(71, 773, 88, 37)
-    SHOW_ANSWER_NEXT_BB = BoundingBox(312, 773, 140, 34)
-    REMOVE_BB = BoundingBox(624, 773, 129, 35)
+    STUDY_BB = BoundingBox(342, 464, 129, 26)
+    ADD_CARD_BB = BoundingBox(331, 49, 129, 26)
+    GET_SHARED_BB = BoundingBox(501, 49, 129, 26)
+    ANKI_LOGIN_BB = BoundingBox(674, 49, 129, 26)
+
+    FILE_DROPDOWN_BB = BoundingBox(0, 0, 70, 31)
+    EDIT_DROPDOWN_BB = BoundingBox(70, 0, 70, 31)
+    TOOLS_DROPDOWN_BB = BoundingBox(140, 0, 70, 31)
+    HELP_DROPDOWN_BB = BoundingBox(210, 0, 70, 31)
+    
+    FILE_DROPDOWN_BB_OFFSET = BoundingBox(0, 35, 100, 28)
+    EDIT_DROPDOWN_BB_OFFSET = BoundingBox(71, 35, 100, 28)
+    TOOLS_DROPDOWN_BB_OFFSET = BoundingBox(142, 35, 100, 28)
+    HELP_DROPDOWN_BB_OFFSET = BoundingBox(212, 35, 100, 28)
+
+    EDIT_BB = BoundingBox(145, 749, 85, 24)
+    SHOW_ANSWER_NEXT_BB = BoundingBox(329, 749, 158, 24)
+    REMOVE_BB = BoundingBox(570, 750, 116, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -350,7 +351,7 @@ class MainPage(Page,RewardElement):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         current_bounding_box = self.calculate_current_bounding_box()
         if((current_bounding_box.is_point_inside(click_point))):
-            click_index: int = floor((click_point[1] - 246) / 38)
+            click_index: int = floor((click_point[1] - 243) / 39)
             if(click_index >= self.deck_database.decks_length()):
                 return
             self.get_state()[self.deck_database.current_index + 1] = 0
@@ -359,9 +360,9 @@ class MainPage(Page,RewardElement):
             self.register_selected_reward(["decks", click_index])
 
     def calculate_current_bounding_box(self):
-       upper_left_point = (112,246)
-       length = 38 * self.deck_database.decks_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 610, length)
+       upper_left_point = (110,243)
+       length = 40 * self.deck_database.decks_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 614, length)
        return current_bounding_box
 
     def open(self):
@@ -452,12 +453,12 @@ class MainPage(Page,RewardElement):
         if(self.is_logo_enabled):
             render_onto_bb(img, BoundingBox (657, 450, 128, 128), anki_logo)
         if (self.profile_page.current_profile is not None):
-            put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (16,132), font_scale = 0.4)
+            put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}", (5,162), font_scale = 0.5)
         
-        put_text(img, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}", (286,132), font_scale = 0.4)
+        put_text(img, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}", (236,162), font_scale = 0.5)
         
         if (self.anki_login.current_anki_account is not None):
-            put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (556,132), font_scale = 0.4)
+            put_text(img, f"Current account: {self.anki_login.current_anki_account.account_name}", (566,162), font_scale = 0.5)
         
         for i, deck in enumerate(self.deck_database.decks):
             put_text(img, deck.name, (126 ,271 + i * 38), font_scale = 0.5)
@@ -467,17 +468,17 @@ class MainPage(Page,RewardElement):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(image, self.WINDOW_BB, frame)
         decks_button = cv2.imread(self.DECKS_BUTTON_PATH)
-        render_onto_bb(image, BoundingBox (479, 43, 158, 40), decks_button)
-        put_text(image, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}",(484, 112),font_scale = 0.5)
-        put_text(image, f"Current card number: {self.deck_database.decks[self.deck_database.current_index].study_index + 1}",(484, 142),font_scale = 0.5)
-        put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",(484, 172),font_scale = 0.5)
+        render_onto_bb(image, BoundingBox (501, 46, 132, 30), decks_button)
+        put_text(image, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}",(484, 142),font_scale = 0.5)
+        put_text(image, f"Current card number: {self.deck_database.decks[self.deck_database.current_index].study_index + 1}",(484, 172),font_scale = 0.5)
+        put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",(484, 202),font_scale = 0.5)
         print_non_ascii(img = image, text = f"Question : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",bounding_box = BoundingBox(42, 232, 600, 100), font_size = 35, dimension = (100, 600, 3))
         if(self.leads_to_external_website_popup_page.is_open()):
             image = self.leads_to_external_website_popup_page.render(image)
         if (self.get_state()[7] == 1):
             print_non_ascii(img = image, text = f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",bounding_box =  BoundingBox(42, 332, 600, 100), font_size = 35, dimension = (100, 600, 3))
             next_button = cv2.imread(self.NEXT_BUTTON_PATH)
-            render_onto_bb(image, BoundingBox (311, 772, 140, 34), next_button)
+            render_onto_bb(image, BoundingBox (327, 747, 164, 30), next_button)
         if (self.edit_card_page.is_open()):
             image = self.edit_card_page.render(image)
         if (self.at_least_one_card_popup_page.is_open()):

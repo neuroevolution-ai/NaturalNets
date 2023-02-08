@@ -17,9 +17,9 @@ class ResetCollectionPopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection_popup.png")
 
-    BOUNDING_BOX = BoundingBox(160, 300, 498, 111)
-    YES_BUTTON_BB = BoundingBox(450, 374, 87, 30)
-    NO_BUTTON_BB = BoundingBox(560, 375, 79, 30)
+    BOUNDING_BOX = BoundingBox(160, 300, 530, 113)
+    YES_BUTTON_BB = BoundingBox(478, 377, 82, 24)
+    NO_BUTTON_BB = BoundingBox(586, 377, 84, 24)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)

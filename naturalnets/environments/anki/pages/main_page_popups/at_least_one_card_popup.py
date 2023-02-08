@@ -16,7 +16,7 @@ class AtLeastOneCardPopup(Page, RewardElement):
 
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_card_popup.png")
-    WINDOW_BB = BoundingBox(250, 300, 318, 121)
+    WINDOW_BB = BoundingBox(250, 250, 318, 121)
     
     OK_BUTTON_BB = BoundingBox(476, 339, 81, 23)
 

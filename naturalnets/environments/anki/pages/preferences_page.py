@@ -31,8 +31,8 @@ class PreferencesPage(RewardElement,Page):
     PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network_page.png")
     PREFERENCES_BACKUP_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_backup_page.png")
 
-    CLOSE_BB = BoundingBox(571, 637, 100, 30)
-    HELP_BB = BoundingBox(695, 638, 95, 30)
+    CLOSE_BB = BoundingBox(545, 640, 98, 26)
+    HELP_BB = BoundingBox(683, 640, 98, 26)
     
     BASIC_SWITCH_BB = BoundingBox(62, 117, 145, 41)
     SCHEDULING_SWITCH_BB = BoundingBox(209, 117, 145, 41)
@@ -440,7 +440,7 @@ class PreferencesPage(RewardElement,Page):
                     img = widget.render(img)
             for dd in self.basic_window_dropdowns:
                 if dd.get_selected_item() is not None:
-                    put_text(img, dd.get_selected_item().display_name, (self.dropdowns_to_bbs[dd].x + 10,(self.dropdowns_to_bbs[dd].y + 19) ),font_scale=0.5)
+                    put_text(img, dd.get_selected_item().display_name, (self.dropdowns_to_bbs[dd].x + 10,(self.dropdowns_to_bbs[dd].y + 19) ),font_scale=0.4)
             if self.open_dd is not None:
                 img = self.open_dd.render(img)
         elif (self.get_state()[2] == 1):

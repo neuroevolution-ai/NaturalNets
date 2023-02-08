@@ -99,7 +99,7 @@ def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_
         pil_image = Image.fromarray(image)
         for x in range(pil_image.width):
             for y in range(pil_image.height):
-                pil_image.putpixel((x, y), (163,168,231))
+                pil_image.putpixel((x, y), (240,240,240))
         draw = ImageDraw.Draw(pil_image)
         font = ImageFont.truetype("arial.ttf", font_size)
         draw.text((5, 5), text, fill = "black", font=font)

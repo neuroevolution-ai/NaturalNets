@@ -22,10 +22,10 @@ class ImportDeckPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_page.png")
 
     WINDOW_BB = BoundingBox(70, 60, 689, 584)
-    SELECT_DECK_BB = BoundingBox(521, 101, 192, 45)
-    IMPORT_BB = BoundingBox(309, 595, 127, 29)
-    CLOSE_BB = BoundingBox(479, 595, 98, 29)
-    HELP_BB = BoundingBox(622, 595, 98, 29)
+    SELECT_DECK_BB = BoundingBox(568, 107, 127, 25)
+    IMPORT_BB = BoundingBox(342, 595, 96, 25)
+    CLOSE_BB = BoundingBox(488, 595, 98, 25)
+    HELP_BB = BoundingBox(625, 595, 98, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -125,7 +125,7 @@ class ImportDeckPage(Page,RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if(self.import_deck_popup.current_import_name is not None):
-            put_text(img, f"Current import deck: {self.import_deck_popup.current_import_name}", (95, 120), font_scale = 0.4)
+            put_text(img, f"Current import deck: {self.import_deck_popup.current_import_name}", (95, 120), font_scale = 0.5)
         if (self.import_deck_popup.is_open()):
             img = self.import_deck_popup.render(img)
         elif (self.leads_to_external_website_popup.is_open()):
@@ -146,10 +146,10 @@ class ImportDeckSelectPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_select_page.png")
 
     WINDOW_BB = BoundingBox(150, 150, 499, 373)
-    CHOOSE_BB = BoundingBox(304, 486, 117, 29)
-    CLOSE_BB = BoundingBox(434, 486, 96, 28)
-    HELP_BB = BoundingBox(546, 486, 98, 28)
-    DECK_BB = BoundingBox(183, 204, 420, 145)
+    CHOOSE_BB = BoundingBox(318, 488, 98, 24)
+    CLOSE_BB = BoundingBox(432, 488, 96, 24)
+    HELP_BB = BoundingBox(543, 488, 98, 24)
+    DECK_BB = BoundingBox(182, 202, 420, 150)
     
     def __new__(cls):
         if not hasattr(cls, 'instance'):

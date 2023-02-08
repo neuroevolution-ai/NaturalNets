@@ -27,13 +27,13 @@ class ProfilePage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
     WINDOW_BB = BoundingBox(130, 150, 555, 466)
-    OPEN_BB = BoundingBox(564, 172, 107, 30)
-    ADD_BB = BoundingBox(564, 215, 107, 30)
-    RENAME_BB = BoundingBox(564, 258, 107, 30)
-    DELETE_BB = BoundingBox(564, 302, 107, 30)
-    OPEN_BACKUP_BB = BoundingBox(506, 529, 175, 30)
-    DOWNGRADE_QUIT_BB = BoundingBox(508, 582, 175, 30)
-    PROFILES_BB = BoundingBox(143, 166, 400, 145)
+    OPEN_BB = BoundingBox(561, 167, 77, 25)
+    ADD_BB = BoundingBox(561, 208, 77, 25)
+    RENAME_BB = BoundingBox(561, 250, 77, 25)
+    DELETE_BB = BoundingBox(561, 291, 77, 25)
+    OPEN_BACKUP_BB = BoundingBox(522, 531, 117, 25)
+    DOWNGRADE_QUIT_BB = BoundingBox(522, 577, 115, 25)
+    PROFILES_BB = BoundingBox(143, 166, 403, 150)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -79,7 +79,7 @@ class ProfilePage(Page,RewardElement):
     def change_current_profile_index(self, click_point:np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if(current_bounding_box.is_point_inside(click_point)):
-            click_index: int = floor((click_point[1] - 166) / 29)
+            click_index: int = floor((click_point[1] - 166) / 30)
             if(click_index >= self.profile_database.profiles_length()):
                 return
             self.get_state()[self.profile_database.current_index + 1] = 0
@@ -90,8 +90,8 @@ class ProfilePage(Page,RewardElement):
 
     def calculate_current_bounding_box(self):
        upper_left_point = (143, 166)
-       length = 29 * self.profile_database.profiles_length()
-       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 400, length)
+       length = 30 * self.profile_database.profiles_length()
+       current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 403, length)
        return current_bounding_box
     
     def open(self):
@@ -183,8 +183,8 @@ class DeleteProfilePopup(Page,RewardElement):
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(160, 300, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "delete_profile_popup.png")
-    YES_BUTTON_BB = BoundingBox(474, 373, 86, 30)
-    NO_BUTTON_BB = BoundingBox(587, 373, 80, 30)
+    YES_BUTTON_BB = BoundingBox(478, 376, 84, 26)
+    NO_BUTTON_BB = BoundingBox(586, 375, 84, 26)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -244,7 +244,7 @@ class DowngradePopup(Page, RewardElement):
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(160, 300, 530, 113)
     IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
-    OK_BUTTON_BB = BoundingBox(585, 375, 82, 27)
+    OK_BUTTON_BB = BoundingBox(601, 382, 81, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -342,9 +342,9 @@ class RenameProfilePopup(RewardElement,Page):
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
     
     WINDOW_BB = BoundingBox(160, 305, 498, 111)
-    OK_BB = BoundingBox(404, 377, 60, 30)
-    TEXT_BB = BoundingBox(586, 339, 70, 26)
-    CANCEL_BB = BoundingBox(505, 380, 83, 24)
+    OK_BB = BoundingBox(451, 381, 82, 24)
+    TEXT_BB = BoundingBox(566, 345, 86, 20)
+    CANCEL_BB = BoundingBox(549, 381, 101, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -427,9 +427,9 @@ class AddProfilePopup(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
     
     WINDOW_BB = BoundingBox(160, 305, 498, 109)
-    OK_BB = BoundingBox(404, 377, 60, 30)
-    TEXT_BB = BoundingBox(586, 339, 70, 26)
-    CANCEL_BB = BoundingBox(505, 380, 83, 24)
+    OK_BB = BoundingBox(451, 381, 82, 24)
+    TEXT_BB = BoundingBox(566, 345, 86, 20)
+    CANCEL_BB = BoundingBox(549, 381, 101, 24)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):

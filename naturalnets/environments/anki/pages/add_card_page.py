@@ -24,12 +24,12 @@ class AddCardPage(Page,RewardElement):
     IMG_PATH = os.path.join(IMAGES_PATH, "add_card_page.png")
 
     WINDOW_BB = BoundingBox(130, 120, 566, 456)
-    SELECT_BB = BoundingBox(508, 162, 167, 46)
-    FRONT_TEXT_BB = BoundingBox(580, 296, 111, 26)
-    BACK_TEXT_BB = BoundingBox(582, 407, 108, 24)
-    TAGS_TEXT_BB = BoundingBox(585, 494, 101, 23)
-    CLOSE_BB = BoundingBox(593, 539, 82, 25)
-    ADD_BB = BoundingBox(510, 538, 60, 25)
+    SELECT_BB = BoundingBox(545, 151, 120, 25)
+    FRONT_TEXT_BB = BoundingBox(588, 299, 87, 25)
+    BACK_TEXT_BB = BoundingBox(588, 407, 87, 25)
+    TAGS_TEXT_BB = BoundingBox(588, 494, 87, 25)
+    CLOSE_BB = BoundingBox(582, 538, 88, 25)
+    ADD_BB = BoundingBox(466, 538, 88, 25)
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -154,18 +154,18 @@ class AddCardPage(Page,RewardElement):
         if (self.choose_deck.is_open()):
             self.choose_deck.render(img)
             return img
-        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}", (180,230) ,font_scale = 0.7)
+        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}", (277,191) ,font_scale = 0.5)
         if (self.front_and_backside_popup.is_open()):
             self.front_and_backside_popup.render(img)
             if (self.back_side_clipboard_temporary_string is not None):
-                put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 429) ,font_scale = 1)
+                put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 422) ,font_scale = 0.5)
             if (self.tag_clipboard_temporary_string is not None):
-                put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 513) ,font_scale = 0.8)
+                put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 507) ,font_scale = 0.5)
             return img
         if (self.front_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.front_side_clipboard_temporary_string}", (198, 316) ,font_scale = 1)
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (197, 310) ,font_scale = 0.5)
         if (self.back_side_clipboard_temporary_string is not None):
-            put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 429) ,font_scale = 1)
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 422) ,font_scale = 0.5)
         if (self.tag_clipboard_temporary_string is not None):
-            put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 513) ,font_scale = 0.8)
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 507) ,font_scale = 0.5)
         return img
