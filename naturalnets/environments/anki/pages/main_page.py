@@ -21,7 +21,7 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb, print_non_ascii
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.anki import ChooseDeckStudyPage
 from naturalnets.environments.anki import CheckMediaPage
@@ -477,7 +477,7 @@ class MainPage(Page,RewardElement):
         if(self.leads_to_external_website_popup_page.is_open()):
             image = self.leads_to_external_website_popup_page.render(image)
         if (self.get_state()[7] == 1):
-            print_non_ascii(img = image, text = f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",bounding_box =  BoundingBox(42, 332, 600, 100), font_size = 35, dimension = (100, 600, 3))
+            AsciiPrintUtil.print_non_ascii(img = image, text = f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",bounding_box =  BoundingBox(42, 332, 600, 100), font_size = 35, dimension = (100, 600, 3))
             next_button = cv2.imread(self.NEXT_BUTTON_PATH)
             render_onto_bb(image, BoundingBox (327, 747, 164, 30), next_button)
         if (self.edit_card_page.is_open()):
