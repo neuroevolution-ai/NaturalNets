@@ -16,7 +16,6 @@ FF_BRAIN = "FeedForwardNN"
 
 GUI_APP_ENV = "GUIApp"
 MUJOCO_ENV = "GymMujoco"
-ANKI_APP_ENV = "AnkiApp"
 
 NO_ENHANCER = None
 RANDOM_ENHANCER = "RandomEnhancer"
@@ -55,7 +54,7 @@ def brain_test_config(request) -> Tuple[int, int, dict, Type[IBrain]]:
             "enhancer": enhancer
         } for (brain, env, enhancer) in itertools.product(
             [CTRNN_BRAIN, RNN_BRAIN, LSTM_BRAIN, GRU_BRAIN, FF_BRAIN],
-            [GUI_APP_ENV, MUJOCO_ENV,ANKI_APP_ENV],
+            [GUI_APP_ENV, MUJOCO_ENV],
             [NO_ENHANCER, RANDOM_ENHANCER]
         )
     ]
@@ -126,11 +125,6 @@ def _get_env_config_and_class(chosen_env: str) -> Tuple[dict, Type[IEnvironment]
     if chosen_env == GUI_APP_ENV:
         env_config = {
             "type": GUI_APP_ENV,
-            "number_time_steps": 200,
-        }
-    elif chosen_env == ANKI_APP_ENV:
-        env_config = {
-            "type": ANKI_APP_ENV,
             "number_time_steps": 200,
         }
     elif chosen_env == MUJOCO_ENV:
