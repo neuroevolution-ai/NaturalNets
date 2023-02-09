@@ -9,6 +9,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class ResetCollectionPopup(Page, RewardElement):
     """
     State description:
@@ -64,7 +65,7 @@ class ResetCollectionPopup(Page, RewardElement):
         self.register_selected_reward(["reset_all"])
         self.close()
     
-    def render(self, img:np.ndarray):
+    def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img

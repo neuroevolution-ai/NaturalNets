@@ -8,19 +8,19 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class CheckMediaPage(Page,RewardElement):
-    
+
+class CheckMediaPage(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open
     """
-    
+
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "check_media_page.png")
-    
+
     WINDOW_BB = BoundingBox(100, 100, 622, 499)
     CLOSE_BB = BoundingBox(619, 562, 81, 24)
-    
+
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(CheckMediaPage, cls).__new__(cls)
@@ -29,8 +29,8 @@ class CheckMediaPage(Page,RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
-        self.close_button = Button(self.CLOSE_BB,self.close)
+
+        self.close_button = Button(self.CLOSE_BB, self.close)
 
     @property
     def reward_template(self):
@@ -38,7 +38,7 @@ class CheckMediaPage(Page,RewardElement):
             "window": ["open", "close"]
         }
 
-    def handle_click(self,click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray):
         if self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
 
@@ -49,13 +49,11 @@ class CheckMediaPage(Page,RewardElement):
     def close(self):
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        
 
     def is_open(self) -> int:
         return self.get_state()[0]
 
-    def render(self,img: np.ndarray):
+    def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
-        

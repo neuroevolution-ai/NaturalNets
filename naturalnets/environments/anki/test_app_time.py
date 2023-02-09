@@ -9,7 +9,7 @@ HEIGHT = 709
 
 config = {
     "type": "AnkiApp",
-    "number_time_steps": 10**6,
+    "number_time_steps": 10 ** 6,
 }
 
 state_diff: np.array = None
@@ -19,6 +19,7 @@ def calc_state_diff(curr_state, init_state, target):
     diff = np.bitwise_xor(curr_state, init_state)
     target = np.bitwise_or(diff, target)
     return target
+
 
 if __name__ == "__main__":
 
@@ -34,13 +35,13 @@ if __name__ == "__main__":
         t0 = time.time()
         app.step(action)
         t1 = time.time()
-        time_sum += (t1-t0)
+        time_sum += (t1 - t0)
 
-        if i % 10**5 == 0:
+        if i % 10 ** 5 == 0:
             print(f"{i} steps done.")
 
         state_diff = calc_state_diff(app.get_state(), initial_state, state_diff)
 
-    print(f"Time per timestep: {time_sum/config['number_time_steps']}")
+    print(f"Time per timestep: {time_sum / config['number_time_steps']}")
     print(f"State diff: {state_diff}")
-    print(f"Changed state elements: {np.sum(state_diff)/len(state_diff)}%")
+    print(f"Changed state elements: {np.sum(state_diff) / len(state_diff)}%")

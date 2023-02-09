@@ -8,7 +8,8 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class NameExistsPopup(Page,RewardElement):
+
+class NameExistsPopup(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open 
@@ -22,7 +23,7 @@ class NameExistsPopup(Page,RewardElement):
         if not hasattr(cls, 'instance'):
             cls.instance = super(NameExistsPopup, cls).__new__(cls)
         return cls.instance
-    
+
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
@@ -30,15 +31,15 @@ class NameExistsPopup(Page,RewardElement):
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"]
+            "window": ["open", "close"]
         }
-        
+
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
         self.ok_button = Button(self.OK_BB, self.close)
-    
+
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
@@ -50,11 +51,11 @@ class NameExistsPopup(Page,RewardElement):
     def is_open(self):
         return self.get_state()[0]
 
-    def render(self,img: np.ndarray):
+    def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        if(self.ok_button.is_clicked_by(click_position)):
+        if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)

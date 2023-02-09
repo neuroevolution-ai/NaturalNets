@@ -8,7 +8,8 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 
-class AboutPage(Page,RewardElement):
+
+class AboutPage(Page, RewardElement):
     """
     Page informing about contributors of the app
         State description:
@@ -25,11 +26,11 @@ class AboutPage(Page,RewardElement):
         if not hasattr(cls, 'instance'):
             cls.instance = super(AboutPage, cls).__new__(cls)
         return cls.instance
-    
+
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
 
     @property
@@ -37,7 +38,6 @@ class AboutPage(Page,RewardElement):
         return {
             "window": ["open", "close"],
         }
-        
 
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -50,12 +50,11 @@ class AboutPage(Page,RewardElement):
     def close(self):
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        
-    
+
     def is_open(self):
         return self.get_state()[0]
 
-    def render(self,img: np.ndarray):
+    def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img

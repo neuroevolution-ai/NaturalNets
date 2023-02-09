@@ -20,10 +20,10 @@ class FakeBugOptions(enum.Enum):
 class AppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-    
+
+
 @register_environment_class
 class AnkiApp(IGUIEnvironment):
-
     screen_width = 834
     screen_height = 834
 
@@ -31,11 +31,11 @@ class AnkiApp(IGUIEnvironment):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the AnkiApp environment")
         t0 = time.time()
-        
+
         self.config = AppCfg(**configuration)
-        
+
         self.app_controller = AppController()
-        
+
         self.t = 0
 
         # Keep track of the last click position for rendering purposes
@@ -45,15 +45,15 @@ class AnkiApp(IGUIEnvironment):
         self.window_name = "AnkiApp"
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
-        
+
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
         logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
-    
+
     def get_state(self):
         return self.app_controller.get_total_state()
-    
+
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
@@ -88,7 +88,7 @@ class AnkiApp(IGUIEnvironment):
         image = self.app_controller.render(image)
 
         return image
-    
+
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
         image = self.render_image()
 
@@ -140,7 +140,7 @@ class AnkiApp(IGUIEnvironment):
 
     def get_window_name(self) -> str:
         return self.window_name
-    
+
     def get_screen_size(self) -> int:
         return 834
 

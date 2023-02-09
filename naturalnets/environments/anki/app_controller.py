@@ -5,13 +5,15 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.anki.pages.main_page import MainPage
 from naturalnets.environments.gui_app.widgets.button import Button
+
+
 class AppController:
-    
+
     def __init__(self):
         self.main_page = MainPage()
-        
+
         self._total_state_len = self.get_element_state_len(self.main_page)
-        
+
         states_info = []
         self._last_allocated_state_index: int = 0
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
@@ -20,7 +22,7 @@ class AppController:
 
         self.reward_array = None
         self.reset_reward_array()
-    
+
     def calculate_reward_count(self, reward_count, reward_element: RewardElement):
         reward_count += reward_element.get_reward_count()
 
@@ -59,7 +61,7 @@ class AppController:
             accumulated_len += self.get_element_state_len(child)
         accumulated_len += state_element.get_state_len()
         return accumulated_len
-    
+
     def assign_state(self, state_element: StateElement, recursion_depth: int, states_info: list) -> None:
         """Assigns (part of) the app state-vector to the given StateElement and all of its children.
 
@@ -77,8 +79,8 @@ class AppController:
             })
 
         for child in state_element.get_children():
-            if (not(isinstance(child, Button))):
-                self.assign_state(child, recursion_depth+1, states_info)
+            if not (isinstance(child, Button)):
+                self.assign_state(child, recursion_depth + 1, states_info)
 
     def get_next_state_sector(self, state_len):
         """Returns the next state sector (i.e. the next non-assigned part of the total
@@ -101,19 +103,19 @@ class AppController:
 
     def get_total_reward_len(self) -> int:
         return len(self.reward_array)
-    
+
     def get_total_state_len(self) -> int:
         return self._total_state_len
-    
+
     def handle_click(self, click_position: np.ndarray):
         previous_reward_array = copy(self.reward_array)
         self.main_page.handle_click(click_position)
         reward = np.count_nonzero(previous_reward_array != self.reward_array)
         return reward
-    
+
     def get_total_state(self) -> np.ndarray:
         return self._state
 
-    def render(self,img: np.ndarray):
+    def render(self, img: np.ndarray):
         img = self.main_page.render(img)
         return img

@@ -5,7 +5,8 @@ from typing import List
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver, VoiceRecorder
-from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import LeadsToExternalWebsitePopup
+from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
+    import LeadsToExternalWebsitePopup
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -15,17 +16,16 @@ from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class PreferencesPage(RewardElement,Page):
-    
+class PreferencesPage(RewardElement, Page):
     """
     State description:
             state[0]: if this window is open
             state[j]: i-th sub-window is open j = {1,2,3,4}  
     """
-    
+
     WINDOW_BB = BoundingBox(20, 80, 801, 601)
     STATE_LEN = 5
-    
+
     PREFERENCES_BASIC_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_basic_page.png")
     PREFERENCES_SCHEDULING_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_scheduling_page.png")
     PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network_page.png")
@@ -33,7 +33,7 @@ class PreferencesPage(RewardElement,Page):
 
     CLOSE_BB = BoundingBox(545, 640, 98, 26)
     HELP_BB = BoundingBox(683, 640, 98, 26)
-    
+
     BASIC_SWITCH_BB = BoundingBox(62, 117, 145, 41)
     SCHEDULING_SWITCH_BB = BoundingBox(209, 117, 145, 41)
     NETWORK_SWITCH_BB = BoundingBox(355, 117, 145, 41)
@@ -68,7 +68,7 @@ class PreferencesPage(RewardElement,Page):
     SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(415, 414, 12, 9)
     SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(415, 455, 12, 9)
     SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB = BoundingBox(415, 496, 18, 9)
-    
+
     SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB = BoundingBox(415, 426, 12, 9)
     SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(415, 464, 12, 9)
     SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(415, 505, 12, 9)
@@ -91,7 +91,7 @@ class PreferencesPage(RewardElement,Page):
         RewardElement.__init__(self)
         self.get_state()[1] = 1
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
-        self.current_search_text = None        
+        self.current_search_text = None
         self.open_dd = None
 
         self.backup_number = 50
@@ -106,7 +106,7 @@ class PreferencesPage(RewardElement,Page):
         self.scheduling_switch_button = Button(self.SCHEDULING_SWITCH_BB, self.set_scheduling)
         self.network_switch_button = Button(self.NETWORK_SWITCH_BB, self.set_network)
         self.backup_switch_button = Button(self.BACKUP_SWITCH_BB, self.set_backup)
-        
+
         self.basic_window_english_ddi = DropdownItem(AnkiLanguages.ENGLISH, AnkiLanguages.ENGLISH.value)
         self.basic_window_german_ddi = DropdownItem(AnkiLanguages.GERMAN, AnkiLanguages.GERMAN.value)
         self.basic_window_spanish_ddi = DropdownItem(AnkiLanguages.SPANISH, AnkiLanguages.SPANISH.value)
@@ -115,86 +115,143 @@ class PreferencesPage(RewardElement,Page):
         self.basic_window_video_driver_angle_ddi = DropdownItem(VideoDriver.ANGLE, VideoDriver.ANGLE.value)
         self.basic_window_video_driver_software_ddi = DropdownItem(VideoDriver.SOFTWARE, VideoDriver.SOFTWARE.value)
 
-        self.basic_window_add_to_current_ddi = DropdownItem(DeckAddType.ADD_TO_CURRENT,DeckAddType.ADD_TO_CURRENT.value)
-        self.basic_window_change_deck_ddi = DropdownItem(DeckAddType.CHANGE_DECK,DeckAddType.CHANGE_DECK.value)
-        
+        self.basic_window_add_to_current_ddi = DropdownItem(DeckAddType.ADD_TO_CURRENT,
+                                                            DeckAddType.ADD_TO_CURRENT.value)
+        self.basic_window_change_deck_ddi = DropdownItem(DeckAddType.CHANGE_DECK, DeckAddType.CHANGE_DECK.value)
+
         self.basic_window_voice_recorder_qt_ddi = DropdownItem(VoiceRecorder.PY_AUDIO, VoiceRecorder.PY_AUDIO.value)
         self.basic_window_voice_recorder_py_audio_ddi = DropdownItem(VoiceRecorder.QT, VoiceRecorder.QT.value)
 
-        self.basic_window_language_dd = Dropdown(self.BASIC_WINDOW_DD_1_BB_OFFSET, [self.basic_window_english_ddi, self.basic_window_german_ddi, self.basic_window_spanish_ddi])
-        self.basic_window_video_driver_dd = Dropdown(self.BASIC_WINDOW_DD_2_BB_OFFSET, [self.basic_window_video_driver_opengl_ddi, self.basic_window_video_driver_angle_ddi, self.basic_window_video_driver_software_ddi])
-        self.basic_window_add_to_deck_dd = Dropdown(self.BASIC_WINDOW_DD_3_BB_OFFSET, [self.basic_window_add_to_current_ddi,self.basic_window_change_deck_ddi])
-        self.basic_window_voice_recorder_dd = Dropdown(self.BASIC_WINDOW_DD_4_BB_OFFSET, [self.basic_window_voice_recorder_qt_ddi,self.basic_window_voice_recorder_py_audio_ddi])
-        
+        self.basic_window_language_dd = Dropdown(self.BASIC_WINDOW_DD_1_BB_OFFSET,
+                                                 [self.basic_window_english_ddi, self.basic_window_german_ddi,
+                                                  self.basic_window_spanish_ddi])
+        self.basic_window_video_driver_dd = Dropdown(self.BASIC_WINDOW_DD_2_BB_OFFSET,
+                                                     [self.basic_window_video_driver_opengl_ddi,
+                                                      self.basic_window_video_driver_angle_ddi,
+                                                      self.basic_window_video_driver_software_ddi])
+        self.basic_window_add_to_deck_dd = Dropdown(self.BASIC_WINDOW_DD_3_BB_OFFSET,
+                                                    [self.basic_window_add_to_current_ddi,
+                                                     self.basic_window_change_deck_ddi])
+        self.basic_window_voice_recorder_dd = Dropdown(self.BASIC_WINDOW_DD_4_BB_OFFSET,
+                                                       [self.basic_window_voice_recorder_qt_ddi,
+                                                        self.basic_window_voice_recorder_py_audio_ddi])
+
         self.basic_window_show_play_buttons_checkbox = CheckBox(self.BASIC_WINDOW_1_CHECKBOX_BB)
         self.basic_window_interrupt_audio_checkbox = CheckBox(self.BASIC_WINDOW_2_CHECKBOX_BB)
         self.basic_window_paste_clipboard_images_checkbox = CheckBox(self.BASIC_WINDOW_3_CHECKBOX_BB)
         self.basic_window_paste_without_shift_key_checkbox = CheckBox(self.BASIC_WINDOW_4_CHECKBOX_BB)
         self.basic_window_night_mode_checkbox = CheckBox(self.BASIC_WINDOW_5_CHECKBOX_BB)
-        
-        self.basic_window_put_text_button = Button(self.BASIC_WINDOW_SEARCH_TEXT_BB, self.set_current_search_text)
-        self.basic_window_user_interface_increment_button = Button(self.BASIC_WINDOW_USER_INTERFACE_INCREMENT, self.increment_user_interface)
-        self.basic_window_user_interface_decrement_button = Button(self.BASIC_WINDOW_USER_INTERFACE_DECREMENT, self.decrement_user_interface)
 
-        self.basic_window_widgets: List[Widget] = [self.basic_window_language_dd,self.basic_window_video_driver_dd,self.basic_window_show_play_buttons_checkbox,
-        self.basic_window_interrupt_audio_checkbox,self.basic_window_paste_clipboard_images_checkbox,self.basic_window_paste_without_shift_key_checkbox,
-        self.basic_window_night_mode_checkbox,self.basic_window_add_to_deck_dd,self.basic_window_put_text_button,self.basic_window_user_interface_increment_button,
-        self.basic_window_user_interface_decrement_button,self.basic_window_voice_recorder_dd]
+        self.basic_window_put_text_button = Button(self.BASIC_WINDOW_SEARCH_TEXT_BB, self.set_current_search_text)
+        self.basic_window_user_interface_increment_button = Button(self.BASIC_WINDOW_USER_INTERFACE_INCREMENT,
+                                                                   self.increment_user_interface)
+        self.basic_window_user_interface_decrement_button = Button(self.BASIC_WINDOW_USER_INTERFACE_DECREMENT,
+                                                                   self.decrement_user_interface)
+
+        self.basic_window_widgets: List[Widget] = [self.basic_window_language_dd, self.basic_window_video_driver_dd,
+                                                   self.basic_window_show_play_buttons_checkbox,
+                                                   self.basic_window_interrupt_audio_checkbox,
+                                                   self.basic_window_paste_clipboard_images_checkbox,
+                                                   self.basic_window_paste_without_shift_key_checkbox,
+                                                   self.basic_window_night_mode_checkbox,
+                                                   self.basic_window_add_to_deck_dd, self.basic_window_put_text_button,
+                                                   self.basic_window_user_interface_increment_button,
+                                                   self.basic_window_user_interface_decrement_button,
+                                                   self.basic_window_voice_recorder_dd]
 
         self.scheduling_window_show_next_review_time_checkbox = CheckBox(self.SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB)
         self.scheduling_window_remaining_card_count_checkbox = CheckBox(self.SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB)
         self.scheduling_window_show_learning_cards_checkbox = CheckBox(self.SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB)
         self.scheduling_window_legacy_timezone_checkbox = CheckBox(self.SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB)
         self.scheduling_window_v3_scheduler_checkbox = CheckBox(self.SCHEDULING_WINDOW_V3_SCHEDULER_BB)
-        
-        self.scheduling_window_next_day_increment_button = Button(self.SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB, self.increment_next_day)
-        self.scheduling_window_learn_ahead_increment_button = Button(self.SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB, self.increment_learn_ahead)
-        self.scheduling_window_timebox_time_increment_button = Button(self.SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB, self.increment_timebox_time)
-        self.scheduling_window_next_day_decrement_button = Button(self.SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB, self.decrement_next_day)
-        self.scheduling_window_learn_ahead_decrement_button = Button(self.SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB, self.decrement_learn_ahead)
-        self.scheduling_window_timebox_time_decrement_button = Button(self.SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB, self.decrement_timebox_time)
 
-        self.scheduling_window_widgets: List[Widget] = [self.scheduling_window_show_next_review_time_checkbox, self.scheduling_window_remaining_card_count_checkbox,
-        self.scheduling_window_legacy_timezone_checkbox, self.scheduling_window_v3_scheduler_checkbox, self.scheduling_window_next_day_increment_button,
-        self.scheduling_window_learn_ahead_increment_button, self.scheduling_window_timebox_time_increment_button, self.scheduling_window_next_day_decrement_button,
-        self.scheduling_window_learn_ahead_decrement_button, self.scheduling_window_timebox_time_decrement_button, self.scheduling_window_show_learning_cards_checkbox]
+        self.scheduling_window_next_day_increment_button = Button(self.SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB,
+                                                                  self.increment_next_day)
+        self.scheduling_window_learn_ahead_increment_button = Button(self.SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB,
+                                                                     self.increment_learn_ahead)
+        self.scheduling_window_timebox_time_increment_button = Button(self.SCHEDULING_WINDOW_TIMEBOX_TIME_INCREMENT_BB,
+                                                                      self.increment_timebox_time)
+        self.scheduling_window_next_day_decrement_button = Button(self.SCHEDULING_WINDOW_NEXT_DAY_DECREMENT_BB,
+                                                                  self.decrement_next_day)
+        self.scheduling_window_learn_ahead_decrement_button = Button(self.SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB,
+                                                                     self.decrement_learn_ahead)
+        self.scheduling_window_timebox_time_decrement_button = Button(self.SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB,
+                                                                      self.decrement_timebox_time)
 
-        self.network_window_synchronize_audio_and_image_checkbox = CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB)
-        self.network_window_synchronize_on_profile_checkbox = CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB)
-        self.network_window_periodically_synchronize_checkbox = CheckBox(self.NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB)
-        self.network_window_force_changes_in_one_direction_checkbox = CheckBox(self.NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB)
+        self.scheduling_window_widgets: List[Widget] = [self.scheduling_window_show_next_review_time_checkbox,
+                                                        self.scheduling_window_remaining_card_count_checkbox,
+                                                        self.scheduling_window_legacy_timezone_checkbox,
+                                                        self.scheduling_window_v3_scheduler_checkbox,
+                                                        self.scheduling_window_next_day_increment_button,
+                                                        self.scheduling_window_learn_ahead_increment_button,
+                                                        self.scheduling_window_timebox_time_increment_button,
+                                                        self.scheduling_window_next_day_decrement_button,
+                                                        self.scheduling_window_learn_ahead_decrement_button,
+                                                        self.scheduling_window_timebox_time_decrement_button,
+                                                        self.scheduling_window_show_learning_cards_checkbox]
 
-        self.network_window_widgets: List[Widget] = [self.network_window_synchronize_audio_and_image_checkbox, self.network_window_synchronize_on_profile_checkbox,
-        self.network_window_periodically_synchronize_checkbox,self.network_window_force_changes_in_one_direction_checkbox]
+        self.network_window_synchronize_audio_and_image_checkbox = \
+            CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB)
+        self.network_window_synchronize_on_profile_checkbox = \
+            CheckBox(self.NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB)
+        self.network_window_periodically_synchronize_checkbox = \
+            CheckBox(self.NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB)
+        self.network_window_force_changes_in_one_direction_checkbox = \
+            CheckBox(self.NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB)
+
+        self.network_window_widgets: List[Widget] = [self.network_window_synchronize_audio_and_image_checkbox,
+                                                     self.network_window_synchronize_on_profile_checkbox,
+                                                     self.network_window_periodically_synchronize_checkbox,
+                                                     self.network_window_force_changes_in_one_direction_checkbox]
 
         self.backups_window_increment_backups = Button(self.BACKUPS_WINDOW_INCREMENT_BB, self.increment_backup_number)
         self.backups_window_decrement_backups = Button(self.BACKUPS_WINDOW_DECREMENT_BB, self.decrement_backup_number)
-        self.backups_window_widgets: List[Widget] = [self.backups_window_increment_backups, self.backups_window_decrement_backups]
+        self.backups_window_widgets: List[Button] = [self.backups_window_increment_backups,
+                                                     self.backups_window_decrement_backups]
 
-        self.basic_window_dropdowns = [self.basic_window_language_dd,self.basic_window_add_to_deck_dd,self.basic_window_voice_recorder_dd,self.basic_window_video_driver_dd]
+        self.basic_window_dropdowns = [self.basic_window_language_dd, self.basic_window_add_to_deck_dd,
+                                       self.basic_window_voice_recorder_dd, self.basic_window_video_driver_dd]
 
         self.dropdowns_to_str = {
-            self.basic_window_language_dd: "basic_window_language_dd",
-            self.basic_window_video_driver_dd: "basic_window_video_driver_dd",
-            self.basic_window_add_to_deck_dd: "basic_window_add_to_deck_dd",
-            self.basic_window_voice_recorder_dd: "basic_window_voice_recorder_dd",
+            self.basic_window_language_dd:
+                "basic_window_language_dd",
+            self.basic_window_video_driver_dd:
+                "basic_window_video_driver_dd",
+            self.basic_window_add_to_deck_dd:
+                "basic_window_add_to_deck_dd",
+            self.basic_window_voice_recorder_dd:
+                "basic_window_voice_recorder_dd",
         }
 
         self.checkboxes_to_str = {
-            self.basic_window_show_play_buttons_checkbox : "basic_window_show_play_buttons_checkbox",
-            self.basic_window_interrupt_audio_checkbox : "basic_window_interrupt_audio_checkbox",
-            self.basic_window_paste_clipboard_images_checkbox : "basic_window_paste_clipboard_images_checkbox",
-            self.basic_window_paste_without_shift_key_checkbox : "basic_window_paste_without_shift_key_checkbox",
-            self.basic_window_night_mode_checkbox : "basic_window_night_mode_checkbox",
-            self.scheduling_window_show_next_review_time_checkbox: "scheduling_window_show_next_review_time_checkbox",
-            self.scheduling_window_remaining_card_count_checkbox: "scheduling_window_remaining_card_count_checkbox",
-            self.scheduling_window_show_learning_cards_checkbox: "scheduling_window_show_learning_cards_checkbox",
-            self.scheduling_window_legacy_timezone_checkbox: "scheduling_window_legacy_timezone_checkbox",
-            self.scheduling_window_v3_scheduler_checkbox: "scheduling_window_v3_scheduler_checkbox",
-            self.network_window_synchronize_audio_and_image_checkbox: "network_window_synchronize_audio_and_image_checkbox",
-            self.network_window_synchronize_on_profile_checkbox: "network_window_synchronize_on_profile_checkbox",
-            self.network_window_periodically_synchronize_checkbox: "network_window_periodically_synchronize_checkbox",
-            self.network_window_force_changes_in_one_direction_checkbox: "network_window_force_changes_in_one_direction_checkbox"
+            self.basic_window_show_play_buttons_checkbox:
+                "basic_window_show_play_buttons_checkbox",
+            self.basic_window_interrupt_audio_checkbox:
+                "basic_window_interrupt_audio_checkbox",
+            self.basic_window_paste_clipboard_images_checkbox:
+                "basic_window_paste_clipboard_images_checkbox",
+            self.basic_window_paste_without_shift_key_checkbox:
+                "basic_window_paste_without_shift_key_checkbox",
+            self.basic_window_night_mode_checkbox:
+                "basic_window_night_mode_checkbox",
+            self.scheduling_window_show_next_review_time_checkbox:
+                "scheduling_window_show_next_review_time_checkbox",
+            self.scheduling_window_remaining_card_count_checkbox:
+                "scheduling_window_remaining_card_count_checkbox",
+            self.scheduling_window_show_learning_cards_checkbox:
+                "scheduling_window_show_learning_cards_checkbox",
+            self.scheduling_window_legacy_timezone_checkbox:
+                "scheduling_window_legacy_timezone_checkbox",
+            self.scheduling_window_v3_scheduler_checkbox:
+                "scheduling_window_v3_scheduler_checkbox",
+            self.network_window_synchronize_audio_and_image_checkbox:
+                "network_window_synchronize_audio_and_image_checkbox",
+            self.network_window_synchronize_on_profile_checkbox:
+                "network_window_synchronize_on_profile_checkbox",
+            self.network_window_periodically_synchronize_checkbox:
+                "network_window_periodically_synchronize_checkbox",
+            self.network_window_force_changes_in_one_direction_checkbox:
+                "network_window_force_changes_in_one_direction_checkbox"
         }
 
         self.dropdowns_to_bbs = {
@@ -205,36 +262,37 @@ class PreferencesPage(RewardElement,Page):
         }
         self.add_child(self.leads_to_external_website_popup)
         self.set_reward_children([self.leads_to_external_website_popup])
+
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"],
-            
+            "window": ["open", "close"],
+
             "help": 0,
             "basic_switch_button": 0,
             "scheduling_switch_button": 0,
             "network_switch_button": 0,
             "backup_switch_button": 0,
 
-            "basic_window_show_play_buttons_checkbox" : [True,False],
-            "basic_window_interrupt_audio_checkbox": [True,False],
-            "basic_window_paste_clipboard_images_checkbox": [True,False],
-            "basic_window_paste_without_shift_key_checkbox": [True,False],
-            "basic_window_night_mode_checkbox": [True,False],
-            
-            "basic_window_language_dd" : {
+            "basic_window_show_play_buttons_checkbox": [True, False],
+            "basic_window_interrupt_audio_checkbox": [True, False],
+            "basic_window_paste_clipboard_images_checkbox": [True, False],
+            "basic_window_paste_without_shift_key_checkbox": [True, False],
+            "basic_window_night_mode_checkbox": [True, False],
+
+            "basic_window_language_dd": {
                 "opened": 0,
                 "selected": [AnkiLanguages.ENGLISH.value, AnkiLanguages.GERMAN.value, AnkiLanguages.SPANISH.value]
             },
-            "basic_window_video_driver_dd" : {
+            "basic_window_video_driver_dd": {
                 "opened": 0,
                 "selected": [VideoDriver.OPENGL.value, VideoDriver.ANGLE.value, VideoDriver.SOFTWARE.value]
             },
-            "basic_window_add_to_deck_dd" : {
+            "basic_window_add_to_deck_dd": {
                 "opened": 0,
                 "selected": [DeckAddType.ADD_TO_CURRENT.value, DeckAddType.CHANGE_DECK.value]
             },
-            "basic_window_voice_recorder_dd" : {
+            "basic_window_voice_recorder_dd": {
                 "opened": 0,
                 "selected": [VoiceRecorder.QT.value, VoiceRecorder.PY_AUDIO.value]
             },
@@ -243,12 +301,12 @@ class PreferencesPage(RewardElement,Page):
             "basic_window_user_interface_decrement_button": 0,
             "basic_window_put_text_button": 0,
 
-            "scheduling_window_show_next_review_time_checkbox": [True,False],
-            "scheduling_window_remaining_card_count_checkbox": [True,False],
-            "scheduling_window_show_learning_cards_checkbox": [True,False],
-            "scheduling_window_legacy_timezone_checkbox": [True,False],
-            "scheduling_window_v3_scheduler_checkbox": [True,False],
-            
+            "scheduling_window_show_next_review_time_checkbox": [True, False],
+            "scheduling_window_remaining_card_count_checkbox": [True, False],
+            "scheduling_window_show_learning_cards_checkbox": [True, False],
+            "scheduling_window_legacy_timezone_checkbox": [True, False],
+            "scheduling_window_v3_scheduler_checkbox": [True, False],
+
             "scheduling_window_next_day_increment_button": 0,
             "scheduling_window_learn_ahead_increment_button": 0,
             "scheduling_window_timebox_time_increment_button": 0,
@@ -256,86 +314,87 @@ class PreferencesPage(RewardElement,Page):
             "scheduling_window_learn_ahead_decrement_button": 0,
             "scheduling_window_timebox_time_decrement_button": 0,
 
-            "network_window_synchronize_audio_and_image_checkbox": [True,False],
-            "network_window_synchronize_on_profile_checkbox": [True,False],
-            "network_window_periodically_synchronize_checkbox": [True,False],
-            "network_window_force_changes_in_one_direction_checkbox": [True,False],
+            "network_window_synchronize_audio_and_image_checkbox": [True, False],
+            "network_window_synchronize_on_profile_checkbox": [True, False],
+            "network_window_periodically_synchronize_checkbox": [True, False],
+            "network_window_force_changes_in_one_direction_checkbox": [True, False],
 
             "backups_window_increment_backups": 0,
             "backups_window_decrement_backups": 0
         }
-        
+
     def set_basic(self):
-        for i in range (1,5):
+        for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[1] = 1
-    
+
     def set_scheduling(self):
-        for i in range (1,5):
+        for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[2] = 1
-    
+
     def set_network(self):
-        for i in range (1,5):
+        for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[3] = 1
-    
+
     def set_backup(self):
-        for i in range (1,5):
+        for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[4] = 1
-    
+
     def increment_backup_number(self):
-        if (self.backup_number < 100):
+        if self.backup_number < 100:
             self.backup_number += 1
             self.register_selected_reward(["backups_window_increment_backups"])
 
     def decrement_backup_number(self):
-        if (self.backup_number > 0):
+        if self.backup_number > 0:
             self.backup_number -= 1
             self.register_selected_reward(["backups_window_decrement_backups"])
 
-    def handle_click(self,click_position: np.ndarray):
-        if(self.leads_to_external_website_popup.is_open()):
+    def handle_click(self, click_position: np.ndarray):
+        if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
             return
-        if (self.basic_switch_button.is_clicked_by(click_position)):
+        if self.basic_switch_button.is_clicked_by(click_position):
             self.basic_switch_button.handle_click(click_position)
             self.register_selected_reward(["basic_switch_button"])
-        elif (self.scheduling_switch_button.is_clicked_by(click_position)):
+        elif self.scheduling_switch_button.is_clicked_by(click_position):
             self.scheduling_switch_button.handle_click(click_position)
             self.register_selected_reward(["scheduling_switch_button"])
-        elif (self.network_switch_button.is_clicked_by(click_position)):
+        elif self.network_switch_button.is_clicked_by(click_position):
             self.network_switch_button.handle_click(click_position)
             self.register_selected_reward(["network_switch_button"])
-        elif (self.backup_switch_button.is_clicked_by(click_position)):
+        elif self.backup_switch_button.is_clicked_by(click_position):
             self.backup_switch_button.handle_click(click_position)
             self.register_selected_reward(["backup_switch_button"])
-        elif(self.close_button.is_clicked_by(click_position)):
+        elif self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
-        elif(self.help_button.is_clicked_by(click_position)):
+        elif self.help_button.is_clicked_by(click_position):
             self.help_button.handle_click(click_position)
         else:
             self.handle_click_by_open_window(click_position)
-        
-    def handle_click_by_open_window(self,click_position: np.ndarray):
-        if (self.get_state()[1] == 1):
+
+    def handle_click_by_open_window(self, click_position: np.ndarray):
+        if self.get_state()[1] == 1:
             self.handle_click_basic_window(click_position)
-        elif (self.get_state()[2] == 1):
+        elif self.get_state()[2] == 1:
             self.handle_click_scheduling_window(click_position)
-        elif (self.get_state()[3] == 1):
+        elif self.get_state()[3] == 1:
             self.handle_click_network_window(click_position)
-        elif (self.get_state()[4] == 1):
+        elif self.get_state()[4] == 1:
             self.handle_click_backups_window(click_position)
-    
-    def handle_click_basic_window(self,click_position: np.ndarray):
+
+    def handle_click_basic_window(self, click_position: np.ndarray):
         if self.open_dd is not None:
             self.open_dd.handle_click(click_position)
-            if(self.open_dd.get_selected_item() is not None):
-                self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "selected", self.open_dd.get_selected_item().get_value().value])
+            if self.open_dd.get_selected_item() is not None:
+                self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "selected",
+                                               self.open_dd.get_selected_item().get_value().value])
             self.open_dd = None
             return
-            
+
         for dd in self.basic_window_dropdowns:
             if self.dropdowns_to_bbs[dd].is_point_inside(click_position):
                 self.open_dd = dd
@@ -345,68 +404,67 @@ class PreferencesPage(RewardElement,Page):
                 return
 
         for widget in self.basic_window_widgets:
-            if (widget.is_clicked_by(click_position) and not(isinstance(widget, Dropdown))):
-                    widget.handle_click(click_position)
-                    if isinstance(widget, CheckBox):
-                        self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
-                    
-    def handle_click_scheduling_window(self,click_position: np.ndarray):
+            if widget.is_clicked_by(click_position) and not (isinstance(widget, Dropdown)):
+                widget.handle_click(click_position)
+                if isinstance(widget, CheckBox):
+                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+
+    def handle_click_scheduling_window(self, click_position: np.ndarray):
         for widget in self.scheduling_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
                 if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
+                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
 
-    def handle_click_network_window(self,click_position: np.ndarray):
+    def handle_click_network_window(self, click_position: np.ndarray):
         for widget in self.network_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
                 if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget], not(widget.is_selected())])
-        
-    def handle_click_backups_window(self,click_position: np.ndarray):
+                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+
+    def handle_click_backups_window(self, click_position: np.ndarray):
         for widget in self.backups_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
-                
-    
+
     def increment_user_interface(self):
-        if (self.user_interface < 200):
+        if self.user_interface < 200:
             self.user_interface += 5
             self.register_selected_reward(["basic_window_user_interface_increment_button"])
 
     def decrement_user_interface(self):
-        if (self.user_interface > 50):
+        if self.user_interface > 50:
             self.user_interface -= 5
             self.register_selected_reward(["basic_window_user_interface_decrement_button"])
-    
+
     def increment_next_day(self):
-        if (self.next_day < 10):
+        if self.next_day < 10:
             self.next_day += 1
             self.register_selected_reward(["scheduling_window_next_day_increment_button"])
-    
+
     def decrement_next_day(self):
-        if (self.next_day > 0):
+        if self.next_day > 0:
             self.next_day -= 1
             self.register_selected_reward(["scheduling_window_next_day_decrement_button"])
-    
+
     def increment_learn_ahead(self):
-        if (self.learn_ahead < 40):
+        if self.learn_ahead < 40:
             self.learn_ahead += 1
             self.register_selected_reward(["scheduling_window_learn_ahead_increment_button"])
-    
+
     def decrement_learn_ahead(self):
-        if (self.learn_ahead > 0):
+        if self.learn_ahead > 0:
             self.learn_ahead -= 1
             self.register_selected_reward(["scheduling_window_learn_ahead_decrement_button"])
-    
+
     def increment_timebox_time(self):
-        if (self.timebox_time < 20):
+        if self.timebox_time < 20:
             self.timebox_time += 1
             self.register_selected_reward(["scheduling_window_timebox_time_increment_button"])
 
     def decrement_timebox_time(self):
-        if (self.timebox_time > 0):
+        if self.timebox_time > 0:
             self.timebox_time -= 1
             self.register_selected_reward(["scheduling_window_timebox_time_decrement_button"])
 
@@ -420,49 +478,51 @@ class PreferencesPage(RewardElement,Page):
 
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window","open"])
-    
+        self.register_selected_reward(["window", "open"])
+
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window","close"])
-    
+        self.register_selected_reward(["window", "close"])
+
     def is_open(self):
         return self.get_state()[0]
 
-    def render(self,img: np.ndarray):
-        if (self.get_state()[1] == 1):
+    def render(self, img: np.ndarray):
+        if self.get_state()[1] == 1:
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.user_interface}", (283, 590), font_scale = 0.4)
-            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}" , (97, 544), font_scale = 0.4)
+            put_text(img, f"{self.user_interface}", (283, 590), font_scale=0.4)
+            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}", (97, 544),
+                     font_scale=0.4)
             for widget in self.basic_window_widgets:
-                if isinstance(widget,CheckBox):
+                if isinstance(widget, CheckBox):
                     img = widget.render(img)
             for dd in self.basic_window_dropdowns:
                 if dd.get_selected_item() is not None:
-                    put_text(img, dd.get_selected_item().display_name, (self.dropdowns_to_bbs[dd].x + 10,(self.dropdowns_to_bbs[dd].y + 19) ),font_scale=0.4)
+                    put_text(img, dd.get_selected_item().display_name,
+                             (self.dropdowns_to_bbs[dd].x + 10, (self.dropdowns_to_bbs[dd].y + 19)), font_scale=0.4)
             if self.open_dd is not None:
                 img = self.open_dd.render(img)
-        elif (self.get_state()[2] == 1):
+        elif self.get_state()[2] == 1:
             to_render = cv2.imread(self.PREFERENCES_SCHEDULING_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
             for widget in self.scheduling_window_widgets:
-                if isinstance(widget,CheckBox):
+                if isinstance(widget, CheckBox):
                     img = widget.render(img)
-            put_text(img, f"{self.next_day}" , (381, 427), font_scale = 0.4)
-            put_text(img, f"{self.learn_ahead}" , (381, 468), font_scale = 0.4)
-            put_text(img, f"{self.timebox_time}" , (381, 510), font_scale = 0.4)
-        elif (self.get_state()[3] == 1):
+            put_text(img, f"{self.next_day}", (381, 427), font_scale=0.4)
+            put_text(img, f"{self.learn_ahead}", (381, 468), font_scale=0.4)
+            put_text(img, f"{self.timebox_time}", (381, 510), font_scale=0.4)
+        elif self.get_state()[3] == 1:
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
             for widget in self.network_window_widgets:
-                if isinstance(widget,CheckBox):
+                if isinstance(widget, CheckBox):
                     img = widget.render(img)
-        elif (self.get_state()[4] == 1):
+        elif self.get_state()[4] == 1:
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.backup_number}" , (255, 208), font_scale = 0.4)
-        if(self.leads_to_external_website_popup.is_open()):
+            put_text(img, f"{self.backup_number}", (255, 208), font_scale=0.4)
+        if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
         return img
 

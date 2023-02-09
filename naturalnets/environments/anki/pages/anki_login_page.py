@@ -11,15 +11,15 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class AnkiLoginPage(Page,RewardElement):
-    
+
+class AnkiLoginPage(Page, RewardElement):
     """
    State description:
             state[0]: if this window is open
             state[i]: if the i-th field is filled i = {1,2}
             state[3]: if it's logged in
     """
-    
+
     STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login_page.png")
 
@@ -35,36 +35,36 @@ class AnkiLoginPage(Page,RewardElement):
         return cls.instance
 
     def __init__(self):
-        
-        Page.__init__(self,self.STATE_LEN,self.WINDOW_BB,self.IMG_PATH)
+
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
         self.failed_login = FailedLoginPopup()
-        
-        self.current_anki_account: AnkiAccount = None
-        self.anki_username_list = ["account_1","account_2","account_3","account_4","account_5"]
-        self.anki_password_list = ["pTgHAa","L7WwEH","yfTVwA","DP7xg7","zx7FeR"]
 
-        self.username_clipboard: str = None
-        self.password_clipboard: str = None
+        self.current_anki_account = None
+        self.anki_username_list = ["account_1", "account_2", "account_3", "account_4", "account_5"]
+        self.anki_password_list = ["pTgHAa", "L7WwEH", "yfTVwA", "DP7xg7", "zx7FeR"]
+
+        self.username_clipboard = None
+        self.password_clipboard = None
 
         self.username_button: Button = Button(self.USERNAME_BB, self.set_username_clipboard)
         self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard)
         self.ok_button: Button = Button(self.OK_BB, self.login)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
-        
+
         self.add_child(self.failed_login)
         self.set_reward_children([self.failed_login])
 
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"],
+            "window": ["open", "close"],
             "set_username": 0,
             "set_password": 0,
             "login": 0
         }
-    
+
     def is_strings_not_none(self):
         return self.username_clipboard is not None and self.password_clipboard is not None
 
@@ -86,7 +86,7 @@ class AnkiLoginPage(Page,RewardElement):
 
     def is_open(self):
         return self.get_state()[0]
-    
+
     def set_username_clipboard(self):
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(self.anki_username_list)
@@ -98,7 +98,7 @@ class AnkiLoginPage(Page,RewardElement):
         self.register_selected_reward(["set_password"])
 
     def login(self):
-        if(self.is_allowed_login()):     
+        if self.is_allowed_login():
             self.register_selected_reward(["login"])
             self.current_anki_account = AnkiAccount(self.username_clipboard, self.password_clipboard)
             self.username_clipboard = None
@@ -109,7 +109,7 @@ class AnkiLoginPage(Page,RewardElement):
             self.close()
         else:
             self.failed_login.open()
-        
+
     def reset(self):
         self.current_anki_account = None
         self.username_clipboard = None
@@ -117,40 +117,33 @@ class AnkiLoginPage(Page,RewardElement):
         self.get_state()[3] = 0
         self.get_state()[2] = 0
         self.get_state()[1] = 0
-    
-    def render(self,img: np.ndarray):
+
+    def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if(self.failed_login.is_open()):
+        if self.failed_login.is_open():
             img = self.failed_login.render(img)
             return img
-        if(self.username_clipboard is not None):
-            put_text(img,f"{self.username_clipboard}", (376, 363) ,font_scale = 0.5)
-        if(self.password_clipboard is not None):
-            put_text(img,f"{self.password_clipboard}", (376, 409) ,font_scale = 0.5)
+        if self.username_clipboard is not None:
+            put_text(img, f"{self.username_clipboard}", (376, 363), font_scale=0.5)
+        if self.password_clipboard is not None:
+            put_text(img, f"{self.password_clipboard}", (376, 409), font_scale=0.5)
         return img
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        if(self.failed_login.is_open()):
+        if self.failed_login.is_open():
             self.failed_login.handle_click(click_position)
             return
-        if (self.username_button.is_clicked_by(click_position)):
+        if self.username_button.is_clicked_by(click_position):
             self.username_button.handle_click(click_position)
-        elif (self.password_button.is_clicked_by(click_position)):
+        elif self.password_button.is_clicked_by(click_position):
             self.password_button.handle_click(click_position)
-        elif (self.ok_button.is_clicked_by(click_position)):
+        elif self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-        elif (self.cancel_button.is_clicked_by(click_position)):
+        elif self.cancel_button.is_clicked_by(click_position):
             self.cancel_button.handle_click(click_position)
-    
-    def default_login(self):
-        self.active_account = AnkiAccount(self.anki_username_list[0],self.anki_password_list[0])
-        self.username_clipboard = None
-        self.password_clipboard = None
-        self.get_state()[3] = 1
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
 
     def is_allowed_login(self):
-        if(self.is_strings_not_none()):
-            return self.anki_username_list.index(self.username_clipboard) ==  self.anki_password_list.index(self.password_clipboard)
+        if self.is_strings_not_none():
+            return self.anki_username_list.index(self.username_clipboard) == self.anki_password_list.index(
+                self.password_clipboard)
