@@ -10,6 +10,7 @@ from attrs import define, field, validators
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 
@@ -96,7 +97,7 @@ class GUIApp(IGUIEnvironment):
         info = {"states_info": self.app_controller.get_states_info()}
 
         if self.config.return_clickable_elements:
-            info["clickable_elements"] = self.app_controller.get_clickable_elements()
+            info["clickable_elements"] = self.get_clickable_elements()
 
         return self.get_observation(), rew, done, info
 
@@ -165,3 +166,6 @@ class GUIApp(IGUIEnvironment):
     def get_screen_size(self) -> int:
         assert self.screen_width == self.screen_height
         return self.screen_width
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return self.app_controller.get_clickable_elements()
