@@ -8,6 +8,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Car
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -23,6 +24,8 @@ class CarConfiguratorSettings(Page, RewardElement):
             state[i]: the enabled-state of car i, i in {0,1,2}.
     """
     STATE_LEN = 3
+    MAX_CLICKABLE_ELEMENTS = 12
+
     IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator_settings.png")
 
     TIRE_20_INCH_BB = BoundingBox(48, 73, 83, 14)
@@ -52,25 +55,25 @@ class CarConfiguratorSettings(Page, RewardElement):
         self.add_child(self.car_disabled_popup)
 
         # configure checkboxes
-        tire_checkboxes = self._create_tire_checkboxes()
-        self.add_widgets(tire_checkboxes)
+        self.tire_checkboxes = self._create_tire_checkboxes()
+        self.add_widgets(self.tire_checkboxes)
 
-        interior_checkboxes = self._create_interior_checkboxes()
-        self.add_widgets(interior_checkboxes)
+        self.interior_checkboxes = self._create_interior_checkboxes()
+        self.add_widgets(self.interior_checkboxes)
 
-        motor_checkboxes = self._create_propulsion_system_checkboxes()
-        self.add_widgets(motor_checkboxes)
+        self.motor_checkboxes = self._create_propulsion_system_checkboxes()
+        self.add_widgets(self.motor_checkboxes)
 
         self._checkbox_groups = [
-            tire_checkboxes,
-            interior_checkboxes,
-            motor_checkboxes
+            self.tire_checkboxes,
+            self.interior_checkboxes,
+            self.motor_checkboxes
         ]
 
         self._checkbox_group_bbs = [
-            get_group_bounding_box(tire_checkboxes),
-            get_group_bounding_box(interior_checkboxes),
-            get_group_bounding_box(motor_checkboxes)
+            get_group_bounding_box(self.tire_checkboxes),
+            get_group_bounding_box(self.interior_checkboxes),
+            get_group_bounding_box(self.motor_checkboxes)
         ]
 
         self.set_reward_children([self.car_disabled_popup])
@@ -344,6 +347,16 @@ class CarConfiguratorSettings(Page, RewardElement):
             img = self.car_disabled_popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.car_disabled_popup.is_open():
+            return self.car_disabled_popup.get_clickable_elements()
+
+        clickable_elements.extend(self.tire_checkboxes)
+        clickable_elements.extend(self.interior_checkboxes)
+        clickable_elements.extend(self.motor_checkboxes)
+
+        return clickable_elements
+
 
 class CarDisabledPopup(Page, RewardElement):
     """Popup for the car-configurator settings (pops up when a car is disabled through the
@@ -353,6 +366,8 @@ class CarDisabledPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 1
+
     BOUNDING_BOX = BoundingBox(87, 101, 235, 86)
     IMG_PATH = os.path.join(IMAGES_PATH, "car_config_car_disabled_popup.png")
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
@@ -425,3 +440,6 @@ class CarDisabledPopup(Page, RewardElement):
         bottom_left_corner = (107, 135)  # Global position of the text
         put_text(img, self._get_disabled_cars_str(), bottom_left_corner, 0.4)
         return img
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.ok_button]

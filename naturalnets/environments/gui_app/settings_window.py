@@ -26,6 +26,7 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
             state[i]: represents the selected/shown status of page i, i in {1,..,4}.
     """
     STATE_LEN: int = 5
+    CLICKABLE_ELEMENTS: int = 5
     BOUNDING_BOX = BoundingBox(3, 1, 422, 367)
 
     PAGE_BB = BoundingBox(25, 48, 378, 262)
@@ -193,3 +194,9 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
     def get_tabs_bb(self, tab_buttons: List[Button]) -> BoundingBox:
         """Returns the bounding-box of the tabs-menu (bounding-box of all buttons)."""
         return get_group_bounding_box(tab_buttons)
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        clickable_elements = [self.close_button]
+        clickable_elements.extend(self.tab_buttons)
+
+        return self.current_tab.get_clickable_elements(clickable_elements)
