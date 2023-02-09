@@ -10,7 +10,7 @@ class AccountManager:
     @staticmethod
     def addAccount(account: Account):
         if len(AccountManager.currentAccounts) < 3:
-            if not AccountManager.is_in_current_accounts(account):
+            if not AccountManager.is_in_current_accounts(account.getAccountName()):
                 AccountManager.currentAccounts.append(account)
 
     @staticmethod
@@ -18,6 +18,13 @@ class AccountManager:
         for current_account in AccountManager.currentAccounts:
             if current_account.getAccountName() == account_name:
                 AccountManager.currentAccounts.remove(current_account)
+
+    @staticmethod
+    def getAccountByName(account_name: str):
+        for current_account in AccountManager.currentAccounts:
+            if current_account.getAccountName() == account_name:
+                return current_account
+        return None
 
     @staticmethod
     def is_in_current_accounts(account_name: str):
@@ -53,8 +60,8 @@ class AccountManager:
                     return [4, 0]
                 else:
                     return [5, 0]
-            elif AccountManager.currentAccounts[1].getAccountName() == NAME_TWO:
-                if name == NAME_ONE:
+            elif name == NAME_TWO:
+                if AccountManager.currentAccounts[1].getAccountName() == NAME_ONE:
                     return [4, 0]
                 else:
                     return [6, 0]

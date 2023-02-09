@@ -1,8 +1,10 @@
 import os
 import cv2
 import numpy as np
+import random
 from naturalnets.environments.password_manager_app.account_manager.account import Account
 from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
+from naturalnets.environments.password_manager_app.cache import Cache
 
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
@@ -66,9 +68,12 @@ class AddAccount(Page, RewardElement):
         self.password_one = DropdownItem("1234", "1234")
         self.password_two = DropdownItem("qwer", "qwer")
         self.password_three = DropdownItem("asdf", "asdf")
-        self.dropdown_password = Dropdown(self.PASSWORD_DD_BB, [self.empty, self.password_one,
+        self.dropdown_password = Dropdown(self.PASSWORD_DD_BB, [self.password_one,
                                                    self.password_two,
                                                    self.password_three])
+        
+        self.current_password = self.random_password()
+        self.is_checked = True
 
         self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one,
                                                    self.name_two,
@@ -91,40 +96,41 @@ class AddAccount(Page, RewardElement):
             self.HIDE_PASSWORD_BB,
             lambda is_checked: self.set_hide_password(is_checked)
         )
-
+        self.checkbox.set_selected(1)
         self.add_widget(self.checkbox)
 
         self.buttons = [
             Button(self.OK_BUTTON_BB, lambda: self.ok()),
             Button(self.CLOSE_BUTTON_BB, lambda: self.cancel()),
             Button(self.GENERATE_BUTTON_BB, lambda: self.generate()),
-            Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy('account')),
-            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy('password')),
+            Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy(self.dropdown_account)),
+            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy(self.dropdown_password)),
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
-            Button(self.COPY_USER_ID_BUTTON_BB, lambda: self.copy('user_id')),
-            Button(self.COPY_URL_BUTTON_BB, lambda: self.copy('url')),
-            Button(self.COPY_NOTES_BUTTON_BB, lambda: self.copy('notes')),
-            Button(self.PAST_ACCOUNT_BUTTON_BB, lambda: self.past('account')),
-            Button(self.PAST_USER_ID_BUTTON_BB, lambda: self.past('password')),
-            Button(self.PAST_PASSWORD_BUTTON_BB, lambda: self.past('user_id')),
-            Button(self.PAST_URL_BUTTON_BB, lambda: self.past('url')),
-            Button(self.PAST_NOTES_BUTTON_BB, lambda: self.past('notes')),
+            Button(self.COPY_USER_ID_BUTTON_BB, lambda: self.copy(self.dropdown_user_id)),
+            Button(self.COPY_URL_BUTTON_BB, lambda: self.copy(self.dropdown_url)),
+            Button(self.COPY_NOTES_BUTTON_BB, lambda: self.copy(self.dropdown_notes)),
+            Button(self.PAST_ACCOUNT_BUTTON_BB, lambda: self.past(self.dropdown_account)),
+            Button(self.PAST_USER_ID_BUTTON_BB, lambda: self.past(self.dropdown_user_id)),
+            Button(self.PAST_PASSWORD_BUTTON_BB, lambda: self.past(self.dropdown_password)),
+            Button(self.PAST_URL_BUTTON_BB, lambda: self.past(self.dropdown_url)),
+            Button(self.PAST_NOTES_BUTTON_BB, lambda: self.past(self.dropdown_notes)),
         ]
 
     def set_hide_password(self, is_checked: bool):
-        "TODO"
-
-        print('hide_password')
+        self.is_checked = is_checked
+        if is_checked:
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_password_hide.png")
+            self.dropdown_password.set_selected_item(None)
+        else:
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_empty_password_hide.png")
+            self.dropdown_password.set_selected_item(self.current_password)
     
     def ok(self):
-        "TODO"
         
         self.account_name = self.dropdown_account.get_current_value()
-
-        print(self.account_name)
         if self.account_name is not None:
             self.account_user_id = self.dropdown_user_id.get_current_value()  
-            self.account_password = self.dropdown_password.get_current_value()
+            self.account_password = self.current_password.get_value()
             self.account_url = self.dropdown_url.get_current_value()
             self.account_notes = self.dropdown_notes.get_current_value()
 
@@ -138,10 +144,8 @@ class AddAccount(Page, RewardElement):
         self.opened_dd = None
 
         self.return_to_main_window()
-        print('ok')
 
     def cancel(self):
-        "TODO"
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
             dropdown.close()
@@ -149,32 +153,32 @@ class AddAccount(Page, RewardElement):
         self.opened_dd = None
 
         self.return_to_main_window()
-        print('cancel')
 
-    def copy(self, dropdownToCopy: str):
-        "TODO"
+    def copy(self, dropdownToCopy: Dropdown):
+        Cache.setCache(dropdownToCopy.get_current_value())
 
-        print('copy')
-
-    def past(self, dropdownToPast: str):
-        "TODO"
-
-        print('past')
+    def past(self, dropdownToPast: Dropdown):
+        dropdownToPast.set_selected_value(Cache.getCache())
 
     def generate(self):
-        "TODO"
+        self.current_password = self.random_password()
+        self.dropdown_password.set_selected_item(self.current_password)
 
-        print('generate')
+    def random_password(self):
+        return random.choice(self.dropdown_password.get_all_items())
 
     def launch_url(self):
-        "TODO"
+        pass
 
-        print('launch url')
 
     def handle_click(self, click_position: np.ndarray = None):
         # Handle the case of an opened dropdown first
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
+            if self.opened_dd == self.dropdown_password:
+                self.current_password = self.dropdown_password.get_selected_item()
+                if self.is_checked:
+                    self.dropdown_password.set_selected_item(None)
             self.opened_dd = None
             return
 
@@ -205,8 +209,10 @@ class AddAccount(Page, RewardElement):
     def render(self, img: np.ndarray):
         """ Renders the main window and all its children onto the given image.
         """
-        img = super().render(img)
-
+        to_render = cv2.imread(self.IMG_PATH)
+        img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
+        for widget in self.get_widgets():
+            img = widget.render(img)
         return img
     
     @property

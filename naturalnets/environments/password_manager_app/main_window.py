@@ -44,11 +44,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(0, 24, 448, 112) #TODO
-    ACCOUNT_AREA_BB = BoundingBox(0, 0, 100, 100) #TODO
 
-    ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 28, 30)
-    EDIT_ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(69, 25, 26, 30)
+    ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 30, 30)
+    EDIT_ACCOUNT_BUTTON_BB = BoundingBox(33, 25, 30, 30)
+    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(64, 25, 30, 30)
     COPY_USERNAME_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 1, 1)
@@ -61,6 +60,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
     ACCOUNT_ONE_BB = BoundingBox(1, 90, 447, 14)
     ACCOUNT_TWO_BB = BoundingBox(1, 105, 447, 15)
     ACCOUNT_THREE_BB = BoundingBox(1, 121, 447, 14)
+
+    SEARCH_DD_BB = BoundingBox(0,0,0,0)
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
@@ -91,7 +92,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
         self.buttons = [
             Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.add_account)),
-            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.edit_account)),
+            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.function_edit_account()),
             Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.delete_account()),
             Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.set_current_page(None)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.set_current_page(None)),
@@ -159,6 +160,13 @@ class MainWindow(StateElement, Clickable, RewardElement):
         if 0 < self.STATE_IMG[1] < 4:
             self.confirm_delete_account.set_name(self.get_selected_account())
             self.set_current_page(self.confirm_delete_account)
+    
+    def function_edit_account(self):
+        if 0 < self.STATE_IMG[1] < 4:
+            account_to_edit = AccountManager.getAccountByName(self.get_selected_account())
+            if account_to_edit is not None:
+                self.edit_account.set_account(account_to_edit)
+                self.set_current_page(self.edit_account)
 
     def get_current_page(self):
         return self.current_page
@@ -244,6 +252,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         """ Renders the main window and all its children onto the given image.
         """
         
+        self
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if (self.current_page is not None):
@@ -268,9 +277,9 @@ class MainWindow(StateElement, Clickable, RewardElement):
         elif self.STATE_IMG[0] == 1:
                 self.new_path = "main_window/main_window_Hanna_account.png"
         elif self.STATE_IMG[0] == 2:
-                self.new_path = "main_window/main_window_Klaus_accounts.png"
+                self.new_path = "main_window/main_window_Klaus_account.png"
         elif self.STATE_IMG[0] == 3:
-                self.new_path = "main_window/main_window_Mariam_accounts.png"
+                self.new_path = "main_window/main_window_Mariam_account.png"
         elif self.STATE_IMG[0] == 4:
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_2_accounts_H_K.png"
