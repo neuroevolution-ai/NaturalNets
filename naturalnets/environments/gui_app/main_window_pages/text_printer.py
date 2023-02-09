@@ -7,6 +7,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
@@ -21,6 +22,8 @@ class TextPrinter(Page, RewardElement):
     """
 
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 1
+
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
@@ -155,3 +158,8 @@ class TextPrinter(Page, RewardElement):
         for i, prop in enumerate(props):
             bottom_left_corner = (x, y + height - i * space)
             put_text(img, prop, bottom_left_corner, font_scale=0.4)
+
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        clickable_elements.append(self.button)
+
+        return clickable_elements

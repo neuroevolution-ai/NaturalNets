@@ -1,0 +1,22 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: NaturalNets
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Daniel
+    family-names: Zimmermann
+  - given-names: Patrick
+    family-names: Deubel
+  - given-names: Björn
+    family-names: Jürgens
+  - given-names: Juan
+    family-names: Saenz
+  - given-names: Julian
+    family-names: Roßkothen
+repository-code: 'https://github.com/neuroevolution-ai/NaturalNets'
+license: MIT
