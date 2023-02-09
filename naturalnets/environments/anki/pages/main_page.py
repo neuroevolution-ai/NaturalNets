@@ -6,6 +6,7 @@ import numpy as np
 
 from naturalnets.environments.anki import AddCardPage
 from naturalnets.environments.anki import AnkiLoginPage
+from naturalnets.environments.anki.ascii_print_util import AsciiPrintUtil
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import EditCardPage
 from naturalnets.environments.anki import ResetCollectionPopup
@@ -472,7 +473,7 @@ class MainPage(Page,RewardElement):
         put_text(image, f"Current deck: {self.deck_database.decks[self.deck_database.current_index].name}",(484, 142),font_scale = 0.5)
         put_text(image, f"Current card number: {self.deck_database.decks[self.deck_database.current_index].study_index + 1}",(484, 172),font_scale = 0.5)
         put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",(484, 202),font_scale = 0.5)
-        print_non_ascii(img = image, text = f"Question : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",bounding_box = BoundingBox(42, 232, 600, 100), font_size = 35, dimension = (100, 600, 3))
+        AsciiPrintUtil.print_non_ascii(img = image, text = f"Question : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",bounding_box = BoundingBox(42, 232, 600, 100), font_size = 35, dimension = (100, 600, 3))
         if(self.leads_to_external_website_popup_page.is_open()):
             image = self.leads_to_external_website_popup_page.render(image)
         if (self.get_state()[7] == 1):

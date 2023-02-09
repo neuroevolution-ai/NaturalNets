@@ -13,6 +13,7 @@ class TestGUIApp:
             gui_app = GUIApp({
                 "type": "GUIApp",
                 "number_time_steps": len(interaction_sequence),
+                "include_fake_bug": False
             })
 
             gui_app.reset()

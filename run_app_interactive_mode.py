@@ -103,6 +103,7 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
             "environment": {
                 "type": "GUIApp",
                 "number_time_steps": 200,
+                "include_fake_bug": False
             }
         }
     else:

@@ -6,7 +6,8 @@ from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb, print_non_ascii
+from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.anki.ascii_print_util import AsciiPrintUtil
 from naturalnets.environments.gui_app.widgets.button import Button
 
 class EditCardPage(RewardElement,Page):
@@ -95,9 +96,9 @@ class EditCardPage(RewardElement,Page):
         to_render = cv2.imread(self._img_path)
         image = render_onto_bb(image, self.get_bb(), to_render)
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}", bounding_box =  BoundingBox (225, 203, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
+            AsciiPrintUtil.print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}", bounding_box =  BoundingBox (225, 203, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}", bounding_box =  BoundingBox (225, 336, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
+            AsciiPrintUtil.print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}", bounding_box =  BoundingBox (225, 336, 300, 40) ,font_size = 25, dimension = (40, 300, 3))
         if (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag is not None):
-            print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}", bounding_box =  BoundingBox (225, 483, 300, 36) , font_size = 25, dimension = (36, 300, 3))
+            AsciiPrintUtil.print_non_ascii(img = image, text = f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}", bounding_box =  BoundingBox (225, 483, 300, 36) , font_size = 25, dimension = (36, 300, 3))
         return image

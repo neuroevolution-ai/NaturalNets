@@ -24,4 +24,3 @@ from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.anki.anki_app import AppCfg,AnkiApp
 
 
-
