@@ -2,7 +2,7 @@ import enum
 import logging
 import time
 from attrs import define, field, validators
-from typing import List, Optional, Dict
+from typing import Optional, Dict
 import cv2
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
@@ -143,3 +143,6 @@ class AnkiApp(IGUIEnvironment):
     
     def get_screen_size(self) -> int:
         return 834
+
+    def get_observation_dict(self):
+        pass
