@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki import NameExistsPopup
+from naturalnets.environments.anki.deck import Deck, DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
     import LeadsToExternalWebsitePopup
@@ -227,7 +228,7 @@ class ImportDeckSelectPage(Page, RewardElement):
 
     def calculate_current_bounding_box(self):
         upper_left_point = (183, 205)
-        length = 30 * self.deck_database.count_number_of_files(PREDEFINED_DECKS_PATH)
+        length = 30 * DeckDatabase.count_number_of_files(PREDEFINED_DECKS_PATH)
         current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 421, length)
         return current_bounding_box
 

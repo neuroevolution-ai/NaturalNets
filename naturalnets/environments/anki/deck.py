@@ -96,7 +96,7 @@ class DeckDatabase:
         return deck
 
     def reset_decks(self) -> None:
-        reset_exported_decks()
+        DeckDatabase.reset_exported_decks()
         self.decks = [Deck(DeckNames.DECK_NAME_1.value)]
         self.current_index: int = 0
 
@@ -117,33 +117,33 @@ class DeckDatabase:
     def set_current_index(self, index: int) -> None:
         self.current_index = index
 
+    @staticmethod
+    def count_number_of_files(dir_path: str) -> int:
+        count = 0
+        for path in os.scandir(dir_path):
+            if path.is_file():
+                count += 1
+        return count
 
-def count_number_of_files(dir_path: str) -> int:
-    count = 0
-    for path in os.scandir(dir_path):
-        if path.is_file():
-            count += 1
-    return count
+    @staticmethod
+    def reset_exported_decks() -> None:
+        for file in os.scandir(EXPORTED_DECKS_PATH):
+            if file.is_file():
+                os.remove(file)
 
+    @staticmethod
+    def is_file_exist(file_name: str, directory: str) -> bool:
+        return os.path.exists(directory + '/' + file_name + '.txt')
 
-def reset_exported_decks() -> None:
-    for file in os.scandir(EXPORTED_DECKS_PATH):
-        if file.is_file():
-            os.remove(file)
+    @staticmethod
+    def is_exporting_allowed() -> bool:
+        return DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) < 5
 
-
-def is_file_exist(file_name: str, directory: str) -> bool:
-    return os.path.exists(directory + '/' + file_name + '.txt')
-
-
-def is_exporting_allowed() -> bool:
-    return count_number_of_files(EXPORTED_DECKS_PATH) < 5
-
-
-def export_deck(deck: Deck) -> None:
-    if not (is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (is_exporting_allowed()):
-        deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt", "w", encoding='utf-8')
-        for card in deck.cards:
-            deck_file.write(card.front + " " + card.back)
-            deck_file.write("\n")
-        deck_file.close()
+    @staticmethod
+    def export_deck(deck: Deck) -> None:
+        if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
+            deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt", "w", encoding='utf-8')
+            for card in deck.cards:
+                deck_file.write(card.front + " " + card.back)
+                deck_file.write("\n")
+            deck_file.close()

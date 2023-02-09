@@ -469,7 +469,7 @@ class PreferencesPage(RewardElement, Page):
             self.register_selected_reward(["scheduling_window_timebox_time_decrement_button"])
 
     def set_current_search_text(self):
-        self.current_search_text = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
+        self.current_search_text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
         self.register_selected_reward(["basic_window_put_text_button"])
 
     def help(self):

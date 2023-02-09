@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import EXPORTED_DECKS_PATH, IMAGES_PATH
+from naturalnets.environments.anki.deck import Deck, DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.profile import ProfileDatabase
@@ -110,22 +111,22 @@ class ExportDeckPage(Page, RewardElement):
 
     def export_deck(self):
         self.register_selected_reward(["exported"])
-        if self.deck_database.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
+        if DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
             self.five_decks_popup.open()
         elif self.include_dropdown.get_selected_item() is None:
             return
-        elif (self.deck_database.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
+        elif (DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
                                                EXPORTED_DECKS_PATH)):
             self.name_exists_popup.open()
         else:
-            self.deck_database.export_deck(self.include_dropdown.get_selected_item().get_value())
+            DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
             self.close()
 
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (331, 265), font_scale=0.4)
-        put_text(img, f"Number of exported decks: {self.deck_database.count_number_of_files(EXPORTED_DECKS_PATH)}",
+        put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
                  (260, 320), font_scale=0.5)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
@@ -142,5 +143,5 @@ class ExportDeckPage(Page, RewardElement):
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
 
     def reset_exported_decks(self):
-        self.deck_database.reset_exported_decks()
+        DeckDatabase.reset_exported_decks()
         self.register_selected_reward(["reset"])

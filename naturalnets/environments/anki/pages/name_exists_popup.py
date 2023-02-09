@@ -24,10 +24,6 @@ class NameExistsPopup(Page, RewardElement):
             cls.instance = super(NameExistsPopup, cls).__new__(cls)
         return cls.instance
 
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
-
     @property
     def reward_template(self):
         return {
