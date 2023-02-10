@@ -13,7 +13,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 class ConfirmDeleteAccount(Page, RewardElement):
 
-    STATE_LEN = 2
+    STATE_LEN = 3
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
     NAME_ACOOUNT_TO_DELETE = ''

@@ -43,7 +43,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     STATE_IMG = [0, 0]
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
-    MENU_AREA_BB = BoundingBox(0, 24, 448, 112) #TODO
+    MENU_AREA_BB = BoundingBox(0, 3, 448, 133) #TODO
 
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 30, 30)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(33, 25, 30, 30)
@@ -52,7 +52,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     COPY_PASSWORD_BUTTON_BB = BoundingBox(131, 25, 30, 30)
     LAUNCH_URL_BUTTON_BB = BoundingBox(162, 25, 30, 30)
     OPTIONS_BUTTON_BB = BoundingBox(199, 25, 30, 30)
-    DATABASE_BB = BoundingBox(0, 0, 1, 1)
+    DATABASE_BB = BoundingBox(0, 4, 57, 19)
     ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     HELP_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     RESET_SEARCH_BUTTON_BB = BoundingBox(0, 0, 1, 1)
@@ -138,7 +138,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     @property
     def reward_template(self):
         return {
-            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "invalid_url", "master_password", "confirm_delete_account", "None"]
+            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "invalid_url", "master_password", "confirm_delete_account", "database","None"]
         }
 
     def reset(self):
