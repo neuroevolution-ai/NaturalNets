@@ -82,8 +82,8 @@ class LoginPage(Page, RewardElement):
         returns: the rendered image
         """
         img = super().render(img)
-        draw_rectangles_around_clickables(
-            [self.buttons, self.textfields], img)
+        #draw_rectangles_around_clickables(
+        #    [self.buttons, self.textfields], img)
 
         return img
 

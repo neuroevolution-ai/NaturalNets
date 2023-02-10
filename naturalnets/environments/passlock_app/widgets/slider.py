@@ -30,7 +30,7 @@ class Slider(Widget):
         '''
 
         thickness = 2
-        color = (0, 0, 0)
+        color = (96, 134, 247)
         radius = 16
         
         width = self._bounding_box.width-2*radius # width, height of the square part of the checkbox
@@ -39,11 +39,11 @@ class Slider(Widget):
         x, y = self.get_bb().get_as_tuple()[0:2]
         # Modify x, y, width, height s.t. the cross does not surpass the box-limits
         x += radius
-        if(self._state[2]): postion = (x +(int(width/2)*2), y+height)
-        if(self._state[1]): postion = (x +(int(width/2)*1), y+height)
-        if(self._state[0]): postion = (x, y+height)
+        if(self._state[2]): postion = (x +(int(width/2)*2)+10, y+height)
+        if(self._state[1]): postion = (x +(int(width/2)*1)+10, y+height)
+        if(self._state[0]): postion = (x+10, y+height)
 
-        cv2.circle(img, postion, radius, color, thickness, lineType=cv2.LINE_AA)
+        cv2.circle(img, postion, radius, color, thickness=-1, lineType=cv2.LINE_AA)
         return img
 
     def handle_click(self, click_position: np.ndarray = None):

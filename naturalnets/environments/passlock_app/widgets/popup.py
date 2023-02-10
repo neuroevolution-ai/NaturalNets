@@ -40,7 +40,7 @@ class PopUp(Page, RewardElement):
         '''
 
         img = super().render(img)
-        draw_rectangle_from_bb(img, self.BOUNDING_BOX, (0, 0, 255), 2)
+        #draw_rectangle_from_bb(img, self.BOUNDING_BOX, (0, 0, 255), 2)
 
         return img
 

@@ -56,7 +56,7 @@ class ShowPasswordButton(Widget, Button):
         if self.is_selected():
             width = height = self._bounding_box.height  # width, height of the square part of the checkbox
             thickness = 2
-            cross_color = (0, 0, 0)
+            color = (96, 134, 247)
 
             x, y = self.get_bb().get_as_tuple()[0:2]
             # Modify x, y, width, height s.t. the cross does not surpass the box-limits
@@ -65,8 +65,8 @@ class ShowPasswordButton(Widget, Button):
             width -= 4
             height -= 4
 
-            cv2.line(img, (x, y), (x + width, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
-            cv2.line(img, (x + width, y), (x, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (x, y), (x + width, y + height), color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (x + width, y), (x, y + height), color, thickness, lineType=cv2.LINE_AA)
         return img
 
     def has_click_action(self) -> bool:

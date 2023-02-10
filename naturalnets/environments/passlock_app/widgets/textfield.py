@@ -75,15 +75,19 @@ class Textfield(Widget):
             
             int  # width, height of the square part of the checkbox
             thickness = 2
-            color = (0, 0, 0)
+            color = (96, 134, 247)
             text = "Sample Text for Textfield"
             font = cv2.FONT_HERSHEY_SIMPLEX
 
+            text_size, _ = cv2.getTextSize(text, font, 1, thickness)
+            text_height = text_size[1]
+            text_width = text_size[0]
             x, y = self.get_bb().get_as_tuple()[0:2]
 
             # change allignment of text
-            x = x + 5
+            x = x + 25
             y = y + 10
+            cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width, y+text_height-10), color=(255,255,255), thickness=-1) 
             cv2.putText(img, text, (x, int(y+height/2)), font, 1, color=color, thickness=thickness)
             
         return img

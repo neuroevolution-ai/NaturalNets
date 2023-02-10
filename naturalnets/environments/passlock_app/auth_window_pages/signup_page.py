@@ -83,7 +83,7 @@ class SignupPage(Page, RewardElement):
         returns: the rendered image
         """
         img = super().render(img)
-        draw_rectangles_around_clickables([self.clickables], img)
+        #draw_rectangles_around_clickables([self.clickables], img)
 
         return img
 

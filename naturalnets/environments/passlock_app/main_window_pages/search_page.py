@@ -46,9 +46,9 @@ class SearchPage(Page, RewardElement):
     SEARCH_TEXTFIELD_BB = BoundingBox(280, 23, 1350, 75)
     SHOW_ALL_BUTTON_BB = BoundingBox(1630, 23, 120, 75)
 
-    TEST1_BUTTON_BB = BoundingBox(145, 135, 150, 60)
-    TEST2_BUTTON_BB = BoundingBox(145, 220, 150, 60)
-    TEST3_BUTTON_BB = BoundingBox(145, 305, 150, 60)
+    TEST1_BUTTON_BB = BoundingBox(145, 135, 1350, 60)
+    TEST2_BUTTON_BB = BoundingBox(145, 220, 1350, 60)
+    TEST3_BUTTON_BB = BoundingBox(145, 305, 1350, 60)
 
     TEST1_COPY_BB = BoundingBox(1668, 192, 50, 50)
     TEST2_COPY_BB = BoundingBox(1668, 280, 50, 50)
@@ -65,7 +65,7 @@ class SearchPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, lambda: self.reset_show_all())
         self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text())
         
@@ -173,7 +173,12 @@ class SearchPage(Page, RewardElement):
         for button in self.password_buttons:
             if button != password_button:
                 button.showing_password = False
+        
+        self.test1_button._bounding_box = BoundingBox(145, 135, 1350, 60)
+        self.test2_button._bounding_box = BoundingBox(145, 220, 1350, 60)
+        self.test3_button._bounding_box = BoundingBox(145, 305, 1350, 60)
 
+  
     def render(self, img: np.ndarray)-> np.ndarray:
         """
         Renders the page onto the given image. 
@@ -195,6 +200,13 @@ class SearchPage(Page, RewardElement):
             self.show_all_button.is_selected()
         )
 
+        if self.test1_button.is_selected():
+            self.test2_button._bounding_box = BoundingBox(145, 270, 1350, 60)
+            self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
+        
+        if self.test2_button.is_selected():
+            self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
+
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchtype.png"),
             (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone_option1.png"),                                             
@@ -208,8 +220,8 @@ class SearchPage(Page, RewardElement):
         self.set_image_path(img_path)
         img = super().render(img)
         
-        draw_rectangles_around_clickables(
-            [self.buttons, self.textfields], img)
+        #draw_rectangles_around_clickables(
+        #    [self.buttons, self.textfields], img)
 
         return img
 
