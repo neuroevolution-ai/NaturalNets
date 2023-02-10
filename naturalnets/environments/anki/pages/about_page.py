@@ -12,16 +12,19 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 class AboutPage(Page, RewardElement):
     """
     Page informing about contributors of the app
-        State description:
-            state[0]: Whether this window is open or not
-
+    State description:
+        state[0]: Whether this window is open or not
     """
+
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
     OK_BUTTON_BB = BoundingBox(713, 793, 118, 36)
 
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
-
+    """
+        Singleton design pattern to ensure that at most one
+        AboutPage is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(AboutPage, cls).__new__(cls)
@@ -33,12 +36,19 @@ class AboutPage(Page, RewardElement):
 
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
 
+    """
+        Provide reward for opening and closing the popup
+    """
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"],
         }
 
+    """
+        Checks if the ok button is clicked and if so the popup is
+        going to be closed
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
@@ -54,6 +64,9 @@ class AboutPage(Page, RewardElement):
     def is_open(self):
         return self.get_state()[0]
 
+    """
+        Renders the image of the popup
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

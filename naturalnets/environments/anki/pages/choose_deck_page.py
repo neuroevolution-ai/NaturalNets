@@ -14,9 +14,11 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class ChooseDeckPage(Page, RewardElement):
     """
-        State description:
-            state[0]: if this window is open
-            state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
+    Is opened up when user clicks select deck button from add card page.
+    By clicking the provided table one can change the deck to add card to.
+    State description:
+        state[0]: if this window is open
+        state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
     """
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_page.png")
@@ -25,7 +27,10 @@ class ChooseDeckPage(Page, RewardElement):
     CHOOSE_BB = BoundingBox(189, 501, 107, 25)
     ADD_BB = BoundingBox(359, 501, 107, 25)
     CLOSE_BB = BoundingBox(520, 501, 107, 25)
-
+    """
+        Singleton design pattern to ensure that at most one
+        ChooseDeckPage is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(ChooseDeckPage, cls).__new__(cls)
@@ -34,12 +39,16 @@ class ChooseDeckPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
+        # Profile database to display all the present profiles
         self.profile_database = ProfileDatabase()
+        # Deck database to display all the present decks of the profile
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
 
+        # Popup for adding a new deck.
         self.add_deck_popup = AddDeckPopup()
         self.add_child(self.add_deck_popup)
 
+        # Index of the currently selected deck in range [0..4]
         self.current_index: int = 0
 
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
@@ -48,6 +57,9 @@ class ChooseDeckPage(Page, RewardElement):
 
         self.set_reward_children([self.add_deck_popup])
 
+    """
+    Provide reward for opening and closing the page, changing the index and choosing a deck
+    """
     @property
     def reward_template(self):
         return {
@@ -75,6 +87,15 @@ class ChooseDeckPage(Page, RewardElement):
     def is_open(self) -> int:
         return self.get_state()[0]
 
+    """
+    Each element has the width of 30. calculate_current_bounding_box()
+    provides the currently clickable areas varying by the number of
+    present decks. If the click_point is within this bounding_box
+    then the current_index is modified.
+    upper_left_point = (203, 222) is the upper left hand corner
+    coordinate of the table.
+    """
+
     def change_current_deck_index(self, click_point: np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if current_bounding_box.is_point_inside(click_point):
@@ -86,12 +107,20 @@ class ChooseDeckPage(Page, RewardElement):
             self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
+    """
+    Calculate the clickable area of the table depending on the number of
+    current decks.
+    """
     def calculate_current_bounding_box(self):
         upper_left_point = (203, 222)
         length = 30 * self.deck_database.decks_length()
         current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 412, length)
         return current_bounding_box
 
+    """
+    Executed when the user clicks on the choose button. It sets the currently selected deck to the index
+    of the choose_deck_page
+    """
     def choose_deck(self):
         self.register_selected_reward(["choose_deck"])
         self.deck_database.set_current_index(self.current_index)
@@ -100,9 +129,15 @@ class ChooseDeckPage(Page, RewardElement):
         self.get_state()[self.current_index + 1] = 1
         self.close()
 
+    """
+    Set the current index to 0 to prevent index out of bound
+    """
     def reset_index(self):
         self.current_index: int = 0
 
+    """
+    Renders the choose deck page with it's add deck popup if open
+    """
     def render(self, img: np.ndarray):
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
@@ -116,7 +151,12 @@ class ChooseDeckPage(Page, RewardElement):
             put_text(img, f" {deck.name}", (211, 243 + 30 * i), font_scale=0.5)
         return img
 
+    """
+    Delegate the click to the add deck popup if open else check if a button is clicked.
+    If yes handle it's click.
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
+        # Updates the deck database of the current profile.
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if self.add_deck_popup.is_open():
             self.add_deck_popup.handle_click(click_position)

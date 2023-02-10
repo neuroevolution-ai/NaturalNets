@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import EXPORTED_DECKS_PATH, IMAGES_PATH
-from naturalnets.environments.anki.deck import Deck, DeckDatabase
+from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.profile import ProfileDatabase

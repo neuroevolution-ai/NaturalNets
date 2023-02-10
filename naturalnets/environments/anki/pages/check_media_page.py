@@ -11,6 +11,8 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class CheckMediaPage(Page, RewardElement):
     """
+    Actually a filler page. Has nothing to do with the logic of the application.
+    Serves providing reward to the agent.
     State description:
             state[0]: if this window is open
     """
@@ -20,7 +22,10 @@ class CheckMediaPage(Page, RewardElement):
 
     WINDOW_BB = BoundingBox(100, 100, 622, 499)
     CLOSE_BB = BoundingBox(619, 562, 81, 24)
-
+    """
+        Singleton design pattern to ensure that at most one
+        CheckMediaPage is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(CheckMediaPage, cls).__new__(cls)
@@ -32,12 +37,17 @@ class CheckMediaPage(Page, RewardElement):
 
         self.close_button = Button(self.CLOSE_BB, self.close)
 
+    """
+        Provides reward for opening and closing the page
+    """
     @property
     def reward_template(self):
         return {
             "window": ["open", "close"]
         }
-
+    """
+        Checks if the close button is clicked and if yes then closes the page.
+    """
     def handle_click(self, click_position: np.ndarray):
         if self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
@@ -53,6 +63,9 @@ class CheckMediaPage(Page, RewardElement):
     def is_open(self) -> int:
         return self.get_state()[0]
 
+    """
+        Renders the image of the page
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

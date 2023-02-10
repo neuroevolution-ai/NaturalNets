@@ -120,7 +120,7 @@ class AddDeckPopup(Page, RewardElement):
     Render the popup and if one of the warning popups are open render it too
     """
     def render(self, img: np.ndarray):
-        # First line synchronizes the self.deck_database attribute with the current database. Bad smell but it works
+        # First line synchronizes the self.deck_database attribute with the current database.
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
@@ -135,7 +135,7 @@ class AddDeckPopup(Page, RewardElement):
     Execute the click action according to the respective button or popup
     """
     def handle_click(self, click_position: np.ndarray) -> None:
-        # First line synchronizes the self.deck_database attribute with the current database. Bad smell but it works
+        # First line synchronizes the self.deck_database attribute with the current database.
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if self.five_decks_popup.is_open():
             self.five_decks_popup.handle_click(click_position)

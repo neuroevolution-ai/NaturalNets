@@ -59,7 +59,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     Check if yes or no button is clicked and if so handle the click
     """
     def handle_click(self, click_position: np.ndarray) -> None:
-        # Updates the current deck database. Bad smell but it works
+        # Updates the current deck database.
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
@@ -87,7 +87,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     Renders the image of the popup
     """
     def render(self, img: np.ndarray):
-        # Updates the current deck database. Bad smell but it works
+        # Updates the current deck database.
         self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

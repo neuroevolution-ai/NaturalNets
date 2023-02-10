@@ -14,7 +14,7 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class AnkiLoginPage(Page, RewardElement):
     """
-   State description:
+    State description:
             state[0]: if this window is open
             state[i]: if the i-th field is filled i = {1,2}
             state[3]: if it's logged in
@@ -29,6 +29,10 @@ class AnkiLoginPage(Page, RewardElement):
     OK_BB = BoundingBox(312, 459, 82, 23)
     CANCEL_BB = BoundingBox(413, 459, 100, 23)
 
+    """
+       Singleton design pattern to ensure that at most one
+       AnkiLoginPage is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(AnkiLoginPage, cls).__new__(cls)
@@ -40,7 +44,7 @@ class AnkiLoginPage(Page, RewardElement):
         RewardElement.__init__(self)
         self.secure_random = random.SystemRandom()
         self.failed_login = FailedLoginPopup()
-
+        # Anki Account is composed of a username and a password
         self.current_anki_account = None
         self.anki_username_list = ["account_1", "account_2", "account_3", "account_4", "account_5"]
         self.anki_password_list = ["pTgHAa", "L7WwEH", "yfTVwA", "DP7xg7", "zx7FeR"]
@@ -56,6 +60,9 @@ class AnkiLoginPage(Page, RewardElement):
         self.add_child(self.failed_login)
         self.set_reward_children([self.failed_login])
 
+    """
+    Provides reward for opening and closing the page as well as setting username, password and logging in
+    """
     @property
     def reward_template(self):
         return {
@@ -65,6 +72,9 @@ class AnkiLoginPage(Page, RewardElement):
             "login": 0
         }
 
+    """
+    Checks if both username and password strings are set
+    """
     def is_strings_not_none(self):
         return self.username_clipboard is not None and self.password_clipboard is not None
 
@@ -87,17 +97,28 @@ class AnkiLoginPage(Page, RewardElement):
     def is_open(self):
         return self.get_state()[0]
 
+    """
+    Sets the password string randomly from the username list 
+    """
     def set_username_clipboard(self):
         self.get_state()[1] = 1
         self.username_clipboard = self.secure_random.choice(self.anki_username_list)
         self.register_selected_reward(["set_username"])
 
+    """
+    Sets the password string randomly from the password list 
+    """
     def set_password_clipboard(self):
         self.get_state()[2] = 1
         self.password_clipboard = self.secure_random.choice(self.anki_password_list)
         self.register_selected_reward(["set_password"])
 
+    """
+    Changes the current account if the login is allowed. Else opens error popup
+    """
     def login(self):
+        if not self.is_strings_not_none():
+            return
         if self.is_allowed_login():
             self.register_selected_reward(["login"])
             self.current_anki_account = AnkiAccount(self.username_clipboard, self.password_clipboard)
@@ -110,6 +131,9 @@ class AnkiLoginPage(Page, RewardElement):
         else:
             self.failed_login.open()
 
+    """
+    Resets the current account and username password combination.
+    """
     def reset(self):
         self.current_anki_account = None
         self.username_clipboard = None
@@ -118,6 +142,9 @@ class AnkiLoginPage(Page, RewardElement):
         self.get_state()[2] = 0
         self.get_state()[1] = 0
 
+    """
+    Renders anki login page with the failed login popup if open
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
@@ -130,6 +157,11 @@ class AnkiLoginPage(Page, RewardElement):
             put_text(img, f"{self.password_clipboard}", (376, 409), font_scale=0.5)
         return img
 
+    """
+    Delegates the click to the failed login popup if it is open.
+    Else if a button is clicked the click action of this button
+    is executed.
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.failed_login.is_open():
             self.failed_login.handle_click(click_position)
@@ -143,6 +175,10 @@ class AnkiLoginPage(Page, RewardElement):
         elif self.cancel_button.is_clicked_by(click_position):
             self.cancel_button.handle_click(click_position)
 
+    """
+    Checks if the indices of the current username and password are the same.
+    If true then the login is allowed
+    """
     def is_allowed_login(self):
         if self.is_strings_not_none():
             return self.anki_username_list.index(self.username_clipboard) == self.anki_password_list.index(
