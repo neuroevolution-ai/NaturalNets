@@ -117,9 +117,6 @@ class AppController:
         reward = np.count_nonzero(previous_reward_array != self.reward_array)
         return reward
 
-    def get_total_state(self) -> np.ndarray:
-        return self._state
-
     def render(self, img: np.ndarray):
         img = self.main_page.render(img)
         return img

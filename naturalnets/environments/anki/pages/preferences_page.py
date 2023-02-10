@@ -18,9 +18,11 @@ from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, Dropdown
 
 class PreferencesPage(RewardElement, Page):
     """
+    Actually the whole page is a filler and an imitation of the original application and does not
+    affect the logic
     State description:
             state[0]: if this window is open
-            state[j]: i-th sub-window is open j = {1,2,3,4}  
+            state[j]: i-th tab is open j = {1,2,3,4}
     """
 
     WINDOW_BB = BoundingBox(20, 80, 801, 601)
@@ -81,6 +83,10 @@ class PreferencesPage(RewardElement, Page):
     BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(294, 195, 12, 9)
     BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(295, 205, 12, 9)
 
+    """
+       Singleton design pattern to ensure that at most one
+       ProfilePage is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(PreferencesPage, cls).__new__(cls)
@@ -90,6 +96,7 @@ class PreferencesPage(RewardElement, Page):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.PREFERENCES_BASIC_IMG_PATH)
         RewardElement.__init__(self)
         self.get_state()[1] = 1
+        # Appears when the help button is clicked
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
         self.current_search_text = None
         self.open_dd = None
@@ -263,6 +270,9 @@ class PreferencesPage(RewardElement, Page):
         self.add_child(self.leads_to_external_website_popup)
         self.set_reward_children([self.leads_to_external_website_popup])
 
+    """
+    Provide rewards for opening/closing this page and selecting dropdown items and checkboxes etc.
+    """
     @property
     def reward_template(self):
         return {
@@ -323,36 +333,59 @@ class PreferencesPage(RewardElement, Page):
             "backups_window_decrement_backups": 0
         }
 
+    """
+    Set the current tab to basic
+    """
     def set_basic(self):
         for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[1] = 1
 
+    """
+    Set the current tab to scheduling
+    """
     def set_scheduling(self):
         for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[2] = 1
 
+    """
+    Set the current tab to network
+    """
     def set_network(self):
         for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[3] = 1
 
+    """
+    Set the current tab to backup
+    """
     def set_backup(self):
         for i in range(1, 5):
             self.get_state()[i] = 0
         self.get_state()[4] = 1
-
+    """
+    Increment the backup number and provide the reward of it
+    """
     def increment_backup_number(self):
         if self.backup_number < 100:
             self.backup_number += 1
             self.register_selected_reward(["backups_window_increment_backups"])
 
+    """
+    Decrement the backup number and provide the reward of it
+    """
     def decrement_backup_number(self):
         if self.backup_number > 0:
             self.backup_number -= 1
             self.register_selected_reward(["backups_window_decrement_backups"])
 
+    """
+    Delegate the click to the popup if it is open 
+    else check if a bounding box for switching tab is selected and then switch the tab
+    else check close or help button is clicked and handle click
+    else delegate click to methods for handling click by open tab 
+    """
     def handle_click(self, click_position: np.ndarray):
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
@@ -375,7 +408,9 @@ class PreferencesPage(RewardElement, Page):
             self.help_button.handle_click(click_position)
         else:
             self.handle_click_by_open_window(click_position)
-
+    """
+    Delegate the click to the open tab
+    """
     def handle_click_by_open_window(self, click_position: np.ndarray):
         if self.get_state()[1] == 1:
             self.handle_click_basic_window(click_position)
@@ -385,7 +420,11 @@ class PreferencesPage(RewardElement, Page):
             self.handle_click_network_window(click_position)
         elif self.get_state()[4] == 1:
             self.handle_click_backups_window(click_position)
-
+    """
+    if a dropdown is open then delegates the click to it
+    else if a dropdown bounding box is clicked then opens the dropdown
+    else handles the click by widgets
+    """
     def handle_click_basic_window(self, click_position: np.ndarray):
         if self.open_dd is not None:
             self.open_dd.handle_click(click_position)
@@ -408,7 +447,9 @@ class PreferencesPage(RewardElement, Page):
                 widget.handle_click(click_position)
                 if isinstance(widget, CheckBox):
                     self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
-
+    """
+    Execute click action if a widget from scheduling window is clicked
+    """
     def handle_click_scheduling_window(self, click_position: np.ndarray):
         for widget in self.scheduling_window_widgets:
             if widget.is_clicked_by(click_position):
@@ -416,6 +457,9 @@ class PreferencesPage(RewardElement, Page):
                 if isinstance(widget, CheckBox):
                     self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
 
+    """
+    Execute click action if a widget from network tab is clicked
+    """
     def handle_click_network_window(self, click_position: np.ndarray):
         for widget in self.network_window_widgets:
             if widget.is_clicked_by(click_position):
@@ -423,70 +467,110 @@ class PreferencesPage(RewardElement, Page):
                 if isinstance(widget, CheckBox):
                     self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
 
+    """
+    Execute click action if a widget from backups tab is clicked
+    """
     def handle_click_backups_window(self, click_position: np.ndarray):
         for widget in self.backups_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
-
+    """
+    Increment the user interface attribute from the basic tab and provide reward of it
+    """
     def increment_user_interface(self):
         if self.user_interface < 200:
             self.user_interface += 5
             self.register_selected_reward(["basic_window_user_interface_increment_button"])
 
+    """
+    Decrement the user interface attribute from the basic tab and provide reward of it
+    """
     def decrement_user_interface(self):
         if self.user_interface > 50:
             self.user_interface -= 5
             self.register_selected_reward(["basic_window_user_interface_decrement_button"])
 
+    """
+    Increment the next day attribute from the scheduling tab and provide reward of it
+    """
     def increment_next_day(self):
         if self.next_day < 10:
             self.next_day += 1
             self.register_selected_reward(["scheduling_window_next_day_increment_button"])
 
+    """
+    Decrement the next day attribute from the scheduling tab and provide reward of it
+    """
     def decrement_next_day(self):
         if self.next_day > 0:
             self.next_day -= 1
             self.register_selected_reward(["scheduling_window_next_day_decrement_button"])
 
+    """
+    Increment the learn ahead attribute from the scheduling tab and provide reward of it
+    """
     def increment_learn_ahead(self):
         if self.learn_ahead < 40:
             self.learn_ahead += 1
             self.register_selected_reward(["scheduling_window_learn_ahead_increment_button"])
 
+    """
+    Decrement the learn ahead attribute from the scheduling tab and provide reward of it
+    """
     def decrement_learn_ahead(self):
         if self.learn_ahead > 0:
             self.learn_ahead -= 1
             self.register_selected_reward(["scheduling_window_learn_ahead_decrement_button"])
-
+    """
+    Increment the timebox time attribute from the scheduling tab and provide reward of it
+    """
     def increment_timebox_time(self):
         if self.timebox_time < 20:
             self.timebox_time += 1
             self.register_selected_reward(["scheduling_window_timebox_time_increment_button"])
 
+    """
+    Decrement the timebox time attribute from the scheduling tab and provide reward of it
+    """
     def decrement_timebox_time(self):
         if self.timebox_time > 0:
             self.timebox_time -= 1
             self.register_selected_reward(["scheduling_window_timebox_time_decrement_button"])
 
+    """
+    Set the current search text attribute of the basic window and provide the reward of it
+    """
     def set_current_search_text(self):
         self.current_search_text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
         self.register_selected_reward(["basic_window_put_text_button"])
-
+    """
+    Click action of help button
+    """
     def help(self):
         self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
-
+    """
+    Opens this window
+    """
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
+    """
+    Closes this window
+    """
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
-
+    """
+    Returns true if this window is open
+    """
     def is_open(self):
         return self.get_state()[0]
-
+    """
+    Render the image of this page according to the open window and 
+    if the popup is open then it is going to be rendered too
+    """
     def render(self, img: np.ndarray):
         if self.get_state()[1] == 1:
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
@@ -525,7 +609,9 @@ class PreferencesPage(RewardElement, Page):
         if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
         return img
-
+    """
+    Method to close all of the dropdowns of the basic tab
+    """
     def close_all_dropdowns(self):
         for dd in self.basic_window_dropdowns:
             dd.close()
