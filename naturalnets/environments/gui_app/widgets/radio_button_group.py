@@ -159,3 +159,6 @@ class RadioButtonGroup(Widget):
     def render(self, img: np.ndarray) -> np.ndarray:
         self._selected_radio_button.render(img)
         return img
+
+    def get_radio_buttons(self) -> List[RadioButton]:
+        return self.radio_buttons

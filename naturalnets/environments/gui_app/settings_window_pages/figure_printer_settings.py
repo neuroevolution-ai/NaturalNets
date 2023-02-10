@@ -20,6 +20,8 @@ from naturalnets.environments.gui_app.widgets.radio_button_group import RadioBut
 class FigurePrinterSettings(Page, RewardElement):
     """The figure-printer settings page, manipulates the figure-printer page."""
     STATE_LEN = 0
+    MAX_CLICKABLE_ELEMENTS = 9
+
     IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_settings.png")
 
     SHOW_FIG_PRINTER_BB = BoundingBox(38, 91, 141, 14)
@@ -165,7 +167,7 @@ class FigurePrinterSettings(Page, RewardElement):
 
         if self._show_fig_printer_checkbox.is_clicked_by(click_position):
             self._show_fig_printer_checkbox.handle_click(click_position)
-            figure_printer_activated = self._show_fig_printer_checkbox.is_selected()
+            figure_printer_activated = self.is_figure_printer_activated()
             self.main_window.enable_figure_printer(figure_printer_activated)
 
             self.register_selected_reward(["activate_figure_printer", bool(figure_printer_activated)])
@@ -234,6 +236,22 @@ class FigurePrinterSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        clickable_elements.append(self._show_fig_printer_checkbox)
+
+        # If the "Activate FigurePrinter" checkbox is not activated, it is the only clickable
+        # widget, thus return
+        if not self.is_figure_printer_activated():
+            return clickable_elements
+
+        clickable_elements.extend(self.figure_checkboxes)
+        clickable_elements.extend(self._color_rbg.get_radio_buttons())
+
+        return clickable_elements
+
 
 class FigureCheckboxesPopup(Page, RewardElement):
     """Popup for the figure-printer settings (pops up when no figure-checkbox is selected).
@@ -242,6 +260,8 @@ class FigureCheckboxesPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(14, 87, 381, 114)
     IMG_PATH = os.path.join(IMAGES_PATH, "figure_settings_checkboxes_popup.png")
 
@@ -351,3 +371,9 @@ class FigureCheckboxesPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        if self.dropdown_opened:
+            return self.dropdown.get_visible_items()
+
+        return [self.dropdown, self.apply_button]

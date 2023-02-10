@@ -1,8 +1,10 @@
 from copy import copy
+from typing import List
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.settings_window import SettingsWindow
@@ -108,8 +110,8 @@ class AppController:
 
         for _ in range(state_len):
             states_info.append({
-                'class_name': str(type(state_element)).split('.')[-1][:-2],
-                'recursion_depth': str(recursion_depth)
+                "class_name": str(type(state_element)).split('.')[-1][:-2],
+                "recursion_depth": str(recursion_depth)
             })
 
         for child in state_element.get_children():
@@ -195,3 +197,11 @@ class AppController:
         if self.settings_window.is_open():
             img = self.settings_window.render(img)
         return img
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        if self.settings_window.is_open():
+            return self.settings_window.get_clickable_elements()
+
+        currently_visible_widgets = [self.settings_button]
+
+        return self.main_window.get_clickable_elements(currently_visible_widgets)

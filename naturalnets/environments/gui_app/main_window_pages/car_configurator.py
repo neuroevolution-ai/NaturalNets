@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -276,6 +276,29 @@ class CarConfigurator(Page, RewardElement):
         else:
             return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd_index is not None:
+            return self.dropdowns[self.opened_dd_index].get_visible_items()
+
+        # Car Dropdown could be disabled if all cars have been deselected in the settings, thus only add the car
+        # dropdown if it has selectable DropdownItems
+        if len(self.car_dropdown.get_visible_items()) > 0:
+            clickable_elements.append(self.car_dropdown)
+
+        # Order here is important because it is directly linked with the order in the state vector, see below
+        possible_clickable_widgets = [self.tire_dropdown, self.interior_dropdown, self.prop_dropdown,
+                                      self.show_config_button]
+
+        # If the state_value is 1, the corresponding widget is visible and can thus be clicked
+        for state_value, widget in zip(self.get_state(), possible_clickable_widgets):
+            if state_value:
+                clickable_elements.append(widget)
+
+        return clickable_elements
+
     def display_configuration(self):
         car = self.car_dropdown.get_current_value()
         tire_size = self.tire_dropdown.get_current_value()
@@ -476,6 +499,9 @@ class CarConfiguratorPopup(Page, RewardElement):
             return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
 
         return current_minimal_distance, current_clickable, click_position
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.ok_button]
 
     def open(self) -> None:
         """Opens this popup."""

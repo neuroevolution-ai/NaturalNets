@@ -186,7 +186,7 @@ class DummyApp(IGUIEnvironment):
 
     def render_image(self) -> np.ndarray:
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
-        image[:, :, :] = 255
+        image[:, :, :] = 235
 
         # Draw button rectangles
         for i in range(self.number_buttons):

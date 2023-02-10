@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import List, Tuple
 
 import cv2
 import numpy as np
@@ -179,6 +179,15 @@ class FigurePrinter(Page, RewardElement):
             new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
 
         return current_minimal_distance, current_clickable, new_click_position
+
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.dropdown_opened:
+            return self.dropdown.get_visible_items()
+
+        clickable_elements.append(self.dropdown)
+        clickable_elements.append(self._draw_figure_button)
+
+        return clickable_elements
 
     def render(self, img: np.ndarray):
         super().render(img)
