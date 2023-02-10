@@ -13,6 +13,10 @@ class AccountManager:
             if not AccountManager.is_in_current_accounts(account.getAccountName()):
                 AccountManager.currentAccounts.append(account)
 
+    def editAccount(account: Account, old_account: Account):
+        AccountManager.deleteAccount(old_account.getAccountName())
+        AccountManager.addAccount(account)
+
     @staticmethod
     def deleteAccount(account_name: str):
         for current_account in AccountManager.currentAccounts:

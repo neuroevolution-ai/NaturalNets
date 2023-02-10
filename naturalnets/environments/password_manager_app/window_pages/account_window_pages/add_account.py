@@ -24,7 +24,7 @@ class AddAccount(Page, RewardElement):
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 
-    HIDE_PASSWORD_BB = BoundingBox(80, 210, 12, 13)
+    HIDE_PASSWORD_BB = BoundingBox(79, 209, 12, 13)
 
     OK_BUTTON_BB = BoundingBox(167, 415, 43, 20)
     CLOSE_BUTTON_BB = BoundingBox(219, 415, 62, 20)
@@ -127,15 +127,15 @@ class AddAccount(Page, RewardElement):
     
     def ok(self):
         
-        self.account_name = self.dropdown_account.get_current_value()
-        if self.account_name is not None:
-            self.account_user_id = self.dropdown_user_id.get_current_value()  
-            self.account_password = self.current_password.get_value()
-            self.account_url = self.dropdown_url.get_current_value()
-            self.account_notes = self.dropdown_notes.get_current_value()
+        account_name = self.dropdown_account.get_current_value()
+        if account_name is not None:
+            account_user_id = self.dropdown_user_id.get_current_value()  
+            account_password = self.current_password.get_value()
+            account_url = self.dropdown_url.get_current_value()
+            account_notes = self.dropdown_notes.get_current_value()
 
-            AccountManager.addAccount(Account(self.account_name, self.account_user_id, self.account_password, 
-                                            self.account_url, self.account_notes))
+            AccountManager.addAccount(Account(account_name, account_user_id, account_password, 
+                                            account_url, account_notes))
 
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
@@ -162,7 +162,8 @@ class AddAccount(Page, RewardElement):
 
     def generate(self):
         self.current_password = self.random_password()
-        self.dropdown_password.set_selected_item(self.current_password)
+        if not self.is_checked:
+            self.dropdown_password.set_selected_item(self.current_password)
 
     def random_password(self):
         return random.choice(self.dropdown_password.get_all_items())

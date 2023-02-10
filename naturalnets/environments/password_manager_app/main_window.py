@@ -48,10 +48,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 30, 30)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(33, 25, 30, 30)
     DELETE_ACCOUNT_BUTTON_BB = BoundingBox(64, 25, 30, 30)
-    COPY_USERNAME_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    COPY_PASSWORD_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    LAUNCH_URL_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    OPTIONS_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    COPY_USERNAME_BUTTON_BB = BoundingBox(100, 25, 30, 30)
+    COPY_PASSWORD_BUTTON_BB = BoundingBox(131, 25, 30, 30)
+    LAUNCH_URL_BUTTON_BB = BoundingBox(162, 25, 30, 30)
+    OPTIONS_BUTTON_BB = BoundingBox(199, 25, 30, 30)
     DATABASE_BB = BoundingBox(0, 0, 1, 1)
     ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
     HELP_BUTTON_BB = BoundingBox(0, 0, 1, 1)
@@ -91,12 +91,12 @@ class MainWindow(StateElement, Clickable, RewardElement):
         # assert len(self.pages) == self.get_state_len()
 
         self.buttons = [
-            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.add_account)),
+            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.function_add_account()),
             Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.function_edit_account()),
             Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.delete_account()),
-            Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.set_current_page(None)),
-            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.set_current_page(None)),
-            Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.set_current_page(None)),
+            Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.copy_username()),
+            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy_password()),
+            Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
             Button(self.OPTIONS_BUTTON_BB, lambda: self.set_current_page(self.options)),
             Button(self.DATABASE_BB, lambda: self.set_current_page(self.database)),
             Button(self.ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.account)),
@@ -156,6 +156,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
         self.set_current_page(None)
 
+    def function_add_account(self):
+        self.add_account.generate()
+        self.set_current_page(self.add_account)
+
     def delete_account(self):
         if 0 < self.STATE_IMG[1] < 4:
             self.confirm_delete_account.set_name(self.get_selected_account())
@@ -167,6 +171,15 @@ class MainWindow(StateElement, Clickable, RewardElement):
             if account_to_edit is not None:
                 self.edit_account.set_account(account_to_edit)
                 self.set_current_page(self.edit_account)
+
+    def copy_username(self):
+        print('copy_username')
+
+    def copy_password(self):
+        print('copy_password')
+
+    def launch_url(self):
+        print('launch_url')
 
     def get_current_page(self):
         return self.current_page
