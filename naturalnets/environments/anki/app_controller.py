@@ -9,6 +9,9 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class AppController:
 
+    """
+        Copied from the app_controller.py of GUIApp and adapted with small changes.
+    """
     def __init__(self):
         self.main_page = MainPage()
 
@@ -63,6 +66,7 @@ class AppController:
         return accumulated_len
 
     def assign_state(self, state_element: StateElement, recursion_depth: int, states_info: list) -> None:
+
         """Assigns (part of) the app state-vector to the given StateElement and all of its children.
 
         Args:

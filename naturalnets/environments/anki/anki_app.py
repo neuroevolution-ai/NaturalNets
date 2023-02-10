@@ -26,7 +26,9 @@ class AppCfg:
 class AnkiApp(IGUIEnvironment):
     screen_width = 834
     screen_height = 834
-
+    """
+    Copied from the gui_app.py and adapted with small changes.
+    """
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the AnkiApp environment")

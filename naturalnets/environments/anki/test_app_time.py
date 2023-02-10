@@ -4,8 +4,12 @@ import numpy as np
 
 from naturalnets.environments.anki import AnkiApp
 
+"""
+Copied and adapted from GUIApp.
+"""
+
 WIDTH = 834
-HEIGHT = 709
+HEIGHT = 834
 
 config = {
     "type": "AnkiApp",

@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki import NameExistsPopup
-from naturalnets.environments.anki.deck import Deck, DeckDatabase
+from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
     import LeadsToExternalWebsitePopup

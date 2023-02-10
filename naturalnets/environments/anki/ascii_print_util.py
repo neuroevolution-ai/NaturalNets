@@ -6,6 +6,11 @@ from PIL import Image, ImageDraw, ImageFont
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import render_onto_bb
 
+"""
+put_text method from the utils of GUIApp does not provide printing non-ASCII
+characters therefore it is necessary to use this method for printing cards in study session
+"""
+
 
 def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_size: int,
                     dimension: Tuple[int, int, int]):
