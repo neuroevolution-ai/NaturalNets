@@ -8,8 +8,11 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class AtLeastOneDeckPopup(Page, RewardElement):
     """
+    This popup appears when the user tries to remove
+    the only deck present
     State description:
         state[0]: if this popup is open
     """
@@ -17,9 +20,13 @@ class AtLeastOneDeckPopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_deck_popup.png")
     WINDOW_BB = BoundingBox(250, 250, 318, 121)
-    
+
     OK_BUTTON_BB = BoundingBox(476, 339, 81, 23)
 
+    """
+    Singleton design pattern to ensure that at most one
+    AtLeastOneDeckPopup is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(AtLeastOneDeckPopup, cls).__new__(cls)
@@ -28,15 +35,21 @@ class AtLeastOneDeckPopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
-        self.ok_button: Button = Button(self.OK_BUTTON_BB,self.close)
-        
+
+        self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
+
+    """
+    Reward the agent for opening and closing the popup
+    """
     @property
     def reward_template(self):
         return {
-            "window": ["open","close"]
+            "window": ["open", "close"]
         }
-    
+
+    """
+    Checks if the ok button is clicked and if so closes the popup
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
@@ -48,11 +61,12 @@ class AtLeastOneDeckPopup(Page, RewardElement):
     def close(self):
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        
 
     def is_open(self) -> int:
         return self.get_state()[0]
-
+    """
+    Renders the image of the popup
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
