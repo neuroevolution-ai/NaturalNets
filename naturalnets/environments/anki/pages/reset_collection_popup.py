@@ -12,6 +12,8 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 class ResetCollectionPopup(Page, RewardElement):
     """
+    Resets the application state to a predefined state
+    with 3 default profiles and 2 decks for each profile
     State description:
             state[0]: if this window is open
     """
@@ -25,15 +27,24 @@ class ResetCollectionPopup(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
+
+        # Profile database to set to the default profiles with default decks
         self.profile_database = ProfileDatabase()
         self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
+    """
+        Singleton design pattern to ensure that at most one
+        ResetCollectionPopup is present
+    """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
         return cls.instance
-    
+
+    """
+    Provide reward for opening/closing this popup and for resetting the application
+    """
     @property
     def reward_template(self):
         return {
@@ -41,30 +52,45 @@ class ResetCollectionPopup(Page, RewardElement):
             "reset_all": 0
         }
 
+    """
+    Handle click with the buttons
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)
-
+    """
+    Open this popup
+    """
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["popup", "open"])
 
+    """
+    Close this popup
+    """
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["popup", "close"])
 
+    """
+    Return true if this popup is open
+    """
     def is_open(self) -> int:
         return self.get_state()[0]
-    
+    """
+    Set the application to the default configuration
+    """
     def reset_all(self):
         self.profile_database.default_profiles()
         for profile in self.profile_database.profiles:
             profile.deck_database.default_decks()
         self.register_selected_reward(["reset_all"])
         self.close()
-    
+    """
+    Render this popup
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

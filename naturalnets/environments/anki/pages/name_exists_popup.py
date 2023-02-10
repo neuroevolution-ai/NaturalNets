@@ -19,11 +19,18 @@ class NameExistsPopup(Page, RewardElement):
     WINDOW_BB = BoundingBox(300, 300, 175, 118)
     OK_BB = BoundingBox(386, 387, 82, 25)
 
+    """
+        Singleton design pattern to ensure that at most one
+        NameExistsPopup is present
+        """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(NameExistsPopup, cls).__new__(cls)
         return cls.instance
 
+    """
+    Provide reward for opening/closing this popup
+    """
     @property
     def reward_template(self):
         return {
@@ -36,22 +43,37 @@ class NameExistsPopup(Page, RewardElement):
 
         self.ok_button = Button(self.OK_BB, self.close)
 
+    """
+    Open this popup
+    """
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
+    """
+    Close this popup
+    """
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
 
+    """
+    Returns true if this popup is open
+    """
     def is_open(self):
         return self.get_state()[0]
 
+    """
+    Render the image of this popup
+    """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img
 
+    """
+    Trigger click action if ok button is clicked
+    """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
