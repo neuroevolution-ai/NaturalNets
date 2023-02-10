@@ -2,6 +2,7 @@ import random
 from typing import Dict
 
 import numpy as np
+import torch
 
 
 def rescale_values(values: np.ndarray, previous_low: int, previous_high: int, new_low: int, new_high: int,
@@ -51,6 +52,7 @@ def flatten_dict(config: Dict, prefix: str = "") -> Dict:
 def set_seeds(seed: int):
     np.random.seed(seed)
     random.seed(seed)
+    torch.manual_seed(seed)
 
 
 class RunningStat(object):
