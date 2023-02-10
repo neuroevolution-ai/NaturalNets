@@ -180,5 +180,8 @@ class GUIApp(IGUIEnvironment):
         assert self.screen_width == self.screen_height
         return self.screen_width
 
-    def get_clickable_elements(self) -> List[Clickable]:
-        return self.app_controller.get_clickable_elements()
+    def get_clickable_elements(self) -> Optional[List[Clickable]]:
+        if self.config.return_clickable_elements:
+            return self.app_controller.get_clickable_elements()
+        else:
+            return None
