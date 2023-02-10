@@ -7,6 +7,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
@@ -19,6 +20,8 @@ from naturalnets.environments.gui_app.widgets.radio_button_group import RadioBut
 class TextPrinterSettings(Page, RewardElement):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
+    CLICKABLE_ELEMENTS = 10
+
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
 
     N_WORDS_BB = BoundingBox(217, 71, 173, 22)
@@ -117,7 +120,7 @@ class TextPrinterSettings(Page, RewardElement):
 
         self.add_widgets(self.dropdowns)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
 
         # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
@@ -224,6 +227,19 @@ class TextPrinterSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
+
+        clickable_elements.extend(self.dropdowns)
+        clickable_elements.extend(self.rbg.get_radio_buttons())
+        clickable_elements.extend(self.font_style_checkboxes)
+
+        return clickable_elements
+
 
 class TextPrinterSettingsPopup(Page, RewardElement):
     """Popup for the text-printer settings (pops up when the green radio-button is selected).
@@ -232,6 +248,8 @@ class TextPrinterSettingsPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(99, 94, 210, 100)
     IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings_popup.png")
 
@@ -284,3 +302,6 @@ class TextPrinterSettingsPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.yes_button, self.no_button]

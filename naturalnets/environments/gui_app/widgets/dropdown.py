@@ -105,6 +105,8 @@ class Dropdown(Widget):
         self.add_children(self._all_items)
         self._selected_item: DropdownItem = None
 
+        self._update_item_bounding_boxes()
+
     def is_open(self) -> int:
         return self.get_state()[0]
 

@@ -173,9 +173,20 @@ class DummyApp(IGUIEnvironment):
     def get_observation(self):
         return self.button_states
 
+    def get_observation_dict(self) -> dict:
+        observation_dict = {
+            "pressed buttons": []
+        }
+
+        for i in range(len(self.button_states)):
+            if self.button_states[i] == 1:
+                observation_dict["pressed buttons"].append(i)
+
+        return observation_dict
+
     def render_image(self) -> np.ndarray:
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
-        image[:, :, :] = 255
+        image[:, :, :] = 235
 
         # Draw button rectangles
         for i in range(self.number_buttons):

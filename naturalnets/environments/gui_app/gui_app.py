@@ -10,6 +10,7 @@ from attrs import define, field, validators
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 
@@ -24,6 +25,7 @@ class AppCfg:
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+    return_clickable_elements: bool = field(default=False, validator=validators.instance_of(bool))
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
@@ -92,7 +94,12 @@ class GUIApp(IGUIEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
+        info = {"states_info": self.app_controller.get_states_info()}
+
+        if self.config.return_clickable_elements:
+            info["clickable_elements"] = self.get_clickable_elements()
+
+        return self.get_observation(), rew, done, info
 
     def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -150,9 +157,15 @@ class GUIApp(IGUIEnvironment):
     def get_observation(self):
         return self.get_state()
 
+    def get_observation_dict(self) -> dict:
+        raise NotImplementedError()
+
     def get_window_name(self) -> str:
         return self.window_name
 
     def get_screen_size(self) -> int:
         assert self.screen_width == self.screen_height
         return self.screen_width
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return self.app_controller.get_clickable_elements()
