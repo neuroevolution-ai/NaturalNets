@@ -101,8 +101,7 @@ class CmaEsEvoTorch(IOptimizer):
         return rew
 
     def ask(self) -> List[np.ndarray]:
-        # TODO probably have to manually move from gpu to cpu if gpu is used
-        self.population = self.cma_es.population.values.numpy()
+        self.population = self.cma_es.population.values.cpu().numpy()
 
         return self.population
 
