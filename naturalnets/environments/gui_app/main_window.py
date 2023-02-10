@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -140,16 +140,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Optional[Clickable]) -> Tuple[float, Clickable, np.ndarray]:
-        for button in self.buttons:
-            if button != self.figure_printer_button or self.is_figure_printer_button_visible:
-                current_minimal_distance, current_clickable = button.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-
-        return self.current_page.find_nearest_clickable(click_position, current_minimal_distance, current_clickable)
 
     def is_dropdown_open(self):
         """Returns true if the current page has an opened dropdown.

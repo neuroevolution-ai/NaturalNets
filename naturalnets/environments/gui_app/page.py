@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List, Optional, Tuple
+from typing import List
 
 import cv2
 import numpy as np
@@ -47,11 +47,6 @@ class Page(StateElement, Clickable, HasPopups):
 
     @abstractmethod
     def handle_click(self, click_position: np.ndarray) -> None:
-        pass
-
-    # @abstractmethod
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
         pass
 
     def get_img_path(self) -> str:

@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
@@ -137,30 +137,6 @@ class CalculatorSettings(Page, RewardElement):
         if self.get_selected_checkboxes_count() == 0:
             self.popup.open()
 
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-
-        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        if self.is_popup_open():
-            # Open popup overlaps the checkboxes on the right completely
-            clickable_checkboxes = [self.addition, self.multiplication]
-        else:
-            clickable_checkboxes = self.operator_checkboxes
-
-        for checkbox in clickable_checkboxes:
-            current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
     def get_selected_checkboxes_count(self) -> int:
         """Returns the number of selected checkboxes."""
         return sum(checkbox.is_selected() for checkbox in self.operator_checkboxes)
@@ -272,22 +248,6 @@ class CalculatorSettingsPopup(Page, RewardElement):
             self.apply_button.handle_click(click_position)
             self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
             self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        if self.is_open():
-            current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-            if not self.dropdown.is_open():
-                current_minimal_distance, current_clickable = self.apply_button.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-
-            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, click_position
 
     def open(self):
         """Opens this popup."""

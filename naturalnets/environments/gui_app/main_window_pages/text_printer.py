@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 
@@ -129,16 +129,6 @@ class TextPrinter(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray = None):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        current_minimal_distance, current_clickable = self.button.calculate_distance_to_click(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, new_click_position
 
     def update_display_dict(self):
         return {

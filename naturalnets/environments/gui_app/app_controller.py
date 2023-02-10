@@ -155,24 +155,21 @@ class AppController:
         previous_reward_array = copy(self.reward_array)
 
         if self.nearest_widget_click:
-            current_minimal_distance, current_clickable, old_click_position = np.inf, None, click_position
+            current_minimal_distance, current_clickable = np.inf, None
 
-            if self.settings_window.is_open():
-                settings_window_result = self.settings_window.find_nearest_clickable(
-                    click_position, current_minimal_distance, current_clickable
-                )
+            for clickable_element in self.get_clickable_elements():
+                clickable_distance = clickable_element.calculate_distance_to_click(click_position)
 
-                current_minimal_distance, current_clickable, click_position = settings_window_result
-            else:
-                current_minimal_distance, current_clickable = self.settings_button.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
+                if clickable_distance < current_minimal_distance:
+                    current_minimal_distance = clickable_distance
+                    current_clickable = clickable_element
 
-                main_window_result = self.main_window.find_nearest_clickable(
-                    click_position, current_minimal_distance, current_clickable
-                )
+            if current_clickable is None:
+                raise RuntimeError("GUIApp landed in a state where no clickable element was found. This should not "
+                                   "be possible, thus the implementation of get_clickable_elements() likely contains "
+                                   "a bug.")
 
-                current_minimal_distance, current_clickable, click_position = main_window_result
+            click_position = current_clickable.get_click_point_inside()
 
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)

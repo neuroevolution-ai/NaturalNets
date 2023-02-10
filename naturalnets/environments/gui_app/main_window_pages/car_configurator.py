@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import cv2
 import numpy as np
@@ -254,28 +254,6 @@ class CarConfigurator(Page, RewardElement):
                         self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "opened"])
                     return
 
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        for index, dropdown in enumerate(self.dropdowns):
-            if index == 0 or self._is_dropdown_value_selected(index - 1):
-                current_minimal_distance, current_clickable = dropdown.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-
-        if self._is_dropdown_value_selected(len(self.dropdowns) - 1):
-            current_minimal_distance, current_clickable = self.show_config_button.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        if current_clickable == self.popup.ok_button:
-            return current_minimal_distance, current_clickable, popup_click_position
-        else:
-            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
     def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
         if self.popup.is_open():
             return self.popup.get_clickable_elements()
@@ -488,17 +466,6 @@ class CarConfiguratorPopup(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        if self.is_open():
-            current_minimal_distance, current_clickable = self.ok_button.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, click_position
 
     def get_clickable_elements(self) -> List[Clickable]:
         return [self.ok_button]

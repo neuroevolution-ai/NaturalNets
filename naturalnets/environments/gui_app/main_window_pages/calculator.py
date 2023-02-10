@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
@@ -190,30 +190,6 @@ class Calculator(Page, RewardElement):
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
 
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        for widget in [self.operator_dd, self.operand_1_dd, self.operand_2_dd, self.button]:
-            current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        if current_clickable == self.popup.button:
-            return current_minimal_distance, current_clickable, popup_click_position
-
-        if current_clickable == self.button:
-            # The coordinates point to the middle of the "Calculate" button, which is never occupied by an opened
-            # dropdown or anything else -> thus always valid
-            new_click_position = np.array([272, 416], dtype=np.int32)
-        else:
-            # Top left of any widget is fine
-            new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, new_click_position
-
     def set_operator_value(self, value: Operator):
         self.operator_dd.set_selected_value(value)
 
@@ -303,17 +279,6 @@ class CalculatorPopup(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.button.is_clicked_by(click_position):
             self.button.handle_click(click_position)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        if self.is_open():
-            current_minimal_distance, current_clickable = self.button.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-            return current_minimal_distance, current_clickable, self.button.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, click_position
 
     def open(self):
         """Opens this popup."""

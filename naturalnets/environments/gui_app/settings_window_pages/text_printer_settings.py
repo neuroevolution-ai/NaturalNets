@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 
@@ -218,55 +218,6 @@ class TextPrinterSettings(Page, RewardElement):
             if previous_color != new_color:
                 self.text_printer.set_color(new_color)
 
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        # TODO: What to do in the following scenario? Click is directly on the position of the black radio button, but
-        #  the popup is opened. Then the click position falls on the box of the popup but not on the yes or no button.
-        #  However because the click is directly on the black radio button it will be selected, despite it not being
-        #  visible. This is technically not a problem, because handle_click() will correctly just click into the popup
-        #  and nothing happens, but the black button is therefore not the nearest (visible) widget. The no button would
-        #  be the nearest (visible) widget.
-        #  Currently implemented: Completely invisible widgets are ignored by additional checks
-
-        current_minimal_distance, current_clickable, popup_click_position = self.popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        # Order of the dropdowns here is important, because n_words_dd might overlap fonts_dd
-        for dropdown in [self.n_words_dd, self.font_size_dd, self.fonts_dd]:
-            current_minimal_distance, current_clickable = dropdown.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        if self.is_popup_open():
-            # In this case the two radio buttons on the right side are not visible
-            clickable_radio_buttons = [self.red_rb, self.green_rb]
-        else:
-            if self.font_size_dd.is_open():
-                # In this case the two radio buttons on the left side are not visible
-                clickable_radio_buttons = [self.blue_rb, self.black_rb]
-            elif self.fonts_dd.is_open():
-                # In this case the two radio buttons on the right side are not visible
-                clickable_radio_buttons = [self.red_rb, self.green_rb]
-            else:
-                # All radio buttons are visible
-                clickable_radio_buttons = [self.red_rb, self.blue_rb, self.green_rb, self.black_rb]
-
-        for rb in clickable_radio_buttons:
-            current_minimal_distance, current_clickable = rb.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        for widget in self.font_style_checkboxes:
-            current_minimal_distance, current_clickable = widget.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        if current_clickable == self.popup.yes_button or current_clickable == self.popup.no_button:
-            return current_minimal_distance, current_clickable, popup_click_position
-
-        return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
     def is_popup_open(self) -> int:
         return self.popup.is_open()
 
@@ -335,18 +286,6 @@ class TextPrinterSettingsPopup(Page, RewardElement):
 
         if self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        if self.is_open():
-            for button in [self.yes_button, self.no_button]:
-                current_minimal_distance, current_clickable = button.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-
-            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, click_position
 
     def open(self):
         """Opens this popup."""

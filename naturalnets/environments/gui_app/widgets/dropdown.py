@@ -129,17 +129,6 @@ class Dropdown(Widget):
         else:
             self.open()
 
-    def calculate_distance_to_click(self, click_position: np.ndarray, current_minimal_distance: Optional[float],
-                                    current_clickable: Optional[Clickable]) -> Tuple[float, Clickable]:
-        if self.is_open():
-            for item in self._update_item_bounding_boxes():
-                current_minimal_distance, current_clickable = item.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-            return current_minimal_distance, current_clickable
-        else:
-            return super().calculate_distance_to_click(click_position, current_minimal_distance, current_clickable)
-
     def get_bb(self):
         if not self.is_open():
             return self._dropdown_button_bb

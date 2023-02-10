@@ -1,7 +1,7 @@
 import itertools
 import os
 from functools import partial
-from typing import List, Tuple
+from typing import List
 
 import numpy as np
 
@@ -235,33 +235,6 @@ class CarConfiguratorSettings(Page, RewardElement):
                         self._car_configurator.reset_car_configurator_dropdowns()
                         return
 
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        popup_result = self.car_disabled_popup.find_nearest_clickable(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        current_minimal_distance, current_clickable, popup_click_position = popup_result
-
-        for checkbox_group in self._checkbox_groups:
-            for checkbox in checkbox_group:
-                if checkbox == self.interior_sport and self.is_popup_open():
-                    # In this case the checkbox is not visible and is excluded from distance calculation
-                    continue
-
-                current_minimal_distance, current_clickable = checkbox.calculate_distance_to_click(
-                    click_position, current_minimal_distance, current_clickable
-                )
-
-        # If the popup is open, then the confirm button overlaps with the interior sport checkbox, thus choose a click
-        # position on the right side of the checkbox. Otherwise, the confirm button is pressed, because when using
-        # get_click_point_inside_bb() the upper left corner of the bounding box is returned, which then falls on the
-        # confirm button.
-        if self.is_popup_open() and current_clickable == self.interior_sport:
-            return current_minimal_distance, current_clickable, np.array([298, 152], dtype=np.int32)
-
-        return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
     def is_popup_open(self) -> int:
         return self.car_disabled_popup.is_open()
 
@@ -427,17 +400,6 @@ class CarDisabledPopup(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        if self.is_open():
-            current_minimal_distance, current_clickable = self.ok_button.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-            return current_minimal_distance, current_clickable, current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, click_position
 
     def open(self, disabled_cars: List[Car]):
         """Opens this popup and adds the disabled cars to the list of cars to be

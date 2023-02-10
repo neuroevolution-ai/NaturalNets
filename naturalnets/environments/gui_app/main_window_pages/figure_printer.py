@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List
 
 import cv2
 import numpy as np
@@ -157,28 +157,6 @@ class FigurePrinter(Page, RewardElement):
 
         if self._draw_figure_button.is_clicked_by(click_position):
             self._draw_figure()
-
-    def find_nearest_clickable(self, click_position: np.ndarray, current_minimal_distance: float,
-                               current_clickable: Clickable) -> Tuple[float, Clickable, np.ndarray]:
-        current_minimal_distance, current_clickable = self.dropdown.calculate_distance_to_click(
-            click_position, current_minimal_distance, current_clickable
-        )
-
-        # If the dropdown is open and contains four items, it completely overlaps the "Draw Figure" button. Therefore,
-        # it is not checked for distance because it is not visible and cannot be clicked
-        if not (self.dropdown.is_open() and len(self.dropdown.get_visible_items()) == 4):
-            current_minimal_distance, current_clickable = self._draw_figure_button.calculate_distance_to_click(
-                click_position, current_minimal_distance, current_clickable
-            )
-
-        if current_clickable == self._draw_figure_button:
-            # That is a click position which is always clickable. It is on the lower part of the "Draw Figure" Button.
-            # If the dropdown has three items and is opened, then the upper half of the button is overlapped.
-            new_click_position = np.array([270, 422], dtype=np.int32)
-        else:
-            new_click_position = current_clickable.get_bb().get_click_point_inside_bb()
-
-        return current_minimal_distance, current_clickable, new_click_position
 
     def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
         if self.dropdown_opened:
