@@ -25,9 +25,20 @@ class AppCfg:
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+
+    # If true, calculates the currently clickable elements of the GUIApp, which can then be retrieved via a method
     return_clickable_elements: bool = field(default=False, validator=validators.instance_of(bool))
 
+    # If true, for each click the nearest clickable element will be calculated and this one will be clicked.
+    # Thus, each click will be on a clickable element
     nearest_widget_click: bool = field(default=False, validator=validators.instance_of(bool))
+
+    @nearest_widget_click.validator
+    def validate_nearest_widget_click(self, attribute, value):
+        if value and not self.return_clickable_elements:
+            raise ValueError("GUIApp: 'nearest_widget_click' is set to True, but 'return_clickable_elements' "
+                             "is set to False.\nHowever, 'return_clickable_elements' is required for "
+                             "'nearest_widget_click' to work, thus try setting it to True.")
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
