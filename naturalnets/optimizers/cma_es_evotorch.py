@@ -34,7 +34,7 @@ class OptimizerCmaEsEvoTorchCfg(IOptimizerCfg):
                         validator=[validators.instance_of(str), validators.in_(["cpu", "cuda"])])
 
     @population_size.validator
-    def validate_initial_bounds(self, attribute, value):
+    def validate_limit_c_decomposition(self, attribute, value):
         if self.limit_C_decomposition and value < 75:
             warnings.warn(f"'limit_C_decomposition' is True and the 'population_size' is lower than 75, this may cause "
                           "a division by zero! Try increasing the 'population_size'.")
@@ -52,7 +52,7 @@ class OptimizerCmaEsEvoTorchCfg(IOptimizerCfg):
                              f"You provided: '{value}'.")
 
     @device.validator
-    def validate_gpu_available(self, attribute, value):
+    def validate_gpu_availability(self, attribute, value):
         if value == "cuda":
             if not torch.cuda.is_available():
                 raise ValueError(f"Torch could not detect CUDA, but you set 'device' to '{value}' or 'gpu'. "
