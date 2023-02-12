@@ -24,7 +24,7 @@ from naturalnets.environments.password_manager_app.window_pages.function_bar_win
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.invalid_url import InvalidURL
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import MasterPassword
 from naturalnets.environments.password_manager_app.window_pages.options import Options
-
+from naturalnets.environments.password_manager_app.cache import Cache
 
 class MainWindow(StateElement, Clickable, RewardElement):
     """The main window of the app, containing the menu as well as the respective pages
@@ -53,8 +53,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
     LAUNCH_URL_BUTTON_BB = BoundingBox(162, 25, 30, 30)
     OPTIONS_BUTTON_BB = BoundingBox(199, 25, 30, 30)
     DATABASE_BB = BoundingBox(0, 4, 57, 19)
-    ACCOUNT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
-    HELP_BUTTON_BB = BoundingBox(0, 0, 1, 1)
+    ACCOUNT_BUTTON_BB = BoundingBox(58, 4, 53, 19)
+    HELP_BUTTON_BB = BoundingBox(111, 4, 32, 19)
     RESET_SEARCH_BUTTON_BB = BoundingBox(0, 0, 1, 1)
 
     ACCOUNT_ONE_BB = BoundingBox(1, 90, 447, 14)
@@ -173,10 +173,18 @@ class MainWindow(StateElement, Clickable, RewardElement):
                 self.set_current_page(self.edit_account)
 
     def copy_username(self):
-        print('copy_username')
+        selected_account_name = self.get_selected_account()
+        if selected_account_name is not None:
+            selected_account = AccountManager.getAccountByName(selected_account_name)
+            if selected_account is not None:
+                Cache.setCache(selected_account.getUserId())
 
     def copy_password(self):
-        print('copy_password')
+        selected_account_name = self.get_selected_account()
+        if selected_account_name is not None:
+            selected_account = AccountManager.getAccountByName(selected_account_name)
+            if selected_account is not None:
+                Cache.setCache(selected_account.getPassword())
 
     def launch_url(self):
         print('launch_url')

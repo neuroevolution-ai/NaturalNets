@@ -158,7 +158,8 @@ class AddAccount(Page, RewardElement):
         Cache.setCache(dropdownToCopy.get_current_value())
 
     def past(self, dropdownToPast: Dropdown):
-        dropdownToPast.set_selected_value(Cache.getCache())
+        if Cache.getCache() is not None:
+            dropdownToPast.set_selected_value(Cache.getCache())
 
     def generate(self):
         self.current_password = self.random_password()
