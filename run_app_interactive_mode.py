@@ -97,7 +97,7 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
                 "type": "GUIApp",
                 "number_time_steps": 200,
                 "include_fake_bug": False,
-                "nearest_widget_click": True,
+                "nearest_widget_click": False,
                 "return_clickable_elements": True
             }
         }
