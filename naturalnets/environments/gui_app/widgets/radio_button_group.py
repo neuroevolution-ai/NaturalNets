@@ -1,4 +1,4 @@
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -6,6 +6,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.exception import ArgumentError
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
 from naturalnets.environments.gui_app.utils import get_group_bounding_box
 
