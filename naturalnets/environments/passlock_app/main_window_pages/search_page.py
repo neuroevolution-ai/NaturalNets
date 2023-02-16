@@ -42,7 +42,7 @@ class SearchPage(Page, RewardElement):
 
     ### Constants###
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "search_page_img\search_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "search_page_img/search_page.png")
     SEARCH_TEXTFIELD_BB = BoundingBox(280, 23, 1350, 75)
     SHOW_ALL_BUTTON_BB = BoundingBox(1630, 23, 120, 75)
 
