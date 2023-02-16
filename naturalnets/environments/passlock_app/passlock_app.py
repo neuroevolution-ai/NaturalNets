@@ -14,6 +14,7 @@ from naturalnets.environments.i_environment import (IEnvironment,
                                                     register_environment_class)
 from naturalnets.environments.passlock_app.app_controller import \
     PasslockAppController
+from naturalnets.tools.utils import rescale_values, scale_coordinates
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -73,15 +74,12 @@ class PasslockApp(IEnvironment):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
-        # TODO: Umrechnung für Koordinaten zwischen mit [-1, 1] und [0, screen_width/screen_height]
-
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        # self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        # self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
-        # click_coordinates = np.array([self.click_position_x, self.click_position_y])
-        click_coordinates = np.array([action[0], action[1]])
-        
+        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+     
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
@@ -157,7 +155,9 @@ class PasslockApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                ob, rew, _, info = self.step(current_action)
+                print(current_action)
+                ob, rew, _, info = self.step([rescale_values(current_action[0], previous_low=0, previous_high=1919, new_high=1, new_low=-1),
+                                             rescale_values(current_action[1], previous_low=0, previous_high=987, new_high=1, new_low=-1)])
                 self.clicked = False
 
                 if print_reward:
