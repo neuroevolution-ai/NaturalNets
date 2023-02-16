@@ -4,12 +4,10 @@
     "monkey_tester_type": "random-clicks",
     "environment": {
         "type": "GUIApp",
-        "number_time_steps": 100,
+        "number_time_steps": 200,
         "include_fake_bug": false
     },
     "results_dir": "results_monkey/",
-    "store_monkey_tester_data": false,
-    "wandb_logging": false,
-    "wandb_entity": "neuroevolution-fzi",
-    "wandb_project": "NaturalNets"
+    "store_individual_monkey_data": false,
+    "chunk_size": 250000
 }

@@ -1,19 +1,17 @@
 import enum
 import logging
 import time
-import os
 from typing import Optional, Dict, List
 
-from attrs import define, field, validators
 import cv2
 import numpy as np
-import jsonlines
+from attrs import define, field, validators
 
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.i_environment import IEnvironment, register_environment_class
-from naturalnets.tools.utils import rescale_values
+from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 
 class FakeBugOptions(enum.Enum):
@@ -28,6 +26,20 @@ class AppCfg:
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
 
+    # If true, calculates the currently clickable elements of the GUIApp, which can then be retrieved via a method
+    return_clickable_elements: bool = field(default=False, validator=validators.instance_of(bool))
+
+    # If true, for each click the nearest clickable element will be calculated and this one will be clicked.
+    # Thus, each click will be on a clickable element
+    nearest_widget_click: bool = field(default=False, validator=validators.instance_of(bool))
+
+    @nearest_widget_click.validator
+    def validate_nearest_widget_click(self, attribute, value):
+        if value and not self.return_clickable_elements:
+            raise ValueError("GUIApp: 'nearest_widget_click' is set to True, but 'return_clickable_elements' "
+                             "is set to False.\nHowever, 'return_clickable_elements' is required for "
+                             "'nearest_widget_click' to work, thus try setting it to True.")
+
     def __attrs_post_init__(self):
         if self.include_fake_bug:
             assert self.fake_bugs is not None and len(self.fake_bugs) > 0, ("'include_fake_bug' is set to True, please "
@@ -36,7 +48,7 @@ class AppCfg:
 
 
 @register_environment_class
-class GUIApp(IEnvironment):
+class GUIApp(IGUIEnvironment):
 
     screen_width: int = 448
     screen_height: int = 448
@@ -48,7 +60,7 @@ class GUIApp(IEnvironment):
 
         self.config = AppCfg(**configuration)
 
-        self.app_controller = AppController()
+        self.app_controller = AppController(self.config.nearest_widget_click)
 
         self.t = 0
 
@@ -59,9 +71,6 @@ class GUIApp(IEnvironment):
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
         self.window_name = "App"
-        self.action = None
-        self.clicked = False
-
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -98,9 +107,14 @@ class GUIApp(IEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {'states_info': self.app_controller.get_states_info()}
+        info = {"states_info": self.app_controller.get_states_info()}
 
-    def _render_image(self):
+        if self.config.return_clickable_elements:
+            info["clickable_elements"] = self.get_clickable_elements()
+
+        return self.get_observation(), rew, done, info
+
+    def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
@@ -108,7 +122,7 @@ class GUIApp(IEnvironment):
         return image
 
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
-        image = self._render_image()
+        image = self.render_image()
 
         # Draw the click position
         cv2.circle(
@@ -134,70 +148,6 @@ class GUIApp(IEnvironment):
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 
-    def click_event(self, event, x, y, _flags, _params):
-        """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.action = np.array([x, y])
-            self.clicked = True
-
-    def interactive_mode(self, print_reward: bool = False, save_screenshots: bool = False, save_state_vector: bool = False):
-        # Create the window here first, so that the callback can be registered
-        # The callback simply registers the clicks of a user
-        cv2.namedWindow(self.window_name)
-        cv2.setMouseCallback(self.window_name, self.click_event)
-
-        # Create out directory if it does not exist yet (this directory should be added to .gitignore)
-        if (save_screenshots or save_state_vector) and not os.path.exists('out'):
-            os.makedirs('out')
-
-        while True:
-            current_action = None
-            if self.clicked:
-                current_action = self.action
-                ob, rew, _, info = self.step(rescale_values(current_action, previous_low=0, previous_high=447, new_low=-1,
-                                                           new_high=1))
-                self.clicked = False
-
-                if print_reward:
-                    print(f"Reward: {rew}")
-
-                if save_state_vector:
-                    states = []
-                    for state_info, state in zip(info['states_info'], ob):
-                        states.append(str(state_info) + " " + str(state))
-
-                    with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
-                        writer.write_all(states)
-
-            image = self._render_image()
-
-            if save_screenshots:
-                cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
-
-            if current_action is not None:
-                # Draw the position of the click as a black circle;
-                # thickness=-1 will fill the circle shape with the specified color
-                cv2.circle(
-                    image,
-                    (current_action[0], current_action[1]), radius=4, color=Color.BLACK.value, thickness=-1
-                )
-
-            cv2.imshow(self.window_name, image)
-
-            while True:
-                # Waits 50ms for a key press (notice that this does not include mouse clicks,
-                # therefore we use the callback method for the clicks)
-                key = cv2.waitKey(50)
-
-                # Keycode 27 is the ESC key
-                if key == 27:
-                    cv2.destroyAllWindows()
-                    return
-
-                if self.clicked:
-                    # The user clicked, thus use the position for a step() and render the new image
-                    break
-
     def get_number_inputs(self) -> int:
         return self.app_controller.get_total_state_len()
 
@@ -212,9 +162,6 @@ class GUIApp(IEnvironment):
         self.click_position_x = 0
         self.click_position_y = 0
 
-        self.action = None
-        self.clicked = False
-
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -222,3 +169,19 @@ class GUIApp(IEnvironment):
 
     def get_observation(self):
         return self.get_state()
+
+    def get_observation_dict(self) -> dict:
+        raise NotImplementedError()
+
+    def get_window_name(self) -> str:
+        return self.window_name
+
+    def get_screen_size(self) -> int:
+        assert self.screen_width == self.screen_height
+        return self.screen_width
+
+    def get_clickable_elements(self) -> Optional[List[Clickable]]:
+        if self.config.return_clickable_elements:
+            return self.app_controller.get_clickable_elements()
+        else:
+            return None

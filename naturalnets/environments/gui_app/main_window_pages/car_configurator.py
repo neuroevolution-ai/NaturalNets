@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Dict, List
 
 import cv2
 import numpy as np
@@ -7,6 +7,7 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Car, TireSize, Interior, PropulsionSystem
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -253,6 +254,29 @@ class CarConfigurator(Page, RewardElement):
                         self.register_selected_reward([self.dropdowns_and_items_to_str[dropdown], "opened"])
                     return
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd_index is not None:
+            return self.dropdowns[self.opened_dd_index].get_visible_items()
+
+        # Car Dropdown could be disabled if all cars have been deselected in the settings, thus only add the car
+        # dropdown if it has selectable DropdownItems
+        if len(self.car_dropdown.get_visible_items()) > 0:
+            clickable_elements.append(self.car_dropdown)
+
+        # Order here is important because it is directly linked with the order in the state vector, see below
+        possible_clickable_widgets = [self.tire_dropdown, self.interior_dropdown, self.prop_dropdown,
+                                      self.show_config_button]
+
+        # If the state_value is 1, the corresponding widget is visible and can thus be clicked
+        for state_value, widget in zip(self.get_state(), possible_clickable_widgets):
+            if state_value:
+                clickable_elements.append(widget)
+
+        return clickable_elements
+
     def display_configuration(self):
         car = self.car_dropdown.get_current_value()
         tire_size = self.tire_dropdown.get_current_value()
@@ -442,6 +466,9 @@ class CarConfiguratorPopup(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.ok_button]
 
     def open(self) -> None:
         """Opens this popup."""

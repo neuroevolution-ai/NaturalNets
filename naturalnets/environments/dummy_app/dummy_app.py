@@ -1,6 +1,6 @@
 import math
 from cmath import inf
-from typing import Dict
+from typing import Dict, Optional
 
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ from attrs import define, field, validators
 from numpy.random import default_rng
 
 from naturalnets.enhancers import RandomEnhancer
-from naturalnets.environments.i_environment import IEnvironment, register_environment_class
+from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 # Variables for rendering the DummyApp
 RED = (0, 0, 255)
@@ -36,11 +36,12 @@ class DummyAppCfg:
     number_button_rows: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_width: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     button_height: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    force_consecutive_click_order: bool = field(default=True, validator=[validators.instance_of(bool)])
     fixed_env_seed: bool = field(validator=[validators.instance_of(bool)])
 
 
 @register_environment_class
-class DummyApp(IEnvironment):
+class DummyApp(IGUIEnvironment):
 
     def __init__(self, configuration: dict, **kwargs):
         self.config = DummyAppCfg(**configuration)
@@ -67,6 +68,7 @@ class DummyApp(IEnvironment):
         assert self.grid_cell_horizontal_offset >= 0 and self.grid_cell_vertical_offset >= 0, err
 
         self.rng = default_rng()
+        self.window_name = "DummyApp"
 
         self.buttons = None
 
@@ -83,7 +85,7 @@ class DummyApp(IEnvironment):
     def get_number_outputs(self):
         return 2
 
-    def reset(self, env_seed: int = None):
+    def reset(self, env_seed: Optional[int] = None):
         if self.config.fixed_env_seed:
             self.rng = default_rng(seed=FIXED_ENV_SEED)
         else:
@@ -137,14 +139,23 @@ class DummyApp(IEnvironment):
                 if distance == 0.0:
                     break
 
+        return self.step_widget(button)
+
+    def step_widget(self, widget_id: int):
+        button = widget_id
         rew = 0.0
 
-        if button == 0:
-            if self.button_states[0] == 0:
-                rew += 1.0
-                self.button_states[0] = 1
+        if self.config.force_consecutive_click_order:
+            if button == 0:
+                if self.button_states[0] == 0:
+                    rew += 1.0
+                    self.button_states[0] = 1
+            else:
+                if self.button_states[button] == 0 and self.button_states[button - 1] == 1:
+                    rew += 1.0
+                    self.button_states[button] = 1
         else:
-            if self.button_states[button] == 0 and self.button_states[button - 1] == 1:
+            if self.button_states[button] == 0:
                 rew += 1.0
                 self.button_states[button] = 1
 
@@ -155,15 +166,27 @@ class DummyApp(IEnvironment):
             done = True
 
         ob = self.get_observation()
+        info = {"action": button}
 
-        return ob, rew, done, {}
+        return ob, rew, done, info
 
     def get_observation(self):
         return self.button_states
 
-    def render(self, enhancer_info: Dict = None):
+    def get_observation_dict(self) -> dict:
+        observation_dict = {
+            "pressed buttons": []
+        }
+
+        for i in range(len(self.button_states)):
+            if self.button_states[i] == 1:
+                observation_dict["pressed buttons"].append(i)
+
+        return observation_dict
+
+    def render_image(self) -> np.ndarray:
         image = np.zeros((self.config.screen_height, self.config.screen_width, 3), dtype=np.uint8)
-        image[:, :, :] = 255
+        image[:, :, :] = 235
 
         # Draw button rectangles
         for i in range(self.number_buttons):
@@ -191,6 +214,11 @@ class DummyApp(IEnvironment):
 
             image = cv2.putText(image, str(i), (text_point_x, text_point_y), cv2.FONT_HERSHEY_PLAIN,
                                 fontScale=FONT_SCALE, color=BLACK, thickness=THICKNESS, lineType=cv2.LINE_AA)
+
+        return image
+
+    def render(self, enhancer_info: Dict = None):
+        image = self.render_image()
 
         # Draw click areas, i.e. cells of the grid in which the buttons reside
         for j in range(self.config.number_button_rows):
@@ -224,8 +252,15 @@ class DummyApp(IEnvironment):
         # Click position
         image = cv2.circle(image, (self.click_position_x, self.click_position_y), radius=3, color=BLUE, thickness=-1)
 
-        cv2.imshow("DummyApp", image)
+        cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
+
+    def get_window_name(self) -> str:
+        return self.window_name
+
+    def get_screen_size(self) -> int:
+        assert self.config.screen_width == self.config.screen_height
+        return self.config.screen_width
 
     @staticmethod
     def is_point_in_rect(point_x, point_y, rect_x, rect_y, width, height):

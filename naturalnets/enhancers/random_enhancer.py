@@ -10,8 +10,8 @@ from naturalnets.enhancers.i_enhancer import IEnhancer, register_enhancer_class
 @register_enhancer_class
 class RandomEnhancer(IEnhancer):
 
-    def __init__(self, env_output_size: int, rng_seed: int = None):
-        super().__init__(env_output_size)
+    def __init__(self, config, env_output_size: int, rng_seed: int = None):
+        super().__init__(config, env_output_size)
         self.rng = default_rng(seed=rng_seed)
         self.brain_output = None
 

@@ -1,11 +1,12 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Base, Operator
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text
@@ -18,6 +19,8 @@ class Calculator(Page, RewardElement):
     """
 
     STATE_LEN = 0
+    MAX_CLICKABLE_ELEMENTS = 4
+
     IMG_PATH = os.path.join(IMAGES_PATH, "calculator.png")
 
     OPERAND_1_BB = BoundingBox(125, 316, 97, 22)
@@ -73,7 +76,7 @@ class Calculator(Page, RewardElement):
         # Does not need to be added as child, because buttons do not have a state
         self.button = Button(self.BUTTON_BB, self.calculate)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
         self.base = None
         self.current_result = None
 
@@ -234,6 +237,18 @@ class Calculator(Page, RewardElement):
 
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
+
+        clickable_elements.extend(self.dropdowns)
+        clickable_elements.append(self.button)
+
+        return clickable_elements
+
 
 class CalculatorPopup(Page, RewardElement):
     """Popup for the calculator (pops up when a division by zero is attempted).
@@ -242,6 +257,8 @@ class CalculatorPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 1
+
     BOUNDING_BOX = BoundingBox(87, 101, 234, 86)
     IMG_PATH = os.path.join(IMAGES_PATH, "calculator_popup.png")
 
@@ -276,3 +293,6 @@ class CalculatorPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.button]

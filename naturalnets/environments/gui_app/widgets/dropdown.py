@@ -1,11 +1,12 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Tuple
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
 from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
 
@@ -97,6 +98,8 @@ class Dropdown(Widget):
         self._all_items: List[DropdownItem] = items
         self.add_children(self._all_items)
         self._selected_item: DropdownItem = None
+
+        self._update_item_bounding_boxes()
 
     def is_open(self) -> int:
         return self.get_state()[0]
