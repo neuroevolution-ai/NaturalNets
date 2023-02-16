@@ -97,6 +97,7 @@ class Dropdown(Widget):
         self._all_items: List[DropdownItem] = items
         self.add_children(self._all_items)
         self._selected_item: DropdownItem = None
+        self.clickable = True
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -117,6 +118,9 @@ class Dropdown(Widget):
         Args:
             click_position (np.ndarray): the position of the click.
         """
+        if not self.clickable:
+            return
+
         if self.is_open():
             for item in self._update_item_bounding_boxes():
                 if item.is_clicked_by(click_position):
@@ -125,6 +129,9 @@ class Dropdown(Widget):
             self.close()
         else:
             self.open()
+
+    def set_clickable(self, clickable: bool):
+        self.clickable = clickable
 
     def get_bb(self):
         if not self.is_open():

@@ -16,8 +16,13 @@ class Account(Page, RewardElement):
     BOUNDING_BOX = BoundingBox(58, 4, 175, 179)
     MENU_AREA_BB = BoundingBox(58, 23, 175, 115)
 
-    OPEN_DATABASE_BUTTON_BB = BoundingBox(0,0,1,1)
-    Change_MASTER_PASSWORD_BUTTON_BB = BoundingBox(0,0,1,1)
+    ADD_ACCOUNT_BUTTON_BB = BoundingBox(60,25,170,22)
+    EDIT_ACCOUNT_BUTTON_BB = BoundingBox(60,48,170,22)
+    DELETE_ACCOUNT_BUTTON_BB = BoundingBox(60,71,170,22)
+    VIEW_ACCOUNT_BUTTON_BB = BoundingBox(60,94,170,22)
+    COPY_USERNAME_BUTTON_BB = BoundingBox(60,117,170,20)
+    COPY_PASSWORD_BUTTON_BB = BoundingBox(60,138,170,21)
+
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)

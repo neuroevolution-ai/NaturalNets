@@ -171,6 +171,13 @@ class MainWindow(StateElement, Clickable, RewardElement):
             if account_to_edit is not None:
                 self.edit_account.set_account(account_to_edit)
                 self.set_current_page(self.edit_account)
+        
+    def function_view_account(self):
+        if 0 < self.STATE_IMG[1] < 4:
+            account_to_view = AccountManager.getAccountByName(self.get_selected_account())
+            if account_to_view is not None:
+                self.view_account.set_account(account_to_view)
+                self.set_current_page(self.view_account)
 
     def copy_username(self):
         selected_account_name = self.get_selected_account()
