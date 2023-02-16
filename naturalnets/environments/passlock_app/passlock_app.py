@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import cv2
 import jsonlines
@@ -10,11 +10,12 @@ from attr import define, field, validators
 
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.gui_app.gui_app import FakeBugOptions
 from naturalnets.environments.i_environment import (IEnvironment,
                                                     register_environment_class)
 from naturalnets.environments.passlock_app.app_controller import \
     PasslockAppController
-from naturalnets.tools.utils import rescale_values, scale_coordinates
+from naturalnets.tools.utils import rescale_values
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -23,8 +24,8 @@ class AppCfg:
     number_time_steps: int = field(
         validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
-    # fake_bugs: List[str] = field(default=None,
-    #                            validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+    fake_bugs: List[str] = field(default=None,
+                              validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
