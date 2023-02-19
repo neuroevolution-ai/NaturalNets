@@ -156,7 +156,6 @@ class PasslockApp(IEnvironment):
             current_action = None
             if self.clicked:
                 current_action = self.action
-                print(current_action)
                 ob, rew, _, info = self.step([rescale_values(current_action[0], previous_low=0, previous_high=1919, new_high=1, new_low=-1),
                                              rescale_values(current_action[1], previous_low=0, previous_high=987, new_high=1, new_low=-1)])
                 self.clicked = False
