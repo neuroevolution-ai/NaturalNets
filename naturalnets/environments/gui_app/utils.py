@@ -20,8 +20,10 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     y = bounding_box.y
     width = bounding_box.width
     height = bounding_box.height
-    
-    img.shape = (height, width, 3)
+
+    if(width == img.shape[0] and height == img.shape[1]):
+        img.shape = (height, width, 3)
+
     img[y:y + height, x:x + width] = to_render
     
     return img
