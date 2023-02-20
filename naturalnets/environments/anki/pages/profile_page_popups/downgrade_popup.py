@@ -9,29 +9,25 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
-class LeadsToExternalWebsitePopup(Page, RewardElement):
+class DowngradePopup(Page, RewardElement):
     """
-    This popup is a replacement for the parts of the original application of Anki
-    where it is led to a website
+    Filler popup. Does nothing.
     State description:
-        state[0]: if this window is open  
+        state[0]: if this window is open
+
     """
-
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "leads_to_external_website_popup.png")
+    WINDOW_BB = BoundingBox(160, 300, 530, 113)
+    IMG_PATH = os.path.join(IMAGES_PATH, "downgrade_popup.png")
+    OK_BUTTON_BB = BoundingBox(601, 382, 81, 25)
 
-    WINDOW_BB = BoundingBox(230, 290, 277, 121)
-    OK_BB = BoundingBox(440, 383, 52, 20)
-    
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
-        self.ok_button = Button(self.OK_BB, self.close)
+        self.ok_button = Button(self.OK_BUTTON_BB, self.close)
 
     """
-        Provide reward for opening and closing the popup
+    Provide reward for opening/closing this popup
     """
     @property
     def reward_template(self):
@@ -40,26 +36,33 @@ class LeadsToExternalWebsitePopup(Page, RewardElement):
         }
 
     """
-        Checks if the ok button is clicked and if so the popup is
-        going to be closed    
+    Execute click action if a button is clicked"
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
-
+    """
+    Open this popup
+    """
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
+    """
+    Close this popup
+    """
     def close(self):
-        self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
+        self.register_selected_reward(["window", "close"])
 
-    def is_open(self):
+    """
+    Return true if this popup is open
+    """
+    def is_open(self) -> int:
         return self.get_state()[0]
 
     """
-        Renders the image of the popup
+    Render the image of this popup
     """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)

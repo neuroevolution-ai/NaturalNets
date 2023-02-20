@@ -13,7 +13,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.anki import AddCardPage
 from naturalnets.environments.anki import AnkiLoginPage
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
+from naturalnets.environments.anki.pages.main_page_popups.add_deck_popup import AddDeckPopup
 from naturalnets.environments.anki import EditCardPage
 from naturalnets.environments.anki import ResetCollectionPopup
 from naturalnets.environments.anki.pages.main_page_popups.at_least_one_card_popup import AtLeastOneCardPopup
@@ -242,7 +242,7 @@ class MainPage(Page, RewardElement):
              self.reset_collection_popup_page, self.edit_card_page, self.no_card_popup_page,
              self.at_least_one_card_popup_page, self.about_page,
              self.check_media_page, self.choose_deck_study_page, self.preferences_page, self.profile_page,
-             self.export_deck_page])
+             self.export_deck_page, self.preferences_page, self.edit_card_page, self.add_card_page])
         # Decides if the anki logo is shown
         self.is_logo_enabled = False
 
@@ -296,63 +296,14 @@ class MainPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        if self.profile_page.is_open():
-            self.profile_page.handle_click(click_position)
-            return
-        elif self.about_page.is_open():
-            self.about_page.handle_click(click_position)
-            return
-        elif self.check_media_page.is_open():
-            self.check_media_page.handle_click(click_position)
-            return
-        elif self.import_deck_page.is_open():
-            self.import_deck_page.handle_click(click_position)
-            return
-        elif self.export_deck_page.is_open():
-            self.export_deck_page.handle_click(click_position)
-            return
-        elif self.preferences_page.is_open():
-            self.preferences_page.handle_click(click_position)
-            return
-        elif self.edit_card_page.is_open():
-            self.edit_card_page.handle_click(click_position)
-            return
-        elif self.add_card_page.is_open():
-            self.add_card_page.handle_click(click_position)
-            return
-        elif self.choose_deck_study_page.is_open():
-            # Cannot be handled in choose deck page itself because it would cause circular import dependency,
-            # so it is handled here
-            if self.study_button_study_deck.is_clicked_by(click_position):
+        if self.study_button_study_deck.is_clicked_by(click_position) and self.profile_page.is_open():
                 self.study_button_study_deck.handle_click(click_position)
-            else:
-                self.choose_deck_study_page.handle_click(click_position)
-            return
-        elif self.anki_login.is_open():
-            self.anki_login.handle_click(click_position)
-            return
-        elif self.add_deck_popup_page.is_open():
-            self.add_deck_popup_page.handle_click(click_position)
-            return
-        elif self.leads_to_external_website_popup_page.is_open():
-            self.leads_to_external_website_popup_page.handle_click(click_position)
-            return
-        elif self.delete_current_deck_check_popup_page.is_open():
-            self.delete_current_deck_check_popup_page.handle_click(click_position)
-            return
-        elif self.at_least_one_deck_popup_page.is_open():
-            self.at_least_one_deck_popup_page.handle_click(click_position)
-            return
-        elif self.no_card_popup_page.is_open():
-            self.no_card_popup_page.handle_click(click_position)
-            return
-        elif self.at_least_one_card_popup_page.is_open():
-            self.at_least_one_card_popup_page.handle_click(click_position)
-            return
-        elif self.reset_collection_popup_page.is_open():
-            self.reset_collection_popup_page.handle_click(click_position)
-            return
-        elif self.opened_dd is not None:
+        for page in self.pages:
+            if page.is_open():
+                page.handle_click(click_position)
+                return
+        
+        if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
             self.opened_dd.close()
@@ -519,39 +470,10 @@ class MainPage(Page, RewardElement):
     Renders an open page,dropdown or popup on to the current page
     """
     def render_onto_current(self, img: np.ndarray):
-        if self.profile_page.is_open():
-            img = self.profile_page.render(img)
-        elif self.import_deck_page.is_open():
-            img = self.import_deck_page.render(img)
-        elif self.export_deck_page.is_open():
-            img = self.export_deck_page.render(img)
-        elif self.choose_deck_study_page.is_open():
-            img = self.choose_deck_study_page.render(img)
-        elif self.preferences_page.is_open():
-            img = self.preferences_page.render(img)
-        elif self.about_page.is_open():
-            img = self.about_page.render(img)
-        elif self.add_card_page.is_open():
-            img = self.add_card_page.render(img)
-        elif self.anki_login.is_open():
-            img = self.anki_login.render(img)
-        elif self.add_deck_popup_page.is_open():
-            img = self.add_deck_popup_page.render(img)
-        elif self.leads_to_external_website_popup_page.is_open():
-            img = self.leads_to_external_website_popup_page.render(img)
-        elif self.delete_current_deck_check_popup_page.is_open():
-            img = self.delete_current_deck_check_popup_page.render(img)
-        elif self.at_least_one_deck_popup_page.is_open():
-            img = self.at_least_one_deck_popup_page.render(img)
-        elif self.no_card_popup_page.is_open():
-            img = self.no_card_popup_page.render(img)
-        elif self.at_least_one_card_popup_page.is_open():
-            img = self.at_least_one_card_popup_page.render(img)
-        elif self.check_media_page.is_open():
-            img = self.check_media_page.render(img)
-        elif self.reset_collection_popup_page.is_open():
-            img = self.reset_collection_popup_page.render(img)
-        elif self.opened_dd is not None:
+        for page in self.pages:
+            if page.is_open():
+                img = page.render(img)
+        if self.opened_dd is not None:
             img = self.opened_dd.render(img)
         return img
     """
@@ -574,7 +496,7 @@ class MainPage(Page, RewardElement):
                      (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
 
         if self.anki_login.get_current_account() is not None:
-            put_text(img, f"Current account: {self.anki_login.get_current_account().get_account_name()}", (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y),
+            put_text(img, f"Current account: {self.anki_login.get_current_account().get_account_name()}", (self.CURRENT_ACCOUNT_X, self.CURRENT_ACCOUNT_Y),
                      font_scale=0.5)
 
         for i, deck in enumerate(self.deck_database.get_decks()):

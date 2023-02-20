@@ -19,15 +19,6 @@ class NameExistsPopup(Page, RewardElement):
     OK_BB = BoundingBox(386, 387, 82, 25)
 
     """
-        Singleton design pattern to ensure that at most one
-        NameExistsPopup is present
-        """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(NameExistsPopup, cls).__new__(cls)
-        return cls.instance
-
-    """
     Provide reward for opening/closing this popup
     """
     @property

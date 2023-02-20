@@ -45,15 +45,6 @@ class AddCardPage(Page, RewardElement):
     TAG_TEXT_X = 198
     TAG_TEXT_Y = 507
 
-    """
-        Singleton design pattern to ensure that at most one
-        AddCardPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(AddCardPage, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

@@ -2,7 +2,7 @@ from math import floor
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
+from naturalnets.environments.anki.pages.main_page_popups.add_deck_popup import AddDeckPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup import \
     LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
@@ -43,14 +43,6 @@ class ChooseDeckStudyPage(Page, RewardElement):
     ITEM_LENGTH = 30
     TEXT_X = 200
     TEXT_Y = 231
-    """
-        Singleton design pattern to ensure that at most one
-        ChooseDeckStudyPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ChooseDeckStudyPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
@@ -130,9 +122,9 @@ class ChooseDeckStudyPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_LENGTH)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[self.current_index + 1] = 0
+            self.get_state()[self.click_index + 1] = 0
             self.current_index: int = click_index
-            self.get_state()[self.current_index + 1] = 1
+            self.get_state()[self.click_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
     """

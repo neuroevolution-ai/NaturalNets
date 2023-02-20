@@ -24,10 +24,6 @@ class AboutPage(Page, RewardElement):
         Singleton design pattern to ensure that at most one
         AboutPage is present
     """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(AboutPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)

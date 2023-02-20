@@ -24,16 +24,7 @@ class FrontAndBacksidePopup(Page, RewardElement):
     WINDOW_BB = BoundingBox(200, 250, 318, 121)
 
     OK_BUTTON_BB = BoundingBox(426, 338, 82, 25)
-
-    """
-        Singleton design pattern to ensure that at most one
-        FrontAndBacksidePopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(FrontAndBacksidePopup, cls).__new__(cls)
-        return cls.instance
-
+    
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

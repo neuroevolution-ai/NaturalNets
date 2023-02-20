@@ -23,15 +23,6 @@ class AtLeastOneDeckPopup(Page, RewardElement):
 
     OK_BUTTON_BB = BoundingBox(476, 339, 81, 23)
 
-    """
-    Singleton design pattern to ensure that at most one
-    AtLeastOneDeckPopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(AtLeastOneDeckPopup, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

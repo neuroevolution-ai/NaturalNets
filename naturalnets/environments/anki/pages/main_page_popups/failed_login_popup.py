@@ -25,15 +25,6 @@ class FailedLoginPopup(Page, RewardElement):
     WINDOW_BB = BoundingBox(250, 300, 318, 121)
     OK_BB = BoundingBox(477, 388, 82, 24)
 
-    """
-        Singleton design pattern to ensure that at most one
-        FailedLoginPopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(FailedLoginPopup, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

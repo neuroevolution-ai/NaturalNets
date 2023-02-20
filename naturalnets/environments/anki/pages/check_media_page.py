@@ -21,14 +21,6 @@ class CheckMediaPage(Page, RewardElement):
 
     WINDOW_BB = BoundingBox(100, 100, 622, 499)
     CLOSE_BB = BoundingBox(619, 562, 81, 24)
-    """
-        Singleton design pattern to ensure that at most one
-        CheckMediaPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(CheckMediaPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)

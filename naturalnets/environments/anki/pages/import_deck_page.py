@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki import NameExistsPopup
 from naturalnets.environments.anki.deck import DeckDatabase
-from naturalnets.environments.anki.pages.main_page_popups import FiveDecksPopup
+from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
     import LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
@@ -212,16 +212,6 @@ class ImportDeckSelectPage(Page, RewardElement):
     FIRST_DECK_X = 191
     FIRST_DECK_Y = 225
 
-    """
-        Singleton design pattern to ensure that at most one
-        ImportDeckSelectPage is present
-    """
-
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ImportDeckSelectPage, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
@@ -307,10 +297,10 @@ class ImportDeckSelectPage(Page, RewardElement):
     is changed
     """
     def change_current_deck_index(self, click_point: np.ndarray):
-        current_bounding_box = ImportDeckSelectPage.calculate_current_bounding_box()
+        current_bounding_box = self.calculate_current_bounding_box()
         if current_bounding_box.is_point_inside(click_point):
             click_index: int = floor((click_point[1] - self.SELECT_DECK_Y) / self.ITEM_LENGTH)
-            if click_index >= self.deck_database.decks_length():
+            if click_index >= self.ITEM_LENGTH:
                 return
             self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index

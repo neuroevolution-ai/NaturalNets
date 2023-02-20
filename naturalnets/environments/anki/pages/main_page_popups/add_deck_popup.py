@@ -36,15 +36,6 @@ class AddDeckPopup(Page, RewardElement):
     TEXT_POSITION_X = 181
     TEXT_POSITION_Y = 302
 
-    """
-    Singleton design pattern to ensure that at most one
-    AddDeckPopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(AddDeckPopup, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

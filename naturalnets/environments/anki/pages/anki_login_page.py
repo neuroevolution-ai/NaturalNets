@@ -32,14 +32,6 @@ class AnkiLoginPage(Page, RewardElement):
     USERNAME_Y = 363
     PASSWORD_X = 376
     PASSWORD_Y = 409
-    """
-       Singleton design pattern to ensure that at most one
-       AnkiLoginPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(AnkiLoginPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
 

@@ -24,15 +24,6 @@ class FiveDecksPopup(Page, RewardElement):
     WINDOW_BB = BoundingBox(230, 290, 318, 121)
     OK_BB = BoundingBox(458, 379, 80, 23)
 
-    """
-        Singleton design pattern to ensure that at most one
-        FiveDecksPopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(FiveDecksPopup, cls).__new__(cls)
-        return cls.instance
-
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)

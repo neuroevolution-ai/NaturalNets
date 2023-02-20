@@ -35,8 +35,11 @@ class ProfileDatabase:
     def __init__(self):
         self.profile_names: Final = [ProfileNames.ALICE.value, ProfileNames.BOB.value, ProfileNames.CAROL.value,
                                      ProfileNames.DENNIS.value, ProfileNames.EVA.value]
-        self.profiles = [Profile(ProfileNames.ALICE.value)]
-        self.current_index: int = 0
+        self.profiles = [Profile(ProfileNames.ALICE.value), Profile(ProfileNames.BOB.value), Profile(ProfileNames.CAROL.value)]
+        self.current_index: int = 1
+        
+        for profile in self.profiles:
+            profile.deck_database.default_decks()
 
     def get_current_index(self):
         return self.current_index

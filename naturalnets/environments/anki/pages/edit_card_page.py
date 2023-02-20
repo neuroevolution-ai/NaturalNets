@@ -33,14 +33,6 @@ class EditCardPage(RewardElement, Page):
     FRONT_TEXT_PRINT_BB = BoundingBox(225, 203, 300, 40)
     BACK_TEXT_PRINT_BB = BoundingBox(225, 336, 300, 40)
     TAGS_TEXT_PRINT_BB = BoundingBox(225, 483, 300, 36)
-    """
-        Singleton design pattern to ensure that at most one
-        EditCardPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(EditCardPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)

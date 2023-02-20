@@ -156,14 +156,6 @@ class DeckDatabase:
 
 
     """
-    Reset the decks configuration to the configuration of only one deck 
-    """
-    def reset_decks(self) -> None:
-        DeckDatabase.reset_exported_decks()
-        self.decks = [Deck(DeckNames.DECK_NAME_1.value)]
-        self.current_index: int = 0
-
-    """
     This method is called when the application status is reset
     """
     def default_decks(self) -> None:

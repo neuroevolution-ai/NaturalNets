@@ -1,5 +1,6 @@
 import os
 import cv2
+
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
@@ -9,41 +10,36 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-class ResetCollectionPopup(Page, RewardElement):
+class DeleteProfilePopup(Page, RewardElement):
     """
-    Resets the application state to a predefined state
-    with 3 default profiles and 2 decks for each profile
+    Popup asking if the currently active deck should be deleted.
     State description:
-            state[0]: if this window is open
+        state[0]: if this window is open  
     """
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection_popup.png")
-
-    BOUNDING_BOX = BoundingBox(160, 300, 530, 113)
-    YES_BUTTON_BB = BoundingBox(478, 377, 82, 24)
-    NO_BUTTON_BB = BoundingBox(586, 377, 84, 24)
+    WINDOW_BB = BoundingBox(160, 300, 530, 113)
+    IMG_PATH = os.path.join(IMAGES_PATH, "delete_profile_popup.png")
+    YES_BUTTON_BB = BoundingBox(478, 376, 84, 26)
+    NO_BUTTON_BB = BoundingBox(586, 375, 84, 26)
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
-        # Profile database to set to the default profiles with default decks
         self.profile_database = ProfileDatabase()
-        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
+        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.delete_profile)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
     """
-    Provide reward for opening/closing this popup and for resetting the application
+    Provide reward for opening/closing the window and deleting a profile
     """
     @property
     def reward_template(self):
         return {
-            "popup": ["open", "close"],
-            "reset_all": 0
+            "window": ["open", "close"],
+            "delete_profile": 0
         }
-
     """
-    Handle click with the buttons
+    Trigger click action if one of the buttons is clicked
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.yes_button.is_clicked_by(click_position):
@@ -55,31 +51,32 @@ class ResetCollectionPopup(Page, RewardElement):
     """
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["popup", "open"])
+        self.register_selected_reward(["window", "open"])
 
     """
     Close this popup
     """
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["popup", "close"])
+        self.register_selected_reward(["window", "close"])
 
     """
     Return true if this popup is open
     """
     def is_open(self) -> int:
         return self.get_state()[0]
+
     """
-    Set the application to the default configuration
+    If more than a profile is present delete the currently selected profile
     """
-    def reset_all(self):
-        self.profile_database.default_profiles()
-        for profile in self.profile_database.get_profiles():
-            profile.deck_database.default_decks()
-        self.register_selected_reward(["reset_all"])
-        self.close()
+    def delete_profile(self):
+        if self.profile_database.is_removing_allowed():
+            self.profile_database.delete_profile()
+            self.register_selected_reward(["delete_profile"])
+            self.close()
+
     """
-    Render this popup
+    Render the image of this popup
     """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)

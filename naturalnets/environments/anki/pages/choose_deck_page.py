@@ -2,7 +2,7 @@ from math import floor
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
+from naturalnets.environments.anki.pages.main_page_popups.add_deck_popup import AddDeckPopup
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
@@ -36,15 +36,6 @@ class ChooseDeckPage(Page, RewardElement):
     ITEM_WIDTH = 412
     TEXT_X = 211
     TEXT_Y = 243
-
-    """
-        Singleton design pattern to ensure that at most one
-        ChooseDeckPage is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ChooseDeckPage, cls).__new__(cls)
-        return cls.instance
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
@@ -112,9 +103,9 @@ class ChooseDeckPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_LENGTH)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[self.current_index + 1] = 0
+            self.get_state()[self.click_index + 1] = 0
             self.current_index: int = click_index
-            self.get_state()[self.current_index + 1] = 1
+            self.get_state()[self.click_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
     """
