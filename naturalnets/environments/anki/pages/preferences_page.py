@@ -1,6 +1,4 @@
 import os
-import random
-import string
 from typing import List
 import cv2
 import numpy as np
@@ -633,12 +631,14 @@ class PreferencesPage(RewardElement, Page):
         self.timebox_time = 5
         self.backup_number = 50
         for widget in self.basic_window_widgets:
-            if(isinstance(widget,CheckBox)):
+            if isinstance(widget,CheckBox):
                 widget.get_state()[0] = 0
-            elif(isinstance(widget,Dropdown)):
+            elif isinstance(widget,Dropdown):
                 widget._selected_item = None
         for widget in self.scheduling_window_widgets:
-            widget.get_state()[0] = 0
+            if isinstance(widget,CheckBox):
+                widget.get_state()[0] = 0
         for widget in self.network_window_widgets:
-            widget.get_state()[0] = 0
+            if isinstance(widget,CheckBox):
+                widget.get_state()[0] = 0
         

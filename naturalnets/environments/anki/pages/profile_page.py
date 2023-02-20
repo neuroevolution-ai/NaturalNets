@@ -62,9 +62,9 @@ class ProfilePage(Page, RewardElement):
 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-
+        self.profile_database = ProfileDatabase()
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         self.current_index = 0
-        self.deck_database = None
         # Popups of this page
         self.add_profile_popup_page = AddProfilePopup()
         self.rename_profile_page = RenameProfilePopup()
@@ -73,7 +73,7 @@ class ProfilePage(Page, RewardElement):
         self.downgrade_popup_page = DowngradePopup()
         self.at_least_one_profile_popup = AtLeastOneProfilePopup()
         # To display the current profiles profile database is necessary
-        self.profile_database = ProfileDatabase()
+        
 
         self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
                            self.reset_collection_popup_page, self.downgrade_popup_page,
@@ -84,11 +84,10 @@ class ProfilePage(Page, RewardElement):
         self.delete_button = Button(self.DELETE_BB, self.handle_delete)
         self.rename_button = Button(self.RENAME_BB, self.rename_profile_page.open)
         self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open)
-        self.open_button = Button(self.OPEN_BB, self.close)
+        self.open_button = Button(self.OPEN_BB, self.open_profile)
 
         # Index of the currently selected profile
         self.profile_database.set_current_index(0)
-        self.current_profile: Profile = self.profile_database.profiles[self.profile_database.get_current_index()]
         self.pages = [self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
             self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup]
 
@@ -106,9 +105,6 @@ class ProfilePage(Page, RewardElement):
             "window": ["open", "close"],
             "selected_profile_index": [0, 1, 2, 3, 4]
         }
-
-    def get_current_profile(self):
-        return self.current_profile
 
     """
     Changes the current index regarding the selected profile if the click_point lies within 
@@ -137,7 +133,6 @@ class ProfilePage(Page, RewardElement):
     """
     def open(self):
         self.get_state()[0:2] = 1
-        self.curre
         self.get_state()[2:7] = 0
         self.register_selected_reward(["window", "open"])
 
@@ -181,7 +176,7 @@ class ProfilePage(Page, RewardElement):
             put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGTH), font_scale=0.5)
         for page in self.pages:
             if page.is_open():
-                img = self.page.render(img)
+                img = page.render(img)
         return img
 
     """
@@ -204,14 +199,13 @@ class ProfilePage(Page, RewardElement):
     
     def open_profile(self):
         self.profile_database.set_current_index(self.current_index)
-        self.current_profile = self.profile_database.get_profiles()[self.profile_database.get_current_index()]
         self.get_state()[1:7] = 0
         self.get_state()[self.current_index + 1] = 1
         self.register_selected_reward(["selected_profile_index", self.current_index])
+        self.close()
     
     def reset_index(self):
         self.current_index = 0
-        self.current_profile = self.profile_database.get_profiles()[0]
         self.get_state()[1] = 1
         self.get_state()[2:7] = 0
         

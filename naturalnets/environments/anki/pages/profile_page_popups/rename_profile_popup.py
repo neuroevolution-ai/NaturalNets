@@ -49,6 +49,7 @@ class RenameProfilePopup(RewardElement, Page):
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_child(self.name_exists_popup_page)
+        self.set_reward_children([self.name_exists_popup_page])
 
     """
     Provide reward for opening/closing this popup, renaming a profile and setting the temporary string
@@ -77,7 +78,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     def close(self):
         self.get_state()[0:2] = 0
-        for child in self.children:
+        for child in self.get_children():
             child.close()
         self.register_selected_reward(["window", "close"])
         self.current_field_string = None

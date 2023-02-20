@@ -75,7 +75,9 @@ class ProfileDatabase:
     Creates a new profile with profile_name and appends it to the list of profiles.
     """
     def create_profile(self, profile_name: str) -> None:
-        self.profiles.append(Profile(profile_name))
+        profile = Profile(profile_name)
+        profile.get_deck_database().default_decks()
+        self.profiles.append(profile)
 
     """
     Changes the name of the current profile with a new name

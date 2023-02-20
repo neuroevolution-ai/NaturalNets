@@ -100,7 +100,7 @@ class EditCardPage(RewardElement, Page):
     """
     def back_text_edit(self):
         if not (self.deck_database.get_decks()[self.deck_database.get_current_index()].cards[self.deck_database.get_decks()
-        [self.deck_database.get_current_index()].get_study_index()].is_back_edited()):
+        [self.deck_database.get_current_index()].get_study_index()].is_back_edited):
             self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
                 self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_back()
             self.register_selected_reward(["second_field_modified"])
@@ -137,7 +137,7 @@ class EditCardPage(RewardElement, Page):
                             bounding_box=self.BACK_TEXT_PRINT_BB, font_size=25,
                             dimension=(40, 300, 3))
         if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
-        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag() is not None):
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index].get_tag() is not None):
             EditCardPage.print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag()}",
                             bounding_box=self.TAGS_TEXT_PRINT_BB, font_size=25,

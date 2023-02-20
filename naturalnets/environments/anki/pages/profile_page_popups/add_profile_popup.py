@@ -85,7 +85,7 @@ class AddProfilePopup(Page, RewardElement):
     def close(self):
         self.get_state()[0:2] = 0
         self.register_selected_reward(["window", "close"])
-        for child in self.get_children:
+        for child in self.get_children():
             child.close()
         self.current_field_string = None
 

@@ -295,8 +295,9 @@ class MainPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        if self.study_button_study_deck.is_clicked_by(click_position) and self.profile_page.is_open():
+        if self.study_button_study_deck.is_clicked_by(click_position) and self.choose_deck_study_page.is_open():
                 self.study_button_study_deck.handle_click(click_position)
+        
         for page in self.pages:
             if page.is_open():
                 page.handle_click(click_position)
@@ -424,7 +425,7 @@ class MainPage(Page, RewardElement):
     Else no card popup is going to be opened
     """
     def study(self):
-        if len(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()) == 0:
+        if len(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()) is 0 :
             self.no_card_popup_page.open()
         else:
             self.register_selected_reward(["study"])
@@ -486,7 +487,7 @@ class MainPage(Page, RewardElement):
             
         if self.is_logo_enabled:
             render_onto_bb(img, self.BOOK_LOGO, book_logo)
-        if self.profile_page.get_current_profile() is not None:
+        if self.profile_database.get_profiles()[self.profile_database.get_current_index()] is not None:
             put_text(img,
                      f"Current profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                      (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.5)
@@ -510,7 +511,7 @@ class MainPage(Page, RewardElement):
         render_onto_bb(image, self.WINDOW_BB, frame)
         decks_button = cv2.imread(self.DECKS_BUTTON_PATH)
         render_onto_bb(image, BoundingBox(501, 46, 132, 30), decks_button)
-        book_logo = cv2.imread(IMAGES_PATH + "book_logo.png")
+        book_logo = cv2.imread(os.path.join(IMAGES_PATH, "book_logo.png"))
         if self.is_logo_enabled:
             render_onto_bb(image, self.BOOK_LOGO, book_logo)
         put_text(image, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].name}", (484, 142),
@@ -583,7 +584,7 @@ class MainPage(Page, RewardElement):
         if (self.choose_deck_study_page.get_current_index() is not None and not (
             self.choose_deck_study_page.add_deck_popup.is_open())
                 and not (self.choose_deck_study_page.leads_to_external_website_popup.is_open())):
-            self.deck_database.get_current_index = self.choose_deck_study_page.get_current_index()
+            self.deck_database.current_index = self.choose_deck_study_page.get_current_index()
             self.choose_deck_study_page.register_selected_reward(["study"])
             self.choose_deck_study_page.close()
             self.study()
