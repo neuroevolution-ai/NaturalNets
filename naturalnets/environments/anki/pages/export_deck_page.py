@@ -104,13 +104,12 @@ class ExportDeckPage(Page, RewardElement):
             self.register_selected_reward(["dropdown", "opened"])
             self.include_dropdown.open()
             return
-        else:
-            if self.export_button.is_clicked_by(click_position):
-                self.export_button.handle_click(click_position)
-            elif self.cancel_button.is_clicked_by(click_position):
-                self.cancel_button.handle_click(click_position)
-            elif self.reset_exported_decks_button.is_clicked_by(click_position):
-                self.reset_exported_decks_button.handle_click(click_position)
+        if self.export_button.is_clicked_by(click_position):
+            self.export_button.handle_click(click_position)
+        elif self.cancel_button.is_clicked_by(click_position):
+            self.cancel_button.handle_click(click_position)
+        elif self.reset_exported_decks_button.is_clicked_by(click_position):
+            self.reset_exported_decks_button.handle_click(click_position)
 
     """
     Open this page and initialize the dropdown

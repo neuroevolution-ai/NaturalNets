@@ -52,10 +52,9 @@ class AppController:
 
     def reset(self):
         self.reset_reward_array()
-
+        self.main_page.reset_collection_popup_page.reset_all()
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index: int = 0
-
         self.assign_state(self.main_page, 0, [])
 
     def get_element_state_len(self, state_element: StateElement) -> int:

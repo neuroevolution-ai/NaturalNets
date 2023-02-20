@@ -348,32 +348,28 @@ class PreferencesPage(RewardElement, Page):
     Set the current tab to basic
     """
     def set_basic(self):
-        for i in range(1, 5):
-            self.get_state()[i] = 0
+        self.get_state()[1:5] = 0
         self.get_state()[1] = 1
 
     """
     Set the current tab to scheduling
     """
     def set_scheduling(self):
-        for i in range(1, 5):
-            self.get_state()[i] = 0
+        self.get_state()[1:5] = 0
         self.get_state()[2] = 1
 
     """
     Set the current tab to network
     """
     def set_network(self):
-        for i in range(1, 5):
-            self.get_state()[i] = 0
+        self.get_state()[1:5] = 0
         self.get_state()[3] = 1
 
     """
     Set the current tab to backup
     """
     def set_backup(self):
-        for i in range(1, 5):
-            self.get_state()[i] = 0
+        self.get_state()[1:5] = 0
         self.get_state()[4] = 1
     """
     Increment the backup number and provide the reward of it

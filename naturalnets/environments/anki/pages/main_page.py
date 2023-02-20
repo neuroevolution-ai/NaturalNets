@@ -114,7 +114,6 @@ class MainPage(Page, RewardElement):
         self.profile_page = ProfilePage()
         self.import_deck_page = ImportDeckPage()
         self.export_deck_page = ExportDeckPage()
-        self.choose_deck_study_page = ChooseDeckStudyPage()
         self.check_media_page = CheckMediaPage()
         self.preferences_page = PreferencesPage()
         self.about_page = AboutPage()
