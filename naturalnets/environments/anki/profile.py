@@ -106,4 +106,4 @@ class ProfileDatabase:
     def default_profiles(self) -> None:
         self.profiles = [Profile(ProfileNames.ALICE.value), Profile(ProfileNames.BOB.value),
                          Profile(ProfileNames.CAROL.value)]
-        self.current_index: int = 1
+        self.current_index: int = 0

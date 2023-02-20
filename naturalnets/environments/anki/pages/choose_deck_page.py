@@ -70,19 +70,18 @@ class ChooseDeckPage(Page, RewardElement):
         }
 
     def open(self):
-        self.current_index: int = 0
-        self.get_state()[3] = 0
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
-        self.get_state()[0] = 1
+        self.reset_index()
+        self.get_state()[2:7] = 0
+        self.get_state()[0:2] = 1
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.register_selected_reward(["window", "close"])
-        self.current_index: int = 0
-        self.get_state()[3] = 0
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
+        for child in self.get_children():
+            child.close()
+        self.reset_index()
+        self.get_state()[2:7] = 0
+        self.get_state()[1] = 1
         self.get_state()[0] = 0
 
     def is_open(self) -> int:
@@ -125,8 +124,7 @@ class ChooseDeckPage(Page, RewardElement):
     def choose_deck(self):
         self.register_selected_reward(["choose_deck"])
         self.deck_database.set_current_index(self.current_index)
-        for i in range(1, 6):
-            self.get_state()[i] = 0
+        self.get_state()[1:6] = 0
         self.get_state()[self.current_index + 1] = 1
         self.close()
 

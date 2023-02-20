@@ -79,17 +79,16 @@ class AnkiLoginPage(Page, RewardElement):
 
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1] = 0
-        self.get_state()[2] = 0
+        self.get_state()[1:2] = 0
         self.username_clipboard = None
         self.password_clipboard = None
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.register_selected_reward(["window", "close"])
-        self.get_state()[0] = 0
-        self.get_state()[1] = 0
-        self.get_state()[2] = 0
+        self.get_state()[0:2] = 0
+        for child in self.get_children():
+            child.close()
         self.username_clipboard = None
         self.password_clipboard = None
 
@@ -124,8 +123,7 @@ class AnkiLoginPage(Page, RewardElement):
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[3] = 1
-            self.get_state()[2] = 0
-            self.get_state()[1] = 0
+            self.get_state()[1:3] = 0
             self.close()
         else:
             self.failed_login.open()
@@ -137,9 +135,7 @@ class AnkiLoginPage(Page, RewardElement):
         self.current_anki_account = None
         self.username_clipboard = None
         self.password_clipboard = None
-        self.get_state()[3] = 0
-        self.get_state()[2] = 0
-        self.get_state()[1] = 0
+        self.get_state()[1:4] = 0
 
     """
     Renders anki login page with the failed login popup if open
@@ -151,9 +147,9 @@ class AnkiLoginPage(Page, RewardElement):
             img = self.failed_login.render(img)
             return img
         if self.username_clipboard is not None:
-            put_text(img, f"{self.username_clipboard}", (376, 363), font_scale=0.5)
+            put_text(img, f"{self.username_clipboard}", (self.USERNAME_X, self.USERNAME_Y), font_scale=0.5)
         if self.password_clipboard is not None:
-            put_text(img, f"{self.password_clipboard}", (376, 409), font_scale=0.5)
+            put_text(img, f"{self.password_clipboard}", (self.PASSWORD_X, self.PASSWORD_Y), font_scale=0.5)
         return img
 
     """

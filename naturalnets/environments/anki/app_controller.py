@@ -53,6 +53,12 @@ class AppController:
     def reset(self):
         self.reset_reward_array()
         self.main_page.reset_collection_popup_page.reset_all()
+        self.main_page.profile_page.reset_index()
+        self.main_page.preferences_page.reset()
+        self.main_page.opened_dd = None
+        self.main_page.is_logo_enabled = False
+        for page in self.main_page.pages:
+            page.close()
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index: int = 0
         self.assign_state(self.main_page, 0, [])

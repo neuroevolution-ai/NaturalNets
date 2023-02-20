@@ -33,6 +33,15 @@ class ResetCollectionPopup(Page, RewardElement):
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
     """
+        Singleton design pattern to ensure that at most one
+        ResetCollectionPopup is present
+    """
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
+        return cls.instance
+
+    """
     Provide reward for opening/closing this popup and for resetting the application
     """
     @property
@@ -74,7 +83,7 @@ class ResetCollectionPopup(Page, RewardElement):
     """
     def reset_all(self):
         self.profile_database.default_profiles()
-        for profile in self.profile_database.get_profiles():
+        for profile in self.profile_database.profiles:
             profile.deck_database.default_decks()
         self.register_selected_reward(["reset_all"])
         self.close()

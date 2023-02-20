@@ -63,6 +63,7 @@ class ProfilePage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
+        self.current_index = 0
         self.deck_database = None
         # Popups of this page
         self.add_profile_popup_page = AddProfilePopup()
@@ -120,10 +121,7 @@ class ProfilePage(Page, RewardElement):
             if click_index >= self.profile_database.profiles_length():
                 return
             self.get_state()[self.profile_database.get_current_index() + 1] = 0
-            self.profile_database.set_current_index(click_index)
-            self.current_profile = self.profile_database.get_profiles()[self.profile_database.get_current_index()]
-            self.get_state()[click_index + 1] = 1
-            self.register_selected_reward(["selected_profile_index", click_index])
+            self.current_index = click_index
 
     """
     Calculate the bounding box regarding number of the profiles.
@@ -138,7 +136,9 @@ class ProfilePage(Page, RewardElement):
     Opens this page
     """
     def open(self):
-        self.get_state()[0] = 1
+        self.get_state()[0:2] = 1
+        self.curre
+        self.get_state()[2:7] = 0
         self.register_selected_reward(["window", "open"])
 
     """
@@ -146,6 +146,9 @@ class ProfilePage(Page, RewardElement):
     """
     def close(self):
         self.get_state()[0] = 0
+        self.get_state()[1] = 1
+        for child in self.get_children():
+            child.close()
         self.register_selected_reward(["window", "close"])
 
     """
@@ -198,3 +201,17 @@ class ProfilePage(Page, RewardElement):
         if self.calculate_current_bounding_box().is_point_inside(click_position):
             self.change_current_profile_index(click_position)
             return
+    
+    def open_profile(self):
+        self.profile_database.set_current_index(self.current_index)
+        self.current_profile = self.profile_database.get_profiles()[self.profile_database.get_current_index()]
+        self.get_state()[1:7] = 0
+        self.get_state()[self.current_index + 1] = 1
+        self.register_selected_reward(["selected_profile_index", self.current_index])
+    
+    def reset_index(self):
+        self.current_index = 0
+        self.current_profile = self.profile_database.get_profiles()[0]
+        self.get_state()[1] = 1
+        self.get_state()[2:7] = 0
+        

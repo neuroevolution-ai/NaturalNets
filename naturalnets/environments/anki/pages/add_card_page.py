@@ -119,9 +119,11 @@ class AddCardPage(Page, RewardElement):
         self.register_selected_reward(["window", "open"])
 
     def close(self):
+        self.get_state()[0] = 0
+        for child in self.get_children():
+            child.close()
         self.reset_temporary_strings()
         self.register_selected_reward(["window", "close"])
-        self.get_state()[0] = 0
 
     def is_open(self):
         return self.get_state()[0]
@@ -162,9 +164,8 @@ class AddCardPage(Page, RewardElement):
         self.back_side_clipboard_temporary_string = None
         self.front_side_clipboard_temporary_string = None
         self.tag_clipboard_temporary_string = None
-        self.get_state()[1] = 0
-        self.get_state()[2] = 0
-        self.get_state()[3] = 0
+        self.get_state()[1:4] = 0
+
     """
     Checks if the condition for creating a card is satisfied and if yes
     creates a card and adds it to the current deck and resets the string

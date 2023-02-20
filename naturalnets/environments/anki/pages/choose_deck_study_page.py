@@ -89,14 +89,21 @@ class ChooseDeckStudyPage(Page, RewardElement):
         return self.current_index
 
     def open(self):
-        self.current_index = 0
+        self.reset_index()
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        self.get_state()[0] = 1
+        self.get_state()[0:2] = 1
+        self.get_state()[2:7] = 0
         self.register_selected_reward(["window", "open"])
 
     def close(self):
+        self.reset_index()
+        for child in self.get_children():
+            child.close()
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
+        self.get_state()[1] = 1
+        self.get_state()[2:7] = 0
+
 
     """
     Executed when the help button is clicked.

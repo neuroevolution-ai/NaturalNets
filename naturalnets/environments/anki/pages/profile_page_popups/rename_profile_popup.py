@@ -76,7 +76,9 @@ class RenameProfilePopup(RewardElement, Page):
     Closes this popup
     """
     def close(self):
-        self.get_state()[0] = 0
+        self.get_state()[0:2] = 0
+        for child in self.children:
+            child.close()
         self.register_selected_reward(["window", "close"])
         self.current_field_string = None
 
@@ -85,6 +87,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     def open(self):
         self.get_state()[0] = 1
+        self.get_state()[1] = 0
         self.register_selected_reward(["window", "open"])
 
     """

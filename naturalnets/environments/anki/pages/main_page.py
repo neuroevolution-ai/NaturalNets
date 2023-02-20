@@ -557,7 +557,7 @@ class MainPage(Page, RewardElement):
         self.register_selected_reward(["remove_card"])
         self.deck_database.get_decks()[self.deck_database.get_current_index()].remove_card()
     """
-    Negate the boolean if the anki logo is shown
+    Negate the boolean if the book logo is shown
     """
     def set_logo_shown(self):
         self.register_selected_reward(["logo_shown", not self.is_logo_enabled])

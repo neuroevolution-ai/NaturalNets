@@ -31,16 +31,7 @@ class ImportDeckPage(Page, RewardElement):
     HELP_BB = BoundingBox(625, 595, 98, 25)
     CURRENT_DECK_NAME_X = 95
     CURRENT_DECK_NAME_Y = 120
-    """
-    Singleton design pattern to ensure that at most one
-    ImportDeckPage is present
-    """
-
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ImportDeckPage, cls).__new__(cls)
-        return cls.instance
-
+    
     def __init__(self):
 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
@@ -127,6 +118,11 @@ class ImportDeckPage(Page, RewardElement):
 
     def close(self):
         self.register_selected_reward(["window", "close"])
+        for child in self.get_children():
+            child.close()
+        self.import_deck_popup.current_import_name = None
+        self.import_deck_popup.get_state()[1] = 1
+        self.import_deck_popup.get_state()[2:4] = 0
         self.get_state()[0] = 0
 
     """
@@ -266,7 +262,9 @@ class ImportDeckSelectPage(Page, RewardElement):
     """
 
     def open(self):
-        self.get_state()[0] = 1
+        self.reset_current_index()
+        self.get_state()[0:2] = 1
+        self.get_state()[2:4] = 0
         self.register_selected_reward(["window", "open"])
 
     """

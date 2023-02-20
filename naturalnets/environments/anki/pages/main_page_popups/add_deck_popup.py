@@ -77,7 +77,9 @@ class AddDeckPopup(Page, RewardElement):
     def close(self):
         self.register_selected_reward(["window", "close"])
         self.current_field_string = None
-        self.get_state()[0] = 0
+        for child in self.get_children():
+            child.close()
+        self.get_state()[0:2] = 0
 
     def open(self):
         self.register_selected_reward(["window", "open"])

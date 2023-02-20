@@ -96,7 +96,7 @@ class PreferencesPage(RewardElement, Page):
     
     """
        Singleton design pattern to ensure that at most one
-       ProfilePage is present
+       PreferencesPage is present
     """
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -548,14 +548,16 @@ class PreferencesPage(RewardElement, Page):
     Set the current search text attribute of the basic window and provide the reward of it
     """
     def set_current_search_text(self):
-        self.current_search_text = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+        self.current_search_text = 'Cool search name'
         self.register_selected_reward(["basic_window_put_text_button"])
+    
     """
     Click action of help button
     """
     def help(self):
         self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
+    
     """
     Opens this window
     """
@@ -622,3 +624,21 @@ class PreferencesPage(RewardElement, Page):
     def close_all_dropdowns(self):
         for dd in self.basic_window_dropdowns:
             dd.close()
+
+    def reset(self):
+        self.current_search_text = None
+        self.user_interface = 100
+        self.next_day = 4
+        self.learn_ahead = 20
+        self.timebox_time = 5
+        self.backup_number = 50
+        for widget in self.basic_window_widgets:
+            if(isinstance(widget,CheckBox)):
+                widget.get_state()[0] = 0
+            elif(isinstance(widget,Dropdown)):
+                widget._selected_item = None
+        for widget in self.scheduling_window_widgets:
+            widget.get_state()[0] = 0
+        for widget in self.network_window_widgets:
+            widget.get_state()[0] = 0
+        

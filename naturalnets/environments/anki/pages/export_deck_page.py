@@ -128,6 +128,9 @@ class ExportDeckPage(Page, RewardElement):
 
     def close(self):
         self.register_selected_reward(["window", "close"])
+        self.current_deck = None
+        for child in self.get_children():
+            child.close()
         self.get_state()[0] = 0
 
     """

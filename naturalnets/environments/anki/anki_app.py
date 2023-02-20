@@ -5,7 +5,6 @@ from typing import Optional, Dict
 import cv2
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
-from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
 from naturalnets.environments.anki.app_controller import AppController
@@ -120,7 +119,6 @@ class AnkiApp(IGUIEnvironment):
 
     def reset(self, env_seed: int = None) -> np.ndarray:
         self.app_controller.reset()
-
         self.t = 0
 
         self.click_position_x = 0
