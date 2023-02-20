@@ -13,7 +13,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class ChooseDeckStudyPage(Page, RewardElement):
     """
     This page enables selecting a deck and switching to the study part of the main

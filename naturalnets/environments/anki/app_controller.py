@@ -8,10 +8,10 @@ from naturalnets.environments.gui_app.widgets.button import Button
 
 
 class AppController:
+    """
+    Copied from the app_controller.py of GUIApp and adapted with small changes.
+    """
 
-    """
-        Copied from the app_controller.py of GUIApp and adapted with small changes.
-    """
     def __init__(self):
         self.main_page = MainPage()
 
@@ -83,7 +83,7 @@ class AppController:
             })
 
         for child in state_element.get_children():
-            if not (isinstance(child, Button)):
+            if not isinstance(child, Button):
                 self.assign_state(child, recursion_depth + 1, states_info)
 
     def get_next_state_sector(self, state_len):

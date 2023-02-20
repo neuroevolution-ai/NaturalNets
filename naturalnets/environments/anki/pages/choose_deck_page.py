@@ -11,7 +11,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class ChooseDeckPage(Page, RewardElement):
     """
     Is opened up when user clicks select deck button from add card page.
@@ -20,6 +19,7 @@ class ChooseDeckPage(Page, RewardElement):
         state[0]: if this window is open
         state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
     """
+
     STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_page.png")
 

@@ -1,9 +1,9 @@
 import codecs
 from typing import List
 
-from naturalnets.environments.anki import Card
-from naturalnets.environments.anki.constants import DeckNames, DeckImportName, PREDEFINED_DECKS_PATH, \
-    EXPORTED_DECKS_PATH
+from naturalnets.environments.anki.card import Card
+from naturalnets.environments.anki.constants import (DeckNames, DeckImportName, PREDEFINED_DECKS_PATH,
+    EXPORTED_DECKS_PATH)
 import os
 
 
@@ -23,11 +23,8 @@ class Deck:
     Proceed to the next card. If the user is at the end of the deck then go back to the first card
     """
     def increment_study_index(self):
-        if self.study_index < len(self.cards) - 1:
-            self.study_index += 1
-        elif self.study_index == len(self.cards):
-            self.study_index = len(self.cards) - 1
-        else:
+        self.study_index += 1
+        if self.study_index == len(self.cards):
             self.study_index = 0
 
     """
@@ -55,7 +52,7 @@ class Deck:
 class DeckDatabase:
 
     """
-    This class holds the present decks which are restricted with 5
+    This class holds the currently selected decks, up to a maximum of 5
     """
     def __init__(self):
 
@@ -78,7 +75,7 @@ class DeckDatabase:
         return len(self.decks)
 
     """
-    Return true if the number of decks does not exceed 5
+    Return true if the number of decks is less than 5.
     """
     def is_deck_length_allowed(self) -> int:
         return self.decks_length() < 5
@@ -198,7 +195,7 @@ class DeckDatabase:
         return os.path.exists(directory + '/' + file_name + '.txt')
 
     """
-    Returns true if number of files in exported decks path does not exceed 5
+    Returns true if number of files in exported decks path is less than 5
     """
     @staticmethod
     def is_exporting_allowed() -> bool:
@@ -210,7 +207,8 @@ class DeckDatabase:
     @staticmethod
     def export_deck(deck: Deck) -> None:
         if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
-            deck_file = codecs.open(EXPORTED_DECKS_PATH + f"{deck.name}.txt", "w", encoding='utf-8')
+            print(EXPORTED_DECKS_PATH)
+            deck_file = codecs.open(os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt"), "w", encoding='utf-8')
             for card in deck.cards:
                 deck_file.write(card.front + " " + card.back)
                 deck_file.write("\n")

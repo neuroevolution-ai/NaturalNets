@@ -2,10 +2,12 @@ class Card:
     """
     A card is composed of front-, and backside and an optional tag
     """
+
     def __init__(self, front: str, back: str):
         self.front = front
         self.back = back
         self.tag = None
+    
     """
     Check if the front side includes substring "edited"
     """

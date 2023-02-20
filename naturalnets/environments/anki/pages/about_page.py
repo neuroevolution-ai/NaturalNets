@@ -8,7 +8,6 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 
-
 class AboutPage(Page, RewardElement):
     """
     Page informing about contributors of the app

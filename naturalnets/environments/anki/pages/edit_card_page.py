@@ -1,15 +1,17 @@
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import FONTS_PATH, IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.anki.ascii_print_util import print_non_ascii
 from naturalnets.environments.gui_app.widgets.button import Button
-
+import cv2
+import numpy as np
+from typing import Tuple
+from PIL import Image, ImageDraw, ImageFont
 
 class EditCardPage(RewardElement, Page):
     """
@@ -110,6 +112,23 @@ class EditCardPage(RewardElement, Page):
     """
     Appends " edited" to the tags of the current card 
     """
+
+    def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_size: int,
+                        dimension: Tuple[int, int, int]):
+        image = np.zeros(dimension, dtype=np.uint8)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        pil_image = Image.fromarray(image)
+        for x in range(pil_image.width):
+            for y in range(pil_image.height):
+                pil_image.putpixel((x, y), (240, 240, 240))
+        draw = ImageDraw.Draw(pil_image)
+        font = ImageFont.truetype(FONTS_PATH, font_size)
+        draw.text((5, 5), text, fill="black", font=font)
+        image = np.asarray(pil_image)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        render_onto_bb(img, bounding_box, image)
+        return img
+    
     def tags_text_edit(self):
         if not (self.deck_database.decks[self.deck_database.current_index].cards
         [self.deck_database.decks[self.deck_database.current_index].study_index].is_tag_edited()):
@@ -127,21 +146,23 @@ class EditCardPage(RewardElement, Page):
         image = render_onto_bb(image, self.get_bb(), to_render)
         if (self.deck_database.decks[self.deck_database.current_index].cards
         [self.deck_database.decks[self.deck_database.current_index].study_index].front is not None):
-            print_non_ascii(img=image,
+            self.print_non_ascii(img=image,
                             text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",
                             bounding_box=BoundingBox(225, 203, 300, 40), font_size=25,
                             dimension=(40, 300, 3))
         if self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks
         [self.deck_database.current_index]
                 .study_index].back is not None:
-            print_non_ascii(img=image,
+            self.print_non_ascii(img=image,
                             text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",
                             bounding_box=BoundingBox(225, 336, 300, 40), font_size=25,
                             dimension=(40, 300, 3))
         if (self.deck_database.decks[self.deck_database.current_index].cards
         [self.deck_database.decks[self.deck_database.current_index].study_index].tag is not None):
-            print_non_ascii(img=image,
+            self.print_non_ascii(img=image,
                             text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}",
                             bounding_box=BoundingBox(225, 483, 300, 36), font_size=25,
                             dimension=(36, 300, 3))
         return image
+
+    

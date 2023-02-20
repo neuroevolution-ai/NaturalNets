@@ -15,12 +15,12 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 
-
 class ImportDeckPage(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open
     """
+
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_page.png")
 

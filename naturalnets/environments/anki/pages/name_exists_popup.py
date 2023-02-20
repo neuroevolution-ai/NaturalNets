@@ -8,7 +8,6 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class NameExistsPopup(Page, RewardElement):
     """
     State description:

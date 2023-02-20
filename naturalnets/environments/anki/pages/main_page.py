@@ -4,9 +4,15 @@ from typing import List
 import cv2
 import numpy as np
 
+import cv2
+import numpy as np
+from typing import Tuple
+
+from PIL import Image, ImageDraw, ImageFont
+from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.anki import AddCardPage
 from naturalnets.environments.anki import AnkiLoginPage
-from naturalnets.environments.anki.ascii_print_util import print_non_ascii
 from naturalnets.environments.anki.pages.main_page_popups import AddDeckPopup
 from naturalnets.environments.anki import EditCardPage
 from naturalnets.environments.anki import ResetCollectionPopup
@@ -21,7 +27,7 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.anki.constants import IMAGES_PATH
+from naturalnets.environments.anki.constants import FONTS_PATH, IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.anki import ChooseDeckStudyPage
@@ -78,9 +84,10 @@ class MainPage(Page, RewardElement):
     REMOVE_BB = BoundingBox(570, 750, 116, 24)
 
     """
-           Singleton design pattern to ensure that at most one
-           MainPage is present
-        """
+    Singleton design pattern to ensure that at most one
+    MainPage is present
+    """
+    
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(MainPage, cls).__new__(cls)
@@ -540,7 +547,9 @@ class MainPage(Page, RewardElement):
     def render_deck_page(self, img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        anki_logo = cv2.imread(IMAGES_PATH + "anki_logo.png")
+        
+        anki_logo = cv2.imread(os.path.join(IMAGES_PATH, "anki_logo.png"))
+            
         if self.is_logo_enabled:
             render_onto_bb(img, BoundingBox(657, 450, 128, 128), anki_logo)
         if self.profile_page.current_profile is not None:
@@ -577,13 +586,13 @@ class MainPage(Page, RewardElement):
                  (484, 172), font_scale=0.5)
         put_text(image, f"Number of cards: {self.deck_database.decks[self.deck_database.current_index].deck_length()}",
                  (484, 202), font_scale=0.5)
-        print_non_ascii(img=image,
+        MainPage.print_non_ascii(img=image,
                         text=f"Question : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",
                         bounding_box=BoundingBox(42, 232, 600, 100), font_size=35, dimension=(100, 600, 3))
         if self.leads_to_external_website_popup_page.is_open():
             image = self.leads_to_external_website_popup_page.render(image)
         if self.get_state()[7] == 1:
-            print_non_ascii(img=image,
+            MainPage.print_non_ascii(img=image,
                             text=f"Answer : {self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",
                             bounding_box=BoundingBox(42, 332, 600, 100), font_size=35, dimension=(100, 600, 3))
             next_button = cv2.imread(self.NEXT_BUTTON_PATH)
@@ -672,3 +681,20 @@ class MainPage(Page, RewardElement):
     def open_reset_collection_popup(self):
         self.get_state()[6] = 0
         self.reset_collection_popup_page.open()
+
+
+    def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_size: int,
+                        dimension: Tuple[int, int, int]):   
+        image = np.zeros(dimension, dtype=np.uint8)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        pil_image = Image.fromarray(image)
+        for x in range(pil_image.width):
+            for y in range(pil_image.height):
+                pil_image.putpixel((x, y), (240, 240, 240))
+        draw = ImageDraw.Draw(pil_image)
+        font = ImageFont.truetype(FONTS_PATH, font_size)
+        draw.text((5, 5), text, fill="black", font=font)
+        image = np.asarray(pil_image)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        render_onto_bb(img, bounding_box, image)
+        return img

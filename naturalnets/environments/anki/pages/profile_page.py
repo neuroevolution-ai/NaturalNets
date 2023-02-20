@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import os
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
-from naturalnets.environments.anki import ResetCollectionPopup
+from naturalnets.environments.anki.pages.reset_collection_popup import ResetCollectionPopup
 from naturalnets.environments.anki.profile import Profile
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -13,7 +13,7 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.anki import ProfileDatabase
+from naturalnets.environments.anki.profile import ProfileDatabase
 
 
 class ProfilePage(Page, RewardElement):

@@ -15,7 +15,6 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
-
 class PreferencesPage(RewardElement, Page):
     """
     Actually the whole page is a filler and an imitation of the original application and does not

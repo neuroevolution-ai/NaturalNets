@@ -14,7 +14,6 @@ from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki import Card
 
-
 class AddCardPage(Page, RewardElement):
     """
     This page is used to add a card to the current deck.

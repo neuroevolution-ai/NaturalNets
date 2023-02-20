@@ -1,5 +1,5 @@
 from typing import Final
-from naturalnets.environments.anki import ProfileNames
+from naturalnets.environments.anki.constants import ProfileNames
 from naturalnets.environments.anki.deck import DeckDatabase
 
 
@@ -7,6 +7,7 @@ class Profile:
     """
     A profile is composed of a name and it's decks aka DeckDatabase
     """
+
     def __init__(self, profile_name: str):
         self.name = profile_name
         self.deck_database = DeckDatabase()
@@ -18,8 +19,8 @@ class ProfileDatabase:
     """
 
     """
-        Singleton design pattern to ensure that at most one
-        ProfileDatabase is present
+    Singleton design pattern to ensure that at most one
+    ProfileDatabase is present
     """
     def __new__(cls):
         if not hasattr(cls, 'instance'):

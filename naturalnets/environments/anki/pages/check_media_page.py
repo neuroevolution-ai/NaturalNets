@@ -8,7 +8,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class CheckMediaPage(Page, RewardElement):
     """
     Actually a filler page. Has nothing to do with the logic of the application.

@@ -13,7 +13,6 @@ from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class ExportDeckPage(Page, RewardElement):
     """
     State description:

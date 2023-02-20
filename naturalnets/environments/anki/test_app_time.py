@@ -1,15 +1,12 @@
 from random import randrange
 import time
 import numpy as np
-
-from naturalnets.environments.anki import AnkiApp
+from naturalnets.environments.anki.anki_app import AnkiApp
 
 """
 Copied and adapted from GUIApp.
 """
-
-WIDTH = 834
-HEIGHT = 834
+ 
 
 config = {
     "type": "AnkiApp",
@@ -33,8 +30,8 @@ if __name__ == "__main__":
     initial_state = np.copy(app.get_state())
     state_diff = np.zeros(len(initial_state), dtype=int)
     for i in range(config["number_time_steps"]):
-        # app.render(action)
-        action = np.array([randrange(0, 834), randrange(0, 709), 0, 0], dtype=int)
+        app.render(action)
+        action = np.array([randrange(0, app.screen_height), randrange(0, app.screen_width), 0, 0], dtype=int)
 
         t0 = time.time()
         app.step(action)

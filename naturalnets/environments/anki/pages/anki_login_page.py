@@ -11,7 +11,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
-
 class AnkiLoginPage(Page, RewardElement):
     """
     State description:

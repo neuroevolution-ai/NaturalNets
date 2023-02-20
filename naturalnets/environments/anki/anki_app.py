@@ -1,4 +1,3 @@
-import enum
 import logging
 import time
 from attrs import define, field, validators
@@ -6,35 +5,32 @@ from typing import Optional, Dict
 import cv2
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
+from PIL import Image, ImageDraw, ImageFont
 
 import numpy as np
 from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
 
-
-class FakeBugOptions(enum.Enum):
-    pass
-
-
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class AppCfg:
+class AnkiAppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
 
 
 @register_environment_class
 class AnkiApp(IGUIEnvironment):
-    screen_width = 834
-    screen_height = 834
     """
     Copied from the gui_app.py and adapted with small changes.
     """
+    
+    screen_width = 834
+    screen_height = 834
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the AnkiApp environment")
         t0 = time.time()
-
-        self.config = AppCfg(**configuration)
+        
+        self.config = AnkiAppCfg(**configuration)
 
         self.app_controller = AppController()
 
@@ -60,8 +56,6 @@ class AnkiApp(IGUIEnvironment):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
-        print(self.click_position_x)
-        print(self.click_position_y)
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
@@ -144,7 +138,7 @@ class AnkiApp(IGUIEnvironment):
         return self.window_name
 
     def get_screen_size(self) -> int:
-        return 834
+        return self.screen_width
 
     def get_observation_dict(self):
         pass
