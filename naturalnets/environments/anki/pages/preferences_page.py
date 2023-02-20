@@ -81,7 +81,19 @@ class PreferencesPage(RewardElement, Page):
 
     BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(294, 195, 12, 9)
     BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(295, 205, 12, 9)
-
+    USER_INTERFACE_X = 283
+    USER_INTERFACE_Y = 590
+    CURRENT_SEARCH_TEXT_X = 97
+    CURRENT_SEARCH_TEXT_Y = 544
+    NEXT_DAY_X = 381
+    NEXT_DAY_Y = 427
+    LEARN_AHEAD_X = 381
+    LEARN_AHEAD_Y = 468
+    TIMEBOX_TIME_X = 381
+    TIMEBOX_TIME_Y = 510
+    BACKUP_NUMBER_X = 255
+    BACKUP_NUMBER_Y = 208
+    
     """
        Singleton design pattern to ensure that at most one
        ProfilePage is present
@@ -574,8 +586,8 @@ class PreferencesPage(RewardElement, Page):
         if self.get_state()[1] == 1:
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.user_interface}", (283, 590), font_scale=0.4)
-            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}", (97, 544),
+            put_text(img, f"{self.user_interface}", (self.USER_INTERFACE_X,self.USER_INTERFACE_Y), font_scale=0.4)
+            put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}", (self.CURRENT_SEARCH_TEXT_X, self.CURRENT_SEARCH_TEXT_Y),
                      font_scale=0.4)
             for widget in self.basic_window_widgets:
                 if isinstance(widget, CheckBox):
@@ -592,9 +604,9 @@ class PreferencesPage(RewardElement, Page):
             for widget in self.scheduling_window_widgets:
                 if isinstance(widget, CheckBox):
                     img = widget.render(img)
-            put_text(img, f"{self.next_day}", (381, 427), font_scale=0.4)
-            put_text(img, f"{self.learn_ahead}", (381, 468), font_scale=0.4)
-            put_text(img, f"{self.timebox_time}", (381, 510), font_scale=0.4)
+            put_text(img, f"{self.next_day}", (self.NEXT_DAY_X, self.NEXT_DAY_Y), font_scale=0.4)
+            put_text(img, f"{self.learn_ahead}", (self.LEARN_AHEAD_X, self.LEARN_AHEAD_Y), font_scale=0.4)
+            put_text(img, f"{self.timebox_time}", (self.TIMEBOX_TIME_X, self.TIMEBOX_TIME_Y), font_scale=0.4)
         elif self.get_state()[3] == 1:
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
@@ -604,7 +616,7 @@ class PreferencesPage(RewardElement, Page):
         elif self.get_state()[4] == 1:
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.backup_number}", (255, 208), font_scale=0.4)
+            put_text(img, f"{self.backup_number}", (self.BACKUP_NUMBER_X, self.BACKUP_NUMBER_Y), font_scale=0.4)
         if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
         return img

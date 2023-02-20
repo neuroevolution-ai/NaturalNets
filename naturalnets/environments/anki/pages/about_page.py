@@ -64,7 +64,7 @@ class AboutPage(Page, RewardElement):
         return self.get_state()[0]
 
     """
-        Renders the image of the popup
+    Renders the image of the popup
     """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)

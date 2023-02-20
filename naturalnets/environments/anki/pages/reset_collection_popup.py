@@ -83,7 +83,7 @@ class ResetCollectionPopup(Page, RewardElement):
     """
     def reset_all(self):
         self.profile_database.default_profiles()
-        for profile in self.profile_database.profiles:
+        for profile in self.profile_database.get_profiles():
             profile.deck_database.default_decks()
         self.register_selected_reward(["reset_all"])
         self.close()

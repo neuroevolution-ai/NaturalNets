@@ -8,20 +8,25 @@ class Card:
         self.back = back
         self.tag = None
     
+    def get_front(self):
+        return self.front
+    
+    def get_back(self):
+        return self.back
+    
+    def get_tag(self):
+        return self.tag
+
     """
     Check if the front side includes substring "edited"
     """
     def is_front_edited(self) -> bool:
-        if self.front is None:
-            return False
         return "edited" in self.front
 
     """
     Check if the back side includes substring "edited"
     """
     def is_back_edited(self) -> bool:
-        if self.back is None:
-            return False
         return "edited" in self.back
 
     """

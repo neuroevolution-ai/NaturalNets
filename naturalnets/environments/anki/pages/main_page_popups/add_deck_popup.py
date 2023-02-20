@@ -33,6 +33,9 @@ class AddDeckPopup(Page, RewardElement):
     CANCEL_BB = BoundingBox(538, 324, 103, 25)
     TEXT_BB = BoundingBox(555, 289, 86, 20)
 
+    TEXT_POSITION_X = 181
+    TEXT_POSITION_Y = 302
+
     """
     Singleton design pattern to ensure that at most one
     AddDeckPopup is present
@@ -53,7 +56,7 @@ class AddDeckPopup(Page, RewardElement):
         # database containing current profiles
         self.profile_database = ProfileDatabase()
         # database containing current decks
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
@@ -94,7 +97,7 @@ class AddDeckPopup(Page, RewardElement):
     """
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
-        self.current_field_string = self.secure_random.choice(self.deck_database.deck_names)
+        self.current_field_string = self.secure_random.choice(self.deck_database.get_deck_names())
 
     def is_open(self):
         return self.get_state()[0]
@@ -121,11 +124,11 @@ class AddDeckPopup(Page, RewardElement):
     """
     def render(self, img: np.ndarray):
         # First line synchronizes the self.deck_database attribute with the current database.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.current_field_string is not None:
-            put_text(img, f"{self.current_field_string}", (181, 302), font_scale=0.4)
+            put_text(img, f"{self.current_field_string}", (self.TEXT_POSITION_X, self.TEXT_POSITION_Y), font_scale=0.4)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
         elif self.name_exists_popup.is_open():
@@ -136,7 +139,7 @@ class AddDeckPopup(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # First line synchronizes the self.deck_database attribute with the current database.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.five_decks_popup.is_open():
             self.five_decks_popup.handle_click(click_position)
             return

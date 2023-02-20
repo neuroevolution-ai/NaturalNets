@@ -27,6 +27,16 @@ class ChooseDeckPage(Page, RewardElement):
     CHOOSE_BB = BoundingBox(189, 501, 107, 25)
     ADD_BB = BoundingBox(359, 501, 107, 25)
     CLOSE_BB = BoundingBox(520, 501, 107, 25)
+
+    CLICK_X = 203
+    CLICK_Y = 222
+    CURRENT_DECK_X = 210
+    CURRENT_DECK_Y = 204
+    ITEM_LENGTH = 30
+    ITEM_WIDTH = 412
+    TEXT_X = 211
+    TEXT_Y = 243
+
     """
         Singleton design pattern to ensure that at most one
         ChooseDeckPage is present
@@ -42,7 +52,7 @@ class ChooseDeckPage(Page, RewardElement):
         # Profile database to display all the present profiles
         self.profile_database = ProfileDatabase()
         # Deck database to display all the present decks of the profile
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
         # Popup for adding a new deck.
         self.add_deck_popup = AddDeckPopup()
@@ -99,7 +109,7 @@ class ChooseDeckPage(Page, RewardElement):
     def change_current_deck_index(self, click_point: np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - 222) / 30)
+            click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_LENGTH)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[self.current_index + 1] = 0
@@ -112,9 +122,9 @@ class ChooseDeckPage(Page, RewardElement):
     current decks.
     """
     def calculate_current_bounding_box(self):
-        upper_left_point = (203, 222)
-        length = 30 * self.deck_database.decks_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 412, length)
+        upper_left_point = (self.CLICK_X, self.CLICK_Y)
+        length = self.ITEM_LENGTH * self.deck_database.decks_length()
+        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
         return current_bounding_box
 
     """
@@ -139,16 +149,16 @@ class ChooseDeckPage(Page, RewardElement):
     Renders the choose deck page with it's add deck popup if open
     """
     def render(self, img: np.ndarray):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.add_deck_popup.is_open():
             img = self.add_deck_popup.render(img)
-        put_text(img, f" {self.deck_database.decks[self.current_index].name}", (210, 204), font_scale=0.5)
-        for i, deck in enumerate(self.deck_database.decks):
+        put_text(img, f" {self.deck_database.get_decks()[self.current_index].get_name()}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        for i, deck in enumerate(self.deck_database.get_decks()):
             if self.add_deck_popup.is_open() and i >= 1:
                 return img
-            put_text(img, f" {deck.name}", (211, 243 + 30 * i), font_scale=0.5)
+            put_text(img, f" {deck.name}", (self.TEXT_X, self.TEXT_Y + self.ITEM_LENGTH * i), font_scale=0.5)
         return img
 
     """
@@ -157,7 +167,7 @@ class ChooseDeckPage(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.add_deck_popup.is_open():
             self.add_deck_popup.handle_click(click_position)
             return

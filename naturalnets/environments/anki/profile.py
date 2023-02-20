@@ -12,6 +12,11 @@ class Profile:
         self.name = profile_name
         self.deck_database = DeckDatabase()
 
+    def get_name(self):
+        return self.name
+
+    def get_deck_database(self):
+        return self.deck_database
 
 class ProfileDatabase:
     """
@@ -32,6 +37,18 @@ class ProfileDatabase:
                                      ProfileNames.DENNIS.value, ProfileNames.EVA.value]
         self.profiles = [Profile(ProfileNames.ALICE.value)]
         self.current_index: int = 0
+
+    def get_current_index(self):
+        return self.current_index
+
+    def get_profile_names(self):
+        return self.profile_names
+
+    def get_profiles(self):
+        return self.profiles
+
+    def set_current_index(self, index: int):
+        self.current_index = index
 
     """
     Adding a profile is allowed if there are less than 5 profiles

@@ -1,4 +1,3 @@
-import codecs
 from typing import List
 
 from naturalnets.environments.anki.card import Card
@@ -19,6 +18,18 @@ class Deck:
         self.study_index: int = 0
         self.is_answer_shown = False
 
+    def get_name(self):
+        return self.name
+
+    def get_cards(self):
+        return self.cards
+
+    def get_study_index(self):
+        return self.study_index
+
+    def get_is_answer_shown(self):
+        return self.is_answer_shown
+            
     """
     Proceed to the next card. If the user is at the end of the deck then go back to the first card
     """
@@ -68,6 +79,19 @@ class DeckDatabase:
         # Index of the currently selected deck
         self.current_index: int = 0
 
+    def get_deck_names(self):
+        return self.deck_names
+
+    def get_deck_import_names(self):
+        return self.deck_import_names
+    
+    def get_decks(self):
+        return self.decks
+
+    def get_current_index(self):
+        return self.current_index
+
+
     """
     Return the number of decks
     """
@@ -103,14 +127,24 @@ class DeckDatabase:
     """
     Import the deck with name deck_import_name from the predefined decks path
     """
+    
     def import_deck(self, deck_import_name: str) -> None:
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
-        deck_file = codecs.open(path, "r", encoding='utf-8')
-        deck_as_string = deck_file.read()
-        deck = self.convert_string_to_deck(deck_import_name, deck_as_string)
+        file = open(path,"r")
+        deck = Deck(deck_import_name)
+        for line in file.readlines():
+            if '\t' in line:
+                    line = line.split('\t')
+                    if len(line) == 2:
+                        deck.add_card(Card(line[0], line[1]))
+            elif ' ' in line:
+                    line = line.split(' ')
+                    if len(line) == 2:
+                        deck.add_card(Card(line[0], line[1]))
         if not (self.is_included(deck_import_name)) and self.is_deck_length_allowed():
             self.decks.append(deck)
-        deck_file.close()
+        file.close()
+        return deck
 
     """
     Delete deck with name deck_name if it is present
@@ -120,21 +154,6 @@ class DeckDatabase:
             self.current_index = 0
             self.decks.remove(self.fetch_deck(deck_name))
 
-    """
-    Takes a string deck_as_string and converts it to a deck called deck_name
-    """
-    def convert_string_to_deck(self, deck_name: str, deck_as_string: str) -> Deck:
-        split_deck = deck_as_string.splitlines(False)
-        deck: Deck = Deck(deck_name)
-        if not (self.is_included(deck_name)):
-            for line in split_deck:
-                if '\t' in line:
-                    line = line.split('\t')
-                    deck.add_card(Card(line[0], line[1]))
-                elif ' ' in line:
-                    line = line.split(' ')
-                    deck.add_card(Card(line[0], line[1]))
-        return deck
 
     """
     Reset the decks configuration to the configuration of only one deck 
@@ -208,8 +227,9 @@ class DeckDatabase:
     def export_deck(deck: Deck) -> None:
         if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
             print(EXPORTED_DECKS_PATH)
-            deck_file = codecs.open(os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt"), "w", encoding='utf-8')
-            for card in deck.cards:
-                deck_file.write(card.front + " " + card.back)
-                deck_file.write("\n")
-            deck_file.close()
+        path = os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt")
+        file = open(path,"w")
+        for card in deck.cards:
+            file.write(card.get_front() + " " + card.back)
+            file.write("\n")
+        file.close()

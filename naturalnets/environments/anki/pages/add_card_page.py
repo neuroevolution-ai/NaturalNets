@@ -36,6 +36,15 @@ class AddCardPage(Page, RewardElement):
     CLOSE_BB = BoundingBox(582, 538, 88, 25)
     ADD_BB = BoundingBox(466, 538, 88, 25)
 
+    DECK_TEXT_X = 277
+    DECK_TEXT_Y = 191
+    FRONT_TEXT_X = 198
+    FRONT_TEXT_Y = 310
+    BACK_TEXT_X = 198
+    BACK_TEXT_Y = 422
+    TAG_TEXT_X = 198
+    TAG_TEXT_Y = 507
+
     """
         Singleton design pattern to ensure that at most one
         AddCardPage is present
@@ -56,7 +65,7 @@ class AddCardPage(Page, RewardElement):
         # Profile database to fetch the current profile
         self.profile_database = ProfileDatabase()
         # Deck database of the current profile to add card to the current deck
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         # Choose deck page enables changing the current deck as well as adding a new deck
         self.choose_deck = ChooseDeckPage()
         # Warning popup that front- and backside strings must be present at the same time to be able to add a new card.
@@ -93,7 +102,7 @@ class AddCardPage(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.choose_deck.is_open():
             self.choose_deck.handle_click(click_position)
             return
@@ -176,7 +185,7 @@ class AddCardPage(Page, RewardElement):
         if self.is_card_creatable():
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
             card.tag = self.tag_clipboard_temporary_string
-            self.deck_database.decks[self.deck_database.current_index].add_card(card)
+            self.deck_database.get_decks()[self.deck_database.get_current_index()].add_card(card)
             self.register_selected_reward(["add_card"])
             self.reset_temporary_strings()
         else:
@@ -197,27 +206,27 @@ class AddCardPage(Page, RewardElement):
     choose deck page if open and current strings if set.
     """
     def render(self, img: np.ndarray):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         # Render choose deck page if open
         if self.choose_deck.is_open():
             self.choose_deck.render(img)
             return img
-        put_text(img, f"{self.deck_database.decks[self.deck_database.current_index].name}", (277, 191), font_scale=0.5)
+        put_text(img, f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (self.DECK_TEXT_X, self.DECK_TEXT_Y), font_scale=0.5)
         # This popup does not completely block the background therefore backside and tag fields are rendered too
         if self.front_and_backside_popup.is_open():
             self.front_and_backside_popup.render(img)
             if self.back_side_clipboard_temporary_string is not None:
-                put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 422), font_scale=0.5)
+                put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y), font_scale=0.5)
             if self.tag_clipboard_temporary_string is not None:
-                put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 507), font_scale=0.5)
+                put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y), font_scale=0.5)
             return img
         # Put the current strings on text fields
         if self.front_side_clipboard_temporary_string is not None:
-            put_text(img, f"{self.front_side_clipboard_temporary_string}", (197, 310), font_scale=0.5)
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (self.FRONT_TEXT_X, self.FRONT_TEXT_Y), font_scale=0.5)
         if self.back_side_clipboard_temporary_string is not None:
-            put_text(img, f"{self.back_side_clipboard_temporary_string}", (198, 422), font_scale=0.5)
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y), font_scale=0.5)
         if self.tag_clipboard_temporary_string is not None:
-            put_text(img, f"{self.tag_clipboard_temporary_string}", (198, 507), font_scale=0.5)
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y), font_scale=0.5)
         return img

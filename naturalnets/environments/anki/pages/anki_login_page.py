@@ -28,6 +28,10 @@ class AnkiLoginPage(Page, RewardElement):
     OK_BB = BoundingBox(312, 459, 82, 23)
     CANCEL_BB = BoundingBox(413, 459, 100, 23)
 
+    USERNAME_X = 376
+    USERNAME_Y = 363
+    PASSWORD_X = 376
+    PASSWORD_Y = 409
     """
        Singleton design pattern to ensure that at most one
        AnkiLoginPage is present
@@ -76,6 +80,10 @@ class AnkiLoginPage(Page, RewardElement):
     """
     def is_strings_not_none(self):
         return self.username_clipboard is not None and self.password_clipboard is not None
+
+    def get_current_account(self):
+        return self.current_anki_account
+
 
     def open(self):
         self.get_state()[0] = 1

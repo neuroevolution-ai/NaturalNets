@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-from naturalnets.environments.anki.constants import FONTS_PATH, IMAGES_PATH
+from naturalnets.environments.anki.constants import FONTS_PATH, IMAGES_PATH, ANKI_COLOR
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
@@ -30,6 +30,9 @@ class EditCardPage(RewardElement, Page):
     BACK_TEXT_BB = BoundingBox(545, 353, 89, 28)
     TAGS_TEXT_BB = BoundingBox(545, 483, 89, 28)
     CLOSE_BB = BoundingBox(534, 556, 99, 29)
+    FRONT_TEXT_PRINT_BB = BoundingBox(225, 203, 300, 40)
+    BACK_TEXT_PRINT_BB = BoundingBox(225, 336, 300, 40)
+    TAGS_TEXT_PRINT_BB = BoundingBox(225, 483, 300, 36)
     """
         Singleton design pattern to ensure that at most one
         EditCardPage is present
@@ -46,7 +49,7 @@ class EditCardPage(RewardElement, Page):
         # Profile database to fetch the currently active profile
         self.profile_database = ProfileDatabase()
         # Deck database to fetch the currently active deck of the current profile
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
         self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.front_text_edit)
         self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.back_text_edit)
@@ -57,7 +60,7 @@ class EditCardPage(RewardElement, Page):
     """
     def handle_click(self, click_position: np.ndarray):
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.front_text_button.is_clicked_by(click_position):
             self.front_text_button.handle_click(click_position)
         elif self.back_text_button.is_clicked_by(click_position):
@@ -82,7 +85,7 @@ class EditCardPage(RewardElement, Page):
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
     def close(self):
         self.register_selected_reward(["window", "close"])
@@ -95,19 +98,19 @@ class EditCardPage(RewardElement, Page):
     Appends " edited" to the front side of the current card 
     """
     def front_text_edit(self):
-        if (not (self.deck_database.decks[self.deck_database.current_index].cards
-        [self.deck_database.decks[self.deck_database.current_index].study_index].is_front_edited())):
-            self.deck_database.decks[self.deck_database.current_index].cards[
-                self.deck_database.decks[self.deck_database.current_index].study_index].edit_front()
+        if (not (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_front_edited())):
+            self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
+                self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_front()
             self.register_selected_reward(["first_field_modified"])
     """
     Appends " edited" to the back side of the current card 
     """
     def back_text_edit(self):
-        if not (self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks
-        [self.deck_database.current_index].study_index].is_back_edited()):
-            self.deck_database.decks[self.deck_database.current_index].cards[
-                self.deck_database.decks[self.deck_database.current_index].study_index].edit_back()
+        if not (self.deck_database.get_decks()[self.deck_database.get_current_index()].cards[self.deck_database.get_decks()
+        [self.deck_database.get_current_index()].get_study_index()].is_back_edited()):
+            self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
+                self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_back()
             self.register_selected_reward(["second_field_modified"])
     """
     Appends " edited" to the tags of the current card 
@@ -120,7 +123,7 @@ class EditCardPage(RewardElement, Page):
         pil_image = Image.fromarray(image)
         for x in range(pil_image.width):
             for y in range(pil_image.height):
-                pil_image.putpixel((x, y), (240, 240, 240))
+                pil_image.putpixel((x, y), ANKI_COLOR)
         draw = ImageDraw.Draw(pil_image)
         font = ImageFont.truetype(FONTS_PATH, font_size)
         draw.text((5, 5), text, fill="black", font=font)
@@ -130,10 +133,10 @@ class EditCardPage(RewardElement, Page):
         return img
     
     def tags_text_edit(self):
-        if not (self.deck_database.decks[self.deck_database.current_index].cards
-        [self.deck_database.decks[self.deck_database.current_index].study_index].is_tag_edited()):
-            self.deck_database.decks[self.deck_database.current_index].cards[
-                self.deck_database.decks[self.deck_database.current_index].study_index].edit_tag()
+        if not (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_tag_edited()):
+            self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
+                self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_tag()
             self.register_selected_reward(["tags_field_modified"])
 
     """
@@ -141,27 +144,27 @@ class EditCardPage(RewardElement, Page):
     """
     def render(self, image: np.ndarray):
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         image = render_onto_bb(image, self.get_bb(), to_render)
-        if (self.deck_database.decks[self.deck_database.current_index].cards
-        [self.deck_database.decks[self.deck_database.current_index].study_index].front is not None):
-            self.print_non_ascii(img=image,
-                            text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].front}",
-                            bounding_box=BoundingBox(225, 203, 300, 40), font_size=25,
+        if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].front is not None):
+            EditCardPage.print_non_ascii(img=image,
+                            text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front()}",
+                            bounding_box=self.FRONT_TEXT_PRINT_BB, font_size=25,
                             dimension=(40, 300, 3))
-        if self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks
-        [self.deck_database.current_index]
-                .study_index].back is not None:
-            self.print_non_ascii(img=image,
-                            text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].back}",
-                            bounding_box=BoundingBox(225, 336, 300, 40), font_size=25,
+        if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()
+        [self.deck_database.get_current_index()]
+                .get_study_index()].get_back() is not None:
+            EditCardPage.print_non_ascii(img=image,
+                            text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back()}",
+                            bounding_box=self.BACK_TEXT_PRINT_BB, font_size=25,
                             dimension=(40, 300, 3))
-        if (self.deck_database.decks[self.deck_database.current_index].cards
-        [self.deck_database.decks[self.deck_database.current_index].study_index].tag is not None):
-            self.print_non_ascii(img=image,
-                            text=f"{self.deck_database.decks[self.deck_database.current_index].cards[self.deck_database.decks[self.deck_database.current_index].study_index].tag}",
-                            bounding_box=BoundingBox(225, 483, 300, 36), font_size=25,
+        if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag() is not None):
+            EditCardPage.print_non_ascii(img=image,
+                            text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag()}",
+                            bounding_box=self.TAGS_TEXT_PRINT_BB, font_size=25,
                             dimension=(36, 300, 3))
         return image
 

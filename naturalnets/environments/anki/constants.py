@@ -5,7 +5,7 @@ IMAGES_PATH: str = os.path.abspath("naturalnets/environments/anki/img")
 PREDEFINED_DECKS_PATH: str = os.path.abspath("naturalnets/environments/anki/decks/predefined_decks")
 EXPORTED_DECKS_PATH: str = os.path.abspath("naturalnets/environments/anki/decks/exported_decks")
 FONTS_PATH: str = os.path.abspath("naturalnets/environments/anki/font/arial.ttf")
-
+ANKI_COLOR = (240,240,240)
 """
 Possible profile names
 """
@@ -23,22 +23,21 @@ Possible deck names
 
 
 class DeckNames(Enum):
-    DECK_NAME_1 = "Deck Name 1"
-    DECK_NAME_2 = "Deck Name 2"
-    DECK_NAME_3 = "Deck Name 3"
-    DECK_NAME_4 = "Deck Name 4"
-    DECK_NAME_5 = "Deck Name 5"
+    DECK_NAME_1 = "Deck_Name_1"
+    DECK_NAME_2 = "Deck_Name_2"
+    DECK_NAME_3 = "Deck_Name_3"
+    DECK_NAME_4 = "Deck_Name_4"
+    DECK_NAME_5 = "Deck_Name_5"
 
 
 """
 Possible decks that can be imported
 """
 
-
 class DeckImportName(Enum):
-    DUTCH_NUMBERS = "Dutch numbers 0-100"
-    ITALIAN_NUMBERS = "Italian numbers 0-100"
-    GERMAN_NUMBERS = "German numbers 0-100"
+    DUTCH_NUMBERS = "Dutch_numbers_0-100"
+    ITALIAN_NUMBERS = "Italian_numbers_0-100"
+    GERMAN_NUMBERS = "German_numbers_0-100"
 
 
 """

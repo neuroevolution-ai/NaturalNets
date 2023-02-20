@@ -43,7 +43,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
         # Profile database is necessary to fetch the currently active profile
         self.profile_database = ProfileDatabase()
         # Deck database is necessary to fetch the decks of a profile
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         self.yes_button = Button(self.YES_BB, self.remove_deck)
         self.no_button = Button(self.NO_BB, self.close)
     """
@@ -60,7 +60,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the current deck database.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].deck_database
         if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):
@@ -80,7 +80,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     Remove the selected deck from the deck database. Is called when yes button is clicked
     """
     def remove_deck(self):
-        self.deck_database.delete_deck(self.deck_database.decks[self.deck_database.current_index].name)
+        self.deck_database.delete_deck(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name())
         self.close()
         self.register_selected_reward(["delete_deck"])
     """
@@ -88,7 +88,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     """
     def render(self, img: np.ndarray):
         # Updates the current deck database.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img

@@ -37,7 +37,14 @@ class ProfilePage(Page, RewardElement):
     OPEN_BACKUP_BB = BoundingBox(522, 531, 117, 25)
     DOWNGRADE_QUIT_BB = BoundingBox(522, 577, 115, 25)
     PROFILES_BB = BoundingBox(143, 166, 403, 150)
-
+    ITEM_WIDTH = 403
+    ITEM_HEIGTH = 30
+    TABLE_X = 143
+    TABLE_Y = 166
+    CURRENT_PROFILE_X = 507
+    CURRENT_PROFILE_Y = 376
+    PROFILE_TEXT_X = 152
+    PROFILE_TEXT_Y = 189
     """
        Singleton design pattern to ensure that at most one
        ProfilePage is present
@@ -75,8 +82,8 @@ class ProfilePage(Page, RewardElement):
         self.open_button = Button(self.OPEN_BB, self.close)
 
         # Index of the currently selected profile
-        self.profile_database.current_index = 0
-        self.current_profile: Profile = self.profile_database.profiles[self.profile_database.current_index]
+        self.profile_database.set_current_index(0)
+        self.current_profile: Profile = self.profile_database.profiles[self.profile_database.get_current_index()]
 
         self.set_reward_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
                                   self.reset_collection_popup_page, self.downgrade_popup_page,
@@ -91,6 +98,9 @@ class ProfilePage(Page, RewardElement):
             "selected_profile_index": [0, 1, 2, 3, 4]
         }
 
+    def get_current_profile(self):
+        return self.current_profile
+
     """
     Changes the current index regarding the selected profile if the click_point lies within 
     current_bounding_box.
@@ -98,12 +108,12 @@ class ProfilePage(Page, RewardElement):
     def change_current_profile_index(self, click_point: np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - 166) / 30)
+            click_index: int = floor((click_point[1] - self.TABLE_Y) / self.ITEM_HEIGTH)
             if click_index >= self.profile_database.profiles_length():
                 return
-            self.get_state()[self.profile_database.current_index + 1] = 0
-            self.profile_database.current_index = click_index
-            self.current_profile = self.profile_database.profiles[self.profile_database.current_index]
+            self.get_state()[self.profile_database.get_current_index() + 1] = 0
+            self.profile_database.set_current_index(click_index)
+            self.current_profile = self.profile_database.get_profiles()[self.profile_database.get_current_index()]
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["selected_profile_index", click_index])
 
@@ -111,9 +121,9 @@ class ProfilePage(Page, RewardElement):
     Calculate the bounding box regarding number of the profiles.
     """
     def calculate_current_bounding_box(self):
-        upper_left_point = (143, 166)
-        length = 30 * self.profile_database.profiles_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 403, length)
+        upper_left_point = (self.TABLE_X, self.TABLE_Y)
+        length = self.ITEM_HEIGTH * self.profile_database.profiles_length()
+        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
         return current_bounding_box
 
     """
@@ -151,13 +161,13 @@ class ProfilePage(Page, RewardElement):
     """
     def render(self, img: np.ndarray):
         # Updates the deck database
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, f"Current profile: {self.profile_database.profiles[self.profile_database.current_index].name}",
-                 (507, 376), font_scale=0.4)
-        for i, profile in enumerate(self.profile_database.profiles):
-            put_text(img, f"{profile.name}", (152, 189 + i * 30), font_scale=0.5)
+        put_text(img, f"Current profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
+                 (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.4)
+        for i, profile in enumerate(self.profile_database.get_profiles()):
+            put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGTH), font_scale=0.5)
         if self.add_profile_popup_page.is_open():
             img = self.add_profile_popup_page.render(img)
         elif self.rename_profile_page.is_open():
@@ -177,7 +187,7 @@ class ProfilePage(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.add_profile_popup_page.is_open():
             self.add_profile_popup_page.handle_click(click_position)
             return
@@ -456,7 +466,8 @@ class RenameProfilePopup(RewardElement, Page):
     OK_BB = BoundingBox(451, 381, 82, 24)
     TEXT_BB = BoundingBox(566, 345, 86, 20)
     CANCEL_BB = BoundingBox(549, 381, 101, 24)
-
+    TEXT_X = 191
+    TEXT_Y = 359
     """
         Singleton design pattern to ensure that at most one
         RenameProfilePopup is present
@@ -554,7 +565,7 @@ class RenameProfilePopup(RewardElement, Page):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_field_string is None else self.current_field_string, (191, 359),
+        put_text(img, "" if self.current_field_string is None else self.current_field_string, (self.TEXT_X, self.TEXT_Y),
                  font_scale=0.5)
         return img
 
@@ -573,6 +584,8 @@ class AddProfilePopup(Page, RewardElement):
     OK_BB = BoundingBox(451, 381, 82, 24)
     TEXT_BB = BoundingBox(566, 345, 86, 20)
     CANCEL_BB = BoundingBox(549, 381, 101, 24)
+    TEXT_X = 191
+    TEXT_Y = 359
 
     """
         Singleton design pattern to ensure that at most one
@@ -654,7 +667,7 @@ class AddProfilePopup(Page, RewardElement):
     def set_current_field_string(self):
         self.get_state()[1] = 1
         self.register_selected_reward(["profile_name_clipboard"])
-        self.current_field_string = self.secure_random.choice(self.profile_database.profile_names)
+        self.current_field_string = self.secure_random.choice(self.profile_database.get_profile_names())
 
     """
     Adds the profile if the current_field_string is set and the max number of decks is not exceeded
@@ -678,7 +691,7 @@ class AddProfilePopup(Page, RewardElement):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_field_string is None else self.current_field_string, (191, 359),
+        put_text(img, "" if self.current_field_string is None else self.current_field_string, (self.TEXT_X, self.TEXT_Y),
                  font_scale=0.5)
         if self.five_profiles_popup.is_open():
             img = self.five_profiles_popup.render(img)
@@ -702,7 +715,6 @@ class AtLeastOneProfilePopup(Page, RewardElement):
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "at_least_one_profile_popup.png")
     WINDOW_BB = BoundingBox(200, 250, 318, 121)
-
     OK_BB = BoundingBox(427, 339, 81, 23)
 
     """

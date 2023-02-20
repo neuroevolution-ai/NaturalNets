@@ -33,8 +33,16 @@ class ChooseDeckStudyPage(Page, RewardElement):
     ADD_BB = BoundingBox(287, 483, 107, 27)
     CANCEL_BB = BoundingBox(405, 483, 107, 27)
     HELP_BB = BoundingBox(519, 483, 107, 27)
-
     DECK_BB = BoundingBox(194, 210, 410, 150)
+    
+    CLICK_X = 194
+    CLICK_Y = 210
+    CURRENT_DECK_X = 210
+    CURRENT_DECK_Y = 204
+    ITEM_WIDTH = 407
+    ITEM_LENGTH = 30
+    TEXT_X = 200
+    TEXT_Y = 231
     """
         Singleton design pattern to ensure that at most one
         ChooseDeckStudyPage is present
@@ -60,7 +68,7 @@ class ChooseDeckStudyPage(Page, RewardElement):
         self.current_index: int = 0
 
         self.profile_database = ProfileDatabase()
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
         """
         Study button is implemented in the main page because implementing study function causes circular import
@@ -85,9 +93,12 @@ class ChooseDeckStudyPage(Page, RewardElement):
             "study": 0
         }
 
+    def get_current_index(self):
+        return self.current_index
+
     def open(self):
         self.current_index = 0
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -116,7 +127,7 @@ class ChooseDeckStudyPage(Page, RewardElement):
     def change_current_deck_index(self, click_point: np.ndarray):
         current_bounding_box = self.calculate_current_bounding_box()
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - 210) / 30)
+            click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_LENGTH)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[self.current_index + 1] = 0
@@ -129,9 +140,9 @@ class ChooseDeckStudyPage(Page, RewardElement):
     current decks.
     """
     def calculate_current_bounding_box(self):
-        upper_left_point = (194, 210)
-        length = 29 * self.deck_database.decks_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], 407, length)
+        upper_left_point = (self.CLICK_X, self.CLICK_Y)
+        length = self.ITEM_LENGTH * self.deck_database.decks_length()
+        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
         return current_bounding_box
 
     """
@@ -145,20 +156,20 @@ class ChooseDeckStudyPage(Page, RewardElement):
     """
     def render(self, img: np.ndarray):
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, f"{self.deck_database.decks[self.current_index].name}", (181, 194), font_scale=0.5)
+        put_text(img, f"{self.deck_database.get_decks()[self.current_index].get_name()}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.render(img)
         elif self.add_deck_popup.is_open():
             self.add_deck_popup.render(img)
         # Opened popups do not completely block the background therefore the following if condition is implemented
-        for i, deck in enumerate(self.deck_database.decks):
+        for i, deck in enumerate(self.deck_database.get_decks()):
             if ((self.add_deck_popup.is_open() and i >= 1) or (
                     self.leads_to_external_website_popup.is_open() and i >= 3)):
                 continue
-            put_text(img, f" {deck.name}", (200, 231 + 30 * i), font_scale=0.5)
+            put_text(img, f" {deck.name}", (self.TEXT_X, self.TEXT_Y + self.ITEM_LENGTH * i), font_scale=0.5)
         return img
 
     """
@@ -167,7 +178,7 @@ class ChooseDeckStudyPage(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
             return

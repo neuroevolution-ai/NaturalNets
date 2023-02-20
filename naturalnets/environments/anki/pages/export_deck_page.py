@@ -32,6 +32,10 @@ class ExportDeckPage(Page, RewardElement):
     EXPORT_BB = BoundingBox(346, 443, 113, 29)
     CANCEL_BB = BoundingBox(470, 443, 113, 29)
     RESET_BB = BoundingBox(218, 441, 110, 29)
+    DECK_TEXT_X = 331
+    DECK_TEXT_Y = 265
+    DECK_NUMBER_X = 260
+    DECK_NUMBER_Y = 320
 
     """
     Singleton design pattern to ensure that at most one
@@ -49,7 +53,7 @@ class ExportDeckPage(Page, RewardElement):
         # Current profile to select the deck from
         self.profile_database = ProfileDatabase()
         # Decks of the current profile
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
 
         self.current_deck = None
         # Appears when the export path already has 5 decks
@@ -123,7 +127,7 @@ class ExportDeckPage(Page, RewardElement):
     """
 
     def open(self):
-        self.deck_database = self.profile_database.profiles[self.profile_database.current_index].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         self.initialise_dropdown()
         self.current_deck = None
         self.get_state()[0] = 1
@@ -167,9 +171,9 @@ class ExportDeckPage(Page, RewardElement):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (331, 265), font_scale=0.4)
+        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (self.DECK_TEXT_X, self.DECK_TEXT_Y), font_scale=0.4)
         put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
-                 (260, 320), font_scale=0.5)
+                 (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
         if self.name_exists_popup.is_open():
@@ -183,7 +187,7 @@ class ExportDeckPage(Page, RewardElement):
     """
     def initialise_dropdown(self):
         self.dropdown_items = []
-        for deck in self.deck_database.decks:
+        for deck in self.deck_database.get_decks():
             self.dropdown_items.append(DropdownItem(deck, deck.name))
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
     """
