@@ -9,6 +9,7 @@ import numpy as np
 from typing import Tuple
 
 from PIL import Image, ImageDraw, ImageFont
+from naturalnets.environments.anki.utils import print_non_ascii
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.anki import AddCardPage
@@ -444,14 +445,14 @@ class MainPage(Page, RewardElement):
     """
     def next_card(self):
         self.get_state()[7] = 0
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].get_is_answer_shown = False
+        self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = False
         self.register_selected_reward(["next_card"])
         self.deck_database.get_decks()[self.deck_database.get_current_index()].increment_study_index()
     """
     Specifies if the active deck shows the answer
     """
     def show_answer(self):
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].get_is_answer_shown = True
+        self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = True
         self.get_state()[7] = 1
         self.register_selected_reward(["show_answer"])
     """
@@ -514,21 +515,21 @@ class MainPage(Page, RewardElement):
         book_logo = cv2.imread(os.path.join(IMAGES_PATH, "book_logo.png"))
         if self.is_logo_enabled:
             render_onto_bb(image, self.BOOK_LOGO, book_logo)
-        put_text(image, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].name}", (484, 142),
+        put_text(image, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (484, 142),
                  font_scale=0.5)
         put_text(image,
-                 f"Current card number: {self.deck_database.get_decks()[self.deck_database.get_current_index()].study_index + 1}",
+                 f"Current card number: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index() + 1}",
                  (484, 172), font_scale=0.5)
         put_text(image, f"Number of cards: {self.deck_database.get_decks()[self.deck_database.get_current_index()].deck_length()}",
                  (484, 202), font_scale=0.5)
-        MainPage.print_non_ascii(img=image,
-                        text=f"Question : {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].study_index].get_front()}",
+        print_non_ascii(img=image,
+                        text=f"Question : {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front()}",
                         bounding_box=BoundingBox(42, 232, 600, 100), font_size=35, dimension=(100, 600, 3))
         if self.leads_to_external_website_popup_page.is_open():
             image = self.leads_to_external_website_popup_page.render(image)
         if self.get_state()[7] == 1:
-            MainPage.print_non_ascii(img=image,
-                            text=f"Answer : {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].study_index].get_back()}",
+            print_non_ascii(img=image,
+                            text=f"Answer : {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back()}",
                             bounding_box=BoundingBox(42, 332, 600, 100), font_size=35, dimension=(100, 600, 3))
             next_button = cv2.imread(self.NEXT_BUTTON_PATH)
             render_onto_bb(image, BoundingBox(327, 747, 164, 30), next_button)
@@ -616,20 +617,3 @@ class MainPage(Page, RewardElement):
     def open_reset_collection_popup(self):
         self.get_state()[6] = 0
         self.reset_collection_popup_page.open()
-
-
-    def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_size: int,
-                        dimension: Tuple[int, int, int]):   
-        image = np.zeros(dimension, dtype=np.uint8)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        pil_image = Image.fromarray(image)
-        for x in range(pil_image.width):
-            for y in range(pil_image.height):
-                pil_image.putpixel((x, y), ANKI_COLOR)
-        draw = ImageDraw.Draw(pil_image)
-        font = ImageFont.truetype(FONTS_PATH, font_size)
-        draw.text((5, 5), text, fill="black", font=font)
-        image = np.asarray(pil_image)
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        render_onto_bb(img, bounding_box, image)
-        return img

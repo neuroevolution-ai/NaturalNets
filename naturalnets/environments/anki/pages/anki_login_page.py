@@ -1,5 +1,4 @@
 import os
-import random
 import cv2
 import numpy as np
 from naturalnets.environments.anki import AnkiAccount
@@ -37,10 +36,12 @@ class AnkiLoginPage(Page, RewardElement):
 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        self.secure_random = random.SystemRandom()
         self.failed_login = FailedLoginPopup()
         # Anki Account is composed of a username and a password
         self.current_anki_account = None
+        self.username_iterate_index = 0
+        self.password_iterate_index = 0
+
         self.anki_username_list = ["account_1", "account_2", "account_3", "account_4", "account_5"]
         self.anki_password_list = ["pTgHAa", "L7WwEH", "yfTVwA", "DP7xg7", "zx7FeR"]
 
@@ -96,19 +97,23 @@ class AnkiLoginPage(Page, RewardElement):
         return self.get_state()[0]
 
     """
-    Sets the password string randomly from the username list 
+    Sets the password string from the username list 
     """
     def set_username_clipboard(self):
         self.get_state()[1] = 1
-        self.username_clipboard = self.secure_random.choice(self.anki_username_list)
+        self.username_clipboard = self.anki_username_list[self.username_iterate_index]
+        self.username_iterate_index += 1
+        self.username_iterate_index %= 5
         self.register_selected_reward(["set_username"])
 
     """
-    Sets the password string randomly from the password list 
+    Sets the password string from the password list 
     """
     def set_password_clipboard(self):
         self.get_state()[2] = 1
-        self.password_clipboard = self.secure_random.choice(self.anki_password_list)
+        self.password_clipboard = self.anki_password_list[self.password_iterate_index]
+        self.password_iterate_index += 1
+        self.password_iterate_index %= 5
         self.register_selected_reward(["set_password"])
 
     """

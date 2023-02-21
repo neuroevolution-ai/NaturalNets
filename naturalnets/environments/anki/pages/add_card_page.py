@@ -1,6 +1,4 @@
 import os
-import random
-import string
 import cv2
 import numpy as np
 from naturalnets.environments.anki import ChooseDeckPage
@@ -61,6 +59,10 @@ class AddCardPage(Page, RewardElement):
         self.choose_deck = ChooseDeckPage()
         # Warning popup that front- and backside strings must be present at the same time to be able to add a new card.
         self.front_and_backside_popup = FrontAndBacksidePopup()
+        
+        self.front_side_counter = 0
+        self.back_side_counter = 0
+        self.tag_counter = 0
 
         self.add_child(self.choose_deck)
         self.add_child(self.front_and_backside_popup)
@@ -133,7 +135,8 @@ class AddCardPage(Page, RewardElement):
     """
     def set_front_side_clipboard(self):
         self.register_selected_reward(["front_side_clipboard"])
-        self.front_side_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+        self.front_side_clipboard_temporary_string = f"Some front side text {self.front_side_counter}"
+        self.front_side_counter += 1
         self.get_state()[1] = 1
 
     """
@@ -141,7 +144,8 @@ class AddCardPage(Page, RewardElement):
     """
     def set_back_side_clipboard(self):
         self.register_selected_reward(["back_side_clipboard"])
-        self.back_side_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+        self.back_side_clipboard_temporary_string = f"Some back side text {self.back_side_counter}"
+        self.back_side_counter += 1
         self.get_state()[2] = 1
 
     """
@@ -149,7 +153,8 @@ class AddCardPage(Page, RewardElement):
     """
     def set_tag_clipboard(self):
         self.register_selected_reward(["tag_clipboard"])
-        self.tag_clipboard_temporary_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+        self.tag_clipboard_temporary_string = f"Some tag text {self.tag_counter}"
+        self.tag_counter += 1 
         self.get_state()[3] = 1
     """
     Check if the front- and the back side of the card is set

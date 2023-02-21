@@ -8,10 +8,10 @@ from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.anki.utils import print_non_ascii
 import cv2
 import numpy as np
-from typing import Tuple
-from PIL import Image, ImageDraw, ImageFont
+
 
 class EditCardPage(RewardElement, Page):
     """
@@ -99,8 +99,8 @@ class EditCardPage(RewardElement, Page):
     Appends " edited" to the back side of the current card 
     """
     def back_text_edit(self):
-        if not (self.deck_database.get_decks()[self.deck_database.get_current_index()].cards[self.deck_database.get_decks()
-        [self.deck_database.get_current_index()].get_study_index()].is_back_edited):
+        if not (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_back_edited()):
             self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
                 self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_back()
             self.register_selected_reward(["second_field_modified"])
@@ -124,21 +124,20 @@ class EditCardPage(RewardElement, Page):
         to_render = cv2.imread(self._img_path)
         image = render_onto_bb(image, self.get_bb(), to_render)
         if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
-        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].front is not None):
-            EditCardPage.print_non_ascii(img=image,
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front() is not None):
+            print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front()}",
                             bounding_box=self.FRONT_TEXT_PRINT_BB, font_size=25,
                             dimension=(40, 300, 3))
-        if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()
-        [self.deck_database.get_current_index()]
-                .get_study_index()].get_back() is not None:
-            EditCardPage.print_non_ascii(img=image,
+        if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back() is not None):
+            print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back()}",
                             bounding_box=self.BACK_TEXT_PRINT_BB, font_size=25,
                             dimension=(40, 300, 3))
         if (self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()
-        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index].get_tag() is not None):
-            EditCardPage.print_non_ascii(img=image,
+        [self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag() is not None):
+            print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag()}",
                             bounding_box=self.TAGS_TEXT_PRINT_BB, font_size=25,
                             dimension=(36, 300, 3))

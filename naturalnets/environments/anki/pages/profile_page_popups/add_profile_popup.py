@@ -1,5 +1,4 @@
 import os
-import random
 import cv2
 
 import numpy as np
@@ -40,8 +39,8 @@ class AddProfilePopup(Page, RewardElement):
         self.profile_database = ProfileDatabase()
         self.add_child(self.name_exists_popup)
         self.add_child(self.five_profiles_popup)
-        # Randomizer for selecting a random name
-        self.secure_random = random.SystemRandom()
+        self.profile_iterate_index = 0
+
         self.current_field_string = None
 
         self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string)
@@ -97,13 +96,14 @@ class AddProfilePopup(Page, RewardElement):
         self.register_selected_reward(["window", "open"])
 
     """
-    Set the current string by randomly selecting a name from the predefined set of names
+    Set the current string by selecting a name from the predefined set of names
     """
     def set_current_field_string(self):
         self.get_state()[1] = 1
         self.register_selected_reward(["profile_name_clipboard"])
-        self.current_field_string = self.secure_random.choice(self.profile_database.get_profile_names())
-
+        self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.profile_iterate_index += 1
+        self.profile_iterate_index %= 5
     """
     Adds the profile if the current_field_string is set and the max number of decks is not exceeded
     and the name of the profile is not present

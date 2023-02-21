@@ -1,5 +1,4 @@
 import os
-import random
 import cv2
 import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
@@ -17,7 +16,7 @@ class AddDeckPopup(Page, RewardElement):
     """
     This popup is used to create a new deck.
     Deck names are "Deck Name i" i = {1,..,5}
-    Text button assigns a random name
+    Text button assigns a name
     Cancel button closes the window and resets the current name string
     OK button adds the deck iff a name is provided by clicking the text button
     and less than 5 profiles are present and the name does not exist
@@ -52,7 +51,7 @@ class AddDeckPopup(Page, RewardElement):
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
 
-        self.secure_random = random.SystemRandom()
+        self.deck_iterate_index = 0
         #  temporarily set string
         self.current_field_string = None
 
@@ -86,11 +85,13 @@ class AddDeckPopup(Page, RewardElement):
         self.get_state()[0] = 1
 
     """
-    Set a random deck name
+    Set a deck name
     """
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
-        self.current_field_string = self.secure_random.choice(self.deck_database.get_deck_names())
+        self.current_field_string = self.deck_database.get_deck_names()[self.deck_iterate_index]
+        self.deck_iterate_index += 1
+        self.deck_iterate_index %= 5
 
     def is_open(self):
         return self.get_state()[0]

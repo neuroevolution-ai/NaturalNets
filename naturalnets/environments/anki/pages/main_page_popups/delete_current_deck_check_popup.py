@@ -51,7 +51,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the current deck database.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].deck_database
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):

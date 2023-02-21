@@ -1,6 +1,4 @@
 from math import floor
-import random
-import string
 import cv2
 import numpy as np
 import os
@@ -10,7 +8,6 @@ from naturalnets.environments.anki.pages.profile_page_popups.rename_profile_popu
 from naturalnets.environments.anki.pages.profile_page_popups.downgrade_popup import DowngradePopup
 from naturalnets.environments.anki.pages.profile_page_popups.at_least_one_profile_popup import AtLeastOneProfilePopup
 from naturalnets.environments.anki.pages.reset_collection_popup import ResetCollectionPopup
-from naturalnets.environments.anki.profile import Profile
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -84,7 +81,7 @@ class ProfilePage(Page, RewardElement):
         self.delete_button = Button(self.DELETE_BB, self.handle_delete)
         self.rename_button = Button(self.RENAME_BB, self.rename_profile_page.open)
         self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open)
-        self.open_button = Button(self.OPEN_BB, self.open_profile)
+        self.open_button = Button(self.OPEN_BB, self.close)
 
         # Index of the currently selected profile
         self.profile_database.set_current_index(0)
@@ -116,8 +113,8 @@ class ProfilePage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.TABLE_Y) / self.ITEM_HEIGTH)
             if click_index >= self.profile_database.profiles_length():
                 return
-            self.get_state()[self.profile_database.get_current_index() + 1] = 0
             self.current_index = click_index
+            self.open_profile()
 
     """
     Calculate the bounding box regarding number of the profiles.
@@ -170,7 +167,7 @@ class ProfilePage(Page, RewardElement):
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, f"Current profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
+        put_text(img, f"Selected profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                  (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.4)
         for i, profile in enumerate(self.profile_database.get_profiles()):
             put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGTH), font_scale=0.5)
@@ -199,13 +196,12 @@ class ProfilePage(Page, RewardElement):
     
     def open_profile(self):
         self.profile_database.set_current_index(self.current_index)
-        self.get_state()[1:7] = 0
+        self.get_state()[1:6] = 0
         self.get_state()[self.current_index + 1] = 1
         self.register_selected_reward(["selected_profile_index", self.current_index])
-        self.close()
     
     def reset_index(self):
         self.current_index = 0
         self.get_state()[1] = 1
-        self.get_state()[2:7] = 0
+        self.get_state()[2:6] = 0
         

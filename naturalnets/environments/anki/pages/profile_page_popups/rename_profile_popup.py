@@ -1,6 +1,4 @@
 import os
-import random
-import string
 import cv2
 
 import numpy as np
@@ -39,8 +37,7 @@ class RenameProfilePopup(RewardElement, Page):
         self.profile_database = ProfileDatabase()
         self.name_exists_popup_page = NameExistsPopup()
 
-        # Randomizer to provide a random string
-        self.secure_random = random.SystemRandom()
+        self.profile_iterate_index = 0
         # Currently set string
         self.current_field_string = None
 
@@ -66,7 +63,10 @@ class RenameProfilePopup(RewardElement, Page):
     Execute click action if a button is clicked
     """
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.text_button.is_clicked_by(click_position):
+        if self.name_exists_popup_page.is_open():
+            self.name_exists_popup_page.handle_click(click_position)
+            return
+        elif self.text_button.is_clicked_by(click_position):
             self.text_button.handle_click(click_position)
         elif self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
@@ -92,10 +92,12 @@ class RenameProfilePopup(RewardElement, Page):
         self.register_selected_reward(["window", "open"])
 
     """
-    Sets a random string of lowercase ascii characters of length 10
+    Sets a profile name
     """
     def set_current_field_string(self):
-        self.current_field_string = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
+        self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.profile_iterate_index += 1
+        self.profile_iterate_index %= 5
         self.register_selected_reward(["profile_name_clipboard"])
 
     """
@@ -123,6 +125,8 @@ class RenameProfilePopup(RewardElement, Page):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
+        if self.name_exists_popup_page.is_open():
+            img = self.name_exists_popup_page.render(img)
         put_text(img, "" if self.current_field_string is None else self.current_field_string, (self.TEXT_X, self.TEXT_Y),
                  font_scale=0.5)
         return img
