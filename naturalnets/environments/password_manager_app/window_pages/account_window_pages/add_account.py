@@ -19,7 +19,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class AddAccount(Page, RewardElement):
     """todo"""
 
-    STATE_LEN = 2
+    STATE_LEN = 14
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_password_hide.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
@@ -137,21 +137,11 @@ class AddAccount(Page, RewardElement):
             AccountManager.addAccount(Account(account_name, account_user_id, account_password, 
                                             account_url, account_notes))
 
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
+        self.reset()
         self.return_to_main_window()
 
     def cancel(self):
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
+        self.reset()
         self.return_to_main_window()
 
     def copy(self, dropdownToCopy: Dropdown):
@@ -201,7 +191,13 @@ class AddAccount(Page, RewardElement):
             self.checkbox.handle_click(click_position)
     
     def reset(self):
-        pass
+        for dropdown in self.dropdowns:
+            dropdown.set_selected_item(None)
+            dropdown.close()
+
+        self.opened_dd = None
+        self.checkbox.set_selected(1)
+        self.set_hide_password(True)
 
     def return_to_main_window(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController

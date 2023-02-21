@@ -29,13 +29,49 @@ class Account(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.OPEN_DATABASE_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.Change_MASTER_PASSWORD_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.add_account()),
+            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.edit_account()),
+            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.delete_account()),
+            Button(self.VIEW_ACCOUNT_BUTTON_BB, lambda: self.view_account()),
+            Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.copy_username()),
+            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy_password()),
         ]
 
     def return_to_main_window(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
+        AppController.main_window.set_current_page(None)
+
+    def add_account(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.function_add_account()
+
+    def delete_account(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.delete_account()
+
+    def edit_account(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.function_edit_account()
+
+    def view_account(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.function_view_account()
+
+    def copy_username(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.copy_username()
+        AppController.main_window.set_current_page(None)
+
+    def copy_password(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.copy_password()
         AppController.main_window.set_current_page(None)
 
     def handle_click(self, click_position: np.ndarray = None):

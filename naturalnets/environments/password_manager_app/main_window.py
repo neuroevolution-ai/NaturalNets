@@ -21,6 +21,7 @@ from naturalnets.environments.password_manager_app.window_pages.function_bar_win
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.database import Database
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.help import Help
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.about import About
+from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.file_system import FileSystem
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.invalid_url import InvalidURL
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import MasterPassword
 from naturalnets.environments.password_manager_app.window_pages.options import Options
@@ -35,7 +36,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     """
 
     # Each state represents the number of accounts that exists (with a max. of 3)
-    STATE_LEN = 11
+    STATE_LEN = 12
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
     # 1. Each state represents which specific accounts exists with a max. of 8 different states 
@@ -81,13 +82,15 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.about = About()
         self.invalid_url = InvalidURL()
         self.master_password = MasterPassword()
+        self.file_system = FileSystem()
 
         self.pages: List[Page] = [self.add_account, self.edit_account,
                                   self.options, self.database,
                                   self.account, self.help,
                                   self.view_account, self.about,
                                   self.invalid_url, self.master_password,
-                                  self.confirm_delete_account]
+                                  self.confirm_delete_account,
+                                  self.file_system]
         # assert len(self.pages) == self.get_state_len()
 
         self.buttons = [
@@ -112,13 +115,13 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                 self.account, self.help,
                                 self.view_account, self.about,
                                 self.invalid_url, self.master_password, 
-                                self.confirm_delete_account])
+                                self.confirm_delete_account, self.file_system])
         self.set_reward_children([self.add_account, self.edit_account,
                                 self.options, self.database,
                                 self.account, self.help,
                                 self.view_account, self.about,
                                 self.invalid_url, self.master_password,
-                                self.confirm_delete_account])
+                                self.confirm_delete_account, self.file_system])
 
         self.pages_to_str = {
             None: "None",
@@ -132,13 +135,14 @@ class MainWindow(StateElement, Clickable, RewardElement):
             self.about: "about",
             self.invalid_url: "invalid_url",
             self.master_password: "master_password",
-            self.confirm_delete_account: "confirm_delete_account"
+            self.confirm_delete_account: "confirm_delete_account",
+            self.file_system: "file_system"
         }
 
     @property
     def reward_template(self):
         return {
-            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "invalid_url", "master_password", "confirm_delete_account", "database","None"]
+            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "invalid_url", "master_password", "confirm_delete_account", "database", "None", "file_system"]
         }
 
     def reset(self):

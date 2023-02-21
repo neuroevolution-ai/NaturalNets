@@ -19,7 +19,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class ViewAccount(Page, RewardElement):
     """todo"""
 
-    STATE_LEN = 2
+    STATE_LEN = 7
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
@@ -71,7 +71,7 @@ class ViewAccount(Page, RewardElement):
                                                    self.password_two,
                                                    self.password_three])
         
-        self.current_password = self.random_password()
+        self.current_password = self.empty
         self.is_checked = True
 
         self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one,
@@ -89,7 +89,6 @@ class ViewAccount(Page, RewardElement):
                           self.dropdown_notes]
         
         self.add_widgets(self.dropdowns)
-        self.opened_dd = None
 
         for dropdown in self.dropdowns:
             dropdown.set_clickable(False)
@@ -117,36 +116,11 @@ class ViewAccount(Page, RewardElement):
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
             self.dropdown_password.set_selected_item(None)
         else:
-            self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_not_hide.png")
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_not_hide.png")
             self.dropdown_password.set_selected_item(self.current_password)
     
     def ok(self):
-        
-        account_name = self.dropdown_account.get_current_value()
-        if account_name is not None:
-            account_user_id = self.dropdown_user_id.get_current_value()  
-            account_password = self.current_password
-            account_url = self.dropdown_url.get_current_value()
-            account_notes = self.dropdown_notes.get_current_value()
-
-            AccountManager.editAccount(Account(account_name, account_user_id, account_password, 
-                                            account_url, account_notes), self.account_to_edit)
-
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
-        self.return_to_main_window()
-
-    def cancel(self):
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
+        self.reset()
         self.return_to_main_window()
 
     def copy(self, dropdownToCopy: Dropdown):
@@ -154,14 +128,6 @@ class ViewAccount(Page, RewardElement):
 
     def past(self, dropdownToPast: Dropdown):
         dropdownToPast.set_selected_value(Cache.getCache())
-
-    def generate(self):
-        self.current_password = self.random_password()
-        if not self.is_checked:
-            self.dropdown_password.set_selected_item(self.current_password)
-
-    def random_password(self):
-        return random.choice(self.dropdown_password.get_all_items())
 
     def launch_url(self):
         pass
@@ -183,34 +149,21 @@ class ViewAccount(Page, RewardElement):
                 self.current_password = password
 
     def handle_click(self, click_position: np.ndarray = None):
-        # Handle the case of an opened dropdown first
-        if self.opened_dd is not None:
-            self.opened_dd.handle_click(click_position)
-            if self.opened_dd == self.dropdown_password:
-                self.current_password = self.dropdown_password.get_selected_item()
-                if self.is_checked:
-                    self.dropdown_password.set_selected_item(None)
-            self.opened_dd = None
-            return
-
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 # check if figure printer button is visible
                 button.handle_click(click_position)
 
-        for dropdown in self.dropdowns:
-            if dropdown.is_clicked_by(click_position):
-                dropdown.handle_click(click_position)
-
-                if dropdown.is_open():
-                    self.opened_dd = dropdown
-                return
-
         if self.checkbox.is_clicked_by(click_position):
             self.checkbox.handle_click(click_position)
     
     def reset(self):
-        pass
+        for dropdown in self.dropdowns:
+            dropdown.set_selected_item(None)
+            dropdown.close()
+
+        self.checkbox.set_selected(1)
+        self.set_hide_password(True)
 
     def return_to_main_window(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController

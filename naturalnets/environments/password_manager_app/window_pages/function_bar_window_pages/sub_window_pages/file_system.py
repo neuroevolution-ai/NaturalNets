@@ -8,23 +8,23 @@ from naturalnets.environments.password_manager_app.reward_element import RewardE
 from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
-class About(Page, RewardElement):
+class FileSystem(Page, RewardElement):
 
     STATE_LEN = 2
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/about.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.PNG")
 
-    BOUNDING_BOX = BoundingBox(71, 111, 305, 198)
+    BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 
-    OK_BUTTON_BB = BoundingBox(201, 276, 45, 21)
-    CLOSE_BUTTON_BB = BoundingBox(346, 112, 30, 30)
+    SAVE_BUTTON_BB = BoundingBox(343, 388, 93, 66)
+    ABORT_BUTTON_BB = BoundingBox(0, 0, 1, 1)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.CLOSE_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.SAVE_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.SAVE_BUTTON_BB, lambda: self.return_to_main_window()),
         ]
     
     def return_to_main_window(self):

@@ -142,22 +142,11 @@ class EditAccount(Page, RewardElement):
 
             AccountManager.editAccount(Account(account_name, account_user_id, account_password, 
                                             account_url, account_notes), self.account_to_edit)
-
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
+        self.reset()
         self.return_to_main_window()
 
     def cancel(self):
-        for dropdown in self.dropdowns:
-            dropdown.set_selected_item(None)
-            dropdown.close()
-
-        self.opened_dd = None
-
+        self.reset()
         self.return_to_main_window()
 
     def copy(self, dropdownToCopy: Dropdown):
@@ -221,7 +210,13 @@ class EditAccount(Page, RewardElement):
             self.checkbox.handle_click(click_position)
     
     def reset(self):
-        pass
+        for dropdown in self.dropdowns:
+            dropdown.set_selected_item(None)
+            dropdown.close()
+
+        self.opened_dd = None
+        self.checkbox.set_selected(1)
+        self.set_hide_password(True)
 
     def return_to_main_window(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController

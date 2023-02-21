@@ -10,28 +10,32 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 class Help(Page, RewardElement):
 
-    STATE_LEN = 2
+    STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/help.PNG")
 
     BOUNDING_BOX = BoundingBox(110, 4, 84, 47)
     MENU_AREA_BB = BoundingBox(110, 23, 84, 28)
 
-    OPEN_DATABASE_BUTTON_BB = BoundingBox(0,0,1,1)
-    Change_MASTER_PASSWORD_BUTTON_BB = BoundingBox(0,0,1,1)
+    ABOUT_BUTTON_BB = BoundingBox(112, 25, 80, 22)
+
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
         RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.OPEN_DATABASE_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.Change_MASTER_PASSWORD_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.ABOUT_BUTTON_BB, lambda: self.open_about()),
         ]
 
     def return_to_main_window(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
+
+    def open_about(self):
+        from naturalnets.environments.password_manager_app.app_controller import AppController
+
+        AppController.main_window.set_current_page(AppController.main_window.about)
 
     def handle_click(self, click_position: np.ndarray = None):
         if self.MENU_AREA_BB.is_point_inside(click_position):
