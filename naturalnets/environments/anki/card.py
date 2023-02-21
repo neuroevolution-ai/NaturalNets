@@ -3,10 +3,10 @@ class Card:
     A card is composed of front-, and backside and an optional tag
     """
 
-    def __init__(self, front: str, back: str):
+    def __init__(self, front: str, back: str, tag: str):
         self.front = front
         self.back = back
-        self.tag = None
+        self.tag = tag
     
     def get_front(self):
         return self.front
@@ -33,8 +33,6 @@ class Card:
     Check if the tag includes substring "edited"
     """
     def is_tag_edited(self) -> bool:
-        if self.tag is None:
-            return False
         return "edited" in self.tag
 
     """

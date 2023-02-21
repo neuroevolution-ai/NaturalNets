@@ -10,6 +10,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class DeleteProfilePopup(Page, RewardElement):
     """
     Popup asking if the currently active deck should be deleted.

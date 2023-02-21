@@ -10,6 +10,7 @@ import numpy as np
 from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
 
+
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AnkiAppCfg:
     type: str = field(validator=validators.instance_of(str))
@@ -21,9 +22,10 @@ class AnkiApp(IGUIEnvironment):
     """
     Copied from the gui_app.py and adapted with small changes.
     """
-    
+
     screen_width = 834
     screen_height = 834
+
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the AnkiApp environment")

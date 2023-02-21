@@ -11,6 +11,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class RenameProfilePopup(RewardElement, Page):
     """
     State description:
@@ -127,6 +128,6 @@ class RenameProfilePopup(RewardElement, Page):
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.name_exists_popup_page.is_open():
             img = self.name_exists_popup_page.render(img)
-        put_text(img, "" if self.current_field_string is None else self.current_field_string, (self.TEXT_X, self.TEXT_Y),
-                 font_scale=0.5)
+        put_text(img, "" if self.current_field_string is None else self.current_field_string,
+                 (self.TEXT_X, self.TEXT_Y), font_scale=0.5)
         return img

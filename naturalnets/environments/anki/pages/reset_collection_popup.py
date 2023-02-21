@@ -29,7 +29,6 @@ class ResetCollectionPopup(Page, RewardElement):
 
         # Profile database to set to the default profiles with default decks
         self.profile_database = ProfileDatabase()
-        self.yes_button: Button = Button(self.YES_BUTTON_BB, self.reset_all)
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
     """
@@ -55,9 +54,7 @@ class ResetCollectionPopup(Page, RewardElement):
     Handle click with the buttons
     """
     def handle_click(self, click_position: np.ndarray) -> None:
-        if self.yes_button.is_clicked_by(click_position):
-            self.yes_button.handle_click(click_position)
-        elif self.no_button.is_clicked_by(click_position):
+        if self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)
     """
     Open this popup
@@ -78,15 +75,7 @@ class ResetCollectionPopup(Page, RewardElement):
     """
     def is_open(self) -> int:
         return self.get_state()[0]
-    """
-    Set the application to the default configuration
-    """
-    def reset_all(self):
-        self.profile_database.default_profiles()
-        for profile in self.profile_database.profiles:
-            profile.deck_database.default_decks()
-        self.register_selected_reward(["reset_all"])
-        self.close()
+
     """
     Render this popup
     """

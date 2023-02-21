@@ -9,6 +9,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class FiveProfilesPopup(Page, RewardElement):
     """
     Pops up as warning that 5 profiles are already present

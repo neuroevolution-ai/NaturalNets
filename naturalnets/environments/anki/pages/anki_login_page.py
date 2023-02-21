@@ -10,6 +10,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class AnkiLoginPage(Page, RewardElement):
     """
     State description:
@@ -77,17 +78,16 @@ class AnkiLoginPage(Page, RewardElement):
     def get_current_account(self):
         return self.current_anki_account
 
-
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1:2] = 0
+        self.get_state()[1:3] = 0
         self.username_clipboard = None
         self.password_clipboard = None
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.register_selected_reward(["window", "close"])
-        self.get_state()[0:2] = 0
+        self.get_state()[0:3] = 0
         for child in self.get_children():
             child.close()
         self.username_clipboard = None

@@ -12,6 +12,7 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 
+
 class AddProfilePopup(Page, RewardElement):
     """
     Adds a new profile to the present profiles
@@ -93,6 +94,7 @@ class AddProfilePopup(Page, RewardElement):
     """
     def open(self):
         self.get_state()[0] = 1
+        self.get_state()[1] = 0
         self.register_selected_reward(["window", "open"])
 
     """
@@ -126,8 +128,8 @@ class AddProfilePopup(Page, RewardElement):
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_field_string is None else self.current_field_string, (self.TEXT_X, self.TEXT_Y),
-                 font_scale=0.5)
+        put_text(img, "" if self.current_field_string is None else self.current_field_string,
+                 (self.TEXT_X, self.TEXT_Y), font_scale=0.5)
         if self.five_profiles_popup.is_open():
             img = self.five_profiles_popup.render(img)
         if self.name_exists_popup.is_open():

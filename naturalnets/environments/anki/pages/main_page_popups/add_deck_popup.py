@@ -83,6 +83,7 @@ class AddDeckPopup(Page, RewardElement):
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
+        self.get_state()[1] = 0
 
     """
     Set a deck name

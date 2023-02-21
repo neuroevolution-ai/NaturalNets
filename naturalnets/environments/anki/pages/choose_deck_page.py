@@ -5,11 +5,13 @@ import numpy as np
 from naturalnets.environments.anki.pages.main_page_popups.add_deck_popup import AddDeckPopup
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
+from naturalnets.environments.anki.utils import calculate_current_bounding_box
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
+
 
 class ChooseDeckPage(Page, RewardElement):
     """
@@ -32,7 +34,7 @@ class ChooseDeckPage(Page, RewardElement):
     CLICK_Y = 222
     CURRENT_DECK_X = 210
     CURRENT_DECK_Y = 204
-    ITEM_LENGTH = 30
+    ITEM_HEIGHT = 30
     ITEM_WIDTH = 412
     TEXT_X = 211
     TEXT_Y = 243
@@ -71,7 +73,7 @@ class ChooseDeckPage(Page, RewardElement):
 
     def open(self):
         self.reset_index()
-        self.get_state()[2:7] = 0
+        self.get_state()[2:6] = 0
         self.get_state()[0:2] = 1
         self.register_selected_reward(["window", "open"])
 
@@ -80,7 +82,7 @@ class ChooseDeckPage(Page, RewardElement):
         for child in self.get_children():
             child.close()
         self.reset_index()
-        self.get_state()[2:7] = 0
+        self.get_state()[2:6] = 0
         self.get_state()[1] = 1
         self.get_state()[0] = 0
 
@@ -97,25 +99,17 @@ class ChooseDeckPage(Page, RewardElement):
     """
 
     def change_current_deck_index(self, click_point: np.ndarray):
-        current_bounding_box = self.calculate_current_bounding_box()
+        current_bounding_box = calculate_current_bounding_box(self.CLICK_X, self.CLICK_Y,
+                                                              self.ITEM_HEIGHT, self.ITEM_WIDTH,
+                                                              self.deck_database.decks_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_LENGTH)
+            click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[click_index + 1] = 0
             self.current_index: int = click_index
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
-
-    """
-    Calculate the clickable area of the table depending on the number of
-    current decks.
-    """
-    def calculate_current_bounding_box(self):
-        upper_left_point = (self.CLICK_X, self.CLICK_Y)
-        length = self.ITEM_LENGTH * self.deck_database.decks_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
-        return current_bounding_box
 
     """
     Executed when the user clicks on the choose button. It sets the currently selected deck to the index
@@ -143,11 +137,12 @@ class ChooseDeckPage(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.add_deck_popup.is_open():
             img = self.add_deck_popup.render(img)
-        put_text(img, f" {self.deck_database.get_decks()[self.current_index].get_name()}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        put_text(img, f" {self.deck_database.get_decks()[self.current_index].get_name()}",
+                 (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
         for i, deck in enumerate(self.deck_database.get_decks()):
             if self.add_deck_popup.is_open() and i >= 1:
                 return img
-            put_text(img, f" {deck.name}", (self.TEXT_X, self.TEXT_Y + self.ITEM_LENGTH * i), font_scale=0.5)
+            put_text(img, f" {deck.name}", (self.TEXT_X, self.TEXT_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
         return img
 
     """
@@ -166,5 +161,7 @@ class ChooseDeckPage(Page, RewardElement):
             self.choose_button.handle_click(click_position)
         elif self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
-        elif self.calculate_current_bounding_box().is_point_inside(click_position):
+        elif calculate_current_bounding_box(self.CLICK_X, self.CLICK_Y, self.ITEM_HEIGHT,
+                                            self.ITEM_WIDTH,
+                                            self.deck_database.decks_length()).is_point_inside(click_position):
             self.change_current_deck_index(click_position)

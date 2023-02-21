@@ -4,7 +4,7 @@ from naturalnets.environments.anki.constants import ProfileNames
 from naturalnets.environments.anki.profile import Profile
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.anki.constants import (DeckNames, DeckImportName, AnkiLanguages, VideoDriver, DeckAddType,
-    VoiceRecorder)
+                                                     VoiceRecorder)
 from naturalnets.environments.anki.deck import Deck
 from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.pages.choose_deck_page import ChooseDeckPage
@@ -23,4 +23,3 @@ from naturalnets.environments.anki.pages.profile_page import ProfilePage
 from naturalnets.environments.anki.pages.main_page import MainPage
 from naturalnets.environments.anki.app_controller import AppController
 from naturalnets.environments.anki.anki_app import AnkiAppCfg, AnkiApp
-from naturalnets.environments.anki.test_app_time import calc_state_diff

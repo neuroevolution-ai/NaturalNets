@@ -12,6 +12,7 @@ from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.anki import Card
 
+
 class AddCardPage(Page, RewardElement):
     """
     This page is used to add a card to the current deck.
@@ -118,10 +119,11 @@ class AddCardPage(Page, RewardElement):
     def open(self):
         self.reset_temporary_strings()
         self.get_state()[0] = 1
+        self.get_state()[1:4] = 0
         self.register_selected_reward(["window", "open"])
 
     def close(self):
-        self.get_state()[0] = 0
+        self.get_state()[0:4] = 0
         for child in self.get_children():
             child.close()
         self.reset_temporary_strings()
@@ -180,8 +182,8 @@ class AddCardPage(Page, RewardElement):
     """
     def add_card(self):
         if self.is_card_creatable():
-            card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string)
-            card.tag = self.tag_clipboard_temporary_string
+            card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string,
+                        self.tag_clipboard_temporary_string)
             self.deck_database.get_decks()[self.deck_database.get_current_index()].add_card(card)
             self.register_selected_reward(["add_card"])
             self.reset_temporary_strings()
@@ -210,20 +212,26 @@ class AddCardPage(Page, RewardElement):
         if self.choose_deck.is_open():
             self.choose_deck.render(img)
             return img
-        put_text(img, f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (self.DECK_TEXT_X, self.DECK_TEXT_Y), font_scale=0.5)
+        put_text(img, f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}",
+                 (self.DECK_TEXT_X, self.DECK_TEXT_Y), font_scale=0.5)
         # This popup does not completely block the background therefore backside and tag fields are rendered too
         if self.front_and_backside_popup.is_open():
             self.front_and_backside_popup.render(img)
             if self.back_side_clipboard_temporary_string is not None:
-                put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y), font_scale=0.5)
+                put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y),
+                         font_scale=0.5)
             if self.tag_clipboard_temporary_string is not None:
-                put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y), font_scale=0.5)
+                put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y),
+                         font_scale=0.5)
             return img
         # Put the current strings on text fields
         if self.front_side_clipboard_temporary_string is not None:
-            put_text(img, f"{self.front_side_clipboard_temporary_string}", (self.FRONT_TEXT_X, self.FRONT_TEXT_Y), font_scale=0.5)
+            put_text(img, f"{self.front_side_clipboard_temporary_string}", (self.FRONT_TEXT_X, self.FRONT_TEXT_Y),
+                     font_scale=0.5)
         if self.back_side_clipboard_temporary_string is not None:
-            put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y), font_scale=0.5)
+            put_text(img, f"{self.back_side_clipboard_temporary_string}", (self.BACK_TEXT_X, self.BACK_TEXT_Y),
+                     font_scale=0.5)
         if self.tag_clipboard_temporary_string is not None:
-            put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y), font_scale=0.5)
+            put_text(img, f"{self.tag_clipboard_temporary_string}", (self.TAG_TEXT_X, self.TAG_TEXT_Y),
+                     font_scale=0.5)
         return img

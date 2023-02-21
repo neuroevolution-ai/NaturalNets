@@ -4,14 +4,7 @@ from typing import List
 import cv2
 import numpy as np
 
-import cv2
-import numpy as np
-from typing import Tuple
-
-from PIL import Image, ImageDraw, ImageFont
-from naturalnets.environments.anki.utils import print_non_ascii
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.anki.utils import calculate_current_bounding_box, print_non_ascii
 from naturalnets.environments.anki import AddCardPage
 from naturalnets.environments.anki import AnkiLoginPage
 from naturalnets.environments.anki.pages.main_page_popups.add_deck_popup import AddDeckPopup
@@ -28,7 +21,7 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.anki.constants import FONTS_PATH, IMAGES_PATH, ANKI_COLOR
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.anki import ChooseDeckStudyPage
@@ -85,10 +78,10 @@ class MainPage(Page, RewardElement):
     REMOVE_BB = BoundingBox(570, 750, 116, 24)
 
     BOOK_LOGO = BoundingBox(657, 450, 128, 128)
-    ITEM_WIDTH = 39
-    ITEM_LENGTH = 614
-    UPPER_X = 110
-    UPPER_Y = 243
+    ITEM_WIDTH = 614
+    ITEM_HEIGHT = 39
+    UPPER_X = 112
+    UPPER_Y = 244
     CURRENT_PROFILE_X = 5
     CURRENT_PROFILE_Y = 162
     CURRENT_DECK_X = 236
@@ -211,6 +204,7 @@ class MainPage(Page, RewardElement):
         self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
         # This button is actually part of the choose deck study page but the button and the click action is handled here
         self.study_button_study_deck: Button = Button(self.choose_deck_study_page.STUDY_BB, self.study_deck)
+        self.reset_button: Button = Button(self.profile_page.reset_collection_popup_page.YES_BUTTON_BB, self.reset_all)
 
         self.main_page_widgets = [self.add_card_button, self.sync_button, self.study_button, self.get_shared_button,
                                   self.create_deck_button, self.import_file_button, self.delete_button]
@@ -296,8 +290,13 @@ class MainPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        if (self.profile_page.reset_collection_popup_page.is_open() or self.reset_collection_popup_page.is_open()) and self.reset_button.is_clicked_by(click_position):
+            self.reset_button.handle_click(click_position)
+            return
+
         if self.study_button_study_deck.is_clicked_by(click_position) and self.choose_deck_study_page.is_open():
-                self.study_button_study_deck.handle_click(click_position)
+            self.study_button_study_deck.handle_click(click_position)
+            return
         
         for page in self.pages:
             if page.is_open():
@@ -383,9 +382,9 @@ class MainPage(Page, RewardElement):
     """
     def change_current_deck_index(self, click_point: np.ndarray):
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        current_bounding_box = self.calculate_current_bounding_box()
+        current_bounding_box = calculate_current_bounding_box(self.UPPER_X, self.UPPER_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.deck_database.decks_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.UPPER_Y) / self.ITEM_WIDTH)
+            click_index: int = floor((click_point[1] - self.UPPER_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[self.deck_database.get_current_index() + 1] = 0
@@ -393,15 +392,6 @@ class MainPage(Page, RewardElement):
             self.get_state()[click_index + 1] = 1
             self.register_selected_reward(["decks", click_index])
 
-    """
-    Calculate the clickable area of the table depending on the number of
-    current decks.
-    """
-    def calculate_current_bounding_box(self):
-        upper_left_point = (self.UPPER_X, self.UPPER_Y)
-        length = self.ITEM_WIDTH * self.deck_database.decks_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_LENGTH, length)
-        return current_bounding_box
     """
     Opens the main page
     """
@@ -426,7 +416,7 @@ class MainPage(Page, RewardElement):
     Else no card popup is going to be opened
     """
     def study(self):
-        if len(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()) is 0 :
+        if len(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()) == 0:
             self.no_card_popup_page.open()
         else:
             self.register_selected_reward(["study"])
@@ -493,15 +483,14 @@ class MainPage(Page, RewardElement):
                      f"Current profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                      (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.5)
 
-        put_text(img, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}",
-                     (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        put_text(img, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
 
         if self.anki_login.get_current_account() is not None:
             put_text(img, f"Current account: {self.anki_login.get_current_account().get_account_name()}", (self.CURRENT_ACCOUNT_X, self.CURRENT_ACCOUNT_Y),
                      font_scale=0.5)
 
         for i, deck in enumerate(self.deck_database.get_decks()):
-            put_text(img, deck.name, (self.DECKS_X, self.DECKS_Y + i * self.ITEM_WIDTH), font_scale=0.5)
+            put_text(img, deck.name, (self.DECKS_X, self.DECKS_Y + i * self.ITEM_HEIGHT), font_scale=0.5)
         return img
 
     """
@@ -617,3 +606,14 @@ class MainPage(Page, RewardElement):
     def open_reset_collection_popup(self):
         self.get_state()[6] = 0
         self.reset_collection_popup_page.open()
+
+    def reset_all(self):
+        self.profile_page.reset_index()
+        self.preferences_page.reset()
+        self.opened_dd = None
+        self.is_logo_enabled = False
+        for page in self.pages:
+            page.close()
+        self.profile_database.default_profiles()
+        for profile in self.profile_database.profiles:
+            profile.deck_database.default_decks()

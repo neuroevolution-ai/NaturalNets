@@ -1,8 +1,6 @@
 from typing import List
-
 from naturalnets.environments.anki.card import Card
-from naturalnets.environments.anki.constants import (DeckNames, DeckImportName, PREDEFINED_DECKS_PATH,
-    EXPORTED_DECKS_PATH)
+from naturalnets.environments.anki.constants import DeckNames, DeckImportName, PREDEFINED_DECKS_PATH, EXPORTED_DECKS_PATH
 import os
 
 
@@ -65,6 +63,7 @@ class DeckDatabase:
     """
     This class holds the currently selected decks, up to a maximum of 5
     """
+
     def __init__(self):
 
         # The names which a deck can get
@@ -90,7 +89,6 @@ class DeckDatabase:
 
     def get_current_index(self):
         return self.current_index
-
 
     """
     Return the number of decks
@@ -128,19 +126,19 @@ class DeckDatabase:
     Import the deck with name deck_import_name from the predefined decks path
     """
     
-    def import_deck(self, deck_import_name: str) -> None:
+    def import_deck(self, deck_import_name: str):
         path = os.path.join(PREDEFINED_DECKS_PATH, deck_import_name + ".txt")
-        file = open(path,"r")
+        file = open(path, "r", encoding='utf-8')
         deck = Deck(deck_import_name)
         for line in file.readlines():
             if '\t' in line:
-                    line = line.split('\t')
-                    if len(line) == 2:
-                        deck.add_card(Card(line[0], line[1]))
+                line = line.split('\t')
+                if len(line) == 2:
+                    deck.add_card(Card(line[0], line[1].removesuffix("\n"), ""))
             elif ' ' in line:
-                    line = line.split(' ')
-                    if len(line) == 2:
-                        deck.add_card(Card(line[0], line[1]))
+                line = line.split(' ')
+                if len(line) == 2:
+                    deck.add_card(Card(line[0], line[1].removesuffix("\n"), ""))
         if not (self.is_included(deck_import_name)) and self.is_deck_length_allowed():
             self.decks.append(deck)
         file.close()
@@ -154,20 +152,19 @@ class DeckDatabase:
             self.current_index = 0
             self.decks.remove(self.fetch_deck(deck_name))
 
-
     """
     This method is called when the application status is reset
     """
     def default_decks(self) -> None:
-        card_1 = Card("Front side", "Back side")
-        card_2 = Card("This is a question", "This is the answer")
+        card_1 = Card("Front side", "Back side", "Tag 1")
+        card_2 = Card("This is a question", "This is the answer", "Tag 2")
         deck_1 = Deck("Cool deck")
 
         deck_1.add_card(card_1)
         deck_1.add_card(card_2)
 
         deck_2 = Deck(DeckNames.DECK_NAME_1.value)
-        card_3 = Card("This is the", "First card in the deck")
+        card_3 = Card("This is the", "First card in the deck", "With a tag")
         deck_2.add_card(card_3)
 
         self.decks = [deck_1, deck_2]
@@ -218,10 +215,9 @@ class DeckDatabase:
     @staticmethod
     def export_deck(deck: Deck) -> None:
         if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
-            print(EXPORTED_DECKS_PATH)
-        path = os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt")
-        file = open(path,"w")
-        for card in deck.cards:
-            file.write(card.get_front() + " " + card.back)
-            file.write("\n")
-        file.close()
+            path = os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt")
+            file = open(path, "w")
+            for card in deck.cards:
+                file.write(card.get_front() + " " + card.back)
+                file.write("\n")
+            file.close()

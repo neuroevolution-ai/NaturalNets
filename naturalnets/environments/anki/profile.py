@@ -18,6 +18,7 @@ class Profile:
     def get_deck_database(self):
         return self.deck_database
 
+
 class ProfileDatabase:
     """
     This database contains the current profiles
@@ -36,7 +37,7 @@ class ProfileDatabase:
         self.profile_names: Final = [ProfileNames.ALICE.value, ProfileNames.BOB.value, ProfileNames.CAROL.value,
                                      ProfileNames.DENNIS.value, ProfileNames.EVA.value]
         self.profiles = [Profile(ProfileNames.ALICE.value), Profile(ProfileNames.BOB.value), Profile(ProfileNames.CAROL.value)]
-        self.current_index: int = 1
+        self.current_index: int = 0
         
         for profile in self.profiles:
             profile.deck_database.default_decks()

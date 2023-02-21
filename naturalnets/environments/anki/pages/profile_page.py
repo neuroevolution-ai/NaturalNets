@@ -8,6 +8,7 @@ from naturalnets.environments.anki.pages.profile_page_popups.rename_profile_popu
 from naturalnets.environments.anki.pages.profile_page_popups.downgrade_popup import DowngradePopup
 from naturalnets.environments.anki.pages.profile_page_popups.at_least_one_profile_popup import AtLeastOneProfilePopup
 from naturalnets.environments.anki.pages.reset_collection_popup import ResetCollectionPopup
+from naturalnets.environments.anki.utils import calculate_current_bounding_box
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -39,7 +40,7 @@ class ProfilePage(Page, RewardElement):
     DOWNGRADE_QUIT_BB = BoundingBox(522, 577, 115, 25)
     PROFILES_BB = BoundingBox(143, 166, 403, 150)
     ITEM_WIDTH = 403
-    ITEM_HEIGTH = 30
+    ITEM_HEIGHT = 30
     TABLE_X = 143
     TABLE_Y = 166
     CURRENT_PROFILE_X = 507
@@ -70,7 +71,6 @@ class ProfilePage(Page, RewardElement):
         self.downgrade_popup_page = DowngradePopup()
         self.at_least_one_profile_popup = AtLeastOneProfilePopup()
         # To display the current profiles profile database is necessary
-        
 
         self.add_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
                            self.reset_collection_popup_page, self.downgrade_popup_page,
@@ -85,11 +85,9 @@ class ProfilePage(Page, RewardElement):
 
         # Index of the currently selected profile
         self.profile_database.set_current_index(0)
-        self.pages = [self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
-            self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup]
+        self.pages = [self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page, self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup]
 
-        self.button = [self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.rename_button,
-            self.add_button, self.open_button]
+        self.button = [self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.rename_button, self.add_button, self.open_button]
         self.set_reward_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
                                   self.reset_collection_popup_page, self.downgrade_popup_page,
                                   self.at_least_one_profile_popup])
@@ -108,29 +106,20 @@ class ProfilePage(Page, RewardElement):
     current_bounding_box.
     """
     def change_current_profile_index(self, click_point: np.ndarray):
-        current_bounding_box = self.calculate_current_bounding_box()
+        current_bounding_box = calculate_current_bounding_box(click_point[0], click_point[1], self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.TABLE_Y) / self.ITEM_HEIGTH)
+            click_index: int = floor((click_point[1] - self.TABLE_Y) / self.ITEM_HEIGHT)
             if click_index >= self.profile_database.profiles_length():
                 return
             self.current_index = click_index
             self.open_profile()
 
     """
-    Calculate the bounding box regarding number of the profiles.
-    """
-    def calculate_current_bounding_box(self):
-        upper_left_point = (self.TABLE_X, self.TABLE_Y)
-        length = self.ITEM_HEIGTH * self.profile_database.profiles_length()
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
-        return current_bounding_box
-
-    """
     Opens this page
     """
     def open(self):
-        self.get_state()[0:2] = 1
-        self.get_state()[2:7] = 0
+        self.get_state()[0] = 1
+        self.reset_index()
         self.register_selected_reward(["window", "open"])
 
     """
@@ -138,7 +127,7 @@ class ProfilePage(Page, RewardElement):
     """
     def close(self):
         self.get_state()[0] = 0
-        self.get_state()[1] = 1
+        self.reset_index()
         for child in self.get_children():
             child.close()
         self.register_selected_reward(["window", "close"])
@@ -170,7 +159,7 @@ class ProfilePage(Page, RewardElement):
         put_text(img, f"Selected profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                  (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.4)
         for i, profile in enumerate(self.profile_database.get_profiles()):
-            put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGTH), font_scale=0.5)
+            put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGHT), font_scale=0.5)
         for page in self.pages:
             if page.is_open():
                 img = page.render(img)
@@ -190,7 +179,7 @@ class ProfilePage(Page, RewardElement):
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
                 return
-        if self.calculate_current_bounding_box().is_point_inside(click_position):
+        if calculate_current_bounding_box(self.TABLE_X, self.TABLE_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length()).is_point_inside(click_position):
             self.change_current_profile_index(click_position)
             return
     

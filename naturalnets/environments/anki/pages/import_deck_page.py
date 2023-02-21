@@ -3,17 +3,18 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki import NameExistsPopup
-from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
     import LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
+from naturalnets.environments.anki.utils import calculate_current_bounding_box
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.anki.constants import IMAGES_PATH, PREDEFINED_DECKS_PATH
+from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+
 
 class ImportDeckPage(Page, RewardElement):
     """
@@ -201,7 +202,7 @@ class ImportDeckSelectPage(Page, RewardElement):
     DECK_BB = BoundingBox(182, 202, 420, 150)
     SELECT_DECK_X = 183
     SELECT_DECK_Y = 205
-    ITEM_LENGTH = 30
+    ITEM_HEIGHT = 30
     ITEM_WIDTH = 421
     CURRENT_DECK_X = 189
     CURRENT_DECK_Y = 192
@@ -254,7 +255,7 @@ class ImportDeckSelectPage(Page, RewardElement):
             self.help_button.handle_click(click_position)
         elif self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
-        elif self.calculate_current_bounding_box().is_point_inside(click_position):
+        elif calculate_current_bounding_box(self.SELECT_DECK_X, self.SELECT_DECK_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, 3).is_point_inside(click_position):
             self.change_current_deck_index(click_position)
 
     """
@@ -273,6 +274,8 @@ class ImportDeckSelectPage(Page, RewardElement):
 
     def close(self):
         self.get_state()[0] = 0
+        self.get_state()[1] = 1
+        self.get_state()[2:4] = 0
         self.register_selected_reward(["window", "close"])
 
     """
@@ -295,25 +298,16 @@ class ImportDeckSelectPage(Page, RewardElement):
     is changed
     """
     def change_current_deck_index(self, click_point: np.ndarray):
-        current_bounding_box = self.calculate_current_bounding_box()
+        current_bounding_box = calculate_current_bounding_box(self.SELECT_DECK_X, self.SELECT_DECK_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, 3)
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.SELECT_DECK_Y) / self.ITEM_LENGTH)
-            if click_index >= self.ITEM_LENGTH:
+            click_index: int = floor((click_point[1] - self.SELECT_DECK_Y) / self.ITEM_HEIGHT)
+            if click_index >= self.ITEM_HEIGHT:
                 return
             self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
             self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", click_index])
-    """
-    Calculate the clickable area of the import table
-    """
-
-    def calculate_current_bounding_box(self):
-        upper_left_point = (self.SELECT_DECK_X, self.SELECT_DECK_Y)
-        length = self.ITEM_LENGTH * DeckDatabase.count_number_of_files(PREDEFINED_DECKS_PATH)
-        current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], self.ITEM_WIDTH, length)
-        return current_bounding_box
-
+    
     """
     Changes the name of the deck to import according to current_index
     """
@@ -337,7 +331,7 @@ class ImportDeckSelectPage(Page, RewardElement):
         if self.deck_database.get_deck_import_names()[self.current_index] is not None:
             put_text(img, f"{self.deck_database.get_deck_import_names()[self.current_index]}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
         for i, deck_name in enumerate(self.deck_database.get_deck_import_names()):
-            put_text(img, f"{deck_name}", (self.FIRST_DECK_X, self.FIRST_DECK_Y + self.ITEM_LENGTH * i), font_scale=0.5)
+            put_text(img, f"{deck_name}", (self.FIRST_DECK_X, self.FIRST_DECK_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
         return img
 
     def get_current_import_name(self):

@@ -13,6 +13,7 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
+
 class PreferencesPage(RewardElement, Page):
     """
     Actually the whole page is a filler and an imitation of the original application and does not
@@ -48,21 +49,21 @@ class PreferencesPage(RewardElement, Page):
     BASIC_WINDOW_DD_3_BB_OFFSET = BoundingBox(90, 441, 644, 29)
     BASIC_WINDOW_DD_4_BB_OFFSET = BoundingBox(90, 491, 644, 29)
 
-    BASIC_WINDOW_1_CHECKBOX_BB = BoundingBox(90, 276, 16, 16)
-    BASIC_WINDOW_2_CHECKBOX_BB = BoundingBox(90, 303, 16, 16)
-    BASIC_WINDOW_3_CHECKBOX_BB = BoundingBox(90, 330, 16, 16)
-    BASIC_WINDOW_4_CHECKBOX_BB = BoundingBox(90, 357, 16, 16)
-    BASIC_WINDOW_5_CHECKBOX_BB = BoundingBox(90, 383, 16, 16)
+    BASIC_WINDOW_1_CHECKBOX_BB = BoundingBox(90, 276, 270, 16)
+    BASIC_WINDOW_2_CHECKBOX_BB = BoundingBox(90, 303, 270, 16)
+    BASIC_WINDOW_3_CHECKBOX_BB = BoundingBox(90, 330, 226, 16)
+    BASIC_WINDOW_4_CHECKBOX_BB = BoundingBox(90, 357, 272, 16)
+    BASIC_WINDOW_5_CHECKBOX_BB = BoundingBox(90, 383, 93, 16)
 
     BASIC_WINDOW_SEARCH_TEXT_BB = BoundingBox(653, 524, 94, 31)
     BASIC_WINDOW_USER_INTERFACE_INCREMENT = BoundingBox(317, 576, 13, 9)
     BASIC_WINDOW_USER_INTERFACE_DECREMENT = BoundingBox(317, 585, 13, 9)
 
-    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(81, 181, 16, 16)
-    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(81, 223, 16, 16)
-    SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB = BoundingBox(81, 269, 16, 16)
-    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(81, 319, 16, 16)
-    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(81, 360, 16, 16)
+    SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB = BoundingBox(81, 181, 316, 16)
+    SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB = BoundingBox(81, 223, 290, 16)
+    SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB = BoundingBox(81, 269, 379, 16)
+    SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB = BoundingBox(81, 319, 193, 16)
+    SCHEDULING_WINDOW_V3_SCHEDULER_BB = BoundingBox(81, 360, 110, 16)
 
     SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB = BoundingBox(415, 414, 12, 9)
     SCHEDULING_WINDOW_LEARN_AHEAD_INCREMENT_BB = BoundingBox(415, 455, 12, 9)
@@ -72,10 +73,10 @@ class PreferencesPage(RewardElement, Page):
     SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(415, 464, 12, 9)
     SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(415, 505, 12, 9)
 
-    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(75, 241, 16, 16)
-    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(75, 284, 16, 16)
-    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(75, 327, 16, 16)
-    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(75, 368, 16, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(75, 241, 246, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(75, 284, 329, 16)
+    NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(75, 327, 211, 16)
+    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(75, 368, 368, 16)
 
     BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(294, 195, 12, 9)
     BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(295, 205, 12, 9)
@@ -437,21 +438,19 @@ class PreferencesPage(RewardElement, Page):
                 self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "selected",
                                                self.open_dd.get_selected_item().get_value().value])
             self.open_dd = None
-            return
-
-        for dd in self.basic_window_dropdowns:
-            if self.dropdowns_to_bbs[dd].is_point_inside(click_position):
-                self.open_dd = dd
-                self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "opened"])
-                self.close_all_dropdowns()
-                self.open_dd.open()
-                return
-
-        for widget in self.basic_window_widgets:
-            if widget.is_clicked_by(click_position) and not (isinstance(widget, Dropdown)):
-                widget.handle_click(click_position)
-                if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+        else:
+            for dd in self.basic_window_dropdowns:
+                if self.dropdowns_to_bbs[dd].is_point_inside(click_position):
+                    self.open_dd = dd
+                    self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "opened"])
+                    self.close_all_dropdowns()
+                    self.open_dd.open()
+                    return
+            for widget in self.basic_window_widgets:
+                if widget.is_clicked_by(click_position) and not (isinstance(widget, Dropdown)):
+                    widget.handle_click(click_position)
+                    if isinstance(widget, CheckBox):
+                        self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
     """
     Execute click action if a widget from scheduling window is clicked
     """
@@ -560,14 +559,18 @@ class PreferencesPage(RewardElement, Page):
     Opens this window
     """
     def open(self):
-        self.get_state()[0] = 1
+        self.get_state()[0:2] = 1
+        self.get_state()[2:5] = 0
         self.register_selected_reward(["window", "open"])
 
     """
     Closes this window
     """
     def close(self):
+        self.open_dd = None
         self.get_state()[0] = 0
+        self.get_state()[1] = 1
+        self.get_state()[2:5] = 0
         self.register_selected_reward(["window", "close"])
     """
     Returns true if this window is open
@@ -582,7 +585,7 @@ class PreferencesPage(RewardElement, Page):
         if self.get_state()[1] == 1:
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.user_interface}", (self.USER_INTERFACE_X,self.USER_INTERFACE_Y), font_scale=0.4)
+            put_text(img, f"{self.user_interface}", (self.USER_INTERFACE_X, self.USER_INTERFACE_Y), font_scale=0.4)
             put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}", (self.CURRENT_SEARCH_TEXT_X, self.CURRENT_SEARCH_TEXT_Y),
                      font_scale=0.4)
             for widget in self.basic_window_widgets:
@@ -631,14 +634,14 @@ class PreferencesPage(RewardElement, Page):
         self.timebox_time = 5
         self.backup_number = 50
         for widget in self.basic_window_widgets:
-            if isinstance(widget,CheckBox):
+            if isinstance(widget, CheckBox):
                 widget.get_state()[0] = 0
-            elif isinstance(widget,Dropdown):
+            elif isinstance(widget, Dropdown):
                 widget._selected_item = None
         for widget in self.scheduling_window_widgets:
-            if isinstance(widget,CheckBox):
+            if isinstance(widget, CheckBox):
                 widget.get_state()[0] = 0
         for widget in self.network_window_widgets:
-            if isinstance(widget,CheckBox):
+            if isinstance(widget, CheckBox):
                 widget.get_state()[0] = 0
         
