@@ -31,7 +31,7 @@ class LeadsToExternalWebsitePopup(Page, RewardElement):
         self.ok_button = Button(self.OK_BB, self.close)
 
     """
-        Provide reward for opening and closing the popup
+    Provide reward for opening and closing the popup
     """
     @property
     def reward_template(self):
@@ -40,8 +40,8 @@ class LeadsToExternalWebsitePopup(Page, RewardElement):
         }
 
     """
-        Checks if the ok button is clicked and if so the popup is
-        going to be closed    
+    Checks if the ok button is clicked and if so the popup is
+    going to be closed    
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
@@ -59,7 +59,7 @@ class LeadsToExternalWebsitePopup(Page, RewardElement):
         return self.get_state()[0]
 
     """
-        Renders the image of the popup
+    Renders the image of the popup
     """
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)

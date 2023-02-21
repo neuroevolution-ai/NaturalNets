@@ -32,15 +32,6 @@ class ResetCollectionPopup(Page, RewardElement):
         self.no_button: Button = Button(self.NO_BUTTON_BB, self.close)
 
     """
-        Singleton design pattern to ensure that at most one
-        ResetCollectionPopup is present
-    """
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(ResetCollectionPopup, cls).__new__(cls)
-        return cls.instance
-
-    """
     Provide reward for opening/closing this popup and for resetting the application
     """
     @property

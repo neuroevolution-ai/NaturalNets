@@ -17,10 +17,10 @@ class RenameProfilePopup(RewardElement, Page):
     State description:
         Change the name of the currently active profile
         state[0]: if this popup is open
-        state[1]: if the text field is filled
+        state[i]: if the text field is filled with name[i] as name = {Alice, Bob, Carol, Dennis, Eva}
     """
 
-    STATE_LEN = 2
+    STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "rename_profile_popup.png")
 
     WINDOW_BB = BoundingBox(160, 305, 498, 111)
@@ -78,7 +78,7 @@ class RenameProfilePopup(RewardElement, Page):
     Closes this popup
     """
     def close(self):
-        self.get_state()[0:2] = 0
+        self.get_state()[0:6] = 0
         for child in self.get_children():
             child.close()
         self.register_selected_reward(["window", "close"])
@@ -89,7 +89,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1] = 0
+        self.get_state()[1:6] = 0
         self.register_selected_reward(["window", "open"])
 
     """
@@ -97,8 +97,10 @@ class RenameProfilePopup(RewardElement, Page):
     """
     def set_current_field_string(self):
         self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 0
         self.profile_iterate_index += 1
         self.profile_iterate_index %= 5
+        self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 1
         self.register_selected_reward(["profile_name_clipboard"])
 
     """

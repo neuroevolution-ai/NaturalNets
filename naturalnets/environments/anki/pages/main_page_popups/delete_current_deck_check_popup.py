@@ -37,6 +37,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         self.yes_button = Button(self.YES_BB, self.remove_deck)
         self.no_button = Button(self.NO_BB, self.close)
+    
     """
     Provide reward for opening and closing the popup and deleting a deck
     """

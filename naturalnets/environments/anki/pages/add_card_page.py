@@ -22,6 +22,8 @@ class AddCardPage(Page, RewardElement):
     State description:
             state[0]: if this window is open
             state[i]: if the i-th field is filled (4 > i > 0)
+    The content of the field has no impact on the logic of app hence it is only important if the
+    field is filled
     """
 
     STATE_LEN = 4
@@ -77,6 +79,7 @@ class AddCardPage(Page, RewardElement):
 
         # Set the rewards of the popups
         self.set_reward_children([self.choose_deck, self.front_and_backside_popup])
+
     """
     Provide reward for opening and closing the page, Setting each text field and adding a card
     """
@@ -158,12 +161,14 @@ class AddCardPage(Page, RewardElement):
         self.tag_clipboard_temporary_string = f"Some tag text {self.tag_counter}"
         self.tag_counter += 1 
         self.get_state()[3] = 1
+
     """
     Check if the front- and the back side of the card is set
     """
     def is_card_creatable(self):
         return self.back_side_clipboard_temporary_string is not None and self.front_side_clipboard_temporary_string \
             is not None
+
     """
     Reset the current string configuration
     """
@@ -189,6 +194,7 @@ class AddCardPage(Page, RewardElement):
             self.reset_temporary_strings()
         else:
             self.front_and_backside_popup.open()
+    
     """
     Opens up the popup for selecting a deck. Reason for resetting the index of
     the popup to 0 is to prevent index out of range. Suppose the current profile has
@@ -200,6 +206,7 @@ class AddCardPage(Page, RewardElement):
     def select_deck(self):
         self.choose_deck.reset_index()
         self.choose_deck.open()
+    
     """
     Renders the add card page with popup or 
     choose deck page if open and current strings if set.

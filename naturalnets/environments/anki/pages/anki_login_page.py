@@ -15,11 +15,11 @@ class AnkiLoginPage(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open
-            state[i]: if the i-th field is filled i = {1,2}
-            state[3]: if it's logged in
+            state[i]: if the i-th field is filled i = [1:10] "one to ten including both"
+            state[11]: if it's logged in
     """
 
-    STATE_LEN = 4
+    STATE_LEN = 12
     IMG_PATH = os.path.join(IMAGES_PATH, "anki_login_page.png")
 
     WINDOW_BB = BoundingBox(270, 250, 277, 244)
@@ -80,14 +80,14 @@ class AnkiLoginPage(Page, RewardElement):
 
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1:3] = 0
+        self.get_state()[1:12] = 0
         self.username_clipboard = None
         self.password_clipboard = None
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.register_selected_reward(["window", "close"])
-        self.get_state()[0:3] = 0
+        self.get_state()[0:12] = 0
         for child in self.get_children():
             child.close()
         self.username_clipboard = None
@@ -100,20 +100,22 @@ class AnkiLoginPage(Page, RewardElement):
     Sets the password string from the username list 
     """
     def set_username_clipboard(self):
-        self.get_state()[1] = 1
         self.username_clipboard = self.anki_username_list[self.username_iterate_index]
+        self.get_state()[1 + (self.username_iterate_index - 1) % 5] = 0
         self.username_iterate_index += 1
         self.username_iterate_index %= 5
+        self.get_state()[1 + (self.username_iterate_index - 1) % 5] = 1
         self.register_selected_reward(["set_username"])
 
     """
     Sets the password string from the password list 
     """
     def set_password_clipboard(self):
-        self.get_state()[2] = 1
         self.password_clipboard = self.anki_password_list[self.password_iterate_index]
+        self.get_state()[6 + (self.password_iterate_index - 1) % 5] = 0
         self.password_iterate_index += 1
         self.password_iterate_index %= 5
+        self.get_state()[6 + (self.password_iterate_index - 1) % 5] = 1
         self.register_selected_reward(["set_password"])
 
     """
@@ -127,8 +129,8 @@ class AnkiLoginPage(Page, RewardElement):
             self.current_anki_account = AnkiAccount(self.username_clipboard, self.password_clipboard)
             self.username_clipboard = None
             self.password_clipboard = None
-            self.get_state()[3] = 1
-            self.get_state()[1:3] = 0
+            self.get_state()[11] = 1
+            self.get_state()[1:11] = 0
             self.close()
         else:
             self.failed_login.open()
@@ -140,7 +142,7 @@ class AnkiLoginPage(Page, RewardElement):
         self.current_anki_account = None
         self.username_clipboard = None
         self.password_clipboard = None
-        self.get_state()[1:4] = 0
+        self.get_state()[1:12] = 0
 
     """
     Renders anki login page with the failed login popup if open

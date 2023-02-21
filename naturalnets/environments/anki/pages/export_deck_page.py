@@ -24,7 +24,7 @@ class ExportDeckPage(Page, RewardElement):
             state[0]: if this window is open
     """
 
-    STATE_LEN = 1
+    STATE_LEN = 41
     IMG_PATH = os.path.join(IMAGES_PATH, "export_deck_page.png")
 
     WINDOW_BB = BoundingBox(210, 200, 380, 278)
@@ -151,8 +151,8 @@ class ExportDeckPage(Page, RewardElement):
             self.five_decks_popup.open()
         elif self.include_dropdown.get_selected_item() is None:
             return
-        elif (DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
-                                         EXPORTED_DECKS_PATH)):
+        elif DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
+                                         EXPORTED_DECKS_PATH):
             self.name_exists_popup.open()
         else:
             DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())

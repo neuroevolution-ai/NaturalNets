@@ -47,6 +47,7 @@ class ProfilePage(Page, RewardElement):
     CURRENT_PROFILE_Y = 376
     PROFILE_TEXT_X = 152
     PROFILE_TEXT_Y = 189
+    
     """
        Singleton design pattern to ensure that at most one
        ProfilePage is present

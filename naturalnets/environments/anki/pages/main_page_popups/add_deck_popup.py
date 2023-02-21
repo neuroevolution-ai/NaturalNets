@@ -19,12 +19,12 @@ class AddDeckPopup(Page, RewardElement):
     Text button assigns a name
     Cancel button closes the window and resets the current name string
     OK button adds the deck iff a name is provided by clicking the text button
-    and less than 5 profiles are present and the name does not exist
+    and less than 5 decks are present and the name does not exist
     State description:
             state[0]: if this popup is open
-            state[1]: if the text field is filled
+            state[i]: if the text field is filled with input "Deck_name_i"
     """
-    STATE_LEN = 2
+    STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "add_deck_popup.png")
 
     WINDOW_BB = BoundingBox(150, 250, 498, 109)
@@ -78,12 +78,12 @@ class AddDeckPopup(Page, RewardElement):
         self.current_field_string = None
         for child in self.get_children():
             child.close()
-        self.get_state()[0:2] = 0
+        self.get_state()[0:6] = 0
 
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
-        self.get_state()[1] = 0
+        self.get_state()[1:6] = 0
 
     """
     Set a deck name
@@ -91,8 +91,11 @@ class AddDeckPopup(Page, RewardElement):
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
         self.current_field_string = self.deck_database.get_deck_names()[self.deck_iterate_index]
+        self.get_state()[1 + (self.deck_iterate_index - 1) % 5] = 0
         self.deck_iterate_index += 1
         self.deck_iterate_index %= 5
+        self.get_state()[1 + (self.deck_iterate_index - 1) % 5] = 1
+        
 
     def is_open(self):
         return self.get_state()[0]

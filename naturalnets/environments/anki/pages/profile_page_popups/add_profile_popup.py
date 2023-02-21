@@ -18,9 +18,9 @@ class AddProfilePopup(Page, RewardElement):
     Adds a new profile to the present profiles
     State description:
         state[0]: if this popup is open
-        state[1]: if the text field is filled
+        state[i]: if the text field is filled with name[i] as name = {Alice, Bob, Carol, Dennis, Eva}
     """
-    STATE_LEN = 2
+    STATE_LEN = 6
     IMG_PATH = os.path.join(IMAGES_PATH, "add_profile_popup.png")
 
     WINDOW_BB = BoundingBox(160, 305, 498, 109)
@@ -83,7 +83,7 @@ class AddProfilePopup(Page, RewardElement):
     Close this popup
     """
     def close(self):
-        self.get_state()[0:2] = 0
+        self.get_state()[0:6] = 0
         self.register_selected_reward(["window", "close"])
         for child in self.get_children():
             child.close()
@@ -94,18 +94,20 @@ class AddProfilePopup(Page, RewardElement):
     """
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1] = 0
+        self.get_state()[1:6] = 0
         self.register_selected_reward(["window", "open"])
 
     """
     Set the current string by selecting a name from the predefined set of names
     """
     def set_current_field_string(self):
-        self.get_state()[1] = 1
         self.register_selected_reward(["profile_name_clipboard"])
         self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 0
         self.profile_iterate_index += 1
         self.profile_iterate_index %= 5
+        self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 1
+        
     """
     Adds the profile if the current_field_string is set and the max number of decks is not exceeded
     and the name of the profile is not present

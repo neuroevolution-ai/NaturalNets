@@ -30,6 +30,7 @@ class FailedLoginPopup(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.ok_button = Button(self.OK_BB, self.close)
+    
     """
     Provide reward for opening and closing the popup
     """

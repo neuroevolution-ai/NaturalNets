@@ -30,7 +30,7 @@ class NoCardPopup(Page, RewardElement):
         self.ok_button: Button = Button(self.OK_BUTTON_BB, self.close)
 
     """
-        Provide reward for opening and closing the popup
+    Provide reward for opening and closing the popup
     """
     @property
     def reward_template(self):
@@ -39,8 +39,8 @@ class NoCardPopup(Page, RewardElement):
         }
 
     """
-        Checks if the ok button is clicked and if so the popup is
-        going to be closed
+    Checks if the ok button is clicked and if so the popup is
+    going to be closed
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
