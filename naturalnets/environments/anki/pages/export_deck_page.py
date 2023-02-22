@@ -48,8 +48,7 @@ class ExportDeckPage(Page, RewardElement):
         self.deck_database = self.profile_database.get_profiles()[
             self.profile_database.get_current_index()].get_deck_database()
         
-        # Fake count variable
-        self.count_variable = 0 
+        self.exported_decks_array = []
         self.current_deck = None
         # Appears when the export path already has 5 decks
         self.five_decks_popup = FiveDecksPopup()
@@ -63,7 +62,7 @@ class ExportDeckPage(Page, RewardElement):
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
-        self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_count_index)
+        self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_exported_decks_array)
 
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
@@ -153,20 +152,23 @@ class ExportDeckPage(Page, RewardElement):
 
     def export_deck(self):
         # Faked version of exporting a deck
-        self.register_selected_reward(["exported"])
         # if DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
         #    self.five_decks_popup.open()
-        if self.count_variable == 5:
+        if len(self.exported_decks_array) == 5:
             self.five_decks_popup.open()
         elif self.include_dropdown.get_selected_item() is None:
             return
         # elif DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
         #                                EXPORTED_DECKS_PATH):
         #    self.name_exists_popup.open()
+        elif self.is_exported():
+            self.name_exists_popup.open()
         else:
             # deck_index = DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
             # self.get_state()[deck_index] = 1
-            self.count_variable += 1
+            self.exported_decks_array.append(self.current_deck)
+            self.register_selected_reward(["exported"])
+            self.current_deck = None
             self.close()
 
     """
@@ -180,7 +182,7 @@ class ExportDeckPage(Page, RewardElement):
                  font_scale=0.4)
         # put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
         #         (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
-        put_text(img, f"Number of exported decks: {self.count_variable}",
+        put_text(img, f"Number of exported decks: {len(self.exported_decks_array)}",
                  (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
@@ -208,5 +210,11 @@ class ExportDeckPage(Page, RewardElement):
         self.register_selected_reward(["reset"])
     """
 
-    def reset_count_index(self):
-        self.count_variable = 0
+    def is_exported(self):
+        for element in self.exported_decks_array:
+            if element == self.current_deck:
+                return True
+        return False
+    
+    def reset_exported_decks_array(self):
+        self.exported_decks_array = []
