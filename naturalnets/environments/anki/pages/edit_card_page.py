@@ -28,9 +28,9 @@ class EditCardPage(RewardElement, Page):
     BACK_TEXT_BB = BoundingBox(545, 353, 89, 28)
     TAGS_TEXT_BB = BoundingBox(545, 483, 89, 28)
     CLOSE_BB = BoundingBox(534, 556, 99, 29)
-    FRONT_TEXT_PRINT_BB = BoundingBox(225, 203, 300, 40)
-    BACK_TEXT_PRINT_BB = BoundingBox(225, 336, 300, 40)
-    TAGS_TEXT_PRINT_BB = BoundingBox(225, 483, 300, 36)
+    FRONT_TEXT_PRINT_BB = BoundingBox(225, 220, 300, 40)
+    BACK_TEXT_PRINT_BB = BoundingBox(225, 350, 300, 40)
+    TAGS_TEXT_PRINT_BB = BoundingBox(225, 485, 300, 36)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
@@ -119,17 +119,17 @@ class EditCardPage(RewardElement, Page):
         if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front() is not None:
             print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_front()}",
-                            bounding_box=self.FRONT_TEXT_PRINT_BB, font_size=25,
+                            bounding_box=self.FRONT_TEXT_PRINT_BB, font_size=18,
                             dimension=(40, 300, 3))
         if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back() is not None:
             print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back()}",
-                            bounding_box=self.BACK_TEXT_PRINT_BB, font_size=25,
+                            bounding_box=self.BACK_TEXT_PRINT_BB, font_size=18,
                             dimension=(40, 300, 3))
         if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag() is not None:
             print_non_ascii(img=image,
                             text=f"{self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_tag()}",
-                            bounding_box=self.TAGS_TEXT_PRINT_BB, font_size=25,
+                            bounding_box=self.TAGS_TEXT_PRINT_BB, font_size=18,
                             dimension=(36, 300, 3))
         return image
 

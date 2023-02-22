@@ -4,7 +4,6 @@ import os
 IMAGES_PATH: str = os.path.abspath("naturalnets/environments/anki/img")
 PREDEFINED_DECKS_PATH: str = os.path.abspath("naturalnets/environments/anki/decks/predefined_decks")
 EXPORTED_DECKS_PATH: str = os.path.abspath("naturalnets/environments/anki/decks/exported_decks")
-FONTS_PATH: str = os.path.abspath("naturalnets/environments/anki/font/arial.ttf")
 ANKI_COLOR = (240, 240, 240)
 """
 Possible profile names
