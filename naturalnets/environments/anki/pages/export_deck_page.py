@@ -46,7 +46,8 @@ class ExportDeckPage(Page, RewardElement):
         # Current profile to select the deck from
         self.profile_database = ProfileDatabase()
         # Decks of the current profile
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles()[
+            self.profile_database.get_current_index()].get_deck_database()
 
         self.current_deck = None
         # Appears when the export path already has 5 decks
@@ -119,7 +120,8 @@ class ExportDeckPage(Page, RewardElement):
     """
 
     def open(self):
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles()[
+            self.profile_database.get_current_index()].get_deck_database()
         self.initialise_dropdown()
         self.current_deck = None
         self.get_state()[0] = 1
@@ -147,6 +149,7 @@ class ExportDeckPage(Page, RewardElement):
     If the number of decks does not exceed 5 and the name of the deck to export does not already exist and
     a dropdown item is selected then convert a deck to a .txt file
     """
+
     def export_deck(self):
         self.register_selected_reward(["exported"])
         if DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
@@ -154,7 +157,7 @@ class ExportDeckPage(Page, RewardElement):
         elif self.include_dropdown.get_selected_item() is None:
             return
         elif DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
-                                         EXPORTED_DECKS_PATH):
+                                        EXPORTED_DECKS_PATH):
             self.name_exists_popup.open()
         else:
             deck_index = DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
@@ -164,10 +167,12 @@ class ExportDeckPage(Page, RewardElement):
     """
     Render the page with its dropdown or popups if opened
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (self.DECK_TEXT_X, self.DECK_TEXT_Y), font_scale=0.4)
+        put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (self.DECK_TEXT_X, self.DECK_TEXT_Y),
+                 font_scale=0.4)
         put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
                  (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
         if self.five_decks_popup.is_open():
@@ -181,14 +186,17 @@ class ExportDeckPage(Page, RewardElement):
     """
     Initialize the dropdown items according to the present decks of the current profile.
     """
+
     def initialise_dropdown(self):
         self.dropdown_items = []
         for deck in self.deck_database.get_decks():
             self.dropdown_items.append(DropdownItem(deck, deck.name))
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
+
     """
     Delete all exported decks
     """
+
     def reset_exported_decks(self):
         DeckDatabase.reset_exported_decks()
         self.get_state()[1:9] = 0

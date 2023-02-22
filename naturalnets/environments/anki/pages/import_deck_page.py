@@ -83,7 +83,7 @@ class ImportDeckPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        #Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
+        # Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
         self.get_state()[1:4] = 0
         index = self.import_names_to_index[self.import_deck_popup.get_current_import_name()]
         self.get_state()[index] = 1
@@ -115,7 +115,6 @@ class ImportDeckPage(Page, RewardElement):
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
-        
 
     """
     Opens the choose deck page to change the currently selected deck
@@ -178,7 +177,7 @@ class ImportDeckPage(Page, RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
-                font_scale=0.5)
+                 font_scale=0.5)
         if self.import_deck_popup.is_open():
             img = self.import_deck_popup.render(img)
         elif self.leads_to_external_website_popup.is_open():

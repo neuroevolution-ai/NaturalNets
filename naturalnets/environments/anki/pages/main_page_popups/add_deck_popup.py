@@ -95,7 +95,6 @@ class AddDeckPopup(Page, RewardElement):
         self.deck_iterate_index += 1
         self.deck_iterate_index %= 5
         self.get_state()[1 + (self.deck_iterate_index - 1) % 5] = 1
-        
 
     def is_open(self):
         return self.get_state()[0]

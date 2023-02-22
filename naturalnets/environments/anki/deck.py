@@ -233,7 +233,7 @@ class DeckDatabase:
     Converts a deck to a .txt file
     """
     @staticmethod
-    def export_deck(deck: Deck) -> None:
+    def export_deck(deck: Deck) -> int:
         if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
             path = os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt")
             file = open(path, "w", encoding='utf-8')
