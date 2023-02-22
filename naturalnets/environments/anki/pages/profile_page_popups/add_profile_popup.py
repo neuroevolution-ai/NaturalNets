@@ -124,6 +124,7 @@ class AddProfilePopup(Page, RewardElement):
             self.current_field_string = None
             self.register_selected_reward(["add_profile"])
             self.close()
+    
     """
     Renders the image of this popup
     """

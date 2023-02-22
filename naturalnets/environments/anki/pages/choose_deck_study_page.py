@@ -23,11 +23,12 @@ class ChooseDeckStudyPage(Page, RewardElement):
     this popup would cause circular dependency between this page and the main page, therefore
     it is implemented in the main page.
     State description:
-            state[0]: if this window is open
-            state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
+        state[0]: if this window is open
+        state[i+1]: there is a deck in the i-th position (5 > i >= 0)
+        state[i+6]: i-th deck is selected (5 > i >= 0)
     """
 
-    STATE_LEN = 6
+    STATE_LEN = 11
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_study_page.png")
 
     WINDOW_BB = BoundingBox(150, 150, 498, 375)
@@ -93,8 +94,11 @@ class ChooseDeckStudyPage(Page, RewardElement):
     def open(self):
         self.reset_index()
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        self.get_state()[0:2] = 1
-        self.get_state()[2:6] = 0
+        self.get_state()[0] = 1
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():6] = 0
+        self.get_state()[6] = 1
+        self.get_state()[7:11] = 0
         self.register_selected_reward(["window", "open"])
 
     def close(self):
@@ -103,8 +107,8 @@ class ChooseDeckStudyPage(Page, RewardElement):
             child.close()
         self.register_selected_reward(["window", "close"])
         self.get_state()[0] = 0
-        self.get_state()[1] = 1
-        self.get_state()[2:6] = 0
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():11] = 0
 
     """
     Executed when the help button is clicked.
@@ -132,9 +136,9 @@ class ChooseDeckStudyPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[self.current_index + 1] = 0
+            self.get_state()[self.current_index + 6] = 0
             self.current_index: int = click_index
-            self.get_state()[self.current_index + 1] = 1
+            self.get_state()[self.current_index + 6] = 1
             self.register_selected_reward(["index", self.current_index])
 
     """
@@ -172,6 +176,8 @@ class ChooseDeckStudyPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():6] = 0
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
             return

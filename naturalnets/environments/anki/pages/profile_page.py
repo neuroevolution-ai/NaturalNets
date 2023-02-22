@@ -174,6 +174,8 @@ class ProfilePage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.get_state()[1:self.profile_database.profiles_length()+1] = 1
+        self.get_state()[self.profile_database.profiles_length()+1:6] = 0
         for page in self.pages:
             if page.is_open():
                 page.handle_click(click_position)
@@ -181,8 +183,6 @@ class ProfilePage(Page, RewardElement):
         for button in self.button:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
-                self.get_state()[1 : self.profile_database.profiles_length() + 1] = 1
-                self.get_state()[self.profile_database.profiles_length() + 1 : 6] = 0
                 return
         if calculate_current_bounding_box(self.TABLE_X, self.TABLE_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length()).is_point_inside(click_position):
             self.change_current_profile_index(click_position)

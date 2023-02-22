@@ -19,10 +19,11 @@ class ChooseDeckPage(Page, RewardElement):
     By clicking the provided table one can change the deck to add card to.
     State description:
         state[0]: if this window is open
-        state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
+        state[i+1]: there is a deck in the i-th position (5 > i >= 0)
+        state[i+6]: i-th deck-index is selected (5 > i >= 0)
     """
 
-    STATE_LEN = 6
+    STATE_LEN = 11
     IMG_PATH = os.path.join(IMAGES_PATH, "choose_deck_page.png")
 
     WINDOW_BB = BoundingBox(160, 160, 498, 375)
@@ -73,18 +74,22 @@ class ChooseDeckPage(Page, RewardElement):
 
     def open(self):
         self.reset_index()
-        self.get_state()[2:6] = 0
-        self.get_state()[0:2] = 1
+        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.get_state()[0] = 1
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():6] = 0
+        self.get_state()[6] = 1
+        self.get_state()[7:11] = 0
         self.register_selected_reward(["window", "open"])
 
     def close(self):
-        self.register_selected_reward(["window", "close"])
         for child in self.get_children():
             child.close()
         self.reset_index()
-        self.get_state()[2:6] = 0
-        self.get_state()[1] = 1
         self.get_state()[0] = 0
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():11] = 0
+        self.register_selected_reward(["window", "close"])
 
     def is_open(self) -> int:
         return self.get_state()[0]
@@ -106,20 +111,19 @@ class ChooseDeckPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[self.current_index + 1] = 0
+            self.get_state()[6 + self.current_index] = 0
             self.current_index: int = click_index
-            self.get_state()[self.current_index + 1] = 1
+            self.get_state()[6 + self.current_index] = 1
             self.register_selected_reward(["index", self.current_index])
 
     """
     Executed when the user clicks on the choose button. It sets the currently selected deck to the index
     of the choose_deck_page
     """
+    
     def choose_deck(self):
         self.register_selected_reward(["choose_deck"])
         self.deck_database.set_current_index(self.current_index)
-        self.get_state()[1:6] = 0
-        self.get_state()[self.current_index + 1] = 1
         self.close()
 
     """
@@ -152,6 +156,8 @@ class ChooseDeckPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.get_state()[1:1+self.deck_database.decks_length()] = 1
+        self.get_state()[1+self.deck_database.decks_length():6] = 0
         if self.add_deck_popup.is_open():
             self.add_deck_popup.handle_click(click_position)
             return

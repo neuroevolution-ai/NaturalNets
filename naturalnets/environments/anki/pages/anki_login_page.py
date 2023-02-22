@@ -17,7 +17,7 @@ class AnkiLoginPage(Page, RewardElement):
             state[0]: if this window is open
             state[i+1]: if the first field is filled with account_name_i i = {0..4}
             state[i+6]: if the first field is filled with i-th account's password i = {0..4}
-            state[11]: if it's logged in
+            state[11]: if it is logged in
     """
 
     STATE_LEN = 12

@@ -414,6 +414,7 @@ class PreferencesPage(RewardElement, Page):
             self.help_button.handle_click(click_position)
         else:
             self.handle_click_by_open_window(click_position)
+    
     """
     Delegate the click to the open tab
     """
@@ -426,6 +427,7 @@ class PreferencesPage(RewardElement, Page):
             self.handle_click_network_window(click_position)
         elif self.get_state()[4] == 1:
             self.handle_click_backups_window(click_position)
+    
     """
     if a dropdown is open then delegates the click to it
     else if a dropdown bounding box is clicked then opens the dropdown

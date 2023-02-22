@@ -16,6 +16,7 @@ class ResetCollectionPopup(Page, RewardElement):
     State description:
             state[0]: if this window is open
     """
+    
     STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "reset_collection_popup.png")
 
@@ -42,11 +43,12 @@ class ResetCollectionPopup(Page, RewardElement):
         }
 
     """
-    Handle click with the buttons
+    Handle click with no button. Yes button is handled in the main page
     """
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.no_button.is_clicked_by(click_position):
             self.no_button.handle_click(click_position)
+    
     """
     Open this popup
     """

@@ -19,7 +19,8 @@ from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
 class ImportDeckPage(Page, RewardElement):
     """
     State description:
-            state[0]: if this window is open
+        state[0]: if this window is open
+        state[i]: i-th deck is ready to import i = {1,2,3}
     """
 
     STATE_LEN = 4
@@ -82,6 +83,10 @@ class ImportDeckPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        #Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
+        self.get_state()[1:4] = 0
+        index = self.import_names_to_index[self.import_deck_popup.get_current_import_name()]
+        self.get_state()[index] = 1
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
             return
@@ -176,10 +181,6 @@ class ImportDeckPage(Page, RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.import_deck_popup.get_current_import_name() is not None:
-            #Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
-            self.get_state()[1:4] = 0
-            index = self.import_names_to_index[self.import_deck_popup.get_current_import_name()]
-            self.get_state()[index] = 1
             put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
                      font_scale=0.5)
         if self.import_deck_popup.is_open():

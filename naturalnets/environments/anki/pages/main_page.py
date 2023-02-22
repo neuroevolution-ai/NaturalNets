@@ -40,7 +40,7 @@ class MainPage(Page, RewardElement):
     State description:
             state[0]: if this window is open
             state[i]  a deck in the i-th position is present i = {1, 2, 3, 4, 5}
-            state[i+5]: i-th deck is selected i = {1, 2, 3, 4, 5}
+            state[i+5]: i-th deck is active i = {1, 2, 3, 4, 5}
             state[11]: learning window is active
             state[12]: answer is shown
             state[13]: book logo is shown
@@ -285,7 +285,7 @@ class MainPage(Page, RewardElement):
                 return i
     """
     Delegate the click to a page if one is open else check if a dropdown is open and then delegate click to it
-    else check if the state of get_state()[6] == 0 indicating learning is not active and table for decks is clicked
+    else check if the state of get_state()[11] == 0 indicating learning is not active and table for decks is clicked
     then handle the click of changing the active deck. Else if the click lies within the bounding box of a dropdown
     then the dropdown is going to be opened. Else the click actions of widgets are handled 
     according to the states get_state()[i] i = {11, 12}.
@@ -293,6 +293,10 @@ class MainPage(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.get_state()[1:self.deck_database.decks_length()+1] = 1
+        self.get_state()[self.deck_database.decks_length()+1:6] = 0
+        self.get_state()[6:11] = 0
+        self.get_state()[self.deck_database.get_current_index()+6] = 1
         if (self.profile_page.reset_collection_popup_page.is_open() or self.reset_collection_popup_page.is_open()) and self.reset_button.is_clicked_by(click_position):
             self.reset_button.handle_click(click_position)
             return
@@ -331,9 +335,6 @@ class MainPage(Page, RewardElement):
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
                     widget.handle_click(click_position)
-                    # Update the state vector regarding present decks
-                    self.get_state()[1 : self.deck_database.decks_length() + 1] = 1
-                    self.get_state()[self.deck_database.decks_length() + 1 : 6] = 0
                     return
 
         elif self.get_state()[12] == 0:
@@ -522,7 +523,7 @@ class MainPage(Page, RewardElement):
                         bounding_box=BoundingBox(42, 232, 600, 100), font_size=35, dimension=(100, 600, 3))
         if self.leads_to_external_website_popup_page.is_open():
             image = self.leads_to_external_website_popup_page.render(image)
-        if self.get_state()[7] == 1:
+        if self.get_state()[12] == 1:
             print_non_ascii(img=image,
                             text=f"Answer : {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].get_back()}",
                             bounding_box=BoundingBox(42, 332, 600, 100), font_size=35, dimension=(100, 600, 3))
@@ -582,6 +583,8 @@ class MainPage(Page, RewardElement):
             self.choose_deck_study_page.add_deck_popup.is_open())
                 and not (self.choose_deck_study_page.leads_to_external_website_popup.is_open())):
             self.deck_database.current_index = self.choose_deck_study_page.get_current_index()
+            self.get_state()[6:10] = 0
+            self.get_state()[self.deck_database.current_index + 6] = 1
             self.choose_deck_study_page.register_selected_reward(["study"])
             self.choose_deck_study_page.close()
             self.study()
@@ -624,5 +627,5 @@ class MainPage(Page, RewardElement):
         self.profile_database.default_profiles()
         for profile in self.profile_database.profiles:
             profile.deck_database.default_decks()
-        self.get_state()[1 : self.deck_database.decks_length() + 1] = 1
-        self.get_state()[self.deck_database.decks_length() + 1 : 6] = 0
+        self.get_state()[1:self.deck_database.decks_length()+1] = 1
+        self.get_state()[self.deck_database.decks_length()+1:6] = 0
