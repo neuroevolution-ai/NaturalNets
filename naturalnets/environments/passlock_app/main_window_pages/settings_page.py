@@ -28,7 +28,7 @@ class SettingsPage(Page, RewardElement):
 
     ### CONSTANTS ###
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "settings_page_img\settings_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "settings_page_img/settings_page.png")
     CHANGE_COLOR_BB = BoundingBox(175, 275, 175, 60)
     SYNC_PW_BB = BoundingBox(175, 365, 300, 60)
     AUTO_SYNC_BB = BoundingBox(1780, 480, 100, 60)
@@ -201,7 +201,7 @@ class SettingsPageChangeColourPopUp(PopUp):
             state[0]: the opened-state of this popup.
     """
     IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_colour_popup.png")
+        IMAGES_PATH, "settings_page_img/settings_page_colour_popup.png")
     BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
     def __init__(self):
@@ -219,7 +219,7 @@ class SettingsPageSyncPopUp(PopUp):
     """
     BOUNDING_BOX = BoundingBox(650, 340, 615, 325)
     IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_sny_popup.png")
+        IMAGES_PATH, "settings_page_img/settings_page_sny_popup.png")
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
@@ -237,7 +237,7 @@ class SettingsPageAboutPopUp(PopUp):
 
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     IMG_PATH = os.path.join(
-        IMAGES_PATH, "settings_page_img\settings_page_about_popup.png")
+        IMAGES_PATH, "settings_page_img/settings_page_about_popup.png")
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)

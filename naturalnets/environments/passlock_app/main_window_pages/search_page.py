@@ -208,12 +208,12 @@ class SearchPage(Page, RewardElement):
             self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
 
         img_paths = {
-            (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchtype.png"),
-            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone_option1.png"),                                             
-            (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_searchdone.png"),
-            (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_option1.png"),
-            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_option2.png"),
-            (False, False, False, True, True): os.path.join(IMAGES_PATH, "search_page_img\search_page_option3.png"),
+            (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchtype.png"),
+            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchdone_option1.png"),                                             
+            (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchdone.png"),
+            (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option1.png"),
+            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option2.png"),
+            (False, False, False, True, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option3.png"),
         }
 
         img_path = img_paths.get(state, self.IMG_PATH)
@@ -319,7 +319,7 @@ class SearchEditPopUp(PopUp):
             state[0]: the opened-state of this popup.
     """
     IMG_PATH = os.path.join(
-                IMAGES_PATH, "search_page_img\search_page_editpopup.png")
+                IMAGES_PATH, "search_page_img/search_page_editpopup.png")
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
