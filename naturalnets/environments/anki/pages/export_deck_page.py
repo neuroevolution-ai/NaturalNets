@@ -20,13 +20,12 @@ class ExportDeckPage(Page, RewardElement):
     This page is used to convert a deck to a .txt file and save it
     in the predefined path for .txt files. Reset button deletes all
     the decks, cancel button closes the window, export button converts
-    the selected item of the dropdown to .txt file
+    the selected item of the dropdown to .txt file. For testing however
+    the faked version of exporting is used
             state[0]: if this window is open
-            state[i]: if the i-th deck is exported with i = [1..8] decks are: 
-            {deck_name_1,.., deck_name_5, Dutch_numbers_0-100, German_numbers_0-100, Italian_numbers_0-100}
     """
 
-    STATE_LEN = 9
+    STATE_LEN = 1
     IMG_PATH = os.path.join(IMAGES_PATH, "export_deck_page.png")
 
     WINDOW_BB = BoundingBox(210, 200, 380, 278)
@@ -48,7 +47,9 @@ class ExportDeckPage(Page, RewardElement):
         # Decks of the current profile
         self.deck_database = self.profile_database.get_profiles()[
             self.profile_database.get_current_index()].get_deck_database()
-
+        
+        # Fake count variable
+        self.count_variable = 0 
         self.current_deck = None
         # Appears when the export path already has 5 decks
         self.five_decks_popup = FiveDecksPopup()
@@ -62,7 +63,7 @@ class ExportDeckPage(Page, RewardElement):
         self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
-        self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_exported_decks)
+        self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_count_index)
 
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
@@ -151,17 +152,21 @@ class ExportDeckPage(Page, RewardElement):
     """
 
     def export_deck(self):
+        # Faked version of exporting a deck
         self.register_selected_reward(["exported"])
-        if DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
+        # if DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH) == 5:
+        #    self.five_decks_popup.open()
+        if self.count_variable == 5:
             self.five_decks_popup.open()
         elif self.include_dropdown.get_selected_item() is None:
             return
-        elif DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
-                                        EXPORTED_DECKS_PATH):
-            self.name_exists_popup.open()
+        # elif DeckDatabase.is_file_exist(self.include_dropdown.get_selected_item().get_value().name,
+        #                                EXPORTED_DECKS_PATH):
+        #    self.name_exists_popup.open()
         else:
-            deck_index = DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
-            self.get_state()[deck_index] = 1
+            # deck_index = DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
+            # self.get_state()[deck_index] = 1
+            self.count_variable += 1
             self.close()
 
     """
@@ -173,7 +178,9 @@ class ExportDeckPage(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, "" if self.current_deck is None else f"{self.current_deck}", (self.DECK_TEXT_X, self.DECK_TEXT_Y),
                  font_scale=0.4)
-        put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
+        # put_text(img, f"Number of exported decks: {DeckDatabase.count_number_of_files(EXPORTED_DECKS_PATH)}",
+        #         (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
+        put_text(img, f"Number of exported decks: {self.count_variable}",
                  (self.DECK_NUMBER_X, self.DECK_NUMBER_Y), font_scale=0.5)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
@@ -195,9 +202,11 @@ class ExportDeckPage(Page, RewardElement):
 
     """
     Delete all exported decks
-    """
-
     def reset_exported_decks(self):
         DeckDatabase.reset_exported_decks()
         self.get_state()[1:9] = 0
         self.register_selected_reward(["reset"])
+    """
+
+    def reset_count_index(self):
+        self.count_variable = 0
