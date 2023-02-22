@@ -150,3 +150,7 @@ class AddDeckPopup(Page, RewardElement):
             self.text_button.handle_click(click_position)
         elif self.cancel_button.is_clicked_by(click_position):
             self.cancel_button.handle_click(click_position)
+
+    def reset_iterate_index(self):
+        self.deck_iterate_index = 0
+        

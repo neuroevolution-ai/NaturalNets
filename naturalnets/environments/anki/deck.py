@@ -88,11 +88,11 @@ class DeckDatabase:
         self.current_index: int = 0
 
     deck_names_to_index = {
-        "Deck_name_1": 1,
-        "Deck_name_2": 2,
-        "Deck_name_3": 3,
-        "Deck_name_4": 4,
-        "Deck_name_5": 5,
+        "Deck_Name_1": 1,
+        "Deck_Name_2": 2,
+        "Deck_Name_3": 3,
+        "Deck_Name_4": 4,
+        "Deck_Name_5": 5,
         "Dutch_numbers_0-100": 6,
         "German_numbers_0-100": 7,
         "Italian_numbers_0-100": 8
@@ -178,7 +178,7 @@ class DeckDatabase:
     def default_decks(self) -> None:
         card_1 = Card("Front side", "Back side", "Tag 1")
         card_2 = Card("This is a question", "This is the answer", "Tag 2")
-        deck_1 = Deck("Cool deck")
+        deck_1 = Deck("Deck_Name_4")
 
         deck_1.add_card(card_1)
         deck_1.add_card(card_2)
@@ -236,7 +236,7 @@ class DeckDatabase:
     def export_deck(deck: Deck) -> None:
         if not (DeckDatabase.is_file_exist(deck.name, EXPORTED_DECKS_PATH)) and (DeckDatabase.is_exporting_allowed()):
             path = os.path.join(EXPORTED_DECKS_PATH, f"{deck.name}.txt")
-            file = open(path, "w")
+            file = open(path, "w", encoding='utf-8')
             for card in deck.cards:
                 file.write(card.get_front() + " " + card.back)
                 file.write("\n")

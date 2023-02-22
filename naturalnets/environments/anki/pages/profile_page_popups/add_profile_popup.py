@@ -143,3 +143,6 @@ class AddProfilePopup(Page, RewardElement):
     """
     def is_open(self) -> int:
         return self.get_state()[0]
+
+    def reset_iterate_index(self):
+        self.profile_iterate_index = 0

@@ -139,6 +139,8 @@ class AnkiLoginPage(Page, RewardElement):
     Resets the current account and username password combination.
     """
     def reset(self):
+        self.username_iterate_index = 0
+        self.password_iterate_index = 0
         self.current_anki_account = None
         self.username_clipboard = None
         self.password_clipboard = None

@@ -622,6 +622,10 @@ class MainPage(Page, RewardElement):
         self.preferences_page.reset()
         self.opened_dd = None
         self.is_logo_enabled = False
+        self.anki_login.reset()
+        self.add_deck_popup_page.reset_iterate_index()
+        self.profile_page.add_profile_popup_page.reset_iterate_index()
+        self.profile_page.rename_profile_page.reset_iterate_index()
         for page in self.pages:
             page.close()
         self.profile_database.default_profiles()

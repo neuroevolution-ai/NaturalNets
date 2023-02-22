@@ -133,7 +133,6 @@ class ImportDeckPage(Page, RewardElement):
         self.register_selected_reward(["window", "close"])
         for child in self.get_children():
             child.close()
-        self.import_deck_popup.current_import_name = None
         self.import_deck_popup.get_state()[1] = 1
         self.import_deck_popup.get_state()[2:4] = 0
         self.get_state()[0] = 0
@@ -159,9 +158,7 @@ class ImportDeckPage(Page, RewardElement):
     """
 
     def import_deck(self):
-        if self.import_deck_popup.get_current_import_name() is None:
-            return
-        elif not (self.deck_database.is_deck_length_allowed()):
+        if not (self.deck_database.is_deck_length_allowed()):
             self.five_decks_popup.open()
             return
         elif self.deck_database.is_included(self.import_deck_popup.get_current_import_name()):
@@ -180,9 +177,8 @@ class ImportDeckPage(Page, RewardElement):
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if self.import_deck_popup.get_current_import_name() is not None:
-            put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
-                     font_scale=0.5)
+        put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
+                font_scale=0.5)
         if self.import_deck_popup.is_open():
             img = self.import_deck_popup.render(img)
         elif self.leads_to_external_website_popup.is_open():
@@ -220,14 +216,13 @@ class ImportDeckSelectPage(Page, RewardElement):
     CURRENT_DECK_Y = 192
     FIRST_DECK_X = 191
     FIRST_DECK_Y = 225
-
+    
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
         self.current_index = 0
         self.leads_to_external_website_popup = LeadsToExternalWebsitePopup()
-        self.current_import_name = None
         # Profile database to fetch current profile
         self.profile_database = ProfileDatabase()
         # Deck database to fetch the decks of the current profile
@@ -236,7 +231,7 @@ class ImportDeckSelectPage(Page, RewardElement):
         self.choose_button: Button = Button(self.CHOOSE_BB, self.set_import_name)
         self.help_button: Button = Button(self.HELP_BB, self.help)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
-
+        self.current_import_name = self.deck_database.get_deck_import_names()[self.current_index]
         self.set_reward_children([self.leads_to_external_website_popup])
 
     """
@@ -342,8 +337,7 @@ class ImportDeckSelectPage(Page, RewardElement):
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
-        if self.deck_database.get_deck_import_names()[self.current_index] is not None:
-            put_text(img, f"{self.deck_database.get_deck_import_names()[self.current_index]}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        put_text(img, f"{self.deck_database.get_deck_import_names()[self.current_index]}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
         for i, deck_name in enumerate(self.deck_database.get_deck_import_names()):
             put_text(img, f"{deck_name}", (self.FIRST_DECK_X, self.FIRST_DECK_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
         return img

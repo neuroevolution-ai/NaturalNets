@@ -133,3 +133,6 @@ class RenameProfilePopup(RewardElement, Page):
         put_text(img, "" if self.current_field_string is None else self.current_field_string,
                  (self.TEXT_X, self.TEXT_Y), font_scale=0.5)
         return img
+
+    def reset_iterate_index(self):
+        self.profile_iterate_index = 0

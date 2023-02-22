@@ -33,7 +33,8 @@ class Card:
     Check if the tag includes substring "edited"
     """
     def is_tag_edited(self) -> bool:
-        return "edited" in self.tag
+        if self.tag is not None:
+            return "edited" in self.tag
 
     """
     Append " edited" to the front side string
