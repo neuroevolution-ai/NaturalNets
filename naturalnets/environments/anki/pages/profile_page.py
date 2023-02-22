@@ -26,9 +26,11 @@ class ProfilePage(Page, RewardElement):
     button is actually a filler and does not affect the application logic
         State description:
             state[0]: if this window is open
-            state[i]: i-th menu item of the profiles bounding-box (6 > i > 0)
+            state[i]: there is a profile in the i-th position i = {1..5}
+            state[i+5]: the profile in the i-th position is selected and active i = {1..5}
     """
-    STATE_LEN = 6
+
+    STATE_LEN = 11
     IMG_PATH = os.path.join(IMAGES_PATH, "profile_page.png")
 
     WINDOW_BB = BoundingBox(130, 150, 555, 466)
@@ -179,6 +181,8 @@ class ProfilePage(Page, RewardElement):
         for button in self.button:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
+                self.get_state()[1 : self.profile_database.profiles_length() + 1] = 1
+                self.get_state()[self.profile_database.profiles_length() + 1 : 6] = 0
                 return
         if calculate_current_bounding_box(self.TABLE_X, self.TABLE_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length()).is_point_inside(click_position):
             self.change_current_profile_index(click_position)
@@ -186,12 +190,14 @@ class ProfilePage(Page, RewardElement):
     
     def open_profile(self):
         self.profile_database.set_current_index(self.current_index)
-        self.get_state()[1:6] = 0
-        self.get_state()[self.current_index + 1] = 1
+        self.get_state()[6:11] = 0
+        self.get_state()[self.current_index + 6] = 1
         self.register_selected_reward(["selected_profile_index", self.current_index])
     
     def reset_index(self):
         self.current_index = 0
-        self.get_state()[1] = 1
-        self.get_state()[2:6] = 0
+        self.get_state()[1:4] = 1
+        self.get_state()[4:6] = 0
+        self.get_state()[6] = 1
+        self.get_state()[7:11] = 0
         

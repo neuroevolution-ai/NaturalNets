@@ -19,12 +19,7 @@ class AboutPage(Page, RewardElement):
     STATE_LEN = 1
     WINDOW_BB = BoundingBox(0, 0, 834, 834)
     OK_BUTTON_BB = BoundingBox(713, 793, 118, 36)
-
     IMG_PATH = os.path.join(IMAGES_PATH, "about_page.png")
-    """
-        Singleton design pattern to ensure that at most one
-        AboutPage is present
-    """
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)

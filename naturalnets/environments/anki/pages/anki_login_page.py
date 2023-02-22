@@ -15,7 +15,8 @@ class AnkiLoginPage(Page, RewardElement):
     """
     State description:
             state[0]: if this window is open
-            state[i]: if the i-th field is filled i = [1:10] "one to ten including both"
+            state[i+1]: if the first field is filled with account_name_i i = {0..4}
+            state[i+6]: if the first field is filled with i-th account's password i = {0..4}
             state[11]: if it's logged in
     """
 
@@ -80,14 +81,14 @@ class AnkiLoginPage(Page, RewardElement):
 
     def open(self):
         self.get_state()[0] = 1
-        self.get_state()[1:12] = 0
+        self.get_state()[1:11] = 0
         self.username_clipboard = None
         self.password_clipboard = None
         self.register_selected_reward(["window", "open"])
 
     def close(self):
         self.register_selected_reward(["window", "close"])
-        self.get_state()[0:12] = 0
+        self.get_state()[0:11] = 0
         for child in self.get_children():
             child.close()
         self.username_clipboard = None
@@ -130,7 +131,6 @@ class AnkiLoginPage(Page, RewardElement):
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[11] = 1
-            self.get_state()[1:11] = 0
             self.close()
         else:
             self.failed_login.open()

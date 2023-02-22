@@ -22,7 +22,7 @@ class ImportDeckPage(Page, RewardElement):
             state[0]: if this window is open
     """
 
-    STATE_LEN = 1
+    STATE_LEN = 4
     IMG_PATH = os.path.join(IMAGES_PATH, "import_deck_page.png")
 
     WINDOW_BB = BoundingBox(70, 60, 689, 584)
@@ -56,6 +56,12 @@ class ImportDeckPage(Page, RewardElement):
 
         self.set_reward_children([self.leads_to_external_website_popup, self.import_deck_popup,
                                   self.five_decks_popup, self.name_exists_popup])
+        
+        self.import_names_to_index = {
+            "Dutch_numbers_0-100": 1,
+            "German_numbers_0-100": 2,
+            "Italian_numbers_0-100": 3
+        }
 
     """
     Provide reward for opening/closing this page, clicking help button and importing a deck 
@@ -104,6 +110,7 @@ class ImportDeckPage(Page, RewardElement):
     def open(self):
         self.register_selected_reward(["window", "open"])
         self.get_state()[0] = 1
+        
 
     """
     Opens the choose deck page to change the currently selected deck
@@ -169,6 +176,10 @@ class ImportDeckPage(Page, RewardElement):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.import_deck_popup.get_current_import_name() is not None:
+            #Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
+            self.get_state()[1:4] = 0
+            index = self.import_names_to_index[self.import_deck_popup.get_current_import_name()]
+            self.get_state()[index] = 1
             put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
                      font_scale=0.5)
         if self.import_deck_popup.is_open():
@@ -315,11 +326,13 @@ class ImportDeckSelectPage(Page, RewardElement):
         self.register_selected_reward(["import_name"])
         self.current_import_name = self.deck_database.get_deck_import_names()[self.current_index]
         self.close()
+    
     """
     Sets the current_index to 0
     """
     def reset_current_index(self):
         self.current_index = 0
+    
     """
     Renders the image of this popup
     """

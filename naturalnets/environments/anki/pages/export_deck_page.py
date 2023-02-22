@@ -22,9 +22,11 @@ class ExportDeckPage(Page, RewardElement):
     the decks, cancel button closes the window, export button converts
     the selected item of the dropdown to .txt file
             state[0]: if this window is open
+            state[i]: if the i-th deck is exported with i = [1..8] decks are: 
+            {deck_name_1,.., deck_name_5, Dutch_numbers_0-100, German_numbers_0-100, Italian_numbers_0-100}
     """
 
-    STATE_LEN = 41
+    STATE_LEN = 9
     IMG_PATH = os.path.join(IMAGES_PATH, "export_deck_page.png")
 
     WINDOW_BB = BoundingBox(210, 200, 380, 278)
@@ -155,7 +157,8 @@ class ExportDeckPage(Page, RewardElement):
                                          EXPORTED_DECKS_PATH):
             self.name_exists_popup.open()
         else:
-            DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
+            deck_index = DeckDatabase.export_deck(self.include_dropdown.get_selected_item().get_value())
+            self.get_state()[deck_index] = 1
             self.close()
 
     """
@@ -188,4 +191,5 @@ class ExportDeckPage(Page, RewardElement):
     """
     def reset_exported_decks(self):
         DeckDatabase.reset_exported_decks()
+        self.get_state()[1:9] = 0
         self.register_selected_reward(["reset"])

@@ -132,9 +132,9 @@ class ChooseDeckStudyPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[click_index + 1] = 0
+            self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
-            self.get_state()[click_index + 1] = 1
+            self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", self.current_index])
 
     """

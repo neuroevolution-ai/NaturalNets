@@ -39,12 +39,14 @@ class MainPage(Page, RewardElement):
     It is also the part, at which the user starts and proceeds with learning
     State description:
             state[0]: if this window is open
-            state[i]: i-th deck is selected i = {1, 2, 3, 4, 5}
-            state[6]: learning window is active
-            state[7]: answer is shown
+            state[i]  a deck in the i-th position is present i = {1, 2, 3, 4, 5}
+            state[i+5]: i-th deck is selected i = {1, 2, 3, 4, 5}
+            state[11]: learning window is active
+            state[12]: answer is shown
+            state[13]: book logo is shown
     """
 
-    STATE_LEN = 8
+    STATE_LEN = 14
     IMG_PATH = os.path.join(IMAGES_PATH, "main_page.png")
     IMG_PATH_STUDY = os.path.join(IMAGES_PATH, "study_page.png")
     NEXT_BUTTON_PATH = os.path.join(IMAGES_PATH, "next_button.png")
@@ -90,6 +92,7 @@ class MainPage(Page, RewardElement):
     CURRENT_ACCOUNT_Y = 162
     DECKS_X = 126
     DECKS_Y = 271
+    
     """
     Singleton design pattern to ensure that at most one
     MainPage is present
@@ -237,12 +240,12 @@ class MainPage(Page, RewardElement):
              self.at_least_one_card_popup_page, self.about_page,
              self.check_media_page, self.choose_deck_study_page, self.preferences_page, self.profile_page,
              self.export_deck_page, self.preferences_page, self.edit_card_page, self.add_card_page])
-        # Decides if the anki logo is shown
+        # Decides if the book logo is shown
         self.is_logo_enabled = False
 
     """
     Provide reward for opening/closing the main window, proceeding with learning, opening dropdowns
-    removing card and deck and enabling/disabling anki logo
+    removing card and deck and enabling/disabling book logo
     """
     @property
     def reward_template(self):
@@ -285,7 +288,7 @@ class MainPage(Page, RewardElement):
     else check if the state of get_state()[6] == 0 indicating learning is not active and table for decks is clicked
     then handle the click of changing the active deck. Else if the click lies within the bounding box of a dropdown
     then the dropdown is going to be opened. Else the click actions of widgets are handled 
-    according to the states get_state()[i] i = {6,7}.
+    according to the states get_state()[i] i = {11, 12}.
     """
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
@@ -312,7 +315,7 @@ class MainPage(Page, RewardElement):
             self.opened_dd = None
             return
 
-        elif self.DECKS_BB.is_point_inside(click_position) and self.get_state()[6] == 0:
+        elif self.DECKS_BB.is_point_inside(click_position) and self.get_state()[11] == 0:
             self.change_current_deck_index(click_position)
             return
 
@@ -324,13 +327,16 @@ class MainPage(Page, RewardElement):
                     self.register_selected_reward(
                         [self.dropdowns_to_str[self.bounding_boxes_to_dropdowns[bounding_box]], "opened"])
 
-        if self.get_state()[6] == 0:
+        if self.get_state()[11] == 0:
             for widget in self.main_page_widgets:
                 if widget.is_clicked_by(click_position):
                     widget.handle_click(click_position)
+                    # Update the state vector regarding present decks
+                    self.get_state()[1 : self.deck_database.decks_length() + 1] = 1
+                    self.get_state()[self.deck_database.decks_length() + 1 : 6] = 0
                     return
 
-        elif self.get_state()[7] == 0:
+        elif self.get_state()[12] == 0:
             for widget in self.study_page_widgets:
                 if widget is self.next_button:
                     pass
@@ -338,7 +344,7 @@ class MainPage(Page, RewardElement):
                     widget.handle_click(click_position)
                     return
 
-        elif self.get_state()[7] == 1:
+        elif self.get_state()[12] == 1:
             for widget in self.study_page_widgets:
                 if widget is self.show_answer_button:
                     pass
@@ -349,14 +355,14 @@ class MainPage(Page, RewardElement):
     Opens the add card page 
     """
     def add_card(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.add_card_page.open()
 
     """
     Opens the anki login page 
     """
     def login(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.anki_login.open()
 
     """
@@ -369,7 +375,7 @@ class MainPage(Page, RewardElement):
     Opens the import deck page
     """
     def import_file(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.import_deck_page.open()
 
     """
@@ -387,9 +393,9 @@ class MainPage(Page, RewardElement):
             click_index: int = floor((click_point[1] - self.UPPER_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
-            self.get_state()[self.deck_database.get_current_index() + 1] = 0
+            self.get_state()[self.deck_database.get_current_index() + 6] = 0
             self.deck_database.set_current_index(click_index)
-            self.get_state()[click_index + 1] = 1
+            self.get_state()[click_index + 6] = 1
             self.register_selected_reward(["decks", click_index])
 
     """
@@ -420,21 +426,21 @@ class MainPage(Page, RewardElement):
             self.no_card_popup_page.open()
         else:
             self.register_selected_reward(["study"])
-            self.get_state()[6] = 1
-            self.get_state()[7] = (
+            self.get_state()[11] = 1
+            self.get_state()[12] = (
                 1 if self.deck_database.get_decks()[self.deck_database.get_current_index()].get_is_answer_shown() else 0)
     """
     Switches back to the main page
     """
     def stop_study(self):
         self.register_selected_reward(["stop_study"])
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
 
     """
     Iterates to the next card of the current deck
     """
     def next_card(self):
-        self.get_state()[7] = 0
+        self.get_state()[12] = 0
         self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = False
         self.register_selected_reward(["next_card"])
         self.deck_database.get_decks()[self.deck_database.get_current_index()].increment_study_index()
@@ -443,7 +449,7 @@ class MainPage(Page, RewardElement):
     """
     def show_answer(self):
         self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = True
-        self.get_state()[7] = 1
+        self.get_state()[12] = 1
         self.register_selected_reward(["show_answer"])
     """
     Render the main page according to whether learning session is active or not
@@ -451,9 +457,9 @@ class MainPage(Page, RewardElement):
     def render(self, img: np.ndarray):
         # Updates the deck database
         self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        if self.get_state()[6] == 1:
+        if self.get_state()[11] == 1:
             img = self.render_study_page(img)
-        elif self.get_state()[6] == 0:
+        elif self.get_state()[11] == 0:
             img = self.render_deck_page(img)
         img = self.render_onto_current(img)
         return img
@@ -553,18 +559,19 @@ class MainPage(Page, RewardElement):
     def set_logo_shown(self):
         self.register_selected_reward(["logo_shown", not self.is_logo_enabled])
         self.is_logo_enabled = not self.is_logo_enabled
+        self.get_state()[13] = not self.get_state()[13]
     """
     Opens choose deck study page
     """
     def open_choose_deck_study_page(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.choose_deck_study_page.open()
 
     """
     Opens preferences page
     """
     def open_preferences_page(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.preferences_page.open()
 
     """
@@ -583,28 +590,28 @@ class MainPage(Page, RewardElement):
     Opens profile page
     """
     def open_switch_profile(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.profile_page.open()
 
     """
     Opens import deck page
     """
     def open_import_deck_page(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.import_deck_page.open()
 
     """
     Opens export deck page
     """
     def open_export_deck_page(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.export_deck_page.open()
 
     """
     Opens reset collection popup
     """
     def open_reset_collection_popup(self):
-        self.get_state()[6] = 0
+        self.get_state()[11] = 0
         self.reset_collection_popup_page.open()
 
     def reset_all(self):
@@ -617,3 +624,5 @@ class MainPage(Page, RewardElement):
         self.profile_database.default_profiles()
         for profile in self.profile_database.profiles:
             profile.deck_database.default_decks()
+        self.get_state()[1 : self.deck_database.decks_length() + 1] = 1
+        self.get_state()[self.deck_database.decks_length() + 1 : 6] = 0

@@ -64,6 +64,15 @@ class DeckDatabase:
     This class holds the currently selected decks, up to a maximum of 5
     """
 
+    """
+    Singleton design pattern to ensure that at most one
+    ProfileDatabase is present
+    """
+    def __new__(cls):
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(DeckDatabase, cls).__new__(cls)
+        return cls.instance
+    
     def __init__(self):
 
         # The names which a deck can get
@@ -78,6 +87,17 @@ class DeckDatabase:
         # Index of the currently selected deck
         self.current_index: int = 0
 
+    deck_names_to_index = {
+        "Deck_name_1": 1,
+        "Deck_name_2": 2,
+        "Deck_name_3": 3,
+        "Deck_name_4": 4,
+        "Deck_name_5": 5,
+        "Dutch_numbers_0-100": 6,
+        "German_numbers_0-100": 7,
+        "Italian_numbers_0-100": 8
+    }
+    
     def get_deck_names(self):
         return self.deck_names
 
@@ -221,3 +241,4 @@ class DeckDatabase:
                 file.write(card.get_front() + " " + card.back)
                 file.write("\n")
             file.close()
+        return DeckDatabase.deck_names_to_index[deck.name]
