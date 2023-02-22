@@ -33,7 +33,7 @@ class AutoPage(Page, RewardElement):
 
     ### Constants###
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "auto_page_img\\auto_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "auto_page_img", "auto_page.png")
     NAME_OF_PW_TEXTFIELD_BB = BoundingBox(280, 155, 1479, 75)
     PASSWORD_TEXTFIELD_BB = BoundingBox(280, 305, 1329, 75)
     GENERATE_PW_BB = BoundingBox(280, 513, 1479, 75)
