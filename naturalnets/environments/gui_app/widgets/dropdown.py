@@ -1,5 +1,5 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, List, Optional, Tuple, Callable
+from typing import Any, List, Optional, Callable
 
 import cv2
 import numpy as np

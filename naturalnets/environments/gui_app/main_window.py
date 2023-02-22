@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -55,7 +55,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                   self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
 
-        self.current_page = None
+        self.current_page: Optional[Page] = None
 
         self.is_figure_printer_button_visible = 0
 

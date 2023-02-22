@@ -39,15 +39,15 @@ class Page(StateElement, Clickable, HasPopups):
     clicks to all other elements of the app. A page has its own image that will be rendered
     onto the base app image."""
 
-    @abstractmethod
-    def handle_click(self, click_position: np.ndarray) -> None:
-        pass
-
     def __init__(self, state_len: int, bounding_box: BoundingBox, img_path: str):
         super().__init__(state_len)
         self._bounding_box = bounding_box
         self._img_path = img_path
         self.widgets: List[Widget] = []
+
+    @abstractmethod
+    def handle_click(self, click_position: np.ndarray) -> None:
+        pass
 
     def get_img_path(self) -> str:
         """Returns the path to this pages image file.

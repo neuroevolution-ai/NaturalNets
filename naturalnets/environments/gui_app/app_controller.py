@@ -18,7 +18,9 @@ class AppController:
     """
     SETTINGS_BUTTON_BB = BoundingBox(8, 0, 49, 18)
 
-    def __init__(self):
+    def __init__(self, nearest_widget_click: bool):
+        self.nearest_widget_click = nearest_widget_click
+
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow(self.main_window)
 
@@ -151,6 +153,23 @@ class AppController:
         """Delegates click-handling to the clicked component.
         """
         previous_reward_array = copy(self.reward_array)
+
+        if self.nearest_widget_click:
+            current_minimal_distance, current_clickable = np.inf, None
+
+            for clickable_element in self.get_clickable_elements():
+                clickable_distance = clickable_element.calculate_distance_to_click(click_position)
+
+                if clickable_distance < current_minimal_distance:
+                    current_minimal_distance = clickable_distance
+                    current_clickable = clickable_element
+
+            if current_clickable is None:
+                raise RuntimeError("GUIApp landed in a state where no clickable element was found. This should not "
+                                   "be possible, thus the implementation of get_clickable_elements() likely contains "
+                                   "a bug.")
+
+            click_position = current_clickable.get_click_point_inside()
 
         if self.settings_window.is_open():
             self.settings_window.handle_click(click_position)
