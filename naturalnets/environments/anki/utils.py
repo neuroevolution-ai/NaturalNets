@@ -18,7 +18,7 @@ def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_
     try:
         font = ImageFont.truetype("arial.ttf", font_size)
     except OSError:
-        font = ImageFont.truetype(ImageFont.load_default(), font_size)
+        font = ImageFont.load_default()
     draw.text((5, 5), text, fill="black", font=font)
     image = np.asarray(pil_image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
