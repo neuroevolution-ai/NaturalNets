@@ -244,13 +244,12 @@ class MainPage(Page, RewardElement):
         self.is_logo_enabled = False
 
     """
-    Provide reward for opening/closing the main window, proceeding with learning, opening dropdowns
+    Provide reward for proceeding with learning, opening dropdowns
     removing card and deck and enabling/disabling book logo
     """
     @property
     def reward_template(self):
         return {
-            "window": ["open", "close"],
             "next_card": 0,
             "show_answer": 0,
             "decks": [0, 1, 2, 3, 4],
@@ -404,14 +403,13 @@ class MainPage(Page, RewardElement):
     """
     def open(self):
         self.get_state()[0] = 1
-        self.register_selected_reward(["window", "open"])
 
     """
     Closes the main page
     """
     def close(self):
         self.get_state()[0] = 0
-        self.register_selected_reward(["window", "close"])
+
     """
     Returns true if this page is open
     """

@@ -1,6 +1,5 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, Callable, List, Optional
-from PIL import Image, ImageDraw
+from typing import Any, List, Optional, Tuple
 
 import cv2
 import numpy as np

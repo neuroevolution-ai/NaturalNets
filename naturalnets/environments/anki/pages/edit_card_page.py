@@ -88,14 +88,16 @@ class EditCardPage(RewardElement, Page):
     Appends " edited" to the front side of the current card 
     """
     def front_text_edit(self):
-        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_front_edited():
+        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()
+            [self.deck_database.get_current_index()].get_study_index()].is_front_edited():
             self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_front()
             self.register_selected_reward(["first_field_modified"])
     """
     Appends " edited" to the back side of the current card 
     """
     def back_text_edit(self):
-        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_back_edited():
+        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()
+            [self.deck_database.get_current_index()].get_study_index()].is_back_edited():
             self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_back()
             self.register_selected_reward(["second_field_modified"])
     """
@@ -103,7 +105,8 @@ class EditCardPage(RewardElement, Page):
     """
     
     def tags_text_edit(self):
-        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].is_tag_edited():
+        if not self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[self.deck_database.get_decks()
+            [self.deck_database.get_current_index()].get_study_index()].is_tag_edited():
             self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()[
                 self.deck_database.get_decks()[self.deck_database.get_current_index()].get_study_index()].edit_tag()
             self.register_selected_reward(["tags_field_modified"])

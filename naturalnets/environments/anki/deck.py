@@ -154,11 +154,11 @@ class DeckDatabase:
             if '\t' in line:
                 line = line.split('\t')
                 if len(line) == 2:
-                    deck.add_card(Card(line[0], line[1].removesuffix("\n"), ""))
+                    deck.add_card(Card(line[0], line[1].rstrip("\n"), ""))
             elif ' ' in line:
                 line = line.split(' ')
                 if len(line) == 2:
-                    deck.add_card(Card(line[0], line[1].removesuffix("\n"), ""))
+                    deck.add_card(Card(line[0], line[1].rstrip("\n"), ""))
         if not (self.is_included(deck_import_name)) and self.is_deck_length_allowed():
             self.decks.append(deck)
         file.close()
