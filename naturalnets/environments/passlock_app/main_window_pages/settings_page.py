@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -89,7 +90,7 @@ class SettingsPage(Page, RewardElement):
         self.add_widget(self.auto_sync_onoffbutton)
         self.add_widget(self.zoom_textfield)
 
-        print("SettingsPage created")
+        logging.debug("SettingsPage created")
 
     @property
     def reward_template(self):
@@ -105,7 +106,7 @@ class SettingsPage(Page, RewardElement):
         '''
         Enters the zoom level. Currently not implemented.
         '''
-        print("Enter zoom level")
+        logging.debug("Enter zoom level")
         
 
     def is_popup_open(self) -> bool:
@@ -188,12 +189,12 @@ class SettingsPage(Page, RewardElement):
         '''
         Opens the youtube link. Currently not implemented.
         '''
-        print("Open youtube link")
+        logging.debug("Open youtube link")
 
     def log_out(self):
         '''
         Logs out. Currently not implemented.'''
-        print("Log out")
+        logging.debug("Log out")
 
 
 class SettingsPageChangeColourPopUp(PopUp):
@@ -210,7 +211,7 @@ class SettingsPageChangeColourPopUp(PopUp):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        print("SettingsPageChangeColourPopUp created")
+        logging.debug("SettingsPageChangeColourPopUp created")
 
 
 class SettingsPageSyncPopUp(PopUp):
@@ -227,7 +228,7 @@ class SettingsPageSyncPopUp(PopUp):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        print("SettingsPageSyncPopUp created")
+        logging.debug("SettingsPageSyncPopUp created")
 
 
 class SettingsPageAboutPopUp(PopUp):
@@ -245,4 +246,4 @@ class SettingsPageAboutPopUp(PopUp):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        print("SettingsPageAboutPopUp created")
+        logging.debug("SettingsPageAboutPopUp created")

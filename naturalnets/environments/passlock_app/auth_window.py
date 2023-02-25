@@ -100,7 +100,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
 
         self.get_state()[0] = 0
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         Handles a click on the Authentication window. 
         If the login page is open it will handle the click on the login page.
@@ -108,11 +108,12 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         If on the signup page a login or signup is successful it will return True.
 
         args: click_position: the position of the click.
-        returns: True if a login or signup was successful
+        returns: True if a login or signup was successful, False otherwise.
         '''
 
         if (self.current_page.handle_click(click_position)):
             return True
+        return False
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """ 

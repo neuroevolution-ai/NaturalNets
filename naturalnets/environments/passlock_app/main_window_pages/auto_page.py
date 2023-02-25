@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -96,7 +97,7 @@ class AutoPage(Page, RewardElement):
         self.add_widget(self.enter_nameof_password_textfield)
         self.add_widget(self.enter_password_textfield)
 
-        print("AutoPage created")
+        logging.debug("AutoPage created")
 
     @property
     def reward_template(self):
@@ -133,8 +134,12 @@ class AutoPage(Page, RewardElement):
         '''
         self.enter_nameof_password_textfield.reset()
         self.enter_password_textfield.reset()
+        self.use_letters_checkbox.reset()
+        self.use_numbers_checkbox.reset()
+        self.use_special_chars_checkbox.reset()
+        self.pw_length_slider.reset()
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> None:
         '''
         Handles a click on the page.
 
@@ -160,16 +165,18 @@ class AutoPage(Page, RewardElement):
 
 
                     clickable.handle_click(click_position)
-                    break
+                return
 
     def copy_password(self):
         '''
         Method to copy the password to the clipboard.
         '''
-        print("copied password")
+        logging.debug("copied password")
 
     def generate_password(self):
         '''
         Method to generate a password. Currently just resets the page.
         '''
-        self.reset()
+        self.enter_password_textfield.reset()
+        self.enter_nameof_password_textfield.reset()
+

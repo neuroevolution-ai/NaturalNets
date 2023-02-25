@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Dict, List
 
@@ -157,7 +158,6 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> None:
         """Handles a click on the home window."""
 
-
         if(self.is_popup_open()):
             self.syncpopup.handle_click(click_position)
             return
@@ -239,7 +239,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''
         Sets the home window to darkmode.
         '''
-        print("Darkmode not implemented yet")
+        logging.debug("Darkmode not implemented yet")
 
 class SyncPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -256,5 +256,5 @@ class SyncPopUp(PopUp):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        print("SettingsPageAboutPopUp created")
+        logging.debug("SettingsPageAboutPopUp created")
 

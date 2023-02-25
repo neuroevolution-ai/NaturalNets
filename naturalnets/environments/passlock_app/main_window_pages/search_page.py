@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -122,7 +123,7 @@ class SearchPage(Page, RewardElement):
         self.add_widget(self.show_all_button)
         self.add_widget(self.search_textfield)
         
-        print("SearchPage created")
+        logging.debug("SearchPage created")
 
     @property
     def reward_template(self):
@@ -302,14 +303,14 @@ class SearchPage(Page, RewardElement):
         '''
         Method for copying the password.
         '''
-        print("copy password")
+        logging.debug("copy password")
         
 
     def delete_password(self):
         '''
         Method for deleting the password.
         '''
-        print("delete password")
+        logging.debug("delete password")
         
 
 
@@ -325,4 +326,4 @@ class SearchEditPopUp(PopUp):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)  
-        print("SearchEditPopUp created")
+        logging.debug("SearchEditPopUp created")
