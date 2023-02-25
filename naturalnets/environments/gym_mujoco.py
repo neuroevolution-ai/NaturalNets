@@ -2,7 +2,7 @@ from typing import Optional, Dict
 
 import gym
 import numpy as np
-from attr import define, field, validators
+from attrs import define, field, validators
 
 from naturalnets.environments.i_environment import IEnvironment, register_environment_class
 from naturalnets.tools.utils import rescale_values
