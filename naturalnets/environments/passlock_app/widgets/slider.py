@@ -12,9 +12,9 @@ class Slider(Widget):
     A slider widget. Clicking on it will change its state and execute the given action.
     '''
 
-    STATE_LEN = 0
+    STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, states, action: Callable = None):
+    def __init__(self, bounding_box: BoundingBox, states, action: Callable = None, color: tuple = (0,0,0)):
         """
         Args: 
             bounding_box (BoundingBox): The bounding box of the widget.
@@ -22,29 +22,29 @@ class Slider(Widget):
         """
         self.STATE_LEN = states
         self.action = action
+        self.color = color
         super().__init__(self.STATE_LEN, bounding_box)
-
+        
     def render(self, img: np.ndarray) -> np.ndarray:
         '''
         Renders the slider widget.
         '''
-
-        thickness = 2
-        color = (96, 134, 247)
+        thickness = -1
+        color = self.color
         radius = 16
         
         width = self._bounding_box.width-2*radius # width, height of the square part of the checkbox
         height = int(self._bounding_box.height/2)  # width, height of the square part of the checkbox
         
         x, y = self.get_bb().get_as_tuple()[0:2]
-        # Modify x, y, width, height s.t. the cross does not surpass the box-limits
+        # Modify x s.t. the radius of the circle is taken into account
         x += radius
-        if(self._state[2]): postion = (x +(int(width/2)*2)+10, y+height)
-        if(self._state[1]): postion = (x +(int(width/2)*1)+10, y+height)
-        if(self._state[0]): postion = (x+10, y+height)
 
-        cv2.circle(img, postion, radius, color, thickness=-1, lineType=cv2.LINE_AA)
+        i = self.get_slider_value()
+        cv2.circle(img, (x +(int(width/(self.STATE_LEN-1))*i)+10, y+height), radius, color, thickness=thickness, lineType=cv2.LINE_AA)
+
         return img
+    
 
     def handle_click(self, click_position: np.ndarray = None):
         '''
@@ -61,6 +61,7 @@ class Slider(Widget):
         '''
         if self.action is not None:
             return True
+        return False
 
     def set_slider_value(self, state):
         '''
@@ -68,7 +69,7 @@ class Slider(Widget):
         '''
         self.get_state()[state] = 1
 
-    def get_slider_value(self):
+    def get_slider_value(self) -> int:
         '''
         Returns the state of the slider.
         '''
@@ -79,3 +80,5 @@ class Slider(Widget):
         Resets the slider to the first state.
         '''
         self._state = np.zeros(self.STATE_LEN)
+        #sets the first state to 1
+        self._state[0] = 1
