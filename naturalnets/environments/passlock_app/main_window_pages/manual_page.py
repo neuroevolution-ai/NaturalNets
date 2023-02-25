@@ -1,4 +1,5 @@
 
+import logging
 import os
 from typing import List
 
@@ -64,7 +65,7 @@ class ManualPage(Page, RewardElement):
         self.add_widget(self.enter_nameof_password_textfield)
         self.add_widget(self.enter_secret_password_textfield)
         self.add_widget(self.show_password_button)
-        print("ManualPage init")
+        logging.debug("ManualPage init")
 
     @property
     def reward_template(self):
