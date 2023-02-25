@@ -19,7 +19,7 @@ class CheckBox(Widget):
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, action: Callable = None):
+    def __init__(self, bounding_box: BoundingBox, action: Callable = None, color:tuple = (0,0,0)):
         """
         Args:
             bounding_box (BoundingBox): The BoundingBox of this checkbox.
@@ -28,6 +28,8 @@ class CheckBox(Widget):
         super().__init__(self.STATE_LEN, bounding_box)
         self.action = action
         self._state[0] = 1
+        #the color of the cross is standard black
+        self.color = color
 
     def handle_click(self, click_position: np.ndarray):
         """Toggles the selected state of this checkbox and executes its action, if any.
@@ -52,7 +54,7 @@ class CheckBox(Widget):
         if self.is_selected():
             width = height = self._bounding_box.height  # width, height of the square part of the checkbox
             thickness = 2
-            cross_color = (96, 134, 247)
+            cross_color = self.color
 
             x, y = self.get_bb().get_as_tuple()[0:2]
             # Modify x, y, width, height s.t. the cross does not surpass the box-limits

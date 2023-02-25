@@ -19,10 +19,11 @@ class Textfield(Widget):
     #Constants
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None):
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color:tuple = (0,0,0)):
         super().__init__(self.STATE_LEN, bounding_box)
         self._bounding_box = bounding_box
         self._click_action = click_action
+        self.color = color
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         """ Executes this RadioButtons action, if any.
@@ -75,7 +76,7 @@ class Textfield(Widget):
             
             int  # width, height of the square part of the checkbox
             thickness = 2
-            color = (96, 134, 247)
+            color = self.color
             text = "Sample Text for Textfield"
             font = cv2.FONT_HERSHEY_SIMPLEX
 
