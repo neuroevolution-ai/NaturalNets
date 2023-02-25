@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
@@ -42,7 +43,7 @@ class SearchPage(Page, RewardElement):
 
     ### Constants###
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "search_page_img/search_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "search_page_img", "search_page.png")
     SEARCH_TEXTFIELD_BB = BoundingBox(280, 23, 1350, 75)
     SHOW_ALL_BUTTON_BB = BoundingBox(1630, 23, 120, 75)
 
@@ -66,8 +67,8 @@ class SearchPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         
-        self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, lambda: self.reset_show_all())
-        self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text())
+        self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, lambda: self.reset_show_all(), ORANGE_COLOR)
+        self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text(), ORANGE_COLOR)
         
         self.test1_button = ShowPasswordButton(self.TEST1_BUTTON_BB)
         self.test2_button = ShowPasswordButton(self.TEST2_BUTTON_BB)
@@ -208,12 +209,12 @@ class SearchPage(Page, RewardElement):
             self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
 
         img_paths = {
-            (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchtype.png"),
-            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchdone_option1.png"),                                             
-            (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_searchdone.png"),
-            (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option1.png"),
-            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option2.png"),
-            (False, False, False, True, True): os.path.join(IMAGES_PATH, "search_page_img/search_page_option3.png"),
+            (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchtype.png"),
+            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone_option1.png"),                                             
+            (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone.png"),
+            (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option1.png"),
+            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img"," search_page_option2.png"),
+            (False, False, False, True, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option3.png"),
         }
 
         img_path = img_paths.get(state, self.IMG_PATH)
@@ -319,7 +320,7 @@ class SearchEditPopUp(PopUp):
             state[0]: the opened-state of this popup.
     """
     IMG_PATH = os.path.join(
-                IMAGES_PATH, "search_page_img/search_page_editpopup.png")
+                IMAGES_PATH, "search_page_img", "search_page_editpopup.png")
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)

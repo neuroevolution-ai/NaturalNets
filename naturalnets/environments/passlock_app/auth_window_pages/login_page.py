@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
@@ -29,7 +30,7 @@ class LoginPage(Page, RewardElement):
     '''
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "login_page_img/login_page.png")
+    IMG_PATH = os.path.join(IMAGES_PATH, "login_page_img", "login_page.png")
     ENTER_PW_TEXTFIELD_BB = BoundingBox(288, 292, 1269, 75)
     SHOW_PW_BUTTON_BB = BoundingBox(1557, 292, 75, 75)
     LOGIN_BUTTON_BB = BoundingBox(903, 465, 112, 112)
@@ -39,8 +40,8 @@ class LoginPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.enter_pw_textfield = Textfield(self.ENTER_PW_TEXTFIELD_BB)
-        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB)
+        self.enter_pw_textfield = Textfield(self.ENTER_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, None, ORANGE_COLOR)
         self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())
 
         self.buttons: List[Button] = [self.login_button, self.show_pw_button]

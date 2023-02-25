@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
@@ -52,8 +53,8 @@ class AutoPage(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.enter_nameof_password_textfield = Textfield(
-            self.NAME_OF_PW_TEXTFIELD_BB)
-        self.enter_password_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB)
+            self.NAME_OF_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.enter_password_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
 
         self.copy_pw_button = Button(
             self.COPY_PW_BB, lambda: self.copy_password())
@@ -64,9 +65,9 @@ class AutoPage(Page, RewardElement):
         self.pw_length_slider = Slider(self.PW_LENGTH_BB, 3)
         self.pw_length_slider.set_slider_value(0)
 
-        self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB)
-        self.use_numbers_checkbox = CheckBox(self.USE_NUMBERS_BB)
-        self.use_special_chars_checkbox = CheckBox(self.USE_SPECIAL_CHARS_BB)
+        self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB, None, ORANGE_COLOR)
+        self.use_numbers_checkbox = CheckBox(self.USE_NUMBERS_BB, None, ORANGE_COLOR)
+        self.use_special_chars_checkbox = CheckBox(self.USE_SPECIAL_CHARS_BB, None, ORANGE_COLOR)
 
         self.sliders: List[Slider] = [self.pw_length_slider]
         self.checkboxes: List[CheckBox] = [self.use_letters_checkbox,

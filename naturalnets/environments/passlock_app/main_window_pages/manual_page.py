@@ -5,6 +5,7 @@ from typing import List
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
@@ -40,10 +41,10 @@ class ManualPage(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.enter_nameof_password_textfield = Textfield(
-            self.NAME_OF_PW_TEXTFIELD_BB)
+            self.NAME_OF_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.enter_secret_password_textfield = Textfield(
-            self.PASSWORD_TEXTFIELD_BB)
-        self.show_password_button = ShowPasswordButton(self.SHOW_PW_BB)
+            self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.show_password_button = ShowPasswordButton(self.SHOW_PW_BB, None, ORANGE_COLOR)
         self.create_pw_button = Button(
             self.CREATE_PW_BB, lambda: self.create_pw())
 
