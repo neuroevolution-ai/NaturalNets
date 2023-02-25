@@ -77,18 +77,6 @@ class SignupPage(Page, RewardElement):
             "show_pw_button": [False, True],
         }
 
-    def render(self, img):
-        """
-        Renders the page onto the given image. 
-
-        args: img - the image to render onto
-        returns: the rendered image
-        """
-        img = super().render(img)
-        #draw_rectangles_around_clickables([self.clickables], img)
-
-        return img
-
     def login(self):
         '''
         This function is called when the login button is clicked.
@@ -133,4 +121,4 @@ class SignupPage(Page, RewardElement):
                         self.register_selected_reward(
                             [self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
-                    break
+                    return False

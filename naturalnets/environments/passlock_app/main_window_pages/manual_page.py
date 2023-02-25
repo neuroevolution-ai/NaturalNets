@@ -102,20 +102,6 @@ class ManualPage(Page, RewardElement):
                 clickable.handle_click(click_position)
                 break
 
-    def render(self, img: np.ndarray)-> np.ndarray:
-        """
-        Renders the page onto the given image. 
-
-        args: img - the image to render onto
-        returns: the rendered image
-        """
-
-        img = super().render(img)
-        #draw_rectangles_around_clickables(
-        #    [self.clickables], img)
-        
-        return img
-
     def create_pw(self):
         '''
         Creates a password if the textfields are filled. Currently only resets the page.

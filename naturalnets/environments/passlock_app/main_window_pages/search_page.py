@@ -221,9 +221,6 @@ class SearchPage(Page, RewardElement):
         img_path = img_paths.get(state, self.IMG_PATH)
         self.set_image_path(img_path)
         img = super().render(img)
-        
-        #draw_rectangles_around_clickables(
-        #    [self.buttons, self.textfields], img)
 
         return img
 

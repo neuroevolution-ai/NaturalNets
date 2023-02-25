@@ -63,8 +63,7 @@ class AutoPage(Page, RewardElement):
             self.RESET_PW_BB, lambda: self.enter_password_textfield.reset())
         self.create_pw_button = Button(
             self.GENERATE_PW_BB, lambda: self.generate_password())
-        self.pw_length_slider = Slider(self.PW_LENGTH_BB, 3)
-        self.pw_length_slider.set_slider_value(0)
+        self.pw_length_slider = Slider(self.PW_LENGTH_BB, 10, color=ORANGE_COLOR)
 
         self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB, None, ORANGE_COLOR)
         self.use_numbers_checkbox = CheckBox(self.USE_NUMBERS_BB, None, ORANGE_COLOR)
@@ -108,25 +107,12 @@ class AutoPage(Page, RewardElement):
             "enter_nameof_password_textfield": [False, True],
             "enter_password_textfield": [False, True],
             # is manually set to 3 for the different states of the slider because this is setup before the slider is created
-            "pw_length_slider": [i for i in range(3)],
+            "pw_length_slider": [i for i in range(10)],
             "use_letters_checkbox": [False, True],
             "use_numbers_checkbox": [False, True],
             "use_special_chars_checkbox": [False, True],
 
         }
-
-    def render(self, img:np.ndarray) -> np.ndarray:
-        """
-        Renders the page onto the given image. 
-        The image changes depending on the state of the page.
-
-        args: img - the image to render onto
-        returns: the rendered image
-        """
-        
-        img = super().render(img)
-        #draw_rectangles_around_clickables([self.clickables], img)
-        return img
 
     def reset(self):
         '''

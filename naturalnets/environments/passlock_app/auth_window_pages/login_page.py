@@ -76,19 +76,6 @@ class LoginPage(Page, RewardElement):
         '''
         logging.debug("login")
 
-    def render(self, img) -> np.ndarray:
-        """
-        Renders the page onto the given image. 
-
-        args: img - the image to render onto
-        returns: the rendered image
-        """
-        img = super().render(img)
-        #draw_rectangles_around_clickables(
-        #    [self.buttons, self.textfields], img)
-
-        return img
-
     def reset(self):
         '''
         This function is called to reset the login page.
@@ -118,4 +105,4 @@ class LoginPage(Page, RewardElement):
                         self.register_selected_reward(
                             [self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
-                    break
+                    return False
