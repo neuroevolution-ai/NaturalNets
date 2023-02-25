@@ -66,3 +66,6 @@ class CheckBox(Widget):
             cv2.line(img, (x, y), (x + width, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
             cv2.line(img, (x + width, y), (x, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
         return img
+    
+    def reset(self):
+        self.get_state()[0] = 1

@@ -73,3 +73,9 @@ class Slider(Widget):
         Returns the state of the slider.
         '''
         return np.argmax(self.get_state())
+
+    def reset(self):
+        '''
+        Resets the slider to the first state.
+        '''
+        self._state = np.zeros(self.STATE_LEN)
