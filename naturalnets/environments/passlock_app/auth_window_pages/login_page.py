@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -57,7 +58,7 @@ class LoginPage(Page, RewardElement):
 
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
-        print("Login Page Created")
+        logging.debug("Login Page Created")
 
     @property
     def reward_template(self):
@@ -73,7 +74,7 @@ class LoginPage(Page, RewardElement):
         '''
         This function is called when the login button is clicked.
         '''
-        print("login")
+        logging.debug("login")
 
     def render(self, img) -> np.ndarray:
         """

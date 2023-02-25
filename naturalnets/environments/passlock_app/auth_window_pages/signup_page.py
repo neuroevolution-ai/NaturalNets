@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -63,7 +64,7 @@ class SignupPage(Page, RewardElement):
         self.add_widget(self.enter_email_textfield)
         self.add_widget(self.enter_pw_textfield)
         self.add_widget(self.show_pw_button)
-        print("SignupPage init")
+        logging.debug("SignupPage init")
 
     @property
     def reward_template(self):
@@ -92,13 +93,13 @@ class SignupPage(Page, RewardElement):
         '''
         This function is called when the login button is clicked.
         '''
-        print("login")
+        logging.debug("login")
 
     def signup(self):
         '''
         This function is called when the signup button is clicked.
         '''
-        print("signup")
+        logging.debug("signup")
 
     def reset(self):
         '''
