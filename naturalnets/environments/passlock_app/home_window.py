@@ -151,34 +151,35 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         """
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
-    def handle_click(self, click_position: np.ndarray) -> None:
+    def handle_click(self, click_position: np.ndarray) -> bool:
         """Handles a click on the home window."""
 
         if(self.is_popup_open()):
             self.syncpopup.handle_click(click_position)
-            return
-
+            return False
+        
+        #If the App is on the manual or auto page, the click is handled differently. In this case the top menu should also be clickable
         if (self.current_page == self.manual or self.current_page == self.auto):
+            ##Pages UI Area is the area where the the page and not the menu is displayed
             if self.current_page_blocks_click() or PAGES_UI_AREA_BB.is_point_inside(click_position):
-                self.current_page.handle_click(click_position)
-                return
+                return self.current_page.handle_click(click_position)
 
-            # Check if menu is clicked
+            # Check if side or top menu is clicked
             if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position)
                     or PAGES_SELECT_AREA_TOP_BB.is_point_inside(click_position))):
 
                 self.handle_menu_click(click_position)
-                return
+                return False
+        #In the other cases the click is handled normally and only the side menu is clickable
         else:
-
-            if self.current_page_blocks_click() or WINDOW_AREA_BB.is_point_inside(click_position):
-                if (self.current_page.handle_click(click_position)):
-                    return True
-
-            # Check if menu is clicked
+            # Check if the side menu is clicked
             if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position))):
                 self.handle_menu_click(click_position)
-                return
+                return False
+            
+            ##Window Area is the area of the entire app
+            if self.current_page_blocks_click() or WINDOW_AREA_BB.is_point_inside(click_position):
+                return self.current_page.handle_click(click_position)
 
     def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
@@ -197,9 +198,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''
         Returns True if a popup is open.
         '''
-        if (self.syncpopup.is_open()):
-            return True
-        return False
+        return bool(self.syncpopup.is_open())
 
     def render(self, img: np.ndarray):
         """ 
@@ -209,17 +208,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         if (self.is_popup_open()):
             img = self.syncpopup.render(img)
             return img
-
-        if (self.get_state()[1] == 1):
-            img = self.manual.render(img)
-        if (self.get_state()[2] == 1):
-            img = self.auto.render(img)
-        if (self.get_state()[3] == 1):
-            img = self.search.render(img)
-        if (self.get_state()[4] == 1):
-            img = self.settings.render(img)
-
-        #draw_rectangles_around_clickables([self.buttons], img)
+        
+        img = self.current_page.render(img)
 
         return img
 

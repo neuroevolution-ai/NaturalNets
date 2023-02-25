@@ -14,8 +14,7 @@ from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables)
+
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -85,7 +84,7 @@ class ManualPage(Page, RewardElement):
         '''
         self.enter_nameof_password_textfield.set_selected(False)
         self.enter_secret_password_textfield.set_selected(False)
-        self.show_password_button.showing_password = False
+        self.show_password_button.set_selected(False)
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -96,9 +95,13 @@ class ManualPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
-                #If the clickable has a selected state, register the reward when it is selected
-                if(isinstance(clickable, StateElement)):
+                try:
+                    rew_key = self.reward_widgets_to_str[clickable]
+                    #If the clickable has a selected state, register the reward when it is selected
                     self.register_selected_reward([self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue     
+                   
                 clickable.handle_click(click_position)
                 break
 
@@ -107,4 +110,5 @@ class ManualPage(Page, RewardElement):
         Creates a password if the textfields are filled. Currently only resets the page.
         '''
         if (self.enter_nameof_password_textfield.is_selected() and self.enter_secret_password_textfield.is_selected()):
-            self.reset()
+            self.enter_nameof_password_textfield.reset()
+            self.enter_secret_password_textfield.reset()

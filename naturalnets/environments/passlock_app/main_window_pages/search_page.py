@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -48,9 +48,12 @@ class SearchPage(Page, RewardElement):
     SEARCH_TEXTFIELD_BB = BoundingBox(280, 23, 1350, 75)
     SHOW_ALL_BUTTON_BB = BoundingBox(1630, 23, 120, 75)
 
-    TEST1_BUTTON_BB = BoundingBox(145, 135, 1350, 60)
-    TEST2_BUTTON_BB = BoundingBox(145, 220, 1350, 60)
-    TEST3_BUTTON_BB = BoundingBox(145, 305, 1350, 60)
+    ORIGINAL_TEST1_BUTTON_BB = BoundingBox(145, 135, 1350, 60)
+    ORIGINAL_TEST2_BUTTON_BB = BoundingBox(145, 220, 1350, 60)
+    ORIGINAL_TEST3_BUTTON_BB = BoundingBox(145, 305, 1350, 60)
+
+    MODIFIED_TEST2_BUTTON_BB = BoundingBox(145, 270, 1350, 60)
+    MODIFIED_TEST3_BUTTON_BB = BoundingBox(145, 350, 1350, 60)
 
     TEST1_COPY_BB = BoundingBox(1668, 192, 50, 50)
     TEST2_COPY_BB = BoundingBox(1668, 280, 50, 50)
@@ -71,16 +74,16 @@ class SearchPage(Page, RewardElement):
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, lambda: self.reset_show_all(), ORANGE_COLOR)
         self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, lambda: self.reset_search_text(), ORANGE_COLOR)
         
-        self.test1_button = ShowPasswordButton(self.TEST1_BUTTON_BB)
-        self.test2_button = ShowPasswordButton(self.TEST2_BUTTON_BB)
-        self.test3_button = ShowPasswordButton(self.TEST3_BUTTON_BB)
+        self.test1_button = ShowPasswordButton(self.ORIGINAL_TEST1_BUTTON_BB)
+        self.test2_button = ShowPasswordButton(self.ORIGINAL_TEST2_BUTTON_BB)
+        self.test3_button = ShowPasswordButton(self.ORIGINAL_TEST3_BUTTON_BB)
 
         self.test1_copy_button = Button(
-            self.TEST1_COPY_BB, lambda: self.copy_password())
+            self.TEST1_COPY_BB, lambda: self.copy_password)
         self.test2_copy_button = Button(
-            self.TEST2_COPY_BB, lambda: self.copy_password())
+            self.TEST2_COPY_BB, lambda: self.copy_password)
         self.test3_copy_button = Button(
-            self.TEST3_COPY_BB, lambda: self.copy_password())
+            self.TEST3_COPY_BB, lambda: self.copy_password)
 
         self.edit_popup = SearchEditPopUp()
         self.test1_edit_button = Button(
@@ -91,11 +94,11 @@ class SearchPage(Page, RewardElement):
             self.TEST3_EDIT_BB, lambda: self.edit_popup.open_popup())
 
         self.test1_delete_button = Button(
-            self.TEST1_DELETE_BB, lambda: self.delete_password())
+            self.TEST1_DELETE_BB, lambda: self.delete_password)
         self.test2_delete_button = Button(
-            self.TEST2_DELETE_BB, lambda: self.delete_password())
+            self.TEST2_DELETE_BB, lambda: self.delete_password)
         self.test3_delete_button = Button(
-            self.TEST3_DELETE_BB, lambda: self.delete_password())
+            self.TEST3_DELETE_BB, lambda: self.delete_password)
 
         self.buttons: List[Widget] = [self.show_all_button, self.test1_button, self.test2_button, self.test3_button,
                                       self.test1_copy_button, self.test2_copy_button, self.test3_copy_button,
@@ -121,6 +124,9 @@ class SearchPage(Page, RewardElement):
         self.add_child(self.edit_popup)
 
         self.add_widget(self.show_all_button)
+        self.add_widget(self.test1_button)
+        self.add_widget(self.test2_button)
+        self.add_widget(self.test3_button)
         self.add_widget(self.search_textfield)
         
         logging.debug("SearchPage created")
@@ -142,11 +148,11 @@ class SearchPage(Page, RewardElement):
         '''
         Resets the page to its default state.
         '''
-        self.search_textfield.set_selected(False)
-        self.show_all_button.showing_password = False
-        self.test1_button.showing_password = False
-        self.test2_button.showing_password = False
-        self.test3_button.showing_password = False
+        self.search_textfield.reset()
+        self.show_all_button.reset()
+        self.test1_button.reset()
+        self.test2_button.reset
+        self.test3_button.reset()
         self.edit_popup.reset()
 
     def reset_search_text(self):
@@ -176,9 +182,9 @@ class SearchPage(Page, RewardElement):
             if button != password_button:
                 button.showing_password = False
         
-        self.test1_button._bounding_box = BoundingBox(145, 135, 1350, 60)
-        self.test2_button._bounding_box = BoundingBox(145, 220, 1350, 60)
-        self.test3_button._bounding_box = BoundingBox(145, 305, 1350, 60)
+        self.test1_button._bounding_box = self.ORIGINAL_TEST1_BUTTON_BB
+        self.test2_button._bounding_box = self.ORIGINAL_TEST2_BUTTON_BB
+        self.test3_button._bounding_box = self.ORIGINAL_TEST3_BUTTON_BB
 
   
     def render(self, img: np.ndarray)-> np.ndarray:
@@ -203,18 +209,18 @@ class SearchPage(Page, RewardElement):
         )
 
         if self.test1_button.is_selected():
-            self.test2_button._bounding_box = BoundingBox(145, 270, 1350, 60)
-            self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
+            self.test2_button._bounding_box = self.MODIFIED_TEST2_BUTTON_BB
+            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
         
         if self.test2_button.is_selected():
-            self.test3_button._bounding_box = BoundingBox(145, 350, 1350, 60)
+            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
 
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchtype.png"),
             (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone_option1.png"),                                             
             (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone.png"),
             (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option1.png"),
-            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img"," search_page_option2.png"),
+            (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option2.png"),
             (False, False, False, True, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option3.png"),
         }
 
@@ -288,7 +294,7 @@ class SearchPage(Page, RewardElement):
             return True
         return False
 
-    def get_open_popup(self) -> PopUp:
+    def get_open_popup(self) -> Optional[PopUp]:
         '''
         Returns the open popup.
         returns: Popup

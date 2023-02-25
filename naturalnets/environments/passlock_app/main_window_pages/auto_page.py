@@ -58,7 +58,7 @@ class AutoPage(Page, RewardElement):
         self.enter_password_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
 
         self.copy_pw_button = Button(
-            self.COPY_PW_BB, lambda: self.copy_password())
+            self.COPY_PW_BB, lambda: self.copy_password)
         self.reset_pw_button = Button(
             self.RESET_PW_BB, lambda: self.enter_password_textfield.reset())
         self.create_pw_button = Button(

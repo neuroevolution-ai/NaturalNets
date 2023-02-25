@@ -66,3 +66,9 @@ class ShowPasswordButton(Widget, Button):
     
     def is_selected(self) -> bool:
         return self.showing_password
+
+    def set_selected(self, selected: bool):
+        self.showing_password = selected
+    
+    def reset(self):
+        self.showing_password = False
