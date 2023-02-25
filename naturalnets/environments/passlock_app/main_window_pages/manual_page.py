@@ -42,28 +42,28 @@ class ManualPage(Page, RewardElement):
 
         self.enter_nameof_password_textfield = Textfield(
             self.NAME_OF_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.enter_secret_password_textfield = Textfield(
+        self.enter_secret_pw_textfield = Textfield(
             self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.show_password_button = ShowPasswordButton(self.SHOW_PW_BB, None, ORANGE_COLOR)
+        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_secret_pw_textfield), ORANGE_COLOR)
         self.create_pw_button = Button(
             self.CREATE_PW_BB, lambda: self.create_pw())
 
         self.buttons: List[Button] = [
-            self.create_pw_button, self.show_password_button]
+            self.create_pw_button, self.show_pw_button]
         self.textfields: List[Textfield] = [
-            self.enter_nameof_password_textfield, self.enter_secret_password_textfield]
+            self.enter_nameof_password_textfield, self.enter_secret_pw_textfield]
         self.clickables = self.buttons + self.textfields
 
         self.reward_widgets_to_str = {
             self.enter_nameof_password_textfield: "enter_nameof_password_textfield",
-            self.enter_secret_password_textfield: "enter_secret_password_textfield",
-            self.show_password_button: "show_password_button",
+            self.enter_secret_pw_textfield: "enter_secret_password_textfield",
+            self.show_pw_button: "show_password_button",
         }
 
 
         self.add_widget(self.enter_nameof_password_textfield)
-        self.add_widget(self.enter_secret_password_textfield)
-        self.add_widget(self.show_password_button)
+        self.add_widget(self.enter_secret_pw_textfield)
+        self.add_widget(self.show_pw_button)
         logging.debug("ManualPage init")
 
     @property
@@ -83,8 +83,8 @@ class ManualPage(Page, RewardElement):
         Resets the page to its initial state.
         '''
         self.enter_nameof_password_textfield.set_selected(False)
-        self.enter_secret_password_textfield.set_selected(False)
-        self.show_password_button.set_selected(False)
+        self.enter_secret_pw_textfield.set_selected(False)
+        self.show_pw_button.set_selected(False)
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -109,6 +109,6 @@ class ManualPage(Page, RewardElement):
         '''
         Creates a password if the textfields are filled. Currently only resets the page.
         '''
-        if (self.enter_nameof_password_textfield.is_selected() and self.enter_secret_password_textfield.is_selected()):
+        if (self.enter_nameof_password_textfield.is_selected() and self.enter_secret_pw_textfield.is_selected()):
             self.enter_nameof_password_textfield.reset()
-            self.enter_secret_password_textfield.reset()
+            self.enter_secret_pw_textfield.reset()

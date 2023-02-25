@@ -16,11 +16,9 @@ class PopUp(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
-    BOUNDING_BOX = BoundingBox(0, 0, 0, 0)
-    IMG_PATH = os.path.join(IMAGES_PATH, "")
 
-    def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
+    def __init__(self, bounding_box: BoundingBox, img_path: str):
+        Page.__init__(self, self.STATE_LEN, bounding_box, img_path)
         RewardElement.__init__(self)
 
     @property
@@ -28,20 +26,6 @@ class PopUp(Page, RewardElement):
         return {
             "popup": ["open", "close"]
         }
-
-    def render(self, img: np.ndarray) -> np.ndarray:
-        '''
-        Renders the popup on the given image.
-
-        Args: 
-            img: The image to render the popup on.
-        Returns:
-            The image with the rendered popup.
-        '''
-
-        img = super().render(img)
-
-        return img
 
     def reset(self):
         '''

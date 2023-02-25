@@ -11,7 +11,7 @@ from attr import define, field, validators
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.gui_app import FakeBugOptions
-from naturalnets.environments.i_environment import (IEnvironment,
+from naturalnets.environments.i_environment import (IEnvironment, IGUIEnvironment,
                                                     register_environment_class)
 from naturalnets.environments.passlock_app.app_controller import \
     PasslockAppController
@@ -19,7 +19,7 @@ from naturalnets.tools.utils import rescale_values
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class AppCfg:
+class PasslockAppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(
         validator=[validators.instance_of(int), validators.gt(0)])
@@ -35,7 +35,7 @@ class AppCfg:
 
 
 @register_environment_class
-class PasslockApp(IEnvironment):
+class PasslockApp(IGUIEnvironment):
 
     screen_width: int = 1920
     screen_height: int = 987
@@ -46,7 +46,7 @@ class PasslockApp(IEnvironment):
             logging.warning("'env_seed' is not used in the GUIApp environment")
         t0 = time.time()
 
-        self.config = AppCfg(**configuration)
+        self.config = PasslockAppCfg(**configuration)
 
         self.app_controller = PasslockAppController()
 
@@ -102,7 +102,7 @@ class PasslockApp(IEnvironment):
 
         return self.get_observation(), rew, done, {'states_info': self.app_controller.get_states_info()}
 
-    def _render_image(self):
+    def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
         image = np.zeros(img_shape, dtype=np.uint8)
         image = self.app_controller.render(image)
@@ -110,7 +110,7 @@ class PasslockApp(IEnvironment):
         return image
 
     def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
-        image = self._render_image()
+        image = self.render_image()
 
         # Draw the click position
         cv2.circle(
@@ -136,69 +136,6 @@ class PasslockApp(IEnvironment):
         cv2.imshow(self.window_name, image)
         cv2.waitKey(1)
 
-    def click_event(self, event, x, y, _flags, _params):
-        """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.action = np.array([x, y])
-            self.clicked = True
-
-    def interactive_mode(self, print_reward: bool = False, save_screenshots: bool = False, save_state_vector: bool = False):
-        # Create the window here first, so that the callback can be registered
-        # The callback simply registers the clicks of a user
-        cv2.namedWindow(self.window_name)
-        cv2.setMouseCallback(self.window_name, self.click_event)
-
-        # Create out directory if it does not exist yet (this directory should be added to .gitignore)
-        if (save_screenshots or save_state_vector) and not os.path.exists('out'):
-            os.makedirs('out')
-
-        while True:
-            current_action = None
-            if self.clicked:
-                current_action = self.action
-                ob, rew, _, info = self.step([rescale_values(current_action[0], previous_low=0, previous_high=1919, new_high=1, new_low=-1),
-                                             rescale_values(current_action[1], previous_low=0, previous_high=987, new_high=1, new_low=-1)])
-                self.clicked = False
-
-                if print_reward:
-                    print(f"Reward: {rew}")
-
-                if save_state_vector:
-                    states = []
-                    for state_info, state in zip(info['states_info'], ob):
-                        states.append(str(state_info) + " " + str(state))
-
-                    with jsonlines.open(os.path.join('out', 'state_vector.jsonl'), 'w') as writer:
-                        writer.write_all(states)
-
-            image = self._render_image()
-
-            if save_screenshots:
-                cv2.imwrite(os.path.join('out', 'screenshot.png'), image)
-
-            if current_action is not None:
-                # Draw the position of the click as a black circle;
-                # thickness=-1 will fill the circle shape with the specified color
-                cv2.circle(
-                    image,
-                    (current_action[0], current_action[1]), radius=4, color=Color.BLACK.value, thickness=-1
-                )
-
-            cv2.imshow(self.window_name, image)
-
-            while True:
-                # Waits 50ms for a key press (notice that this does not include mouse clicks,
-                # therefore we use the callback method for the clicks)
-                key = cv2.waitKey(50)
-
-                # Keycode 27 is the ESC key
-                if key == 27:
-                    cv2.destroyAllWindows()
-
-                if self.clicked:
-                    # The user clicked, thus use the position for a step() and render the new image
-                    break
-
     def get_number_inputs(self) -> int:
         return self.app_controller.get_total_state_len()
 
@@ -223,3 +160,18 @@ class PasslockApp(IEnvironment):
 
     def get_observation(self):
         return self.get_state()
+    
+    def get_screen_height(self) -> int:
+        return self.screen_height
+    
+    def get_screen_width(self) -> int:
+        return self.screen_width
+    
+    def get_screen_size(self) -> int:
+        pass
+
+    def get_observation_dict(self) -> dict:
+        return super().get_observation_dict()
+
+    def get_window_name(self) -> str:
+        return "PasslockApp"

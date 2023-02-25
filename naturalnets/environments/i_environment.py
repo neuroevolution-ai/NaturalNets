@@ -60,6 +60,14 @@ class IGUIEnvironment(IEnvironment):
         pass
 
     @abc.abstractmethod
+    def get_screen_width(self) -> int:
+        pass
+
+    @abc.abstractmethod
+    def get_screen_height(self) -> int:
+        pass
+
+    @abc.abstractmethod
     def render_image(self) -> np.ndarray:
         pass
 

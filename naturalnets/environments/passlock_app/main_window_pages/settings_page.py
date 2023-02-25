@@ -50,7 +50,7 @@ class SettingsPage(Page, RewardElement):
 
         self.zoom_textfield = Textfield(
             self.ZOOM_TEXTFIELD_BB,
-            lambda: self.enter_zoom_level(), 
+            lambda: self.enter_zoom_level, 
             ORANGE_COLOR
         )
 
@@ -62,7 +62,7 @@ class SettingsPage(Page, RewardElement):
 
         self.about_button = Button(
             self.ABOUT_BB, lambda: self.about_popup.open_popup())
-        self.yt_button = Button(self.YT_BB, lambda: self.open_youtube_link())
+        self.yt_button = Button(self.YT_BB, lambda: self.open_youtube_link)
         self.log_out_button = Button(self.LOG_OUT_BB, lambda: self.log_out())
 
         self.add_child(self.about_popup)
@@ -113,14 +113,8 @@ class SettingsPage(Page, RewardElement):
         '''
         Returns True if a popup is open.
         '''
-        if (self.about_popup.is_open()):
-            return True
-        if (self.sync_popup.is_open()):
-            return True
-        if (self.change_colour_popup.is_open()):
-            return True
-
-        return False
+        return self.about_popup.is_open() or self.sync_popup.is_open() or self.change_colour_popup.is_open()
+ 
 
     def get_open_popup(self) -> PopUp:
         '''
@@ -167,7 +161,7 @@ class SettingsPage(Page, RewardElement):
 
         if (self.is_popup_open()):
             self.get_open_popup().handle_click(click_position)
-            return
+            return False
 
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
@@ -182,7 +176,7 @@ class SettingsPage(Page, RewardElement):
                         [self.reward_widgets_to_str[clickable], clickable.is_selected()])
 
                 clickable.handle_click(click_position)
-                break
+                return False
 
     def open_youtube_link(self):
         '''
@@ -207,8 +201,7 @@ class SettingsPageChangeColourPopUp(PopUp):
     BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
+        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
 
         logging.debug("SettingsPageChangeColourPopUp created")
 
@@ -224,8 +217,7 @@ class SettingsPageSyncPopUp(PopUp):
         IMAGES_PATH, "settings_page_img", "settings_page_sny_popup.png")
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
+        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
 
         logging.debug("SettingsPageSyncPopUp created")
 
@@ -242,7 +234,6 @@ class SettingsPageAboutPopUp(PopUp):
         IMAGES_PATH, "settings_page_img", "settings_page_about_popup.png")
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
+        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
 
         logging.debug("SettingsPageAboutPopUp created")

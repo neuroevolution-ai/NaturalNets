@@ -14,13 +14,13 @@ class Slider(Widget):
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, states, action: Callable = None, color: tuple = (0,0,0)):
+    def __init__(self, bounding_box: BoundingBox, state_len, action: Callable = None, color: tuple = (0,0,0)):
         """
         Args: 
             bounding_box (BoundingBox): The bounding box of the widget.
             action (Callable, optional): The action to be executed when the widget is clicked. Defaults to None.
         """
-        self.STATE_LEN = states
+        self.STATE_LEN = state_len
         self.action = action
         self.color = color
         super().__init__(self.STATE_LEN, bounding_box)

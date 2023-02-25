@@ -6,6 +6,8 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
+from naturalnets.environments.passlock_app.widgets.textfield import Textfield
+
 
 
 class Button(Clickable):
@@ -72,3 +74,9 @@ class ShowPasswordButton(Widget, Button):
     
     def reset(self):
         self.showing_password = False
+    
+    def show_password_of_textfield(self, textfield:Textfield):
+        if not self.is_selected() and textfield.is_selected():
+            textfield.set_text("Password Shown")
+        else: 
+            textfield.set_text("Sample Text for Textfield")

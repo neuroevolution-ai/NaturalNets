@@ -265,15 +265,13 @@ class SearchPage(Page, RewardElement):
                 self.close_other_passwords(button)
 
         specific_buttons = []
-        if self.test1_button.is_selected():
-            specific_buttons += [self.test1_copy_button,
-                                 self.test1_edit_button, self.test1_delete_button]
-        if self.test2_button.is_selected():
-            specific_buttons += [self.test2_copy_button,
-                                 self.test2_edit_button, self.test2_delete_button]
-        if self.test3_button.is_selected():
-            specific_buttons += [self.test3_copy_button,
-                                 self.test3_edit_button, self.test3_delete_button]
+        for i in range(1, 4):
+            if getattr(self, f"test{i}_button").is_selected():
+                specific_buttons += [
+                    getattr(self, f"test{i}_copy_button"),
+                    getattr(self, f"test{i}_edit_button"),
+                    getattr(self, f"test{i}_delete_button")
+                ]
 
         for button in specific_buttons:
             if button.is_clicked_by(click_position):
@@ -327,6 +325,5 @@ class SearchEditPopUp(PopUp):
                 IMAGES_PATH, "search_page_img", "search_page_editpopup.png")
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
-        RewardElement.__init__(self)  
+        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
         logging.debug("SearchEditPopUp created")

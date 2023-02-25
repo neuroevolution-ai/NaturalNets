@@ -62,6 +62,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
         self.current_page = None
         self.syncpopup = SyncPopUp()
+
+        self.darkmode_button = ShowPasswordButton(self.DARK_LIGHT_BB, lambda: self.darkmode())
         
         self.buttons = [
             Button(self.HOME_BUTTON_BB,
@@ -73,14 +75,14 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             Button(self.MANUAL_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
             Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto)),
-            ShowPasswordButton(self.DARK_LIGHT_BB, lambda: self.darkmode), 
-            Button(self.SYNC_BUTTON_BB, lambda: self.syncpopup.open_popup)
+            self.darkmode_button,
+            Button(self.SYNC_BUTTON_BB, lambda: self.syncpopup.open_popup())
         ]
 
         self.add_children([self.manual, self.auto, self.search, self.settings, self.syncpopup])
         self.set_reward_children(
             [self.manual, self.auto, self.search, self.settings, self.syncpopup])
-
+        self.add_child(self.darkmode_button)
         self.pages_to_str: Dict[Page, str] = {
             self.manual: "manual",
             self.auto: "auto",
@@ -92,7 +94,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     def reward_template(self):
         return {
             "home_window": ["open", "close"],
-            "page_selected": ["manual", "auto", "search", "settings"]
+            "page_selected": ["manual", "auto", "search", "settings"],
+            "darkmode_clicked": [True, False]
         }
 
     def reset(self):
@@ -225,6 +228,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''
         Sets the home window to darkmode.
         '''
+        self.register_selected_reward(["darkmode_clicked", self.darkmode_button.is_selected()])
         logging.debug("Darkmode not implemented yet")
 
     def sign_up(self):

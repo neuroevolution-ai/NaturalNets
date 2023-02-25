@@ -43,7 +43,7 @@ class SignupPage(Page, RewardElement):
 
         self.enter_email_textfield = Textfield(self.EMAIL_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, None, ORANGE_COLOR)
+        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
         self.signup_button = Button(
             self.SIGNUP_BUTTON_BB, lambda: self.signup())
         self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())

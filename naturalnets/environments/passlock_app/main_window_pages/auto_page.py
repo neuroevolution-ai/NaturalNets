@@ -12,8 +12,6 @@ from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import \
-    draw_rectangles_around_clickables
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -125,7 +123,7 @@ class AutoPage(Page, RewardElement):
         self.use_special_chars_checkbox.reset()
         self.pw_length_slider.reset()
 
-    def handle_click(self, click_position: np.ndarray) -> None:
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         Handles a click on the page.
 
@@ -138,7 +136,7 @@ class AutoPage(Page, RewardElement):
                 if(clickable == self.create_pw_button and self.enter_password_textfield.is_selected() and self.enter_nameof_password_textfield.is_selected()):
                     self.generate_password()
                     clickable.handle_click(click_position)
-                    return
+                    return False
                 else: 
                     # if the clickable is a slider, we need to register the reward for the slider value
                     if (isinstance(clickable, Slider)):
@@ -151,7 +149,7 @@ class AutoPage(Page, RewardElement):
 
 
                     clickable.handle_click(click_position)
-                return
+                return False
 
     def copy_password(self):
         '''

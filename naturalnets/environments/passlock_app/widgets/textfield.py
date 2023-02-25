@@ -12,6 +12,8 @@ from naturalnets.environments.gui_app.widgets.radio_button_group import RadioBut
 class Textfield(Widget):
     '''
     A textfield widget. This widget is a like radio button that can be selected and deselected.
+    It doesnt have a button but when it is clicked the text is rendered onto the textfield. 
+    
 
     State Description:
         0: Whether or not the textfield is selected
@@ -24,6 +26,7 @@ class Textfield(Widget):
         self._bounding_box = bounding_box
         self._click_action = click_action
         self.color = color
+        self.text = "Sample Text for Textfield"
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         """ Executes this RadioButtons action, if any.
@@ -34,8 +37,7 @@ class Textfield(Widget):
         if self.has_click_action():
             self._click_action()
 
-        # this implementation of a textfield works like a radio button click it once and the text field is selected and the text is rendered
-        # click it again and the text is no longer rendered
+       
         self.enter_value()
 
     def has_click_action(self) -> bool:
@@ -64,6 +66,12 @@ class Textfield(Widget):
             self.set_selected(False)
         else:
             self.set_selected(True)
+    
+    def set_text(self, text):
+        '''
+        Sets the text of the textfield.
+        '''
+        self.text = text
 
     def render(self, img: np.ndarray) -> np.ndarray:
         '''
@@ -71,13 +79,13 @@ class Textfield(Widget):
         '''
 
         if self.is_selected():
-            width = self._bounding_box.width
+
+            # height of the square part of the checkbox
             height = int(self._bounding_box.height)
             
-            int  # width, height of the square part of the checkbox
             thickness = 2
             color = self.color
-            text = "Sample Text for Textfield"
+            text = self.text
             font = cv2.FONT_HERSHEY_SIMPLEX
 
             text_size, _ = cv2.getTextSize(text, font, 1, thickness)
@@ -85,9 +93,10 @@ class Textfield(Widget):
             text_width = text_size[0]
             x, y = self.get_bb().get_as_tuple()[0:2]
 
-            # change allignment of text
+            # change alignment of text
             x = x + 25
             y = y + 10
+            #the rectangle is drawn to make the text more visible. It draws a rectangle behind the text in white
             cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width, y+text_height-10), color=(255,255,255), thickness=-1) 
             cv2.putText(img, text, (x, int(y+height/2)), font, 1, color=color, thickness=thickness)
             
