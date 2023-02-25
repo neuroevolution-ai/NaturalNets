@@ -138,3 +138,9 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         Sets the bounding box of the Authentication window.
         '''
         self._bounding_box = bounding_box
+    
+    def log_out(self):
+        '''
+        Signs up the user.
+        '''
+        self.set_current_page(self.login)

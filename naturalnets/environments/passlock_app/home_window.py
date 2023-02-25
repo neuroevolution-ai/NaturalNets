@@ -13,15 +13,11 @@ from naturalnets.environments.gui_app.widgets.button import Button, ShowPassword
 from naturalnets.environments.passlock_app.constants import (
     IMAGES_PATH, PAGES_SELECT_AREA_SIDE_BB, PAGES_SELECT_AREA_TOP_BB,
     PAGES_UI_AREA_BB, WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.main_window_pages.auto_page import \
-    AutoPage
-from naturalnets.environments.passlock_app.main_window_pages.manual_page import \
-    ManualPage
-from naturalnets.environments.passlock_app.main_window_pages.search_page import \
-    SearchPage
-from naturalnets.environments.passlock_app.main_window_pages.settings_page import \
-    SettingsPage
-from naturalnets.environments.passlock_app.utils import draw_rectangles_around_clickables
+from naturalnets.environments.passlock_app.main_window_pages.auto_page import AutoPage
+from naturalnets.environments.passlock_app.main_window_pages.manual_page import ManualPage
+from naturalnets.environments.passlock_app.main_window_pages.search_page import SearchPage
+from naturalnets.environments.passlock_app.main_window_pages.settings_page import SettingsPage
+
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 
 
@@ -77,8 +73,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             Button(self.MANUAL_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
             Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto)),
-            ShowPasswordButton(self.DARK_LIGHT_BB, lambda: self.darkmode()), 
-            Button(self.SYNC_BUTTON_BB, lambda: self.syncpopup.open_popup())
+            ShowPasswordButton(self.DARK_LIGHT_BB, lambda: self.darkmode), 
+            Button(self.SYNC_BUTTON_BB, lambda: self.syncpopup.open_popup)
         ]
 
         self.add_children([self.manual, self.auto, self.search, self.settings, self.syncpopup])
@@ -141,7 +137,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         if self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page) + 1] = 1
-            self.open()  # open the home window if it is closed
+            if not self.open(): self.open  # open the home window if it is closed
 
             page.reset()
             self.current_page = page
@@ -240,6 +236,13 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         Sets the home window to darkmode.
         '''
         logging.debug("Darkmode not implemented yet")
+
+    def sign_up(self):
+        '''
+        Signs up the user.
+        '''
+        self.set_current_page(self.manual)
+        
 
 class SyncPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).

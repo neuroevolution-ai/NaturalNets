@@ -43,7 +43,7 @@ class LoginPage(Page, RewardElement):
 
         self.enter_pw_textfield = Textfield(self.ENTER_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, None, ORANGE_COLOR)
-        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())
+        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login)
 
         self.buttons: List[Button] = [self.login_button, self.show_pw_button]
         self.textfields: List[Textfield] = [self.enter_pw_textfield]

@@ -77,9 +77,7 @@ class PasslockAppController:
         Resets the app.
         '''
         self.home_window.reset()
-        self.home_window.close()
         self.auth_window.reset()
-        self.auth_window.open()
         
         self.reset_reward_array()
 
@@ -189,16 +187,16 @@ class PasslockAppController:
         return img
 
     def sign_up(self):
-        
         self.home_window.reset()
         self.auth_window.reset()
         self.auth_window.close()
         self.home_window.open()
-        self.home_window.set_current_page(self.home_window.manual)
-
+        self.home_window.sign_up()
+        
     def log_out(self):
         self.home_window.reset()
         self.auth_window.reset()
         self.home_window.close()
         self.auth_window.open()
-        self.auth_window.set_current_page(self.auth_window.login)
+        self.auth_window.log_out()
+        
