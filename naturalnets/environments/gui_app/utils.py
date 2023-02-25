@@ -21,6 +21,8 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     width = bounding_box.width
     height = bounding_box.height
 
+    #If the image is the same size as the bounding box, we can just replace the image with to_render
+    #This sets the shape of the image to the shape of to_render
     if(width == img.shape[0] and height == img.shape[1]):
         img.shape = (height, width, 3)
 
