@@ -41,9 +41,9 @@ class AutoPage(Page, RewardElement):
     RESET_PW_BB = BoundingBox(1684, 305, 75, 75)
     COPY_PW_BB = BoundingBox(1609, 305, 75, 75)
     PW_LENGTH_BB = BoundingBox(320, 413, 1439, 75)
-    USE_LETTERS_BB = BoundingBox(293, 640, 28, 28)
-    USE_NUMBERS_BB = BoundingBox(293, 694, 28, 28)
-    USE_SPECIAL_CHARS_BB = BoundingBox(293, 749, 28, 28)
+    USE_LETTERS_BB = BoundingBox(293, 640, 320, 28)
+    USE_NUMBERS_BB = BoundingBox(293, 694, 320, 28)
+    USE_SPECIAL_CHARS_BB = BoundingBox(293, 749, 450, 28)
 
     def __init__(self):
         '''
