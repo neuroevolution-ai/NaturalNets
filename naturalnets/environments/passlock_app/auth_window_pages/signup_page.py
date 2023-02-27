@@ -13,8 +13,6 @@ from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -45,8 +43,8 @@ class SignupPage(Page, RewardElement):
         self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
         self.signup_button = Button(
-            self.SIGNUP_BUTTON_BB, lambda: self.signup())
-        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login())
+            self.SIGNUP_BUTTON_BB, lambda: self.signup)
+        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login)
 
         self.buttons: List[Button] = [self.signup_button,
                                       self.login_button, self.show_pw_button]

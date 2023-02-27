@@ -14,8 +14,6 @@ from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables, textfield_check)
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -118,6 +116,15 @@ class SearchPage(Page, RewardElement):
             self.test1_button: "test1_button",
             self.test2_button: "test2_button",
             self.test3_button: "test3_button",
+            self.test1_copy_button: "test1_copy_button",
+            self.test2_copy_button: "test2_copy_button",
+            self.test3_copy_button: "test3_copy_button",
+            self.test1_edit_button: "test1_edit_button",
+            self.test2_edit_button: "test2_edit_button",
+            self.test3_edit_button: "test3_edit_button",
+            self.test1_delete_button: "test1_delete_button",
+            self.test2_delete_button: "test2_delete_button",
+            self.test3_delete_button: "test3_delete_button",
         }
 
         self.set_reward_children([self.edit_popup])
@@ -141,7 +148,16 @@ class SearchPage(Page, RewardElement):
             "show_all_button": [False, True],
             "test1_button": [False, True],
             "test2_button": [False, True],
-            "test3_button": [False, True]
+            "test3_button": [False, True], 
+            "test1_copy_button": ["clicked"],
+            "test2_copy_button": ["clicked"],
+            "test3_copy_button": ["clicked"],
+            "test1_edit_button": ["clicked"],
+            "test2_edit_button": ["clicked"],
+            "test3_edit_button": ["clicked"],
+            "test1_delete_button": ["clicked"],
+            "test2_delete_button": ["clicked"],
+            "test3_delete_button": ["clicked"],
         }
 
     def reset(self):
@@ -160,18 +176,20 @@ class SearchPage(Page, RewardElement):
         Resets the search textfield to its default state.
         '''
         self.search_textfield.set_selected(False)
-        self.test1_button.showing_password = False
-        self.test2_button.showing_password = False
-        self.test3_button.showing_password = False
+        self.test1_button.set_selected(False)
+        self.test2_button.set_selected(False)
+        self.test3_button.set_selected(False)
+        self.reset_bouding_boxes()
 
     def reset_show_all(self):
         '''
         Resets the show all button to its default state.
         '''
-        self.show_all_button.showing_password = False
-        self.test1_button.showing_password = False
-        self.test2_button.showing_password = False
-        self.test3_button.showing_password = False
+        self.show_all_button.set_selected(False)
+        self.test1_button.set_selected(False)
+        self.test2_button.set_selected(False)
+        self.test3_button.set_selected(False)
+        self.reset_bouding_boxes()
         
 
     def close_other_passwords(self, password_button):
@@ -182,11 +200,13 @@ class SearchPage(Page, RewardElement):
             if button != password_button:
                 button.showing_password = False
         
+        self.reset_bouding_boxes()
+        
+    def reset_bouding_boxes(self):
         self.test1_button._bounding_box = self.ORIGINAL_TEST1_BUTTON_BB
         self.test2_button._bounding_box = self.ORIGINAL_TEST2_BUTTON_BB
         self.test3_button._bounding_box = self.ORIGINAL_TEST3_BUTTON_BB
 
-  
     def render(self, img: np.ndarray)-> np.ndarray:
         """
         Renders the page onto the given image. 
@@ -201,19 +221,14 @@ class SearchPage(Page, RewardElement):
             return img
         
         state = (
-            textfield_check([self.search_textfield]),
+            self.search_textfield.is_selected(),
             self.test1_button.is_selected(),
             self.test2_button.is_selected(),
             self.test3_button.is_selected(),
             self.show_all_button.is_selected()
         )
-
-        if self.test1_button.is_selected():
-            self.test2_button._bounding_box = self.MODIFIED_TEST2_BUTTON_BB
-            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
-        
-        if self.test2_button.is_selected():
-            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
+     
+        self.shift_bounding_box()
 
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchtype.png"),
@@ -229,6 +244,14 @@ class SearchPage(Page, RewardElement):
         img = super().render(img)
 
         return img
+    
+    def shift_bounding_box(self):
+        if self.test1_button.is_selected():
+            self.test2_button._bounding_box = self.MODIFIED_TEST2_BUTTON_BB
+            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
+        
+        if self.test2_button.is_selected():
+            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -244,9 +267,12 @@ class SearchPage(Page, RewardElement):
         for widget in self.textsearchwidgets:
             if widget.is_clicked_by(click_position):
                 # If the clickable has a selected state, register the reward when it is selected
-                if (isinstance(widget, StateElement)):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[widget], widget.is_selected()])   
+                try:
+                    rew_key = self.reward_widgets_to_str[widget]
+                    #If the clickable has a selected state, register the reward when it is selected
+                    self.register_selected_reward([rew_key, widget.is_selected()])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue     
                                  
                 widget.handle_click(click_position)
                 break
@@ -276,9 +302,12 @@ class SearchPage(Page, RewardElement):
         for button in specific_buttons:
             if button.is_clicked_by(click_position):
 
-                if (isinstance(button, StateElement)):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[button], button.is_selected()])       
+                try:
+                    rew_key = self.reward_widgets_to_str[button]
+                    #If the clickable has a selected state, register the reward when it is selected
+                    self.register_selected_reward([rew_key, "clicked"])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue   
 
                 button.handle_click(click_position)
                 break
@@ -313,7 +342,6 @@ class SearchPage(Page, RewardElement):
         '''
         logging.debug("delete password")
         
-
 
 class SearchEditPopUp(PopUp):
     """Popup for the Editing passwords on the search page. Pops up when the edit button is clicked.

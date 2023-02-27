@@ -104,7 +104,7 @@ class AutoPage(Page, RewardElement):
         return {
             "enter_nameof_password_textfield": [False, True],
             "enter_password_textfield": [False, True],
-            # is manually set to 3 for the different states of the slider because this is setup before the slider is created
+            # is manually set to 10 for the different states of the slider because this is setup before the slider is created
             "pw_length_slider": [i for i in range(10)],
             "use_letters_checkbox": [False, True],
             "use_numbers_checkbox": [False, True],

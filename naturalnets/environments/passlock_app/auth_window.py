@@ -8,10 +8,8 @@ from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.passlock_app.auth_window_pages.login_page import \
-    LoginPage
-from naturalnets.environments.passlock_app.auth_window_pages.signup_page import \
-    SignupPage
+from naturalnets.environments.passlock_app.auth_window_pages.login_page import LoginPage
+from naturalnets.environments.passlock_app.auth_window_pages.signup_page import SignupPage
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH
 
 

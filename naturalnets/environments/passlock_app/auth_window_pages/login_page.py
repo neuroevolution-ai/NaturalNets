@@ -15,8 +15,6 @@ from naturalnets.environments.gui_app.widgets.radio_button_group import (
     RadioButton, RadioButtonGroup)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import (
-    draw_rectangles_around_clickables)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 

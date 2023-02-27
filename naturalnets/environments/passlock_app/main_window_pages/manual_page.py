@@ -98,7 +98,7 @@ class ManualPage(Page, RewardElement):
                 try:
                     rew_key = self.reward_widgets_to_str[clickable]
                     #If the clickable has a selected state, register the reward when it is selected
-                    self.register_selected_reward([self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                    self.register_selected_reward([rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue     
                    

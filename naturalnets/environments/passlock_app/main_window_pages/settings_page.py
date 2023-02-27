@@ -13,7 +13,6 @@ from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
-from naturalnets.environments.passlock_app.utils import draw_rectangles_around_clickables
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 

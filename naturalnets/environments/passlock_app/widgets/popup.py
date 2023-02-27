@@ -6,7 +6,6 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH
-from naturalnets.environments.passlock_app.utils import draw_rectangle_from_bb
 
 
 class PopUp(Page, RewardElement):
