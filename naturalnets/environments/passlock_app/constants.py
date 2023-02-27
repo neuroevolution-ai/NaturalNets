@@ -1,3 +1,4 @@
+"""Constants for the passlock app environment."""
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 
 IMAGES_PATH: str = "naturalnets/environments/passlock_app/img/"

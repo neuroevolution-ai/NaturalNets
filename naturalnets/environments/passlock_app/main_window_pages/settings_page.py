@@ -1,3 +1,4 @@
+"""The settings page of the app."""
 import logging
 import os
 from typing import List
@@ -53,7 +54,7 @@ class SettingsPage(Page, RewardElement):
 
         self.zoom_textfield = Textfield(
             self.ZOOM_TEXTFIELD_BB,
-            lambda: self.enter_zoom_level, 
+            lambda: self.enter_zoom_level,
             ORANGE_COLOR
         )
 
@@ -106,14 +107,14 @@ class SettingsPage(Page, RewardElement):
         Enters the zoom level. Currently not implemented.
         '''
         logging.debug("Enter zoom level")
-        
+
 
     def is_popup_open(self) -> bool:
         '''
         Returns True if a popup is open.
         '''
         return self.about_popup.is_open() or self.sync_popup.is_open() or self.change_colour_popup.is_open()
- 
+
 
     def get_open_popup(self) -> PopUp:
         '''
@@ -130,12 +131,12 @@ class SettingsPage(Page, RewardElement):
 
     def render(self, img) -> np.ndarray:
         """
-        Renders the page onto the given image. 
+        Renders the page onto the given image.
 
         args: img - the image to render onto
         returns: the rendered image
         """
-        if (self.is_popup_open()):
+        if self.is_popup_open():
             img = self.get_open_popup().render(img)
             return img
 

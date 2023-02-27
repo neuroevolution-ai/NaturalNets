@@ -1,4 +1,4 @@
-
+"""This module contains the ManualPage class, which is the page that is shown when the user clicks on the manual button."""
 import logging
 import os
 from typing import List
@@ -96,8 +96,7 @@ class ManualPage(Page, RewardElement):
                     #If the clickable has a selected state, register the reward when it is selected
                     self.register_selected_reward([rew_key, clickable.is_selected()])
                 except KeyError:
-                    pass  # This clickable does not grant a reward, continue     
-                   
+                    pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 break
 

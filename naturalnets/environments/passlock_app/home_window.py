@@ -1,3 +1,4 @@
+"""The home window of the app, containing the menu as well as the respective pages"""
 import logging
 import os
 from typing import Dict, List
@@ -64,7 +65,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.syncpopup = SyncPopUp()
 
         self.darkmode_button = ShowPasswordButton(self.DARK_LIGHT_BB, self.darkmode)
-        
+
         self.buttons = [
             Button(self.HOME_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
@@ -140,7 +141,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         if self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page) + 1] = 1
-            if not self.open(): self.open  # open the home window if it is closed
+            if not self.is_open():
+                self.open()  # open the home window if it is closed
 
             page.reset()
             self.current_page = page
@@ -157,29 +159,29 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     def handle_click(self, click_position: np.ndarray) -> bool:
         """Handles a click on the home window."""
 
-        if(self.is_popup_open()):
+        if self.is_popup_open():
             self.syncpopup.handle_click(click_position)
             return False
-        
+
         #If the App is on the manual or auto page, the click is handled differently. In this case the top menu should also be clickable
-        if (self.current_page == self.manual or self.current_page == self.auto):
+        if self.current_page in (self.manual, self.auto):
             ##Pages UI Area is the area where the the page and not the menu is displayed
             if self.current_page_blocks_click() or PAGES_UI_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
 
             # Check if side or top menu is clicked
-            if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position)
-                    or PAGES_SELECT_AREA_TOP_BB.is_point_inside(click_position))):
+            if (PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position)
+                    or PAGES_SELECT_AREA_TOP_BB.is_point_inside(click_position)):
 
                 self.handle_menu_click(click_position)
                 return False
         #In the other cases the click is handled normally and only the side menu is clickable
         else:
             # Check if the side menu is clicked
-            if ((PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position))):
+            if PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position):
                 self.handle_menu_click(click_position)
                 return False
-            
+
             ##Window Area is the area of the entire app
             if self.current_page_blocks_click() or WINDOW_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
@@ -204,14 +206,14 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return bool(self.syncpopup.is_open())
 
     def render(self, img: np.ndarray):
-        """ 
+        """
         Renders the main window and all its children onto the given image.
         """
 
-        if (self.is_popup_open()):
+        if self.is_popup_open():
             img = self.syncpopup.render(img)
             return img
-        
+
         img = self.current_page.render(img)
 
         return img
@@ -223,7 +225,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         '''Sets the bounding box of the home window.'''
         self._bounding_box = bounding_box
-    
+
     def darkmode(self):
         '''
         Sets the home window to darkmode.
@@ -236,7 +238,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         Signs up the user.
         '''
         self.set_current_page(self.manual)
-        
+
 
 class SyncPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -250,8 +252,5 @@ class SyncPopUp(PopUp):
         IMAGES_PATH, "home_window_popup.png")
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
-        RewardElement.__init__(self)
-
+        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
         logging.debug("SettingsPageAboutPopUp created")
-

@@ -1,3 +1,4 @@
+"""This module contains the AutoPage class which is the page where the user can generate a password. The actual generation of the passwords is only modelled. No actual password is generated and the UI is not changed on generation of a password."""
 import logging
 import os
 from typing import List
@@ -18,7 +19,7 @@ from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 class AutoPage(Page, RewardElement):
     '''
-    The AutoPage is the page where the user can generate a password. The actual generation of the passwords is only modelled. 
+    The AutoPage is the page where the user can generate a password. The actual generation of the passwords is only modelled.
     No actual password is generated and the UI is not changed on generation of a password.
 
     State Description:
@@ -162,4 +163,3 @@ class AutoPage(Page, RewardElement):
         '''
         self.enter_password_textfield.reset()
         self.enter_nameof_password_textfield.reset()
-

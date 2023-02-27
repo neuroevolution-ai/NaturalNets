@@ -1,3 +1,4 @@
+"""The Authentication Window of the app, containing the different Authentication-pages, one for"""
 import os
 from typing import Dict, List
 
@@ -29,6 +30,8 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
         RewardElement.__init__(self)
+
+        self._bounding_box = self.APP_BOUNDING_BOX
 
         self.login = LoginPage()
         self.signup = SignupPage()
@@ -100,7 +103,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
 
     def handle_click(self, click_position: np.ndarray) -> bool:
         '''
-        Handles a click on the Authentication window. 
+        Handles a click on the Authentication window.
         If the login page is open it will handle the click on the login page.
         If the signup page is open it will handle the click on the signup page.
         If on the signup page a login or signup is successful it will return True.
@@ -109,18 +112,18 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         returns: True if a login or signup was successful, False otherwise.
         '''
 
-        if (self.current_page.handle_click(click_position)):
+        if self.current_page.handle_click(click_position):
             return True
         return False
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ 
+        """
         Renders the main window and all its children onto the given image.
         """
 
-        if (self.current_page == self.signup):
+        if self.current_page == self.signup:
             img = self.signup.render(img)
-        elif (self.current_page == self.login):
+        elif self.current_page == self.login:
             img = self.login.render(img)
 
         return img
@@ -136,7 +139,7 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         Sets the bounding box of the Authentication window.
         '''
         self._bounding_box = bounding_box
-    
+
     def log_out(self):
         '''
         Signs up the user.

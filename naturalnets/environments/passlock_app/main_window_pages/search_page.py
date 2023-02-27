@@ -1,3 +1,4 @@
+"""The search page of the Passlock app."""
 import logging
 import os
 from typing import List, Optional
@@ -66,35 +67,34 @@ class SearchPage(Page, RewardElement):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
-        
+
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, self.reset_show_all, ORANGE_COLOR)
         self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, self.reset_search_text, ORANGE_COLOR)
-        
         self.test1_button = ShowPasswordButton(self.ORIGINAL_TEST1_BUTTON_BB)
         self.test2_button = ShowPasswordButton(self.ORIGINAL_TEST2_BUTTON_BB)
         self.test3_button = ShowPasswordButton(self.ORIGINAL_TEST3_BUTTON_BB)
 
         self.test1_copy_button = Button(
-            self.TEST1_COPY_BB, lambda: self.copy_password)
+            self.TEST1_COPY_BB, self.copy_password)
         self.test2_copy_button = Button(
-            self.TEST2_COPY_BB, lambda: self.copy_password)
+            self.TEST2_COPY_BB, self.copy_password)
         self.test3_copy_button = Button(
-            self.TEST3_COPY_BB, lambda: self.copy_password)
+            self.TEST3_COPY_BB, self.copy_password)
 
         self.edit_popup = SearchEditPopUp()
         self.test1_edit_button = Button(
-            self.TEST1_EDIT_BB, lambda: self.edit_popup.open_popup())
+            self.TEST1_EDIT_BB, self.edit_popup.open_popup)
         self.test2_edit_button = Button(
-            self.TEST2_EDIT_BB, lambda: self.edit_popup.open_popup())
+            self.TEST2_EDIT_BB, self.edit_popup.open_popup)
         self.test3_edit_button = Button(
-            self.TEST3_EDIT_BB, lambda: self.edit_popup.open_popup())
+            self.TEST3_EDIT_BB, self.edit_popup.open_popup)
 
         self.test1_delete_button = Button(
-            self.TEST1_DELETE_BB, lambda: self.delete_password)
+            self.TEST1_DELETE_BB, self.delete_password)
         self.test2_delete_button = Button(
-            self.TEST2_DELETE_BB, lambda: self.delete_password)
+            self.TEST2_DELETE_BB, self.delete_password)
         self.test3_delete_button = Button(
-            self.TEST3_DELETE_BB, lambda: self.delete_password)
+            self.TEST3_DELETE_BB, self.delete_password)
 
         self.buttons: List[Widget] = [self.show_all_button, self.test1_button, self.test2_button, self.test3_button,
                                       self.test1_copy_button, self.test2_copy_button, self.test3_copy_button,
@@ -133,7 +133,7 @@ class SearchPage(Page, RewardElement):
         self.add_widget(self.test2_button)
         self.add_widget(self.test3_button)
         self.add_widget(self.search_textfield)
-        
+
         logging.debug("SearchPage created")
 
     @property
@@ -146,7 +146,7 @@ class SearchPage(Page, RewardElement):
             "show_all_button": [False, True],
             "test1_button": [False, True],
             "test2_button": [False, True],
-            "test3_button": [False, True], 
+            "test3_button": [False, True],
             "test1_copy_button": ["clicked"],
             "test2_copy_button": ["clicked"],
             "test3_copy_button": ["clicked"],
@@ -188,7 +188,7 @@ class SearchPage(Page, RewardElement):
         self.test2_button.set_selected(False)
         self.test3_button.set_selected(False)
         self.reset_bouding_boxes()
-        
+
 
     def close_other_passwords(self, password_button):
         '''
@@ -197,27 +197,30 @@ class SearchPage(Page, RewardElement):
         for button in self.password_buttons:
             if button != password_button:
                 button.showing_password = False
-        
+
         self.reset_bouding_boxes()
-        
+
     def reset_bouding_boxes(self):
-        self.test1_button._bounding_box = self.ORIGINAL_TEST1_BUTTON_BB
-        self.test2_button._bounding_box = self.ORIGINAL_TEST2_BUTTON_BB
-        self.test3_button._bounding_box = self.ORIGINAL_TEST3_BUTTON_BB
+        '''
+        Resets the bounding boxes of the password buttons to their original values.
+        '''
+        self.test1_button.set_bb(self.ORIGINAL_TEST1_BUTTON_BB)
+        self.test2_button.set_bb(self.ORIGINAL_TEST2_BUTTON_BB)
+        self.test3_button.set_bb(self.ORIGINAL_TEST3_BUTTON_BB)
 
     def render(self, img: np.ndarray)-> np.ndarray:
         """
-        Renders the page onto the given image. 
+        Renders the page onto the given image.
         The image changes depending on the state of the page.
 
         args: img - the image to render onto
         returns: the rendered image
         """
-  
-        if (self.is_popup_open()):
+
+        if self.is_popup_open():
             img = self.get_open_popup().render(img)
             return img
-        
+
         state = (
             self.search_textfield.is_selected(),
             self.test1_button.is_selected(),
@@ -225,12 +228,12 @@ class SearchPage(Page, RewardElement):
             self.test3_button.is_selected(),
             self.show_all_button.is_selected()
         )
-     
+
         self.shift_bounding_box()
 
         img_paths = {
             (True, False, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchtype.png"),
-            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone_option1.png"),                                             
+            (True, True, False, False, False): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone_option1.png"),
             (False, False, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_searchdone.png"),
             (False, True, False, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option1.png"),
             (False, False, True, False, True): os.path.join(IMAGES_PATH, "search_page_img", "search_page_option2.png"),
@@ -242,17 +245,18 @@ class SearchPage(Page, RewardElement):
         img = super().render(img)
 
         return img
-     
+
     def shift_bounding_box(self):
         '''
         Shifts the bounding box of the buttons depending on the state of the page.
         '''
         if self.test1_button.is_selected():
-            self.test2_button._bounding_box = self.MODIFIED_TEST2_BUTTON_BB
-            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
+            self.test2_button.set_bb(self.MODIFIED_TEST2_BUTTON_BB)
+            self.test3_button.set_bb(self.MODIFIED_TEST3_BUTTON_BB)
+
 
         if self.test2_button.is_selected():
-            self.test3_button._bounding_box = self.MODIFIED_TEST3_BUTTON_BB
+            self.test3_button.set_bb(self.MODIFIED_TEST3_BUTTON_BB)
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -261,7 +265,7 @@ class SearchPage(Page, RewardElement):
         args: click_position - the position of the click
         '''
 
-        if (self.is_popup_open()):
+        if self.is_popup_open():
             self.get_open_popup().handle_click(click_position)
             return
 
@@ -273,7 +277,7 @@ class SearchPage(Page, RewardElement):
                     #If the clickable has a selected state, register the reward when it is selected
                     self.register_selected_reward([rew_key, widget.is_selected()])
                 except KeyError:
-                    pass  # This clickable does not grant a reward, continue                    
+                    pass  # This clickable does not grant a reward, continue
                 widget.handle_click(click_position)
                 break
 
@@ -307,7 +311,7 @@ class SearchPage(Page, RewardElement):
                     #If the clickable has a selected state, register the reward when it is selected
                     self.register_selected_reward([rew_key, "clicked"])
                 except KeyError:
-                    pass  # This clickable does not grant a reward, continue   
+                    pass  # This clickable does not grant a reward, continue
 
                 button.handle_click(click_position)
                 break
@@ -317,7 +321,7 @@ class SearchPage(Page, RewardElement):
         Returns true if a popup is open.
         returns: bool
         '''
-        if (self.edit_popup.is_open()):
+        if self.edit_popup.is_open():
             return True
         return False
 
@@ -334,13 +338,13 @@ class SearchPage(Page, RewardElement):
         Method for copying the password.
         '''
         logging.debug("copy password")
-        
+
     def delete_password(self):
         '''
         Method for deleting the password.
         '''
         logging.debug("delete password")
-        
+
 class SearchEditPopUp(PopUp):
     """Popup for the Editing passwords on the search page. Pops up when the edit button is clicked.
 

@@ -1,3 +1,4 @@
+"""This module contains the login page of the authentication window."""
 import logging
 import os
 from typing import List
@@ -23,7 +24,7 @@ class LoginPage(Page, RewardElement):
     State Description:
     The Login Page has no state itself, but it contains the following widgets which have state:
         0: Password textfield is selected
-        1: Whether or not the password is shown     
+        1: Whether or not the password is shown
     '''
 
     STATE_LEN = 0
@@ -59,7 +60,7 @@ class LoginPage(Page, RewardElement):
     @property
     def reward_template(self):
         '''
-        The reward template for the signup page. 
+        The reward template for the signup page.
         '''
         return {
             "enter_pw_textfield": [False, True],
@@ -81,23 +82,23 @@ class LoginPage(Page, RewardElement):
 
     def handle_click(self, click_position: np.ndarray) -> bool:
         '''
-        This function is called when the user clicks on the login page. 
+        This function is called when the user clicks on the login page.
         If the user clicks on a button, the button's function is called.
 
         args: click_position: the position of the click
-        returns: True if the click resullts in a login 
+        returns: True if the click resullts in a login
         '''
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
                 # If the user clicks on the login button, check if the password textfield is selected
                 # If it is, then login
-                if (clickable == self.login_button and self.enter_pw_textfield.is_selected()):
+                if clickable == self.login_button and self.enter_pw_textfield.is_selected():
                     clickable.handle_click(click_position)
                     return True
                 else:
                     # If the clickable has a state, register the reward when it is selected
-                    if (isinstance(clickable, StateElement)):
+                    if isinstance(clickable, StateElement):
                         self.register_selected_reward(
                             [self.reward_widgets_to_str[clickable], clickable.is_selected()])
                     clickable.handle_click(click_position)
