@@ -63,7 +63,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
         self.syncpopup = SyncPopUp()
 
-        self.darkmode_button = ShowPasswordButton(self.DARK_LIGHT_BB, lambda: self.darkmode())
+        self.darkmode_button = ShowPasswordButton(self.DARK_LIGHT_BB, self.darkmode)
         
         self.buttons = [
             Button(self.HOME_BUTTON_BB,
@@ -76,7 +76,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
                    lambda: self.set_current_page(self.manual)),
             Button(self.AUTO_BUTTON_BB, lambda: self.set_current_page(self.auto)),
             self.darkmode_button,
-            Button(self.SYNC_BUTTON_BB, lambda: self.syncpopup.open_popup())
+            Button(self.SYNC_BUTTON_BB, self.syncpopup.open_popup)
         ]
 
         self.add_children([self.manual, self.auto, self.search, self.settings, self.syncpopup])

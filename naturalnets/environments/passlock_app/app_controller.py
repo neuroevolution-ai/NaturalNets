@@ -1,5 +1,4 @@
 from copy import copy
-from multiprocessing.connection import Listener
 import numpy as np
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
