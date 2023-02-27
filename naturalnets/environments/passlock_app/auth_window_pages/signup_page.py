@@ -57,6 +57,8 @@ class SignupPage(Page, RewardElement):
             self.enter_email_textfield: "enter_email_textfield",
             self.enter_pw_textfield: "enter_pw_textfield",
             self.show_pw_button: "show_pw_button",
+            self.login_button: "login_button",
+            self.signup_button: "signup_button",
         }
 
         self.add_widget(self.enter_email_textfield)
@@ -73,6 +75,8 @@ class SignupPage(Page, RewardElement):
             "enter_email_textfield": [False, True],
             "enter_pw_textfield": [False, True],
             "show_pw_button": [False, True],
+            "login_button": ["clicked"],
+            "signup_button": ["clicked"],
         }
 
     def login(self):
@@ -106,17 +110,19 @@ class SignupPage(Page, RewardElement):
 
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
+                # If the user clicks on the login button, check if the password textfield is selected
+                # If it is, then login
+                try:
+                    rew_key = self.reward_widgets_to_str[clickable]
 
-                # If the user clicks on the signup or login button, trigger a login/signup
-                if clickable == self.signup_button or clickable == self.login_button:
-                    # but only if the password and email textfields are selected
-                    if (self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected()):
-                        clickable.handle_click(click_position)
-                        return True
-                else:
-                    # If the clickable has a selected state, register the reward when it is selected
-                    if isinstance(clickable, StateElement):
-                        self.register_selected_reward(
-                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
-                    clickable.handle_click(click_position)
-                    return False
+                    if clickable in (self.login_button, self.signup_button):
+                        if self.enter_pw_textfield.is_selected() and self.enter_email_textfield.is_selected():
+                            clickable.handle_click(click_position)
+                            self.register_selected_reward([rew_key, "clicked"])
+                            return True
+                    #If the clickable has a selected state, register the reward when it is selected
+                    self.register_selected_reward([rew_key, clickable.is_selected()])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue
+                clickable.handle_click(click_position)
+                return False

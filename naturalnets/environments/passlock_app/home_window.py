@@ -157,7 +157,11 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
     def handle_click(self, click_position: np.ndarray) -> bool:
-        """Handles a click on the home window."""
+        """Handles a click on the home window.
+        args:
+            click_position (np.ndarray): the position of the click.
+            returns: True if a login or signup was successful, False otherwise.
+            """
 
         if self.is_popup_open():
             self.syncpopup.handle_click(click_position)
@@ -205,9 +209,10 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''
         return bool(self.syncpopup.is_open())
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """
         Renders the main window and all its children onto the given image.
+        returns: the rendered image.
         """
 
         if self.is_popup_open():
@@ -222,7 +227,7 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''Returns the bounding box of the home window.'''
         return self._bounding_box
 
-    def set_bb(self, bounding_box: BoundingBox) -> None:
+    def set_bb(self, bounding_box: BoundingBox):
         '''Sets the bounding box of the home window.'''
         self._bounding_box = bounding_box
 

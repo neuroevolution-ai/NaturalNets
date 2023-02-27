@@ -13,6 +13,7 @@ from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.widgets.PasswordCard import PasswordCard
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -70,9 +71,9 @@ class SearchPage(Page, RewardElement):
 
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, self.reset_show_all, ORANGE_COLOR)
         self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, self.reset_search_text, ORANGE_COLOR)
-        self.test1_button = ShowPasswordButton(self.ORIGINAL_TEST1_BUTTON_BB)
-        self.test2_button = ShowPasswordButton(self.ORIGINAL_TEST2_BUTTON_BB)
-        self.test3_button = ShowPasswordButton(self.ORIGINAL_TEST3_BUTTON_BB)
+        self.test1_button = PasswordCard(self.ORIGINAL_TEST1_BUTTON_BB)
+        self.test2_button = PasswordCard(self.ORIGINAL_TEST2_BUTTON_BB)
+        self.test3_button = PasswordCard(self.ORIGINAL_TEST3_BUTTON_BB)
 
         self.test1_copy_button = Button(
             self.TEST1_COPY_BB, self.copy_password)
@@ -177,7 +178,7 @@ class SearchPage(Page, RewardElement):
         self.test1_button.set_selected(False)
         self.test2_button.set_selected(False)
         self.test3_button.set_selected(False)
-        self.reset_bouding_boxes()
+        self.reset_bounding_boxes_to_original()
 
     def reset_show_all(self):
         '''
@@ -187,20 +188,20 @@ class SearchPage(Page, RewardElement):
         self.test1_button.set_selected(False)
         self.test2_button.set_selected(False)
         self.test3_button.set_selected(False)
-        self.reset_bouding_boxes()
+        self.reset_bounding_boxes_to_original()
 
 
-    def close_other_passwords(self, password_button):
+    def close_other_passwordcards(self, password_button: PasswordCard):
         '''
         Closes all other password buttons except the given one.
         '''
         for button in self.password_buttons:
             if button != password_button:
-                button.showing_password = False
+                button.set_selected(False)
 
-        self.reset_bouding_boxes()
+        self.reset_bounding_boxes_to_original()
 
-    def reset_bouding_boxes(self):
+    def reset_bounding_boxes_to_original(self):
         '''
         Resets the bounding boxes of the password buttons to their original values.
         '''
@@ -258,16 +259,17 @@ class SearchPage(Page, RewardElement):
         if self.test2_button.is_selected():
             self.test3_button.set_bb(self.MODIFIED_TEST3_BUTTON_BB)
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         Handles clicks on the page.
 
         args: click_position - the position of the click
+        returns: False, because only a login, signup or logout should return True
         '''
 
         if self.is_popup_open():
             self.get_open_popup().handle_click(click_position)
-            return
+            return False
 
         for widget in self.textsearchwidgets:
             if widget.is_clicked_by(click_position):
@@ -279,11 +281,11 @@ class SearchPage(Page, RewardElement):
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 widget.handle_click(click_position)
-                break
+                return False
 
         if (self.show_all_button.is_selected() or self.search_textfield.is_selected()):
             self.handle_all_password_click(click_position)
-            return
+            return False
 
     def handle_all_password_click(self, click_position: np.ndarray):
         '''
@@ -292,7 +294,7 @@ class SearchPage(Page, RewardElement):
         for button in self.password_buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
-                self.close_other_passwords(button)
+                self.close_other_passwordcards(button)
 
         specific_buttons = []
         for i in range(1, 4):

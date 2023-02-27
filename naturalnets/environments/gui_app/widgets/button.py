@@ -28,6 +28,9 @@ class Button(Clickable):
         self._click_action()
 
 class ShowPasswordButton(Widget, Button):
+    '''
+    Represents a ShowPasswordButton that can be clicked on to show a password.
+    '''
 
     STATE_LEN = 1
 
@@ -36,8 +39,11 @@ class ShowPasswordButton(Widget, Button):
         Button.__init__(self, bounding_box, click_action)
         self.showing_password = False
         self.color = color
-    
+
     def show_or_hide_password(self):
+        '''
+        Toggles the showing_password attribute of the button.
+        '''
         self.showing_password = not self.showing_password
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -45,7 +51,7 @@ class ShowPasswordButton(Widget, Button):
         if self._click_action:
             self._click_action()
         self.show_or_hide_password()
-    
+
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_selected():
             width = height = self._bounding_box.height  # width, height of the square part of the checkbox
@@ -62,21 +68,36 @@ class ShowPasswordButton(Widget, Button):
             cv2.line(img, (x, y), (x + width, y + height), color, thickness, lineType=cv2.LINE_AA)
             cv2.line(img, (x + width, y), (x, y + height), color, thickness, lineType=cv2.LINE_AA)
         return img
-    
+
     def has_click_action(self) -> bool:
+        '''
+        Returns True if the button has a click-action.
+        '''
         return self._click_action is not None
-    
+
     def is_selected(self) -> bool:
+        '''
+        Returns True if the button is selected.
+        '''
         return self.showing_password
 
     def set_selected(self, selected: bool):
+        '''
+        Sets the selected attribute of the button.
+        '''
         self.showing_password = selected
-    
+
     def reset(self):
+        '''
+        Resets the button.
+        '''
         self.showing_password = False
-    
+
     def show_password_of_textfield(self, textfield:Textfield):
+        '''
+        Shows the password of the given textfield.
+        '''
         if not self.is_selected() and textfield.is_selected():
             textfield.set_text("Password Shown")
-        else: 
+        else:
             textfield.set_text("Sample Text for Textfield")

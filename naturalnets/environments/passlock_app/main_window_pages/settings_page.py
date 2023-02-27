@@ -84,7 +84,12 @@ class SettingsPage(Page, RewardElement):
 
         self.reward_widgets_to_str = {
             self.auto_sync_onoffbutton: "auto_sync_onoffbutton",
-            self.zoom_textfield: "zoom_textfield"
+            self.zoom_textfield: "zoom_textfield",
+            self.change_color_button: "change_colour_button",
+            self.sync_pw_button: "sync_pw_button",
+            self.about_button: "about_button",
+            self.yt_button: "yt_button",
+            self.log_out_button: "log_out_button"
         }
 
         self.add_widget(self.auto_sync_onoffbutton)
@@ -99,7 +104,12 @@ class SettingsPage(Page, RewardElement):
         '''
         return {
             "auto_sync_onoffbutton": [False, True],
-            "zoom_textfield": [False, True]
+            "zoom_textfield": [False, True],
+            "change_colour_button": ["clicked"],
+            "sync_pw_button": ["clicked"],
+            "about_button": ["clicked"],
+            "yt_button": ["clicked"],
+            "log_out_button": ["clicked"]
         }
 
     def enter_zoom_level(self):
@@ -166,15 +176,21 @@ class SettingsPage(Page, RewardElement):
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
-                # If the logout button is clicked, return True
-                if clickable == self.log_out_button:
-                    clickable.handle_click(click_position)
-                    return True
-                # If the clickable has a selected state, register the reward when it is selected
-                if isinstance(clickable, StateElement):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                try:
+                    rew_key = self.reward_widgets_to_str[clickable]
 
+                    # If the logout button is clicked, return True
+                    if clickable == self.log_out_button:
+                        clickable.handle_click(click_position)
+                        self.register_selected_reward([self.reward_widgets_to_str[clickable], "clicked"])
+                        return True
+                    if isinstance(clickable, Button):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], "clicked"])
+                    else:
+                        self.register_selected_reward([rew_key, clickable.is_selected()])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
 

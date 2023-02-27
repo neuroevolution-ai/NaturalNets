@@ -71,6 +71,7 @@ class ManualPage(Page, RewardElement):
             "enter_nameof_password_textfield": [False, True],
             "enter_secret_password_textfield": [False, True],
             "show_password_button": [False, True],
+            "create_password_button":  ["clicked"]
 
         }
 
@@ -82,23 +83,27 @@ class ManualPage(Page, RewardElement):
         self.enter_secret_pw_textfield.set_selected(False)
         self.show_pw_button.set_selected(False)
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         Handles a click on the page.
 
         args: click_position - the position of the click
+        returns: False, because only a login, signup or logout should return True
         '''
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
                 try:
                     rew_key = self.reward_widgets_to_str[clickable]
-                    #If the clickable has a selected state, register the reward when it is selected
-                    self.register_selected_reward([rew_key, clickable.is_selected()])
+                    if isinstance(clickable, Button):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], "clicked"])
+                    else:
+                        self.register_selected_reward([rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
-                break
+                return False
 
     def create_pw(self):
         '''

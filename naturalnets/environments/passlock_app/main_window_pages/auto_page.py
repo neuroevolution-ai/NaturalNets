@@ -86,6 +86,9 @@ class AutoPage(Page, RewardElement):
             self.use_letters_checkbox: "use_letters_checkbox",
             self.use_numbers_checkbox: "use_numbers_checkbox",
             self.use_special_chars_checkbox: "use_special_chars_checkbox",
+            self.copy_pw_button: "copy_pw_button",
+            self.reset_pw_button: "reset_pw_button",
+            self.create_pw_button: "create_pw_button",
         }
 
         self.add_widget(self.pw_length_slider)
@@ -110,7 +113,9 @@ class AutoPage(Page, RewardElement):
             "use_letters_checkbox": [False, True],
             "use_numbers_checkbox": [False, True],
             "use_special_chars_checkbox": [False, True],
-
+            "copy_pw_button": ["clicked"],
+            "reset_pw_button": ["clicked"],
+            "create_pw_button": ["clicked"],
         }
 
     def reset(self):
@@ -129,25 +134,26 @@ class AutoPage(Page, RewardElement):
         Handles a click on the page.
 
         args: click_position - the position of the click
+        returns: False, because only a login, signup or logout should return True
         '''
 
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
 
-                if(clickable == self.create_pw_button and self.enter_password_textfield.is_selected() and self.enter_nameof_password_textfield.is_selected()):
-                    self.generate_password()
-                    clickable.handle_click(click_position)
-                    return False
-                # if the clickable is a slider, we need to register the reward for the slider value
-                if isinstance(clickable, Slider):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
-                # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
-                elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
-                    self.register_selected_reward(
-                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                try:
+                    rew_key = self.reward_widgets_to_str[clickable]
 
-
+                    if rew_key == "pw_length_slider":
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
+                    elif isinstance(clickable, Button):
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], "clicked"])
+                    else:
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                except KeyError:
+                    pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
 
@@ -161,5 +167,6 @@ class AutoPage(Page, RewardElement):
         '''
         Method to generate a password. Currently just resets the page.
         '''
-        self.enter_password_textfield.reset()
-        self.enter_nameof_password_textfield.reset()
+        if self.enter_password_textfield.is_selected() and self.enter_nameof_password_textfield.is_selected():
+            self.enter_password_textfield.reset()
+            self.enter_nameof_password_textfield.reset()
