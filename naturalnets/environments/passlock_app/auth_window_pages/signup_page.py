@@ -43,8 +43,8 @@ class SignupPage(Page, RewardElement):
         self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
         self.signup_button = Button(
-            self.SIGNUP_BUTTON_BB, lambda: self.signup)
-        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login)
+            self.SIGNUP_BUTTON_BB, self.signup)
+        self.login_button = Button(self.LOGIN_BUTTON_BB, self.login)
 
         self.buttons: List[Button] = [self.signup_button,
                                       self.login_button, self.show_pw_button]
@@ -56,7 +56,6 @@ class SignupPage(Page, RewardElement):
             self.enter_email_textfield: "enter_email_textfield",
             self.enter_pw_textfield: "enter_pw_textfield",
             self.show_pw_button: "show_pw_button",
-
         }
 
         self.add_widget(self.enter_email_textfield)

@@ -42,10 +42,14 @@ class SettingsPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
+        self.about_popup = SettingsPageAboutPopUp()
+        self.sync_popup = SettingsPageSyncPopUp()
+        self.change_colour_popup = SettingsPageChangeColourPopUp()
+
         self.change_color_button = Button(
-            self.CHANGE_COLOR_BB, lambda: self.change_colour_popup.open_popup())
+            self.CHANGE_COLOR_BB, self.change_colour_popup.open_popup)
         self.sync_pw_button = Button(
-            self.SYNC_PW_BB, lambda: self.sync_popup.open_popup())
+            self.SYNC_PW_BB, self.sync_popup.open_popup)
 
         self.zoom_textfield = Textfield(
             self.ZOOM_TEXTFIELD_BB,
@@ -53,16 +57,12 @@ class SettingsPage(Page, RewardElement):
             ORANGE_COLOR
         )
 
-        self.about_popup = SettingsPageAboutPopUp()
-        self.sync_popup = SettingsPageSyncPopUp()
-        self.change_colour_popup = SettingsPageChangeColourPopUp()
-
         self.auto_sync_onoffbutton = ShowPasswordButton(self.AUTO_SYNC_BB, None, ORANGE_COLOR)
 
         self.about_button = Button(
-            self.ABOUT_BB, lambda: self.about_popup.open_popup())
-        self.yt_button = Button(self.YT_BB, lambda: self.open_youtube_link)
-        self.log_out_button = Button(self.LOG_OUT_BB, lambda: self.log_out())
+            self.ABOUT_BB, self.about_popup.open_popup)
+        self.yt_button = Button(self.YT_BB, self.open_youtube_link)
+        self.log_out_button = Button(self.LOG_OUT_BB, self.log_out)
 
         self.add_child(self.about_popup)
         self.add_child(self.sync_popup)
@@ -158,7 +158,7 @@ class SettingsPage(Page, RewardElement):
         returns: True if the logout button was clicked and the page should be closed
         '''
 
-        if (self.is_popup_open()):
+        if self.is_popup_open():
             self.get_open_popup().handle_click(click_position)
             return False
 
@@ -166,11 +166,11 @@ class SettingsPage(Page, RewardElement):
             if clickable.is_clicked_by(click_position):
 
                 # If the logout button is clicked, return True
-                if (clickable == self.log_out_button):
+                if clickable == self.log_out_button:
                     clickable.handle_click(click_position)
                     return True
                 # If the clickable has a selected state, register the reward when it is selected
-                elif (isinstance(clickable, StateElement)):
+                if isinstance(clickable, StateElement):
                     self.register_selected_reward(
                         [self.reward_widgets_to_str[clickable], clickable.is_selected()])
 

@@ -9,12 +9,8 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import (
-    Button, ShowPasswordButton)
-from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
-                                                             WINDOW_AREA_BB)
-
+from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
+from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
 
@@ -23,7 +19,7 @@ class ManualPage(Page, RewardElement):
     The page that is shown when the user clicks on the manual button.
 
     State Description:
-    The Manual Page has no state itself, but it has a state for each of its widgets with a inherent state.
+        The Manual Page has no state itself, but it has a state for each of its widgets with a inherent state.
         0: The state of the enter_nameof_password_textfield
         1: The state of the enter_secret_password_textfield
         2: The state of the show_password_button
@@ -46,7 +42,7 @@ class ManualPage(Page, RewardElement):
             self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_secret_pw_textfield), ORANGE_COLOR)
         self.create_pw_button = Button(
-            self.CREATE_PW_BB, lambda: self.create_pw())
+            self.CREATE_PW_BB, self.create_pw)
 
         self.buttons: List[Button] = [
             self.create_pw_button, self.show_pw_button]

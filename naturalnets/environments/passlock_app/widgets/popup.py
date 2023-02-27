@@ -1,11 +1,9 @@
-import os
 
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.passlock_app.constants import IMAGES_PATH
 
 
 class PopUp(Page, RewardElement):
@@ -55,5 +53,5 @@ class PopUp(Page, RewardElement):
         Handles a click on the popup. Currently, the only action is to close the popup.
         '''
         if (self.is_open()):
-            if (self.BOUNDING_BOX.is_point_inside(click_position)):
+            if (self._bounding_box.is_point_inside(click_position)):
                 self.close_popup()

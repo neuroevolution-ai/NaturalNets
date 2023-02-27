@@ -58,9 +58,9 @@ class AutoPage(Page, RewardElement):
         self.copy_pw_button = Button(
             self.COPY_PW_BB, lambda: self.copy_password)
         self.reset_pw_button = Button(
-            self.RESET_PW_BB, lambda: self.enter_password_textfield.reset())
+            self.RESET_PW_BB, self.enter_password_textfield.reset)
         self.create_pw_button = Button(
-            self.GENERATE_PW_BB, lambda: self.generate_password())
+            self.GENERATE_PW_BB, self.generate_password)
         self.pw_length_slider = Slider(self.PW_LENGTH_BB, 10, color=ORANGE_COLOR)
 
         self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB, None, ORANGE_COLOR)
@@ -137,18 +137,17 @@ class AutoPage(Page, RewardElement):
                     self.generate_password()
                     clickable.handle_click(click_position)
                     return False
-                else: 
-                    # if the clickable is a slider, we need to register the reward for the slider value
-                    if (isinstance(clickable, Slider)):
-                        self.register_selected_reward(
-                            [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
-                    # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
-                    elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
-                        self.register_selected_reward(
-                            [self.reward_widgets_to_str[clickable], clickable.is_selected()])
+                # if the clickable is a slider, we need to register the reward for the slider value
+                if isinstance(clickable, Slider):
+                    self.register_selected_reward(
+                        [self.reward_widgets_to_str[clickable], clickable.get_slider_value()])
+                # if the clickable is a checkbox or textfield, we need to register the reward for the selected state
+                elif (isinstance(clickable, CheckBox) or isinstance(clickable, Textfield)):
+                    self.register_selected_reward(
+                        [self.reward_widgets_to_str[clickable], clickable.is_selected()])
 
 
-                    clickable.handle_click(click_position)
+                clickable.handle_click(click_position)
                 return False
 
     def copy_password(self):

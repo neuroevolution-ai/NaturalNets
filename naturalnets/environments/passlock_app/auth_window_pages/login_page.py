@@ -11,8 +11,6 @@ from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
 from naturalnets.environments.gui_app.widgets.button import (
     Button, ShowPasswordButton)
-from naturalnets.environments.gui_app.widgets.radio_button_group import (
-    RadioButton, RadioButtonGroup)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
@@ -41,7 +39,7 @@ class LoginPage(Page, RewardElement):
 
         self.enter_pw_textfield = Textfield(self.ENTER_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
-        self.login_button = Button(self.LOGIN_BUTTON_BB, lambda: self.login)
+        self.login_button = Button(self.LOGIN_BUTTON_BB, self.login)
 
         self.buttons: List[Button] = [self.login_button, self.show_pw_button]
         self.textfields: List[Textfield] = [self.enter_pw_textfield]
