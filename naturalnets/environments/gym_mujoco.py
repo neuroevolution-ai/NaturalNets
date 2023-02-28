@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 
-import gym
+import gymnasium as gym
 import numpy as np
 from attrs import define, field, validators
 
