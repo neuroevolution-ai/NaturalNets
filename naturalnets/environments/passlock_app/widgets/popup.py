@@ -14,9 +14,10 @@ class PopUp(Page, RewardElement):
     """
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, img_path: str):
-        Page.__init__(self, self.STATE_LEN, bounding_box, img_path)
+    def __init__(self, page_bounding_box: BoundingBox, popup_bb:BoundingBox, img_path: str):
+        Page.__init__(self, self.STATE_LEN, page_bounding_box, img_path)
         RewardElement.__init__(self)
+        self.popup_bb = popup_bb
 
     @property
     def reward_template(self):
@@ -53,6 +54,6 @@ class PopUp(Page, RewardElement):
         Handles a click on the popup. Currently, the only action is to close the popup.
         '''
         if self.is_open():
-            if self._bounding_box.is_point_inside(click_position):
+            if self.popup_bb.is_point_inside(click_position):
                 self.close_popup()
 

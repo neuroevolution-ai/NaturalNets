@@ -1,8 +1,7 @@
 """The settings page of the app."""
 import logging
 import os
-from typing import List, Tuple
-import cv2
+from typing import List
 
 import numpy as np
 
@@ -10,7 +9,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, OnOffButton, ShowPasswordButton
+from naturalnets.environments.gui_app.widgets.button import Button, OnOffButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
@@ -216,7 +215,7 @@ class SettingsPageChangeColourPopUp(PopUp):
     BOUNDING_BOX = BoundingBox(710, 425, 500, 150)
 
     def __init__(self):
-        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
+        super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
 
         logging.debug("SettingsPageChangeColourPopUp created")
 
@@ -232,23 +231,9 @@ class SettingsPageSyncPopUp(PopUp):
         IMAGES_PATH, "settings_page_img", "settings_page_sny_popup.png")
 
     def __init__(self):
-        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
+        super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
 
         logging.debug("SettingsPageSyncPopUp created")
-
-    def draw_rectangle_from_bb(img, bounding_box: BoundingBox, color: Tuple[int, int, int], thickness: int = 2):
-        """Draws a rectangle onto the given image in the given bounding box's position.
-        Args:
-            img (np.ndarray): the image.
-            bounding_box (BoundingBox): the bounding box.
-            color (Tuple[int,int,int]): the color of the rectangle.
-            thickness (int, optional): the thickness of the rectangle. Defaults to 2.
-        """
-        x, y, width, height = bounding_box.get_as_tuple()
-        cv2.rectangle(img, (x, y), (x+width, y+height), color, thickness)
-
-        return img
-
 
 class SettingsPageAboutPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -262,6 +247,6 @@ class SettingsPageAboutPopUp(PopUp):
         IMAGES_PATH, "settings_page_img", "settings_page_about_popup.png")
 
     def __init__(self):
-        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
+        super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
 
         logging.debug("SettingsPageAboutPopUp created")

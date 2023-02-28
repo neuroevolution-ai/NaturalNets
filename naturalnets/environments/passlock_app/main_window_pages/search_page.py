@@ -358,5 +358,5 @@ class SearchEditPopUp(PopUp):
                 IMAGES_PATH, "search_page_img", "search_page_editpopup.png")
     BOUNDING_BOX = BoundingBox(650, 305, 615, 395)
     def __init__(self):
-        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
+        super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
         logging.debug("SearchEditPopUp created")

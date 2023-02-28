@@ -182,12 +182,12 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         #In the other cases the click is handled normally and only the side menu is clickable
         else:
             # Check if the side menu is clicked
-            if PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position):
+            if not self.current_page_blocks_click() and PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position):
                 self.handle_menu_click(click_position)
                 return False
 
             ##Window Area is the area of the entire app
-            if self.current_page_blocks_click() or WINDOW_AREA_BB.is_point_inside(click_position):
+            if WINDOW_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
 
     def handle_menu_click(self, click_position: np.ndarray) -> None:
@@ -257,5 +257,5 @@ class SyncPopUp(PopUp):
         IMAGES_PATH, "home_window_popup.png")
 
     def __init__(self):
-        super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
+        super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
         logging.debug("SettingsPageAboutPopUp created")
