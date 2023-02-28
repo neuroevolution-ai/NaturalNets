@@ -1,3 +1,4 @@
+import os
 from typing import Callable
 import cv2
 
@@ -6,9 +7,8 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
+from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
-
-
 
 class Button(Clickable):
     """Represents a Button with a click-action.
@@ -27,58 +27,52 @@ class Button(Clickable):
     def handle_click(self, click_position: np.ndarray) -> None:
         self._click_action()
 
-class ShowPasswordButton(Widget, Button):
+class ToggleButton(Widget, Button):
     '''
-    Represents a ShowPasswordButton that can be clicked on to show a password.
+    Represents a ToggleButton that can be clicked on to toggle between two states.
     '''
 
     STATE_LEN = 1
+    IMG_PATH = None
 
-    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color:tuple = (0,0,0)):
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None):
         Widget.__init__(self, self.STATE_LEN, bounding_box)
         Button.__init__(self, bounding_box, click_action)
-        self.showing_password = False
-        self.color = color
+        self.toggle_on = False
 
-    def show_or_hide_password(self):
+    def toggle(self):
         '''
-        Toggles the showing_password attribute of the button.
+        Toggles the state of the button.
         '''
-        self.showing_password = not self.showing_password
+        self.toggle_on = not self.toggle_on
 
-    def handle_click(self, click_position: np.ndarray) -> None:
+    def handle_click(self, click_position: np.ndarray):
         '''
-        Handles a click on the button.
+        Handles a click on the button. If the button has a click action, it is executed.
         '''
-
-        if self._click_action:
+        if self.has_click_action():
             self._click_action()
-        self.show_or_hide_password()
+        self.toggle()
 
     def render(self, img: np.ndarray) -> np.ndarray:
         '''
-        Renders the button on the given image.
-        args:   img:    The image to render the button on.
-        returns:        The image with the rendered button.And a cross if the button is selected.'''
-        if self.is_selected():
-            width = height = self._bounding_box.height  # width, height of the square part of the checkbox
-            thickness = 2
-            color = self.color
+        Renders the button onto the given image.
+        args:
+            img: the image to render the button onto.
+        returns:
+            the rendered image.
+        '''
+        if self.IMG_PATH is not None:
+            if self.is_selected():
+                to_render = cv2.imread(self.IMG_PATH)
+                to_render = cv2.resize(to_render, (self._bounding_box.width, self._bounding_box.height))
+                img = render_onto_bb(img, self._bounding_box, to_render)
 
-            x, y = self.get_bb().get_as_tuple()[0:2]
-            # Modify x, y, width, height s.t. the cross does not surpass the box-limits
-            x += 2
-            y += 2
-            width -= 4
-            height -= 4
-
-            cv2.line(img, (x, y), (x + width, y + height), color, thickness, lineType=cv2.LINE_AA)
-            cv2.line(img, (x + width, y), (x, y + height), color, thickness, lineType=cv2.LINE_AA)
         return img
 
     def has_click_action(self) -> bool:
         '''
-        Returns True if the button has a click-action.
+        Returns True if the button has a click action.
         '''
         return self._click_action is not None
 
@@ -86,25 +80,51 @@ class ShowPasswordButton(Widget, Button):
         '''
         Returns True if the button is selected.
         '''
-        return self.showing_password
+        return self.toggle_on
 
     def set_selected(self, selected: bool):
         '''
-        Sets the selected attribute of the button.
+        Sets the selected state of the button.
         '''
-        self.showing_password = selected
+        self.toggle_on = selected
 
     def reset(self):
         '''
-        Resets the button.
+        Resets the button to its initial state.
         '''
-        self.showing_password = False
+        self.set_selected(False)
+
+    def set_img_path(self, path):
+        '''
+        Sets the path of the image to be rendered.
+        '''
+        self.IMG_PATH = path
+
+class ShowPasswordButton(ToggleButton):
+    '''
+    Represents a ShowPasswordButton that can be clicked on to show a password.
+    '''
+
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color:tuple = (0,0,0)):
+        ToggleButton.__init__(self, bounding_box, click_action)
+        self.color = color
+        self.IMG_PATH = os.path.join("naturalnets" ,"environments" , "passlock_app", "img", "password_shown_button.PNG")
 
     def show_password_of_textfield(self, textfield:Textfield):
         '''
         Shows the password of the given textfield.
         '''
-        if not self.is_selected() and textfield.is_selected():
+        if not self.is_selected():
             textfield.set_text("Password Shown")
         else:
             textfield.set_text("Sample Text for Textfield")
+
+class OnOffButton(ToggleButton):
+    '''
+    Represents a OnOffButton that can be clicked on to turn something on or off.
+    '''
+
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None):
+        ToggleButton.__init__(self, bounding_box, click_action)
+        self.IMG_PATH = os.path.join("naturalnets" ,"environments" , "passlock_app", "img", "on_off_button.PNG")
+

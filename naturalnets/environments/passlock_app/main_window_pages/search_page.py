@@ -10,7 +10,7 @@ from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import (
-    Button, ShowPasswordButton)
+    Button, ShowPasswordButton, ToggleButton)
 from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
                                                              WINDOW_AREA_BB)
 from naturalnets.environments.passlock_app.widgets.PasswordCard import PasswordCard
@@ -70,7 +70,7 @@ class SearchPage(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.search_textfield = Textfield(self.SEARCH_TEXTFIELD_BB, self.reset_show_all, ORANGE_COLOR)
-        self.show_all_button = ShowPasswordButton(self.SHOW_ALL_BUTTON_BB, self.reset_search_text, ORANGE_COLOR)
+        self.show_all_button = ToggleButton(self.SHOW_ALL_BUTTON_BB, self.reset_search_text)
         self.test1_button = PasswordCard(self.ORIGINAL_TEST1_BUTTON_BB)
         self.test2_button = PasswordCard(self.ORIGINAL_TEST2_BUTTON_BB)
         self.test3_button = PasswordCard(self.ORIGINAL_TEST3_BUTTON_BB)

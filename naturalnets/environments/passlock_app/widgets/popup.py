@@ -55,3 +55,4 @@ class PopUp(Page, RewardElement):
         if self.is_open():
             if self._bounding_box.is_point_inside(click_position):
                 self.close_popup()
+

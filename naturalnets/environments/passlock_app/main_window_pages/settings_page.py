@@ -1,7 +1,8 @@
 """The settings page of the app."""
 import logging
 import os
-from typing import List
+from typing import List, Tuple
+import cv2
 
 import numpy as np
 
@@ -9,7 +10,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
+from naturalnets.environments.gui_app.widgets.button import Button, OnOffButton, ShowPasswordButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
@@ -55,7 +56,7 @@ class SettingsPage(Page, RewardElement):
             ORANGE_COLOR
         )
 
-        self.auto_sync_onoffbutton = ShowPasswordButton(self.AUTO_SYNC_BB, None, ORANGE_COLOR)
+        self.auto_sync_onoffbutton = OnOffButton(self.AUTO_SYNC_BB, None)
 
         self.about_button = Button(
             self.ABOUT_BB, self.about_popup.open_popup)
@@ -234,6 +235,19 @@ class SettingsPageSyncPopUp(PopUp):
         super().__init__(WINDOW_AREA_BB, self.IMG_PATH)
 
         logging.debug("SettingsPageSyncPopUp created")
+
+    def draw_rectangle_from_bb(img, bounding_box: BoundingBox, color: Tuple[int, int, int], thickness: int = 2):
+        """Draws a rectangle onto the given image in the given bounding box's position.
+        Args:
+            img (np.ndarray): the image.
+            bounding_box (BoundingBox): the bounding box.
+            color (Tuple[int,int,int]): the color of the rectangle.
+            thickness (int, optional): the thickness of the rectangle. Defaults to 2.
+        """
+        x, y, width, height = bounding_box.get_as_tuple()
+        cv2.rectangle(img, (x, y), (x+width, y+height), color, thickness)
+
+        return img
 
 
 class SettingsPageAboutPopUp(PopUp):
