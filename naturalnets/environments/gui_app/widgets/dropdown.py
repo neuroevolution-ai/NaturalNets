@@ -1,12 +1,11 @@
 """ Module containing classes relevant for the dropdown-widget."""
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Callable
 
 import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Widget
 from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
 
@@ -37,6 +36,7 @@ class DropdownItem(Widget):
         self._value = value
         self.get_state()[0] = 0  # is-selected state
         self.display_name = display_name
+        self.click_action = None
 
     def get_value(self):
         return self._value
@@ -51,12 +51,14 @@ class DropdownItem(Widget):
         self._is_visible = visible
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        """Currently unused method. May be used to perform on-click actions.
-        """
+        self.click_action()
 
     def set_selected(self, selected: int):
         self.get_state()[0] = selected
 
+    def set_click_action(self, click_action: Callable):
+        self.click_action = click_action
+    
     def is_selected(self) -> int:
         return self.get_state()[0]
 
@@ -66,8 +68,11 @@ class DropdownItem(Widget):
         end_point = (x + width, y + height)
         color = Color.BLACK.value
         thickness = 2
+        
         cv2.rectangle(img, start_point, end_point, color, thickness)
-
+        points= [[x, y],[x, y + height],[x + width, y + height],[x + width, y]]
+        cv2.fillPoly(img, np.int32([points]), color = (240, 240, 240))
+        
         text_padding = 3 * thickness
         bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:
@@ -124,6 +129,8 @@ class Dropdown(Widget):
             for item in self._update_item_bounding_boxes():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
+                    if(item.click_action is not None):
+                        item.click_action()
             # any click action closes dropdown if it was open
             self.close()
         else:

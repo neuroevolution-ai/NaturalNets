@@ -17,3 +17,6 @@ tensorboardX==2.5.1
 tensorflow==2.11.0
 tqdm==4.64.1
 wandb==0.13.9
+
+setuptools==65.5.1
+Pillow==9.4.0
