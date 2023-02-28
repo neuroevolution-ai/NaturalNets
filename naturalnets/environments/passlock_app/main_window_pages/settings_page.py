@@ -9,11 +9,8 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import (
-    Button, ShowPasswordButton)
-from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
-                                                             WINDOW_AREA_BB)
+from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
+from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -138,6 +135,7 @@ class SettingsPage(Page, RewardElement):
 
         if self.change_colour_popup.is_open():
             return self.change_colour_popup
+
 
     def render(self, img) -> np.ndarray:
         """

@@ -10,8 +10,8 @@ from naturalnets.environments.gui_app.page import Widget
 class Textfield(Widget):
     '''
     A textfield widget. This widget is a like radio button that can be selected and deselected.
-    It doesnt have a button but when it is clicked the text is rendered onto the textfield. 
-    
+    It doesnt have a button but when it is clicked the text is rendered onto the textfield.
+
 
     State Description:
         0: Whether or not the textfield is selected
@@ -34,8 +34,6 @@ class Textfield(Widget):
         """
         if self.has_click_action():
             self._click_action()
-
-       
         self.enter_value()
 
     def has_click_action(self) -> bool:
@@ -64,7 +62,7 @@ class Textfield(Widget):
             self.set_selected(False)
         else:
             self.set_selected(True)
-    
+
     def set_text(self, text):
         '''
         Sets the text of the textfield.
@@ -80,7 +78,7 @@ class Textfield(Widget):
 
             # height of the square part of the checkbox
             height = int(self._bounding_box.height)
-            
+
             thickness = 2
             color = self.color
             text = self.text
@@ -95,9 +93,9 @@ class Textfield(Widget):
             x = x + 25
             y = y + 10
             #the rectangle is drawn to make the text more visible. It draws a rectangle behind the text in white
-            cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width, y+text_height-10), color=(255,255,255), thickness=-1) 
+            cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width, y+text_height-10), color=(255,255,255), thickness=-1)
             cv2.putText(img, text, (x, int(y+height/2)), font, 1, color=color, thickness=thickness)
-            
+
         return img
 
     def reset(self):

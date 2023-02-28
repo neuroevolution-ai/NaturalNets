@@ -52,6 +52,6 @@ class PopUp(Page, RewardElement):
         '''
         Handles a click on the popup. Currently, the only action is to close the popup.
         '''
-        if (self.is_open()):
-            if (self._bounding_box.is_point_inside(click_position)):
+        if self.is_open():
+            if self._bounding_box.is_point_inside(click_position):
                 self.close_popup()

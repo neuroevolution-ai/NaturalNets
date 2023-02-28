@@ -230,6 +230,7 @@ class SearchPage(Page, RewardElement):
             self.show_all_button.is_selected()
         )
 
+        #Shifts bounding boxes if necessary
         self.shift_bounding_box()
 
         img_paths = {

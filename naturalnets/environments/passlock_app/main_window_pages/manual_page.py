@@ -56,7 +56,6 @@ class ManualPage(Page, RewardElement):
             self.show_pw_button: "show_password_button",
         }
 
-
         self.add_widget(self.enter_nameof_password_textfield)
         self.add_widget(self.enter_secret_pw_textfield)
         self.add_widget(self.show_pw_button)
@@ -107,7 +106,7 @@ class ManualPage(Page, RewardElement):
 
     def create_pw(self):
         '''
-        Creates a password if the textfields are filled. Currently only resets the page.
+        Creates a password if the textfields are filled. Currently only resets the password textfields on the page.
         '''
         if (self.enter_nameof_password_textfield.is_selected() and self.enter_secret_pw_textfield.is_selected()):
             self.enter_nameof_password_textfield.reset()

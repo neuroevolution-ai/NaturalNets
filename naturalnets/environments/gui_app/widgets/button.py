@@ -47,12 +47,19 @@ class ShowPasswordButton(Widget, Button):
         self.showing_password = not self.showing_password
 
     def handle_click(self, click_position: np.ndarray) -> None:
+        '''
+        Handles a click on the button.
+        '''
 
         if self._click_action:
             self._click_action()
         self.show_or_hide_password()
 
     def render(self, img: np.ndarray) -> np.ndarray:
+        '''
+        Renders the button on the given image.
+        args:   img:    The image to render the button on.
+        returns:        The image with the rendered button.And a cross if the button is selected.'''
         if self.is_selected():
             width = height = self._bounding_box.height  # width, height of the square part of the checkbox
             thickness = 2
