@@ -10,6 +10,7 @@ from naturalnets.environments.gui_app.page import Widget
 from naturalnets.environments.gui_app.utils import render_onto_bb
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
+
 class Button(Clickable):
     """Represents a Button with a click-action.
     """
@@ -27,9 +28,11 @@ class Button(Clickable):
     def handle_click(self, click_position: np.ndarray) -> None:
         self._click_action()
 
+
 class ToggleButton(Widget, Button):
     '''
     Represents a ToggleButton that can be clicked on to toggle between two states.
+    On click a picture is rendered onto the button. The can be set with the set_img_path method.
     '''
 
     STATE_LEN = 1
@@ -50,6 +53,7 @@ class ToggleButton(Widget, Button):
         '''
         Handles a click on the button. If the button has a click action, it is executed.
         '''
+
         if self.has_click_action():
             self._click_action()
         self.toggle()
@@ -65,7 +69,8 @@ class ToggleButton(Widget, Button):
         if self.IMG_PATH is not None:
             if self.is_selected():
                 to_render = cv2.imread(self.IMG_PATH)
-                to_render = cv2.resize(to_render, (self._bounding_box.width, self._bounding_box.height))
+                to_render = cv2.resize(
+                    to_render, (self._bounding_box.width, self._bounding_box.height))
                 img = render_onto_bb(img, self._bounding_box, to_render)
 
         return img
@@ -100,17 +105,19 @@ class ToggleButton(Widget, Button):
         '''
         self.IMG_PATH = path
 
+
 class ShowPasswordButton(ToggleButton):
     '''
     Represents a ShowPasswordButton that can be clicked on to show a password.
     '''
 
-    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color:tuple = (0,0,0)):
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color: tuple = (0, 0, 0)):
         ToggleButton.__init__(self, bounding_box, click_action)
         self.color = color
-        self.IMG_PATH = os.path.join("naturalnets" ,"environments" , "passlock_app", "img", "password_shown_button.PNG")
+        self.IMG_PATH = os.path.join(
+            "naturalnets", "environments", "passlock_app", "img", "password_shown_button.PNG")
 
-    def show_password_of_textfield(self, textfield:Textfield):
+    def show_password_of_textfield(self, textfield: Textfield):
         '''
         Shows the password of the given textfield.
         '''
@@ -118,13 +125,3 @@ class ShowPasswordButton(ToggleButton):
             textfield.set_text("Password Shown")
         else:
             textfield.set_text("Sample Text for Textfield")
-
-class OnOffButton(ToggleButton):
-    '''
-    Represents a OnOffButton that can be clicked on to turn something on or off.
-    '''
-
-    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None):
-        ToggleButton.__init__(self, bounding_box, click_action)
-        self.IMG_PATH = os.path.join("naturalnets" ,"environments" , "passlock_app", "img", "on_off_button.PNG")
-

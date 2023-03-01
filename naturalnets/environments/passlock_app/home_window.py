@@ -10,7 +10,7 @@ from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button, ShowPasswordButton
+from naturalnets.environments.gui_app.widgets.button import Button, ToggleButton
 from naturalnets.environments.passlock_app.constants import (
     IMAGES_PATH, PAGES_SELECT_AREA_SIDE_BB, PAGES_SELECT_AREA_TOP_BB,
     PAGES_UI_AREA_BB, WINDOW_AREA_BB)
@@ -63,10 +63,13 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
         self.syncpopup = SyncPopUp()
 
-        self.darkmode_button = ShowPasswordButton(
+        self.darkmode_button = ToggleButton(
             self.DARK_LIGHT_BB, self.darkmode)
 
-        self.buttons = [
+        self.darkmode_button.set_img_path(
+            os.path.join(IMAGES_PATH, "darkmode_button.png"))
+
+        self.buttons: Button = [
             Button(self.HOME_BUTTON_BB,
                    lambda: self.set_current_page(self.manual)),
             Button(self.SEARCH_BUTTON_BB,
@@ -221,6 +224,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             return img
 
         img = self.current_page.render(img)
+
+        img = self.darkmode_button.render(img)
 
         return img
 

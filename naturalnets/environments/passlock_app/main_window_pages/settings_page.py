@@ -9,7 +9,7 @@ from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, OnOffButton
+from naturalnets.environments.gui_app.widgets.button import Button, ToggleButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
@@ -56,7 +56,10 @@ class SettingsPage(Page, RewardElement):
             ORANGE_COLOR
         )
 
-        self.auto_sync_onoffbutton = OnOffButton(self.AUTO_SYNC_BB, None)
+        self.auto_sync_onoffbutton = ToggleButton(self.AUTO_SYNC_BB, None)
+
+        self.auto_sync_onoffbutton.set_img_path(os.path.join(
+            IMAGES_PATH, "on_off_button.PNG"))
 
         self.about_button = Button(
             self.ABOUT_BB, self.about_popup.open_popup)
