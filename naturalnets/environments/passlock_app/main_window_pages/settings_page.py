@@ -27,7 +27,8 @@ class SettingsPage(Page, RewardElement):
 
     ### CONSTANTS ###
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "settings_page_img", "settings_page.png")
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "settings_page_img", "settings_page.png")
     CHANGE_COLOR_BB = BoundingBox(175, 275, 175, 60)
     SYNC_PW_BB = BoundingBox(175, 365, 300, 60)
     AUTO_SYNC_BB = BoundingBox(1780, 480, 100, 60)
@@ -115,13 +116,11 @@ class SettingsPage(Page, RewardElement):
         '''
         logging.debug("Enter zoom level")
 
-
     def is_popup_open(self) -> bool:
         '''
         Returns True if a popup is open.
         '''
         return self.about_popup.is_open() or self.sync_popup.is_open() or self.change_colour_popup.is_open()
-
 
     def get_open_popup(self) -> PopUp:
         '''
@@ -135,7 +134,6 @@ class SettingsPage(Page, RewardElement):
 
         if self.change_colour_popup.is_open():
             return self.change_colour_popup
-
 
     def render(self, img) -> np.ndarray:
         """
@@ -158,6 +156,9 @@ class SettingsPage(Page, RewardElement):
         self.about_popup.reset()
         self.change_colour_popup.reset()
         self.sync_popup.reset()
+        self.auto_sync_onoffbutton.reset()
+        self.zoom_textfield.reset()
+        self.get_state()[:] = 0
 
     def handle_click(self, click_position: np.ndarray) -> bool:
         '''
@@ -180,13 +181,15 @@ class SettingsPage(Page, RewardElement):
                     # If the logout button is clicked, return True
                     if clickable == self.log_out_button:
                         clickable.handle_click(click_position)
-                        self.register_selected_reward([self.reward_widgets_to_str[clickable], "clicked"])
+                        self.register_selected_reward(
+                            [self.reward_widgets_to_str[clickable], "clicked"])
                         return True
                     if isinstance(clickable, Button):
                         self.register_selected_reward(
                             [self.reward_widgets_to_str[clickable], "clicked"])
                     else:
-                        self.register_selected_reward([rew_key, clickable.is_selected()])
+                        self.register_selected_reward(
+                            [rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
@@ -234,6 +237,7 @@ class SettingsPageSyncPopUp(PopUp):
         super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
 
         logging.debug("SettingsPageSyncPopUp created")
+
 
 class SettingsPageAboutPopUp(PopUp):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).

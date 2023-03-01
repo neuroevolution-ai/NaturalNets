@@ -1,4 +1,4 @@
-
+'''This module contains the PopUp class.'''
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
@@ -14,7 +14,7 @@ class PopUp(Page, RewardElement):
     """
     STATE_LEN = 1
 
-    def __init__(self, page_bounding_box: BoundingBox, popup_bb:BoundingBox, img_path: str):
+    def __init__(self, page_bounding_box: BoundingBox, popup_bb: BoundingBox, img_path: str):
         Page.__init__(self, self.STATE_LEN, page_bounding_box, img_path)
         RewardElement.__init__(self)
         self.popup_bb = popup_bb
@@ -56,4 +56,3 @@ class PopUp(Page, RewardElement):
         if self.is_open():
             if self.popup_bb.is_point_inside(click_position):
                 self.close_popup()
-

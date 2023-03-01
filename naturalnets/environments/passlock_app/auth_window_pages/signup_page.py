@@ -26,7 +26,8 @@ class SignupPage(Page, RewardElement):
     '''
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img", "signup_window.png")
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "signup_page_img", "signup_window.png")
     EMAIL_TEXTFIELD_BB = BoundingBox(288, 293, 1344, 75)
     PASSWORD_TEXTFIELD_BB = BoundingBox(288, 443, 1269, 75)
     SHOW_PW_BUTTON_BB = BoundingBox(1557, 443, 75, 75)
@@ -37,9 +38,12 @@ class SignupPage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, WINDOW_AREA_BB, self.IMG_PATH)
         RewardElement.__init__(self)
 
-        self.enter_email_textfield = Textfield(self.EMAIL_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.enter_pw_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
+        self.enter_email_textfield = Textfield(
+            self.EMAIL_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.enter_pw_textfield = Textfield(
+            self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.show_pw_button = ShowPasswordButton(
+            self.SHOW_PW_BUTTON_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_pw_textfield), ORANGE_COLOR)
         self.signup_button = Button(
             self.SIGNUP_BUTTON_BB, self.signup)
         self.login_button = Button(self.LOGIN_BUTTON_BB, self.login)
@@ -94,7 +98,8 @@ class SignupPage(Page, RewardElement):
         '''
         self.enter_email_textfield.set_selected(False)
         self.enter_pw_textfield.set_selected(False)
-        self.show_pw_button.showing_password = False
+        self.show_pw_button.set_selected(False)
+        self.get_state()[:] = 0
 
     def handle_click(self, click_position: np.ndarray):
         '''
@@ -118,8 +123,9 @@ class SignupPage(Page, RewardElement):
                             self.register_selected_reward([rew_key, "clicked"])
                             return True
                     else:
-                        #If the clickable has a selected state, register the reward when it is selected
-                        self.register_selected_reward([rew_key, clickable.is_selected()])
+                        # If the clickable has a selected state, register the reward when it is selected
+                        self.register_selected_reward(
+                            [rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)

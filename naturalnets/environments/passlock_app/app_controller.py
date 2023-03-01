@@ -87,7 +87,6 @@ class PasslockAppController:
         self.assign_state(self.home_window, 0, [])
         self.assign_state(self.auth_window, 0, [])
 
-
     def get_element_state_len(self, state_element: StateElement) -> int:
         """Collects the total state length of the given StateElement and all its children.
 

@@ -1,21 +1,16 @@
 import logging
-import os
 import time
 from typing import Dict, List, Optional
 
 import cv2
-import jsonlines
 import numpy as np
 from attr import define, field, validators
 
 from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.gui_app import FakeBugOptions
-from naturalnets.environments.i_environment import (IEnvironment, IGUIEnvironment,
-                                                    register_environment_class)
-from naturalnets.environments.passlock_app.app_controller import \
-    PasslockAppController
-from naturalnets.tools.utils import rescale_values
+from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
+from naturalnets.environments.passlock_app.app_controller import PasslockAppController
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -80,7 +75,7 @@ class PasslockApp(IGUIEnvironment):
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
-     
+
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
@@ -160,13 +155,13 @@ class PasslockApp(IGUIEnvironment):
 
     def get_observation(self):
         return self.get_state()
-    
+
     def get_screen_height(self) -> int:
         return self.screen_height
-    
+
     def get_screen_width(self) -> int:
         return self.screen_width
-    
+
     def get_screen_size(self) -> int:
         pass
 

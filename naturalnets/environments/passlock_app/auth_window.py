@@ -24,7 +24,8 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
     """
 
     STATE_LEN = 3
-    IMG_PATH = os.path.join(IMAGES_PATH, "signup_page_img", "signup_window.png")
+    IMG_PATH = os.path.join(
+        IMAGES_PATH, "signup_page_img", "signup_window.png")
     APP_BOUNDING_BOX = BoundingBox(0, 0, 1920, 987)
 
     def __init__(self):
@@ -83,7 +84,9 @@ class AuthenticationWindow(StateElement, Clickable, RewardElement):
         '''
         self.login.reset()
         self.signup.reset()
-        self.set_current_page(self.signup)
+        self.get_state()[:] = 0
+        self.open()
+        self.current_page = self.signup
 
     def is_open(self) -> int:
         """Returns if the settings window is open."""

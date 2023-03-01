@@ -22,7 +22,6 @@ from naturalnets.environments.passlock_app.main_window_pages.settings_page impor
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 
 
-
 class HomeWindow(StateElement, Clickable, RewardElement):
     """The main window of the app, containing the menu as well as the respective pages
     (manual page, auto page, search page and setting page).
@@ -64,7 +63,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         self.current_page = None
         self.syncpopup = SyncPopUp()
 
-        self.darkmode_button = ShowPasswordButton(self.DARK_LIGHT_BB, self.darkmode)
+        self.darkmode_button = ShowPasswordButton(
+            self.DARK_LIGHT_BB, self.darkmode)
 
         self.buttons = [
             Button(self.HOME_BUTTON_BB,
@@ -80,7 +80,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             Button(self.SYNC_BUTTON_BB, self.syncpopup.open_popup)
         ]
 
-        self.add_children([self.manual, self.auto, self.search, self.settings, self.syncpopup])
+        self.add_children(
+            [self.manual, self.auto, self.search, self.settings, self.syncpopup])
         self.set_reward_children(
             [self.manual, self.auto, self.search, self.settings, self.syncpopup])
         self.add_child(self.darkmode_button)
@@ -167,9 +168,9 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             self.syncpopup.handle_click(click_position)
             return False
 
-        #If the App is on the manual or auto page, the click is handled differently. In this case the top menu should also be clickable
+        # If the App is on the manual or auto page, the click is handled differently. In this case the top menu should also be clickable
         if self.current_page in (self.manual, self.auto):
-            ##Pages UI Area is the area where the the page and not the menu is displayed
+            # Pages UI Area is the area where the the page and not the menu is displayed
             if self.current_page_blocks_click() or PAGES_UI_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
 
@@ -179,14 +180,14 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
                 self.handle_menu_click(click_position)
                 return False
-        #In the other cases the click is handled normally and only the side menu is clickable
+        # In the other cases the click is handled normally and only the side menu is clickable
         else:
             # Check if the side menu is clicked
             if not self.current_page_blocks_click() and PAGES_SELECT_AREA_SIDE_BB.is_point_inside(click_position):
                 self.handle_menu_click(click_position)
                 return False
 
-            ##Window Area is the area of the entire app
+            # Window Area is the area of the entire app
             if WINDOW_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
 
@@ -235,7 +236,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
         '''
         Sets the home window to darkmode.
         '''
-        self.register_selected_reward(["darkmode_clicked", self.darkmode_button.is_selected()])
+        self.register_selected_reward(
+            ["darkmode_clicked", self.darkmode_button.is_selected()])
         logging.debug("Darkmode not implemented yet")
 
     def sign_up(self):

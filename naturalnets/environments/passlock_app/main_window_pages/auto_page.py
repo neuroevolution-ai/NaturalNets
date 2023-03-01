@@ -1,4 +1,5 @@
-"""This module contains the AutoPage class which is the page where the user can generate a password. The actual generation of the passwords is only modelled. No actual password is generated and the UI is not changed on generation of a password."""
+"""This module contains the AutoPage class which is the page where the user can generate a password. The actual generation of the passwords is only modelled.
+No actual password is generated and the UI is not changed on generation of a password."""
 import logging
 import os
 from typing import List
@@ -11,8 +12,7 @@ from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.passlock_app.constants import (IMAGES_PATH,
-                                                             WINDOW_AREA_BB)
+from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
 from naturalnets.environments.passlock_app.widgets.slider import Slider
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -54,7 +54,8 @@ class AutoPage(Page, RewardElement):
 
         self.enter_nameof_password_textfield = Textfield(
             self.NAME_OF_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.enter_password_textfield = Textfield(self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
+        self.enter_password_textfield = Textfield(
+            self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
 
         self.copy_pw_button = Button(
             self.COPY_PW_BB, lambda: self.copy_password)
@@ -62,11 +63,15 @@ class AutoPage(Page, RewardElement):
             self.RESET_PW_BB, self.enter_password_textfield.reset)
         self.create_pw_button = Button(
             self.GENERATE_PW_BB, self.generate_password)
-        self.pw_length_slider = Slider(self.PW_LENGTH_BB, 10, color=ORANGE_COLOR)
+        self.pw_length_slider = Slider(
+            self.PW_LENGTH_BB, 10, color=ORANGE_COLOR)
 
-        self.use_letters_checkbox = CheckBox(self.USE_LETTERS_BB, None, ORANGE_COLOR)
-        self.use_numbers_checkbox = CheckBox(self.USE_NUMBERS_BB, None, ORANGE_COLOR)
-        self.use_special_chars_checkbox = CheckBox(self.USE_SPECIAL_CHARS_BB, None, ORANGE_COLOR)
+        self.use_letters_checkbox = CheckBox(
+            self.USE_LETTERS_BB, None, ORANGE_COLOR)
+        self.use_numbers_checkbox = CheckBox(
+            self.USE_NUMBERS_BB, None, ORANGE_COLOR)
+        self.use_special_chars_checkbox = CheckBox(
+            self.USE_SPECIAL_CHARS_BB, None, ORANGE_COLOR)
 
         self.sliders: List[Slider] = [self.pw_length_slider]
         self.checkboxes: List[CheckBox] = [self.use_letters_checkbox,
@@ -128,6 +133,7 @@ class AutoPage(Page, RewardElement):
         self.use_numbers_checkbox.reset()
         self.use_special_chars_checkbox.reset()
         self.pw_length_slider.reset()
+        self.get_state()[:] = 0
 
     def handle_click(self, click_position: np.ndarray) -> bool:
         '''

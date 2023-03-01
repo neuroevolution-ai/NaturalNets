@@ -40,7 +40,8 @@ class ManualPage(Page, RewardElement):
             self.NAME_OF_PW_TEXTFIELD_BB, None, ORANGE_COLOR)
         self.enter_secret_pw_textfield = Textfield(
             self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
-        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BB, lambda: self.show_pw_button.show_password_of_textfield(self.enter_secret_pw_textfield), ORANGE_COLOR)
+        self.show_pw_button = ShowPasswordButton(self.SHOW_PW_BB, lambda: self.show_pw_button.show_password_of_textfield(
+            self.enter_secret_pw_textfield), ORANGE_COLOR)
         self.create_pw_button = Button(
             self.CREATE_PW_BB, self.create_pw)
 
@@ -81,6 +82,7 @@ class ManualPage(Page, RewardElement):
         self.enter_nameof_password_textfield.set_selected(False)
         self.enter_secret_pw_textfield.set_selected(False)
         self.show_pw_button.set_selected(False)
+        self.get_state()[:] = 0
 
     def handle_click(self, click_position: np.ndarray) -> bool:
         '''
@@ -98,7 +100,8 @@ class ManualPage(Page, RewardElement):
                         self.register_selected_reward(
                             [self.reward_widgets_to_str[clickable], "clicked"])
                     else:
-                        self.register_selected_reward([rew_key, clickable.is_selected()])
+                        self.register_selected_reward(
+                            [rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
@@ -108,6 +111,6 @@ class ManualPage(Page, RewardElement):
         '''
         Creates a password if the textfields are filled. Currently only resets the password textfields on the page.
         '''
-        if (self.enter_nameof_password_textfield.is_selected() and self.enter_secret_pw_textfield.is_selected()):
+        if self.enter_nameof_password_textfield.is_selected() and self.enter_secret_pw_textfield.is_selected():
             self.enter_nameof_password_textfield.reset()
             self.enter_secret_pw_textfield.reset()
