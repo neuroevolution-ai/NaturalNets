@@ -34,14 +34,14 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
         if event == cv2.EVENT_LBUTTONDOWN:
             current_action = np.array([x, y])
 
-            #If the screen is square, we only need one value to specify the action
-            #Otherwise, we need two values
-            if(app.get_screen_height == app.get_screen_width):
+            # If the screen is square, we only need one value to specify the action
+            # Otherwise, we need two values
+            if (app.get_screen_height == app.get_screen_width):
                 ob, rew, _, info = app.step(rescale_values(current_action,
-                                                        previous_low=0,
-                                                        previous_high=app.get_screen_size(),
-                                                        new_low=-1,
-                                                        new_high=1))
+                                                           previous_low=0,
+                                                           previous_high=app.get_screen_size(),
+                                                           new_low=-1,
+                                                           new_high=1))
             else:
                 ob, rew, _, info = app.step([rescale_values(current_action[0], previous_low=0, previous_high=app.get_screen_width(), new_high=1, new_low=-1),
                                              rescale_values(current_action[1], previous_low=0, previous_high=app.get_screen_height(), new_high=1, new_low=-1)])
@@ -52,7 +52,8 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
             if save_state_vector:
                 states = []
                 for state_info, state in zip(info["states_info"], ob):
-                    states.append("({recursion_depth}) {class_name}: ".format(**state_info) + str(state))
+                    states.append("({recursion_depth}) {class_name}: ".format(
+                        **state_info) + str(state))
 
                 with jsonlines.open(os.path.join(OUT_DIRECTORY, "state_vector.jsonl"), "w") as writer:
                     writer.write_all(states)
@@ -92,7 +93,7 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
 
 @click.command()
-@click.option("-c", "--config", "config_id", default=2, type=int, help="Config number (1: GUIApp, 2:PasslockApp else: DummyApp)")
+@click.option("-c", "--config", "config_id", default=1, type=int, help="Config number (1: GUIApp, 2:PasslockApp else: DummyApp)")
 @click.option("-p/-no-p", "--screenshot/--no-screenshot", "save_screenshots",
               default=True, type=bool, help="Save screenshots?")
 @click.option("-s/-no-s", "--state/--no-state", "save_state_vector", default=True, type=bool, help="Save state vector?")
