@@ -1,4 +1,3 @@
-import os
 from typing import List, Optional
 
 import numpy as np
@@ -10,6 +9,7 @@ from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
@@ -20,7 +20,7 @@ class CalculatorSettings(Page, RewardElement):
     STATE_LEN = 0
     MAX_CLICKABLE_ELEMENTS = 5
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator_settings.png")
 
     ADDITION_BB = BoundingBox(38, 117, 66, 14)
     MULTIPLICATION_BB = BoundingBox(38, 143, 91, 14)
@@ -181,7 +181,7 @@ class CalculatorSettingsPopup(Page, RewardElement):
     MAX_CLICKABLE_ELEMENTS = 2
 
     BOUNDING_BOX = BoundingBox(47, 87, 315, 114)
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator_settings_popup.png")
 
     DROPDOWN_BB = BoundingBox(69, 129, 271, 22)
     APPLY_BUTTON_BB = BoundingBox(123, 157, 163, 22)

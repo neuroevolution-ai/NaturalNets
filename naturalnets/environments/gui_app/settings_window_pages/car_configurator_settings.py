@@ -1,5 +1,4 @@
 import itertools
-import os
 from functools import partial
 from typing import List
 
@@ -12,7 +11,7 @@ from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
+from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text, get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 
@@ -26,7 +25,7 @@ class CarConfiguratorSettings(Page, RewardElement):
     STATE_LEN = 3
     MAX_CLICKABLE_ELEMENTS = 12
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator_settings.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "car_configurator_settings.png")
 
     TIRE_20_INCH_BB = BoundingBox(48, 73, 83, 14)
     TIRE_22_INCH_BB = BoundingBox(48, 99, 83, 14)
@@ -369,7 +368,7 @@ class CarDisabledPopup(Page, RewardElement):
     MAX_CLICKABLE_ELEMENTS = 1
 
     BOUNDING_BOX = BoundingBox(87, 101, 235, 86)
-    IMG_PATH = os.path.join(IMAGES_PATH, "car_config_car_disabled_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "car_config_car_disabled_popup.png")
     OK_BUTTON_BB = BoundingBox(147, 143, 115, 22)
 
     def __init__(self):

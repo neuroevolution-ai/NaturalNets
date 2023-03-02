@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import numpy as np
@@ -10,7 +9,7 @@ from naturalnets.environments.gui_app.enums import Font, FontStyle
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
+from naturalnets.environments.gui_app.utils import put_text, get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
@@ -24,7 +23,7 @@ class TextPrinter(Page, RewardElement):
     STATE_LEN = 1
     MAX_CLICKABLE_ELEMENTS = 1
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "text_printer.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
     # For rendering purposes (position of the rendered text), the text-area bounding box

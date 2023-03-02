@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import numpy as np
@@ -11,6 +10,7 @@ from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
@@ -22,7 +22,7 @@ class TextPrinterSettings(Page, RewardElement):
     STATE_LEN = 0
     CLICKABLE_ELEMENTS = 10
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "text_printer_settings.png")
 
     N_WORDS_BB = BoundingBox(217, 71, 173, 22)
     FONT_SIZE_BB = BoundingBox(38, 110, 87, 22)
@@ -251,7 +251,7 @@ class TextPrinterSettingsPopup(Page, RewardElement):
     CLICKABLE_ELEMENTS = 2
 
     BOUNDING_BOX = BoundingBox(99, 94, 210, 100)
-    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "text_printer_settings_popup.png")
 
     YES_BUTTON_BB = BoundingBox(121, 150, 80, 22)
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)
