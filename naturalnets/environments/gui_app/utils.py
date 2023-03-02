@@ -1,4 +1,5 @@
 from cmath import inf
+from importlib.resources import path as res_path
 from typing import List, Tuple, Dict
 
 import cv2
@@ -7,6 +8,11 @@ import numpy as np
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.interfaces import HasBoundingBox
+
+
+def get_image_path(module: str, file_name: str):
+    with res_path(module, file_name) as p:
+        return p.__str__()
 
 
 def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.ndarray) -> np.ndarray:
