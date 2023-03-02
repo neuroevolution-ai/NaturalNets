@@ -1,0 +1,3 @@
+recursive-include naturalnets/environments/gui_app/img *
+recursive-include naturalnets/environments/anki/img *
+recursive-include naturalnets/environments/anki/decks *
