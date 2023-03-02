@@ -1,4 +1,3 @@
-import os
 from typing import Dict, List
 
 import cv2
@@ -10,7 +9,7 @@ from naturalnets.environments.gui_app.enums import Car, TireSize, Interior, Prop
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb, get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
@@ -26,7 +25,7 @@ class CarConfigurator(Page, RewardElement):
     """
 
     STATE_LEN = 4
-    IMG_PATH = os.path.join(IMAGES_PATH, "car_configurator.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "car_configurator.png")
 
     CAR_DROPDOWN_BB = BoundingBox(252, 108, 166, 22)
     TIRE_DROPDOWN_BB = BoundingBox(252, 189, 166, 22)
@@ -34,16 +33,16 @@ class CarConfigurator(Page, RewardElement):
     PROPULSION_DROPDOWN_BB = BoundingBox(252, 351, 166, 22)
 
     TIRE_FRAME_BB = BoundingBox(125, 163, 303, 75)
-    TIRE_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_tire_frame.png")
+    TIRE_FRAME_IMG_PATH = get_image_path(IMAGES_PATH, "car_config_tire_frame.png")
 
     INTERIOR_FRAME_BB = BoundingBox(125, 244, 303, 75)
-    INTERIOR_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_interior_frame.png")
+    INTERIOR_FRAME_IMG_PATH = get_image_path(IMAGES_PATH, "car_config_interior_frame.png")
 
     PROP_FRAME_BB = BoundingBox(125, 325, 303, 75)
-    PROP_FRAME_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_prop_frame.png")
+    PROP_FRAME_IMG_PATH = get_image_path(IMAGES_PATH, "car_config_prop_frame.png")
 
     BUTTON_BB = BoundingBox(125, 406, 303, 22)
-    BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "car_config_button_frame.png")
+    BUTTON_IMG_PATH = get_image_path(IMAGES_PATH, "car_config_button_frame.png")
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, MAIN_PAGE_AREA_BB, self.IMG_PATH)
@@ -446,7 +445,7 @@ class CarConfiguratorPopup(Page, RewardElement):
     STATE_LEN = 1
     BOUNDING_BOX = BoundingBox(75, 160, 298, 128)
     CONFIGURATION_TEXT_BB = BoundingBox(94, 167, 263, 73)
-    IMG_PATH = os.path.join(IMAGES_PATH, "car_config_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "car_config_popup.png")
 
     OK_BUTTON_BB = BoundingBox(148, 244, 152, 22)
 

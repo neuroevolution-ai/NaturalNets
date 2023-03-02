@@ -1,4 +1,3 @@
-import os
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -11,6 +10,7 @@ from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import Figure
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.gui_app.utils import get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.check_box import CheckBox
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
@@ -22,7 +22,7 @@ class FigurePrinterSettings(Page, RewardElement):
     STATE_LEN = 0
     MAX_CLICKABLE_ELEMENTS = 9
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_settings.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "figure_printer_settings.png")
 
     SHOW_FIG_PRINTER_BB = BoundingBox(38, 91, 141, 14)
 
@@ -234,7 +234,7 @@ class FigureCheckboxesPopup(Page, RewardElement):
     MAX_CLICKABLE_ELEMENTS = 2
 
     BOUNDING_BOX = BoundingBox(14, 87, 381, 114)
-    IMG_PATH = os.path.join(IMAGES_PATH, "figure_settings_checkboxes_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "figure_settings_checkboxes_popup.png")
 
     APPLY_BUTTON_BB = BoundingBox(103, 157, 203, 22)
     DROPDOWN_BB = BoundingBox(36, 129, 337, 22)

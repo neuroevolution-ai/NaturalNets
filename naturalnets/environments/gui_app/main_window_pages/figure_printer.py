@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import cv2
@@ -10,7 +9,7 @@ from naturalnets.environments.gui_app.enums import Color, Figure
 from naturalnets.environments.gui_app.interfaces import Clickable
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.gui_app.utils import put_text, render_onto_bb, get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
 
@@ -23,7 +22,7 @@ class FigurePrinter(Page, RewardElement):
     """
 
     STATE_LEN = 1
-    IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "figure_printer.png")
     DROPDOWN_BB = BoundingBox(125, 348, 303, 22)
     DRAW_FIGURE_BUTTON_BB = BoundingBox(125, 406, 303, 22)
     FIGURE_CANVAS_BB = BoundingBox(125, 39, 303, 303)
@@ -170,7 +169,7 @@ class FigurePrinter(Page, RewardElement):
     def render(self, img: np.ndarray):
         super().render(img)
         if self.is_figure_shown() and self.current_figure is not None:
-            figure_img_path = os.path.join(IMAGES_PATH, self.current_figure.value)
+            figure_img_path = get_image_path(IMAGES_PATH, self.current_figure.value)
             img = render_onto_bb(img, self.FIGURE_CANVAS_BB, cv2.imread(figure_img_path))
 
             # Indicate the selected color of the figure with a text string
