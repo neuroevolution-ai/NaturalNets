@@ -1,6 +1,6 @@
-import gym
+import gymnasium as gym
 import numpy as np
-from gym.spaces.utils import flatdim
+from gymnasium.spaces.utils import flatdim
 
 from naturalnets.environments.environment_utils import deprecate_environment
 from naturalnets.environments.i_environment import IEnvironment

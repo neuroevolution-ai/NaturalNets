@@ -1,4 +1,3 @@
-import os
 from typing import List, Optional
 
 import cv2
@@ -14,7 +13,7 @@ from naturalnets.environments.gui_app.main_window_pages.text_printer import Text
 from naturalnets.environments.gui_app.page import Page
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.gui_app.utils import render_onto_bb, get_image_path
 from naturalnets.environments.gui_app.widgets.button import Button
 
 
@@ -29,8 +28,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
     STATE_LEN = 4
     MAX_CLICKABLE_ELEMENTS = 4
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
-    FIGURE_PRINTER_BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_button.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "main_window_base.png")
+    FIGURE_PRINTER_BUTTON_IMG_PATH = get_image_path(IMAGES_PATH, "figure_printer_button.png")
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(4, 25, 110, 118)
     PAGES_AREA_BB = BoundingBox(117, 22, 326, 420)

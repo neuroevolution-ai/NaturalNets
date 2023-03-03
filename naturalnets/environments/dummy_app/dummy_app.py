@@ -175,12 +175,12 @@ class DummyApp(IGUIEnvironment):
 
     def get_observation_dict(self) -> dict:
         observation_dict = {
-            "pressed buttons": []
+            "pressed_buttons": []
         }
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
-                observation_dict["pressed buttons"].append(i)
+                observation_dict["pressed_buttons"].append(i)
 
         return observation_dict
 

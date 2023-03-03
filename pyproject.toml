@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools >= 62.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naturalnets"
+description = "NaturalNets implmented in Python"
+version="0.2.0"
+readme = "README.md"
+requires-python = ">= 3.8"
+authors = [
+    { name = "Daniel Zimmermann", email = "dzimmer@fzi.de" },
+    { name = "Patrick Deubel", email = "33164686+pdeubel@users.noreply.github.com"}
+]
+license = { text = "MIT License" }
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+packages = ["naturalnets"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

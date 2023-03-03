@@ -1,5 +1,5 @@
 import attr
-import gym
+import gymnasium as gym
 import numpy as np
 
 from naturalnets.environments.environment_utils import deprecate_environment
