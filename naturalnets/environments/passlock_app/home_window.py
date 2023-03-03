@@ -194,6 +194,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
             if WINDOW_AREA_BB.is_point_inside(click_position):
                 return self.current_page.handle_click(click_position)
 
+        return False
+
     def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
         if any).
@@ -253,7 +255,8 @@ class HomeWindow(StateElement, Clickable, RewardElement):
 
 
 class SyncPopUp(PopUp):
-    """Popup for the calculator settings (pops up when no operator-checkbox is selected).
+    """
+    The SyncPopUp class represents the popup that appears when the user clicks on the sync button.
 
        State description:
             state[0]: the opened-state of this popup.
@@ -265,4 +268,4 @@ class SyncPopUp(PopUp):
 
     def __init__(self):
         super().__init__(WINDOW_AREA_BB, self.BOUNDING_BOX, self.IMG_PATH)
-        logging.debug("SettingsPageAboutPopUp created")
+        logging.debug("SyncPop created")

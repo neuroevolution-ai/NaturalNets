@@ -130,3 +130,4 @@ class SignupPage(Page, RewardElement):
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
+        return False

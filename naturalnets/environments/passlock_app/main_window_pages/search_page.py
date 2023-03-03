@@ -11,7 +11,7 @@ from naturalnets.environments.gui_app.page import Page, Widget
 from naturalnets.environments.gui_app.reward_element import RewardElement
 from naturalnets.environments.gui_app.widgets.button import Button, ToggleButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.widgets.PasswordCard import PasswordCard
+from naturalnets.environments.passlock_app.widgets.password_card import PasswordCard
 from naturalnets.environments.passlock_app.widgets.popup import PopUp
 from naturalnets.environments.passlock_app.widgets.textfield import Textfield
 
@@ -288,6 +288,8 @@ class SearchPage(Page, RewardElement):
         if (self.show_all_button.is_selected() or self.search_textfield.is_selected()):
             self.handle_all_password_click(click_position)
             return False
+
+        return False
 
     def handle_all_password_click(self, click_position: np.ndarray):
         '''

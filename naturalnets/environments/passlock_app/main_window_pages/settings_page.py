@@ -52,14 +52,14 @@ class SettingsPage(Page, RewardElement):
 
         self.zoom_textfield = Textfield(
             self.ZOOM_TEXTFIELD_BB,
-            lambda: self.enter_zoom_level,
+            self.enter_zoom_level,
             ORANGE_COLOR
         )
 
         self.auto_sync_onoffbutton = ToggleButton(self.AUTO_SYNC_BB, None)
 
         self.auto_sync_onoffbutton.set_img_path(os.path.join(
-            IMAGES_PATH, "on_off_button.PNG"))
+            IMAGES_PATH, "on_off_button.png"))
 
         self.about_button = Button(
             self.ABOUT_BB, self.about_popup.open_popup)
@@ -197,6 +197,7 @@ class SettingsPage(Page, RewardElement):
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
+        return False
 
     def open_youtube_link(self):
         '''

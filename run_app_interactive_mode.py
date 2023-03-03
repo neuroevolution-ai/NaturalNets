@@ -34,17 +34,8 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
         if event == cv2.EVENT_LBUTTONDOWN:
             current_action = np.array([x, y])
 
-            # If the screen is square, we only need one value to specify the action
-            # Otherwise, we need two values
-            if (app.get_screen_height == app.get_screen_width):
-                ob, rew, _, info = app.step(rescale_values(current_action,
-                                                           previous_low=0,
-                                                           previous_high=app.get_screen_size(),
-                                                           new_low=-1,
-                                                           new_high=1))
-            else:
-                ob, rew, _, info = app.step([rescale_values(current_action[0], previous_low=0, previous_high=app.get_screen_width(), new_high=1, new_low=-1),
-                                             rescale_values(current_action[1], previous_low=0, previous_high=app.get_screen_height(), new_high=1, new_low=-1)])
+            ob, rew, _, info = app.step([rescale_values(current_action[0], previous_low=0, previous_high=app.get_screen_width(), new_high=1, new_low=-1),
+                                         rescale_values(current_action[1], previous_low=0, previous_high=app.get_screen_height(), new_high=1, new_low=-1)])
 
             if print_reward:
                 print(f"Reward: {rew}")

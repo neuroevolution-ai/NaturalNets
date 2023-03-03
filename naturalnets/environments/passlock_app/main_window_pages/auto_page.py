@@ -58,7 +58,7 @@ class AutoPage(Page, RewardElement):
             self.PASSWORD_TEXTFIELD_BB, None, ORANGE_COLOR)
 
         self.copy_pw_button = Button(
-            self.COPY_PW_BB, lambda: self.copy_password)
+            self.COPY_PW_BB, self.copy_password)
         self.reset_pw_button = Button(
             self.RESET_PW_BB, self.enter_password_textfield.reset)
         self.create_pw_button = Button(
@@ -162,6 +162,7 @@ class AutoPage(Page, RewardElement):
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
+        return False
 
     def copy_password(self):
         '''

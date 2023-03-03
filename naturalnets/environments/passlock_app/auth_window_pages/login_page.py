@@ -101,11 +101,11 @@ class LoginPage(Page, RewardElement):
                         clickable.handle_click(click_position)
                         self.register_selected_reward([rew_key, "clicked"])
                         return True
-                    else:
-                        # If the clickable has a selected state, register the reward when it is selected
-                        self.register_selected_reward(
-                            [rew_key, clickable.is_selected()])
+                    # If the clickable has a selected state, register the reward when it is selected
+                    self.register_selected_reward(
+                        [rew_key, clickable.is_selected()])
                 except KeyError:
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
+        return False

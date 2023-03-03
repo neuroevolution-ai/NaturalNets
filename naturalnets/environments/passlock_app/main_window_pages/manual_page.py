@@ -93,7 +93,6 @@ class ManualPage(Page, RewardElement):
         '''
         for clickable in self.clickables:
             if clickable.is_clicked_by(click_position):
-
                 try:
                     rew_key = self.reward_widgets_to_str[clickable]
                     if isinstance(clickable, Button):
@@ -106,6 +105,7 @@ class ManualPage(Page, RewardElement):
                     pass  # This clickable does not grant a reward, continue
                 clickable.handle_click(click_position)
                 return False
+        return False
 
     def create_pw(self):
         '''

@@ -20,7 +20,7 @@ class PasslockAppCfg:
         validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
-                              validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+                                 validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
@@ -71,10 +71,13 @@ class PasslockApp(IGUIEnvironment):
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(
+            0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(
+            0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+        click_coordinates = np.array(
+            [self.click_position_x, self.click_position_y])
 
         rew = self.app_controller.handle_click(click_coordinates)
 
@@ -169,4 +172,4 @@ class PasslockApp(IGUIEnvironment):
         return super().get_observation_dict()
 
     def get_window_name(self) -> str:
-        return "PasslockApp"
+        return self.window_name

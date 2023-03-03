@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.page import Widget
 
 
@@ -19,7 +18,7 @@ class CheckBox(Widget):
 
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, action: Callable = None, color:tuple = (0,0,0)):
+    def __init__(self, bounding_box: BoundingBox, action: Callable = None, color: tuple = (0, 0, 0)):
         """
         Args:
             bounding_box (BoundingBox): The BoundingBox of this checkbox.
@@ -28,7 +27,7 @@ class CheckBox(Widget):
         super().__init__(self.STATE_LEN, bounding_box)
         self.action = action
         self._state[0] = 1
-        #the color of the cross is standard black
+        # the color of the cross is standard black
         self.color = color
 
     def handle_click(self, click_position: np.ndarray):
@@ -43,16 +42,23 @@ class CheckBox(Widget):
             self.action(self.get_state()[0])
 
     def is_selected(self) -> int:
+        '''
+        Returns the selected state of this checkbox.
+        '''
         return self.get_state()[0]
 
     def set_selected(self, selected: int):
+        '''
+        Sets the selected state of this checkbox to the given value.
+        '''
         self.get_state()[0] = selected
         if self.action is not None:
             self.action(self.get_state()[0])
 
     def render(self, img: np.ndarray) -> np.ndarray:
         if self.is_selected():
-            width = height = self._bounding_box.height  # width, height of the square part of the checkbox
+            # width, height of the square part of the checkbox
+            width = height = self._bounding_box.height
             thickness = 2
             cross_color = self.color
 
@@ -63,9 +69,14 @@ class CheckBox(Widget):
             width -= 4
             height -= 4
 
-            cv2.line(img, (x, y), (x + width, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
-            cv2.line(img, (x + width, y), (x, y + height), cross_color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (x, y), (x + width, y + height),
+                     cross_color, thickness, lineType=cv2.LINE_AA)
+            cv2.line(img, (x + width, y), (x, y + height),
+                     cross_color, thickness, lineType=cv2.LINE_AA)
         return img
-    
+
     def reset(self):
+        '''
+        Resets the state of this checkbox to its default value.
+        '''
         self.get_state()[0] = 1
