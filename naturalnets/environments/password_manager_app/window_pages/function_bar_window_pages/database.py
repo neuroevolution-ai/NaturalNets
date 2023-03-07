@@ -16,11 +16,11 @@ class Database(Page, RewardElement):
     BOUNDING_BOX = BoundingBox(1, 3, 237, 254)
     MENU_AREA_BB = BoundingBox(1, 23, 237, 234)
 
-    NEW_DATABASE_BUTTON_BB = BoundingBox(3,25,232,22)
-    OPEN_DATABASE_BUTTON_BB = BoundingBox(3,48,232,22)
-    Change_MASTER_PASSWORD_BUTTON_BB = BoundingBox(0,0,1,1)
-    EXPORT_BUTTON_BB = BoundingBox(0,0,1,1)
-    IMPORT_BUTTON_BB = BoundingBox(0,0,1,1)
+    NEW_DATABASE_BUTTON_BB = BoundingBox(3, 25, 232, 22)
+    OPEN_DATABASE_BUTTON_BB = BoundingBox(3, 48, 232, 22)
+    Change_MASTER_PASSWORD_BUTTON_BB = BoundingBox(3, 125, 232, 22)
+    EXPORT_BUTTON_BB = BoundingBox(3, 178, 232, 22)
+    IMPORT_BUTTON_BB = BoundingBox(3, 201, 232, 22)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
