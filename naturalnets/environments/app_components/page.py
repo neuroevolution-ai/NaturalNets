@@ -4,10 +4,10 @@ from typing import List
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable, HasPopups
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.interfaces import Clickable, HasPopups
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.utils import render_onto_bb
 
 
 class Widget(StateElement, Clickable):
@@ -56,7 +56,7 @@ class Page(StateElement, Clickable, HasPopups):
             str: the path to the pages' image file.
         """
         return self._img_path
-    
+
     def set_image_path(self, img_path: str) -> None:
         """Sets the path to this pages image file.
 
@@ -111,8 +111,6 @@ class Page(StateElement, Clickable, HasPopups):
 
     def is_dropdown_open(self) -> int:
         return 0
-    
+
     def reset(self):
         pass
-    
-    

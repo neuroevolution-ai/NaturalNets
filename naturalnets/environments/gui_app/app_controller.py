@@ -3,13 +3,13 @@ from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
-from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.app_components.reward_element import RewardElement
 from naturalnets.environments.gui_app.settings_window import SettingsWindow
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AppController:
@@ -24,11 +24,13 @@ class AppController:
         self.main_window = MainWindow()
         self.settings_window = SettingsWindow(self.main_window)
 
-        self.settings_button = Button(self.SETTINGS_BUTTON_BB, self.settings_window.open)
+        self.settings_button = Button(
+            self.SETTINGS_BUTTON_BB, self.settings_window.open)
 
         self._total_state_len = 0
         self._total_state_len += self.get_element_state_len(self.main_window)
-        self._total_state_len += self.get_element_state_len(self.settings_window)
+        self._total_state_len += self.get_element_state_len(
+            self.settings_window)
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
@@ -51,17 +53,20 @@ class AppController:
 
     def reset_reward_array(self):
         reward_count = self.calculate_reward_count(0, self.main_window)
-        reward_count = self.calculate_reward_count(reward_count, self.settings_window)
+        reward_count = self.calculate_reward_count(
+            reward_count, self.settings_window)
 
         self.reward_array = np.zeros(reward_count, dtype=np.uint8)
 
         last_reward_index = self.assign_reward(0, self.main_window)
-        last_reward_index = self.assign_reward(last_reward_index, self.settings_window)
+        last_reward_index = self.assign_reward(
+            last_reward_index, self.settings_window)
         assert last_reward_index == reward_count
 
     def assign_reward(self, current_index, reward_element: RewardElement):
         reward_count = reward_element.get_reward_count()
-        reward_element.assign_reward_slice(self.reward_array[current_index:current_index + reward_count])
+        reward_element.assign_reward_slice(
+            self.reward_array[current_index:current_index + reward_count])
         current_index += reward_count
 
         for reward_child in reward_element.get_reward_children():
@@ -158,7 +163,8 @@ class AppController:
             current_minimal_distance, current_clickable = np.inf, None
 
             for clickable_element in self.get_clickable_elements():
-                clickable_distance = clickable_element.calculate_distance_to_click(click_position)
+                clickable_distance = clickable_element.calculate_distance_to_click(
+                    click_position)
 
                 if clickable_distance < current_minimal_distance:
                     current_minimal_distance = clickable_distance

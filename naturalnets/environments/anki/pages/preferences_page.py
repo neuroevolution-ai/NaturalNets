@@ -5,13 +5,13 @@ import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH, AnkiLanguages, DeckAddType, VideoDriver, VoiceRecorder
 from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_website_popup \
     import LeadsToExternalWebsitePopup
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page, Widget
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb, put_text
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page, Widget
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import render_onto_bb, put_text
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class PreferencesPage(RewardElement, Page):
@@ -26,10 +26,14 @@ class PreferencesPage(RewardElement, Page):
     WINDOW_BB = BoundingBox(20, 80, 801, 601)
     STATE_LEN = 5
 
-    PREFERENCES_BASIC_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_basic_page.png")
-    PREFERENCES_SCHEDULING_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_scheduling_page.png")
-    PREFERENCES_NETWORK_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_network_page.png")
-    PREFERENCES_BACKUP_IMG_PATH = os.path.join(IMAGES_PATH, "preferences_backup_page.png")
+    PREFERENCES_BASIC_IMG_PATH = os.path.join(
+        IMAGES_PATH, "preferences_basic_page.png")
+    PREFERENCES_SCHEDULING_IMG_PATH = os.path.join(
+        IMAGES_PATH, "preferences_scheduling_page.png")
+    PREFERENCES_NETWORK_IMG_PATH = os.path.join(
+        IMAGES_PATH, "preferences_network_page.png")
+    PREFERENCES_BACKUP_IMG_PATH = os.path.join(
+        IMAGES_PATH, "preferences_backup_page.png")
 
     CLOSE_BB = BoundingBox(545, 640, 98, 26)
     HELP_BB = BoundingBox(683, 640, 98, 26)
@@ -73,10 +77,12 @@ class PreferencesPage(RewardElement, Page):
     SCHEDULING_WINDOW_LEARN_AHEAD_DECREMENT_BB = BoundingBox(415, 464, 12, 9)
     SCHEDULING_WINDOW_TIMEBOX_TIME_DECREMENT_BB = BoundingBox(415, 505, 12, 9)
 
-    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(75, 241, 246, 16)
+    NETWORK_WINDOW_SYNCHRONIZE_AUDIO_AND_IMAGE_BB = BoundingBox(
+        75, 241, 246, 16)
     NETWORK_WINDOW_SYNCHRONIZE_ON_PROFILE_BB = BoundingBox(75, 284, 329, 16)
     NETWORK_WINDOW_PERIODICALLY_SYNCHRONIZE_BB = BoundingBox(75, 327, 211, 16)
-    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(75, 368, 368, 16)
+    NETWORK_WINDOW_FORCE_CHANGES_IN_ONE_DIRECTION_BB = BoundingBox(
+        75, 368, 368, 16)
 
     BACKUPS_WINDOW_INCREMENT_BB = BoundingBox(294, 195, 12, 9)
     BACKUPS_WINDOW_DECREMENT_BB = BoundingBox(295, 205, 12, 9)
@@ -92,7 +98,7 @@ class PreferencesPage(RewardElement, Page):
     TIMEBOX_TIME_Y = 510
     BACKUP_NUMBER_X = 255
     BACKUP_NUMBER_Y = 208
-    
+
     """
        Singleton design pattern to ensure that at most one
        PreferencesPage is present
@@ -103,7 +109,8 @@ class PreferencesPage(RewardElement, Page):
         return cls.instance
 
     def __init__(self):
-        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.PREFERENCES_BASIC_IMG_PATH)
+        Page.__init__(self, self.STATE_LEN, self.WINDOW_BB,
+                      self.PREFERENCES_BASIC_IMG_PATH)
         RewardElement.__init__(self)
         self.get_state()[1] = 1
         # Appears when the help button is clicked
@@ -120,24 +127,36 @@ class PreferencesPage(RewardElement, Page):
         self.help_button = Button(self.HELP_BB, self.help)
 
         self.basic_switch_button = Button(self.BASIC_SWITCH_BB, self.set_basic)
-        self.scheduling_switch_button = Button(self.SCHEDULING_SWITCH_BB, self.set_scheduling)
-        self.network_switch_button = Button(self.NETWORK_SWITCH_BB, self.set_network)
-        self.backup_switch_button = Button(self.BACKUP_SWITCH_BB, self.set_backup)
+        self.scheduling_switch_button = Button(
+            self.SCHEDULING_SWITCH_BB, self.set_scheduling)
+        self.network_switch_button = Button(
+            self.NETWORK_SWITCH_BB, self.set_network)
+        self.backup_switch_button = Button(
+            self.BACKUP_SWITCH_BB, self.set_backup)
 
-        self.basic_window_english_ddi = DropdownItem(AnkiLanguages.ENGLISH, AnkiLanguages.ENGLISH.value)
-        self.basic_window_german_ddi = DropdownItem(AnkiLanguages.GERMAN, AnkiLanguages.GERMAN.value)
-        self.basic_window_spanish_ddi = DropdownItem(AnkiLanguages.SPANISH, AnkiLanguages.SPANISH.value)
+        self.basic_window_english_ddi = DropdownItem(
+            AnkiLanguages.ENGLISH, AnkiLanguages.ENGLISH.value)
+        self.basic_window_german_ddi = DropdownItem(
+            AnkiLanguages.GERMAN, AnkiLanguages.GERMAN.value)
+        self.basic_window_spanish_ddi = DropdownItem(
+            AnkiLanguages.SPANISH, AnkiLanguages.SPANISH.value)
 
-        self.basic_window_video_driver_opengl_ddi = DropdownItem(VideoDriver.OPENGL, VideoDriver.OPENGL.value)
-        self.basic_window_video_driver_angle_ddi = DropdownItem(VideoDriver.ANGLE, VideoDriver.ANGLE.value)
-        self.basic_window_video_driver_software_ddi = DropdownItem(VideoDriver.SOFTWARE, VideoDriver.SOFTWARE.value)
+        self.basic_window_video_driver_opengl_ddi = DropdownItem(
+            VideoDriver.OPENGL, VideoDriver.OPENGL.value)
+        self.basic_window_video_driver_angle_ddi = DropdownItem(
+            VideoDriver.ANGLE, VideoDriver.ANGLE.value)
+        self.basic_window_video_driver_software_ddi = DropdownItem(
+            VideoDriver.SOFTWARE, VideoDriver.SOFTWARE.value)
 
         self.basic_window_add_to_current_ddi = DropdownItem(DeckAddType.ADD_TO_CURRENT,
                                                             DeckAddType.ADD_TO_CURRENT.value)
-        self.basic_window_change_deck_ddi = DropdownItem(DeckAddType.CHANGE_DECK, DeckAddType.CHANGE_DECK.value)
+        self.basic_window_change_deck_ddi = DropdownItem(
+            DeckAddType.CHANGE_DECK, DeckAddType.CHANGE_DECK.value)
 
-        self.basic_window_voice_recorder_qt_ddi = DropdownItem(VoiceRecorder.PY_AUDIO, VoiceRecorder.PY_AUDIO.value)
-        self.basic_window_voice_recorder_py_audio_ddi = DropdownItem(VoiceRecorder.QT, VoiceRecorder.QT.value)
+        self.basic_window_voice_recorder_qt_ddi = DropdownItem(
+            VoiceRecorder.PY_AUDIO, VoiceRecorder.PY_AUDIO.value)
+        self.basic_window_voice_recorder_py_audio_ddi = DropdownItem(
+            VoiceRecorder.QT, VoiceRecorder.QT.value)
 
         self.basic_window_language_dd = Dropdown(self.BASIC_WINDOW_DD_1_BB_OFFSET,
                                                  [self.basic_window_english_ddi, self.basic_window_german_ddi,
@@ -153,13 +172,19 @@ class PreferencesPage(RewardElement, Page):
                                                        [self.basic_window_voice_recorder_qt_ddi,
                                                         self.basic_window_voice_recorder_py_audio_ddi])
 
-        self.basic_window_show_play_buttons_checkbox = CheckBox(self.BASIC_WINDOW_1_CHECKBOX_BB)
-        self.basic_window_interrupt_audio_checkbox = CheckBox(self.BASIC_WINDOW_2_CHECKBOX_BB)
-        self.basic_window_paste_clipboard_images_checkbox = CheckBox(self.BASIC_WINDOW_3_CHECKBOX_BB)
-        self.basic_window_paste_without_shift_key_checkbox = CheckBox(self.BASIC_WINDOW_4_CHECKBOX_BB)
-        self.basic_window_night_mode_checkbox = CheckBox(self.BASIC_WINDOW_5_CHECKBOX_BB)
+        self.basic_window_show_play_buttons_checkbox = CheckBox(
+            self.BASIC_WINDOW_1_CHECKBOX_BB)
+        self.basic_window_interrupt_audio_checkbox = CheckBox(
+            self.BASIC_WINDOW_2_CHECKBOX_BB)
+        self.basic_window_paste_clipboard_images_checkbox = CheckBox(
+            self.BASIC_WINDOW_3_CHECKBOX_BB)
+        self.basic_window_paste_without_shift_key_checkbox = CheckBox(
+            self.BASIC_WINDOW_4_CHECKBOX_BB)
+        self.basic_window_night_mode_checkbox = CheckBox(
+            self.BASIC_WINDOW_5_CHECKBOX_BB)
 
-        self.basic_window_put_text_button = Button(self.BASIC_WINDOW_SEARCH_TEXT_BB, self.set_current_search_text)
+        self.basic_window_put_text_button = Button(
+            self.BASIC_WINDOW_SEARCH_TEXT_BB, self.set_current_search_text)
         self.basic_window_user_interface_increment_button = Button(self.BASIC_WINDOW_USER_INTERFACE_INCREMENT,
                                                                    self.increment_user_interface)
         self.basic_window_user_interface_decrement_button = Button(self.BASIC_WINDOW_USER_INTERFACE_DECREMENT,
@@ -176,11 +201,16 @@ class PreferencesPage(RewardElement, Page):
                                                    self.basic_window_user_interface_decrement_button,
                                                    self.basic_window_voice_recorder_dd]
 
-        self.scheduling_window_show_next_review_time_checkbox = CheckBox(self.SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB)
-        self.scheduling_window_remaining_card_count_checkbox = CheckBox(self.SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB)
-        self.scheduling_window_show_learning_cards_checkbox = CheckBox(self.SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB)
-        self.scheduling_window_legacy_timezone_checkbox = CheckBox(self.SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB)
-        self.scheduling_window_v3_scheduler_checkbox = CheckBox(self.SCHEDULING_WINDOW_V3_SCHEDULER_BB)
+        self.scheduling_window_show_next_review_time_checkbox = CheckBox(
+            self.SCHEDULING_WINDOW_NEXT_REVIEW_TIME_BB)
+        self.scheduling_window_remaining_card_count_checkbox = CheckBox(
+            self.SCHEDULING_WINDOW_REMAINING_CARD_COUNT_BB)
+        self.scheduling_window_show_learning_cards_checkbox = CheckBox(
+            self.SCHEDULING_WINDOW_SHOW_LEARNING_CARDS_BB)
+        self.scheduling_window_legacy_timezone_checkbox = CheckBox(
+            self.SCHEDULING_WINDOW_LEGACY_TIMEZONE_BB)
+        self.scheduling_window_v3_scheduler_checkbox = CheckBox(
+            self.SCHEDULING_WINDOW_V3_SCHEDULER_BB)
 
         self.scheduling_window_next_day_increment_button = Button(self.SCHEDULING_WINDOW_NEXT_DAY_INCREMENT_BB,
                                                                   self.increment_next_day)
@@ -221,8 +251,10 @@ class PreferencesPage(RewardElement, Page):
                                                      self.network_window_periodically_synchronize_checkbox,
                                                      self.network_window_force_changes_in_one_direction_checkbox]
 
-        self.backups_window_increment_backups = Button(self.BACKUPS_WINDOW_INCREMENT_BB, self.increment_backup_number)
-        self.backups_window_decrement_backups = Button(self.BACKUPS_WINDOW_DECREMENT_BB, self.decrement_backup_number)
+        self.backups_window_increment_backups = Button(
+            self.BACKUPS_WINDOW_INCREMENT_BB, self.increment_backup_number)
+        self.backups_window_decrement_backups = Button(
+            self.BACKUPS_WINDOW_DECREMENT_BB, self.decrement_backup_number)
         self.backups_window_widgets: List[Button] = [self.backups_window_increment_backups,
                                                      self.backups_window_decrement_backups]
 
@@ -346,6 +378,7 @@ class PreferencesPage(RewardElement, Page):
     """
     Set the current tab to basic
     """
+
     def set_basic(self):
         self.get_state()[1:5] = 0
         self.get_state()[1] = 1
@@ -353,6 +386,7 @@ class PreferencesPage(RewardElement, Page):
     """
     Set the current tab to scheduling
     """
+
     def set_scheduling(self):
         self.get_state()[1:5] = 0
         self.get_state()[2] = 1
@@ -360,6 +394,7 @@ class PreferencesPage(RewardElement, Page):
     """
     Set the current tab to network
     """
+
     def set_network(self):
         self.get_state()[1:5] = 0
         self.get_state()[3] = 1
@@ -367,12 +402,14 @@ class PreferencesPage(RewardElement, Page):
     """
     Set the current tab to backup
     """
+
     def set_backup(self):
         self.get_state()[1:5] = 0
         self.get_state()[4] = 1
     """
     Increment the backup number and provide the reward of it
     """
+
     def increment_backup_number(self):
         if self.backup_number < 100:
             self.backup_number += 1
@@ -381,17 +418,19 @@ class PreferencesPage(RewardElement, Page):
     """
     Decrement the backup number and provide the reward of it
     """
+
     def decrement_backup_number(self):
         if self.backup_number > 0:
             self.backup_number -= 1
             self.register_selected_reward(["backups_window_decrement_backups"])
 
     """
-    Delegate the click to the popup if it is open 
+    Delegate the click to the popup if it is open
     else check if a bounding box for switching tab is selected and then switch the tab
     else check close or help button is clicked and handle click
-    else delegate click to methods for handling click by open tab 
+    else delegate click to methods for handling click by open tab
     """
+
     def handle_click(self, click_position: np.ndarray):
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
@@ -414,10 +453,11 @@ class PreferencesPage(RewardElement, Page):
             self.help_button.handle_click(click_position)
         else:
             self.handle_click_by_open_window(click_position)
-    
+
     """
     Delegate the click to the open tab
     """
+
     def handle_click_by_open_window(self, click_position: np.ndarray):
         if self.get_state()[1] == 1:
             self.handle_click_basic_window(click_position)
@@ -427,12 +467,13 @@ class PreferencesPage(RewardElement, Page):
             self.handle_click_network_window(click_position)
         elif self.get_state()[4] == 1:
             self.handle_click_backups_window(click_position)
-    
+
     """
     if a dropdown is open then delegates the click to it
     else if a dropdown bounding box is clicked then opens the dropdown
     else handles the click by widgets
     """
+
     def handle_click_basic_window(self, click_position: np.ndarray):
         if self.open_dd is not None:
             self.open_dd.handle_click(click_position)
@@ -444,7 +485,8 @@ class PreferencesPage(RewardElement, Page):
             for dd in self.basic_window_dropdowns:
                 if self.dropdowns_to_bbs[dd].is_point_inside(click_position):
                     self.open_dd = dd
-                    self.register_selected_reward([self.dropdowns_to_str[self.open_dd], "opened"])
+                    self.register_selected_reward(
+                        [self.dropdowns_to_str[self.open_dd], "opened"])
                     self.close_all_dropdowns()
                     self.open_dd.open()
                     return
@@ -452,30 +494,36 @@ class PreferencesPage(RewardElement, Page):
                 if widget.is_clicked_by(click_position) and not (isinstance(widget, Dropdown)):
                     widget.handle_click(click_position)
                     if isinstance(widget, CheckBox):
-                        self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+                        self.register_selected_reward(
+                            [self.checkboxes_to_str[widget], not (widget.is_selected())])
     """
     Execute click action if a widget from scheduling window is clicked
     """
+
     def handle_click_scheduling_window(self, click_position: np.ndarray):
         for widget in self.scheduling_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
                 if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+                    self.register_selected_reward(
+                        [self.checkboxes_to_str[widget], not (widget.is_selected())])
 
     """
     Execute click action if a widget from network tab is clicked
     """
+
     def handle_click_network_window(self, click_position: np.ndarray):
         for widget in self.network_window_widgets:
             if widget.is_clicked_by(click_position):
                 widget.handle_click(click_position)
                 if isinstance(widget, CheckBox):
-                    self.register_selected_reward([self.checkboxes_to_str[widget], not (widget.is_selected())])
+                    self.register_selected_reward(
+                        [self.checkboxes_to_str[widget], not (widget.is_selected())])
 
     """
     Execute click action if a widget from backups tab is clicked
     """
+
     def handle_click_backups_window(self, click_position: np.ndarray):
         for widget in self.backups_window_widgets:
             if widget.is_clicked_by(click_position):
@@ -483,83 +531,102 @@ class PreferencesPage(RewardElement, Page):
     """
     Increment the user interface attribute from the basic tab and provide reward of it
     """
+
     def increment_user_interface(self):
         if self.user_interface < 200:
             self.user_interface += 5
-            self.register_selected_reward(["basic_window_user_interface_increment_button"])
+            self.register_selected_reward(
+                ["basic_window_user_interface_increment_button"])
 
     """
     Decrement the user interface attribute from the basic tab and provide reward of it
     """
+
     def decrement_user_interface(self):
         if self.user_interface > 50:
             self.user_interface -= 5
-            self.register_selected_reward(["basic_window_user_interface_decrement_button"])
+            self.register_selected_reward(
+                ["basic_window_user_interface_decrement_button"])
 
     """
     Increment the next day attribute from the scheduling tab and provide reward of it
     """
+
     def increment_next_day(self):
         if self.next_day < 10:
             self.next_day += 1
-            self.register_selected_reward(["scheduling_window_next_day_increment_button"])
+            self.register_selected_reward(
+                ["scheduling_window_next_day_increment_button"])
 
     """
     Decrement the next day attribute from the scheduling tab and provide reward of it
     """
+
     def decrement_next_day(self):
         if self.next_day > 0:
             self.next_day -= 1
-            self.register_selected_reward(["scheduling_window_next_day_decrement_button"])
+            self.register_selected_reward(
+                ["scheduling_window_next_day_decrement_button"])
 
     """
     Increment the learn ahead attribute from the scheduling tab and provide reward of it
     """
+
     def increment_learn_ahead(self):
         if self.learn_ahead < 40:
             self.learn_ahead += 1
-            self.register_selected_reward(["scheduling_window_learn_ahead_increment_button"])
+            self.register_selected_reward(
+                ["scheduling_window_learn_ahead_increment_button"])
 
     """
     Decrement the learn ahead attribute from the scheduling tab and provide reward of it
     """
+
     def decrement_learn_ahead(self):
         if self.learn_ahead > 0:
             self.learn_ahead -= 1
-            self.register_selected_reward(["scheduling_window_learn_ahead_decrement_button"])
+            self.register_selected_reward(
+                ["scheduling_window_learn_ahead_decrement_button"])
     """
     Increment the timebox time attribute from the scheduling tab and provide reward of it
     """
+
     def increment_timebox_time(self):
         if self.timebox_time < 20:
             self.timebox_time += 1
-            self.register_selected_reward(["scheduling_window_timebox_time_increment_button"])
+            self.register_selected_reward(
+                ["scheduling_window_timebox_time_increment_button"])
 
     """
     Decrement the timebox time attribute from the scheduling tab and provide reward of it
     """
+
     def decrement_timebox_time(self):
         if self.timebox_time > 0:
             self.timebox_time -= 1
-            self.register_selected_reward(["scheduling_window_timebox_time_decrement_button"])
+            self.register_selected_reward(
+                ["scheduling_window_timebox_time_decrement_button"])
 
     """
     Set the current search text attribute of the basic window and provide the reward of it
     """
+
     def set_current_search_text(self):
         self.current_search_text = 'Cool search name'
         self.register_selected_reward(["basic_window_put_text_button"])
-    
+
     """
     Click action of help button
     """
+
     def help(self):
         self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
-    
+
     """
     Opens this window
     """
+
     def open(self):
         self.get_state()[0:2] = 1
         self.get_state()[2:5] = 0
@@ -568,6 +635,7 @@ class PreferencesPage(RewardElement, Page):
     """
     Closes this window
     """
+
     def close(self):
         self.open_dd = None
         self.get_state()[0] = 0
@@ -577,17 +645,20 @@ class PreferencesPage(RewardElement, Page):
     """
     Returns true if this window is open
     """
+
     def is_open(self):
         return self.get_state()[0]
     """
-    Render the image of this page according to the open window and 
+    Render the image of this page according to the open window and
     if the popup is open then it is going to be rendered too
     """
+
     def render(self, img: np.ndarray):
         if self.get_state()[1] == 1:
             to_render = cv2.imread(self.PREFERENCES_BASIC_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.user_interface}", (self.USER_INTERFACE_X, self.USER_INTERFACE_Y), font_scale=0.4)
+            put_text(img, f"{self.user_interface}",
+                     (self.USER_INTERFACE_X, self.USER_INTERFACE_Y), font_scale=0.4)
             put_text(img, "" if self.current_search_text is None else f"{self.current_search_text}", (self.CURRENT_SEARCH_TEXT_X, self.CURRENT_SEARCH_TEXT_Y),
                      font_scale=0.4)
             for widget in self.basic_window_widgets:
@@ -605,9 +676,12 @@ class PreferencesPage(RewardElement, Page):
             for widget in self.scheduling_window_widgets:
                 if isinstance(widget, CheckBox):
                     img = widget.render(img)
-            put_text(img, f"{self.next_day}", (self.NEXT_DAY_X, self.NEXT_DAY_Y), font_scale=0.4)
-            put_text(img, f"{self.learn_ahead}", (self.LEARN_AHEAD_X, self.LEARN_AHEAD_Y), font_scale=0.4)
-            put_text(img, f"{self.timebox_time}", (self.TIMEBOX_TIME_X, self.TIMEBOX_TIME_Y), font_scale=0.4)
+            put_text(img, f"{self.next_day}",
+                     (self.NEXT_DAY_X, self.NEXT_DAY_Y), font_scale=0.4)
+            put_text(img, f"{self.learn_ahead}",
+                     (self.LEARN_AHEAD_X, self.LEARN_AHEAD_Y), font_scale=0.4)
+            put_text(img, f"{self.timebox_time}",
+                     (self.TIMEBOX_TIME_X, self.TIMEBOX_TIME_Y), font_scale=0.4)
         elif self.get_state()[3] == 1:
             to_render = cv2.imread(self.PREFERENCES_NETWORK_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
@@ -617,13 +691,15 @@ class PreferencesPage(RewardElement, Page):
         elif self.get_state()[4] == 1:
             to_render = cv2.imread(self.PREFERENCES_BACKUP_IMG_PATH)
             img = render_onto_bb(img, self.get_bb(), to_render)
-            put_text(img, f"{self.backup_number}", (self.BACKUP_NUMBER_X, self.BACKUP_NUMBER_Y), font_scale=0.4)
+            put_text(img, f"{self.backup_number}",
+                     (self.BACKUP_NUMBER_X, self.BACKUP_NUMBER_Y), font_scale=0.4)
         if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
         return img
     """
     Method to close all of the dropdowns of the basic tab
     """
+
     def close_all_dropdowns(self):
         for dd in self.basic_window_dropdowns:
             dd.close()
@@ -646,4 +722,3 @@ class PreferencesPage(RewardElement, Page):
         for widget in self.network_window_widgets:
             if isinstance(widget, CheckBox):
                 widget.get_state()[0] = 0
-        

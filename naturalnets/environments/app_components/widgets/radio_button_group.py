@@ -3,12 +3,12 @@ from typing import Any, Callable, List, Optional, Tuple
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.exception import ArgumentError
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.page import Widget
-from naturalnets.environments.gui_app.utils import get_group_bounding_box
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Widget
+from naturalnets.environments.app_components.utils import get_group_bounding_box
 
 
 class RadioButton(Widget):
@@ -64,7 +64,8 @@ class RadioButton(Widget):
             radius = min(circle_width, circle_height) // 4
             color = Color.BLACK.value
             thickness = -1
-            cv2.circle(img, (c_x, c_y), radius, color, thickness, lineType=cv2.LINE_AA)
+            cv2.circle(img, (c_x, c_y), radius, color,
+                       thickness, lineType=cv2.LINE_AA)
         return img
 
 

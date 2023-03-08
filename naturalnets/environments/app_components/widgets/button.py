@@ -4,11 +4,11 @@ import cv2
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.page import Widget
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.passlock_app.widgets.textfield import Textfield
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Widget
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.textfield import Textfield
 
 
 class Button(Clickable):

@@ -5,11 +5,11 @@ import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class RenameProfilePopup(RewardElement, Page):
@@ -42,7 +42,8 @@ class RenameProfilePopup(RewardElement, Page):
         # Currently set string
         self.current_field_string = None
 
-        self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string)
+        self.text_button: Button = Button(
+            self.TEXT_BB, self.set_current_field_string)
         self.ok_button: Button = Button(self.OK_BB, self.rename_profile)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
@@ -63,6 +64,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Execute click action if a button is clicked
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.name_exists_popup_page.is_open():
             self.name_exists_popup_page.handle_click(click_position)
@@ -77,6 +79,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Closes this popup
     """
+
     def close(self):
         self.get_state()[0:6] = 0
         for child in self.get_children():
@@ -87,6 +90,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Opens this popup
     """
+
     def open(self):
         self.get_state()[0] = 1
         self.get_state()[1:6] = 0
@@ -95,8 +99,10 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Sets a profile name
     """
+
     def set_current_field_string(self):
-        self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.current_field_string = self.profile_database.get_profile_names()[
+            self.profile_iterate_index]
         self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 0
         self.profile_iterate_index += 1
         self.profile_iterate_index %= 5
@@ -106,12 +112,14 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Returns true if this popup is open
     """
+
     def is_open(self) -> int:
         return self.get_state()[0]
 
     """
     If the new name is already present then name exists popup appears else the profile name is changed.
     """
+
     def rename_profile(self):
         if self.current_field_string is None:
             return
@@ -125,6 +133,7 @@ class RenameProfilePopup(RewardElement, Page):
     """
     Renders the image of this popup
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

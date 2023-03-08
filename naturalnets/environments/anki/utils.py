@@ -1,9 +1,9 @@
 from typing import Tuple
 import cv2
 import numpy as np
-from naturalnets.environments.anki.constants import ANKI_COLOR 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.anki.constants import ANKI_COLOR
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.utils import render_onto_bb
 from PIL import Image, ImageDraw, ImageFont
 
 
@@ -35,5 +35,6 @@ def print_non_ascii(img: np.ndarray, text: str, bounding_box: BoundingBox, font_
 def calculate_current_bounding_box(x_position: int, y_position: int, item_height: int, item_width: int, item_number: int):
     upper_left_point = (x_position, y_position)
     length = item_height * item_number
-    current_bounding_box = BoundingBox(upper_left_point[0], upper_left_point[1], item_width, length)
+    current_bounding_box = BoundingBox(
+        upper_left_point[0], upper_left_point[1], item_width, length)
     return current_bounding_box

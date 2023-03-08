@@ -4,11 +4,11 @@ import numpy as np
 from naturalnets.environments.anki import AnkiAccount
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.pages.main_page_popups.failed_login_popup import FailedLoginPopup
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AnkiLoginPage(Page, RewardElement):
@@ -44,14 +44,18 @@ class AnkiLoginPage(Page, RewardElement):
         self.username_iterate_index = 0
         self.password_iterate_index = 0
 
-        self.anki_username_list = ["account_1", "account_2", "account_3", "account_4", "account_5"]
-        self.anki_password_list = ["pTgHAa", "L7WwEH", "yfTVwA", "DP7xg7", "zx7FeR"]
+        self.anki_username_list = [
+            "account_1", "account_2", "account_3", "account_4", "account_5"]
+        self.anki_password_list = [
+            "pTgHAa", "L7WwEH", "yfTVwA", "DP7xg7", "zx7FeR"]
 
         self.username_clipboard = None
         self.password_clipboard = None
 
-        self.username_button: Button = Button(self.USERNAME_BB, self.set_username_clipboard)
-        self.password_button: Button = Button(self.PASSWORD_BB, self.set_password_clipboard)
+        self.username_button: Button = Button(
+            self.USERNAME_BB, self.set_username_clipboard)
+        self.password_button: Button = Button(
+            self.PASSWORD_BB, self.set_password_clipboard)
         self.ok_button: Button = Button(self.OK_BB, self.login)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
@@ -73,6 +77,7 @@ class AnkiLoginPage(Page, RewardElement):
     """
     Checks if both username and password strings are set
     """
+
     def is_strings_not_none(self):
         return self.username_clipboard is not None and self.password_clipboard is not None
 
@@ -98,8 +103,9 @@ class AnkiLoginPage(Page, RewardElement):
         return self.get_state()[0]
 
     """
-    Sets the password string from the username list 
+    Sets the password string from the username list
     """
+
     def set_username_clipboard(self):
         self.username_clipboard = self.anki_username_list[self.username_iterate_index]
         self.get_state()[1 + (self.username_iterate_index - 1) % 5] = 0
@@ -109,8 +115,9 @@ class AnkiLoginPage(Page, RewardElement):
         self.register_selected_reward(["set_username"])
 
     """
-    Sets the password string from the password list 
+    Sets the password string from the password list
     """
+
     def set_password_clipboard(self):
         self.password_clipboard = self.anki_password_list[self.password_iterate_index]
         self.get_state()[6 + (self.password_iterate_index - 1) % 5] = 0
@@ -122,12 +129,14 @@ class AnkiLoginPage(Page, RewardElement):
     """
     Changes the current account if the login is allowed. Else opens error popup
     """
+
     def login(self):
         if not self.is_strings_not_none():
             return
         if self.is_allowed_login():
             self.register_selected_reward(["login"])
-            self.current_anki_account = AnkiAccount(self.username_clipboard, self.password_clipboard)
+            self.current_anki_account = AnkiAccount(
+                self.username_clipboard, self.password_clipboard)
             self.username_clipboard = None
             self.password_clipboard = None
             self.get_state()[11] = 1
@@ -138,6 +147,7 @@ class AnkiLoginPage(Page, RewardElement):
     """
     Resets the current account and username password combination.
     """
+
     def reset(self):
         self.username_iterate_index = 0
         self.password_iterate_index = 0
@@ -149,6 +159,7 @@ class AnkiLoginPage(Page, RewardElement):
     """
     Renders anki login page with the failed login popup if open
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
@@ -156,9 +167,11 @@ class AnkiLoginPage(Page, RewardElement):
             img = self.failed_login.render(img)
             return img
         if self.username_clipboard is not None:
-            put_text(img, f"{self.username_clipboard}", (self.USERNAME_X, self.USERNAME_Y), font_scale=0.5)
+            put_text(img, f"{self.username_clipboard}",
+                     (self.USERNAME_X, self.USERNAME_Y), font_scale=0.5)
         if self.password_clipboard is not None:
-            put_text(img, f"{self.password_clipboard}", (self.PASSWORD_X, self.PASSWORD_Y), font_scale=0.5)
+            put_text(img, f"{self.password_clipboard}",
+                     (self.PASSWORD_X, self.PASSWORD_Y), font_scale=0.5)
         return img
 
     """
@@ -166,6 +179,7 @@ class AnkiLoginPage(Page, RewardElement):
     Else if a button is clicked the click action of this button
     is executed.
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.failed_login.is_open():
             self.failed_login.handle_click(click_position)
@@ -183,6 +197,7 @@ class AnkiLoginPage(Page, RewardElement):
     Checks if the indices of the current username and password are the same.
     If true then the login is allowed
     """
+
     def is_allowed_login(self):
         if self.is_strings_not_none():
             return self.anki_username_list.index(self.username_clipboard) == self.anki_password_list.index(

@@ -1,6 +1,6 @@
 """Contains constants for the app."""
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 
 IMAGES_PATH: str = "naturalnets.environments.gui_app.img"
 

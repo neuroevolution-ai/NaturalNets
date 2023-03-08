@@ -4,11 +4,11 @@ import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class DeleteCurrentDeckPopup(Page, RewardElement):
@@ -18,7 +18,7 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     deck is going to be deleted if no is clicked then the
     popup will be closed.
     State description:
-        state[0]: if this window is open  
+        state[0]: if this window is open
     """
 
     STATE_LEN = 1
@@ -34,10 +34,11 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
         # Profile database is necessary to fetch the currently active profile
         self.profile_database = ProfileDatabase()
         # Deck database is necessary to fetch the decks of a profile
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.yes_button = Button(self.YES_BB, self.remove_deck)
         self.no_button = Button(self.NO_BB, self.close)
-    
+
     """
     Provide reward for opening and closing the popup and deleting a deck
     """
@@ -50,9 +51,11 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     """
     Check if yes or no button is clicked and if so handle the click
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the current deck database.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         if self.yes_button.is_clicked_by(click_position):
             self.yes_button.handle_click(click_position)
         elif self.no_button.is_clicked_by(click_position):
@@ -71,16 +74,20 @@ class DeleteCurrentDeckPopup(Page, RewardElement):
     """
     Remove the selected deck from the deck database. Is called when yes button is clicked
     """
+
     def remove_deck(self):
-        self.deck_database.delete_deck(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name())
+        self.deck_database.delete_deck(self.deck_database.get_decks()[
+                                       self.deck_database.get_current_index()].get_name())
         self.close()
         self.register_selected_reward(["delete_deck"])
     """
     Renders the image of the popup
     """
+
     def render(self, img: np.ndarray):
         # Updates the current deck database.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         return img

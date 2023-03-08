@@ -5,12 +5,12 @@ from typing import Dict, List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.widgets.button import Button, ToggleButton
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.widgets.button import Button, ToggleButton
 from naturalnets.environments.passlock_app.constants import (
     IMAGES_PATH, PAGES_SELECT_AREA_SIDE_BB, PAGES_SELECT_AREA_TOP_BB,
     PAGES_UI_AREA_BB, WINDOW_AREA_BB)
@@ -19,7 +19,7 @@ from naturalnets.environments.passlock_app.main_window_pages.manual_page import 
 from naturalnets.environments.passlock_app.main_window_pages.search_page import SearchPage
 from naturalnets.environments.passlock_app.main_window_pages.settings_page import SettingsPage
 
-from naturalnets.environments.passlock_app.widgets.popup import PopUp
+from naturalnets.environments.app_components.widgets.popup import PopUp
 
 
 class HomeWindow(StateElement, Clickable, RewardElement):

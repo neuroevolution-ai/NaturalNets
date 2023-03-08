@@ -2,9 +2,9 @@
 from typing import Callable
 
 import numpy as np
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Widget
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Widget
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class PasswordCard(Widget, Button):

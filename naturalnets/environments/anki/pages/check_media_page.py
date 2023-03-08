@@ -2,11 +2,11 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class CheckMediaPage(Page, RewardElement):
@@ -40,6 +40,7 @@ class CheckMediaPage(Page, RewardElement):
     """
         Checks if the close button is clicked and if yes then closes the page.
     """
+
     def handle_click(self, click_position: np.ndarray):
         if self.close_button.is_clicked_by(click_position):
             self.close_button.handle_click(click_position)
@@ -58,6 +59,7 @@ class CheckMediaPage(Page, RewardElement):
     """
         Renders the image of the page
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

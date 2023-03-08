@@ -5,14 +5,14 @@ from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import ORANGE_COLOR
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button, ToggleButton
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.widgets.button import Button, ToggleButton
 from naturalnets.environments.passlock_app.constants import IMAGES_PATH, WINDOW_AREA_BB
-from naturalnets.environments.passlock_app.widgets.popup import PopUp
-from naturalnets.environments.passlock_app.widgets.textfield import Textfield
+from naturalnets.environments.app_components.widgets.popup import PopUp
+from naturalnets.environments.app_components.widgets.textfield import Textfield
 
 
 class SettingsPage(Page, RewardElement):
