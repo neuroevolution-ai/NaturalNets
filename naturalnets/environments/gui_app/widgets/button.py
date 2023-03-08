@@ -115,7 +115,7 @@ class ShowPasswordButton(ToggleButton):
         ToggleButton.__init__(self, bounding_box, click_action)
         self.color = color
         self.IMG_PATH = os.path.join(
-            "naturalnets", "environments", "passlock_app", "img", "password_shown_button.PNG")
+            "naturalnets", "environments", "passlock_app", "img", "password_shown_button.png")
 
     def show_password_of_textfield(self, textfield: Textfield):
         '''
