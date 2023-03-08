@@ -285,7 +285,7 @@ class SearchPage(Page, RewardElement):
                 widget.handle_click(click_position)
                 return False
 
-        if (self.show_all_button.is_selected() or self.search_textfield.is_selected()):
+        if self.show_all_button.is_selected() or self.search_textfield.is_selected():
             self.handle_all_password_click(click_position)
             return False
 

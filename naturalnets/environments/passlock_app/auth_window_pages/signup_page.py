@@ -101,7 +101,7 @@ class SignupPage(Page, RewardElement):
         self.show_pw_button.set_selected(False)
         self.get_state()[:] = 0
 
-    def handle_click(self, click_position: np.ndarray):
+    def handle_click(self, click_position: np.ndarray) -> bool:
         '''
         This function is called when the user clicks on the signup page.
         If the user clicks on a button, the button's function is called.
