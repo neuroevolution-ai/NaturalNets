@@ -14,7 +14,8 @@ from naturalnets.environments.i_environment import IGUIEnvironment, register_env
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AnkiAppCfg:
     type: str = field(validator=validators.instance_of(str))
-    number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_time_steps: int = field(
+        validator=[validators.instance_of(int), validators.gt(0)])
 
 
 @register_environment_class
@@ -28,9 +29,10 @@ class AnkiApp(IGUIEnvironment):
 
     def __init__(self, configuration: dict, **kwargs):
         if "env_seed" in kwargs:
-            logging.warning("'env_seed' is not used in the AnkiApp environment")
+            logging.warning(
+                "'env_seed' is not used in the AnkiApp environment")
         t0 = time.time()
-        
+
         self.config = AnkiAppCfg(**configuration)
 
         self.app_controller = AppController()
@@ -48,16 +50,20 @@ class AnkiApp(IGUIEnvironment):
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
-        logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
+        logging.debug(
+            f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
-        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+        self.click_position_x = int(
+            0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(
+            0.5 * (action[1] + 1.0) * self.screen_height)
+        click_coordinates = np.array(
+            [self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the AnkiApp, and ignore the time step calculations
@@ -138,6 +144,12 @@ class AnkiApp(IGUIEnvironment):
         return self.window_name
 
     def get_screen_size(self) -> int:
+        return self.screen_width
+
+    def get_screen_height(self) -> int:
+        return self.screen_height
+
+    def get_screen_width(self) -> int:
         return self.screen_width
 
     def get_observation_dict(self):

@@ -261,6 +261,12 @@ class DummyApp(IGUIEnvironment):
     def get_screen_size(self) -> int:
         assert self.config.screen_width == self.config.screen_height
         return self.config.screen_width
+    
+    def get_screen_height(self) -> int:
+        return self.config.screen_height
+    
+    def get_screen_width(self) -> int:
+        return self.config.screen_width
 
     @staticmethod
     def is_point_in_rect(point_x, point_y, rect_x, rect_y, width, height):

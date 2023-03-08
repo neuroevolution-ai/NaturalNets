@@ -1,44 +1,26 @@
-import enum
 import logging
 import time
-from typing import Optional, Dict, List
+from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
-from attrs import define, field, validators
+from attr import define, field, validators
 
-from naturalnets.enhancers import RandomEnhancer
-from naturalnets.environments.gui_app.app_controller import AppController
+from naturalnets.enhancers.random_enhancer import RandomEnhancer
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
-
-
-class FakeBugOptions(enum.Enum):
-    pass
+from naturalnets.environments.gui_app.gui_app import FakeBugOptions
+from naturalnets.environments.i_environment import IGUIEnvironment, register_environment_class
+from naturalnets.environments.passlock_app.app_controller import PasslockAppController
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class AppCfg:
+class PasslockAppCfg:
     type: str = field(validator=validators.instance_of(str))
-    number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_time_steps: int = field(
+        validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
-
-    # If true, calculates the currently clickable elements of the GUIApp, which can then be retrieved via a method
-    return_clickable_elements: bool = field(default=False, validator=validators.instance_of(bool))
-
-    # If true, for each click the nearest clickable element will be calculated and this one will be clicked.
-    # Thus, each click will be on a clickable element
-    nearest_widget_click: bool = field(default=False, validator=validators.instance_of(bool))
-
-    @nearest_widget_click.validator
-    def validate_nearest_widget_click(self, attribute, value):
-        if value and not self.return_clickable_elements:
-            raise ValueError("GUIApp: 'nearest_widget_click' is set to True, but 'return_clickable_elements' "
-                             "is set to False.\nHowever, 'return_clickable_elements' is required for "
-                             "'nearest_widget_click' to work, thus try setting it to True.")
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
@@ -48,19 +30,20 @@ class AppCfg:
 
 
 @register_environment_class
-class GUIApp(IGUIEnvironment):
+class PasslockApp(IGUIEnvironment):
 
-    screen_width: int = 448
-    screen_height: int = 448
+    screen_width: int = 1920
+    screen_height: int = 987
 
     def __init__(self, configuration: dict, **kwargs):
+
         if "env_seed" in kwargs:
             logging.warning("'env_seed' is not used in the GUIApp environment")
         t0 = time.time()
 
-        self.config = AppCfg(**configuration)
+        self.config = PasslockAppCfg(**configuration)
 
-        self.app_controller = AppController(self.config.nearest_widget_click)
+        self.app_controller = PasslockAppController()
 
         self.t = 0
 
@@ -70,24 +53,32 @@ class GUIApp(IGUIEnvironment):
 
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
-        self.window_name = "App"
+        self.window_name = "Passlock-App"
+        self.action = None
+        self.clicked = False
+
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
-        logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
+        logging.debug(
+            f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(
+            0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(
+            0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+        click_coordinates = np.array(
+            [self.click_position_x, self.click_position_y])
+
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
@@ -107,12 +98,7 @@ class GUIApp(IGUIEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        info = {"states_info": self.app_controller.get_states_info()}
-
-        if self.config.return_clickable_elements:
-            info["clickable_elements"] = self.get_clickable_elements()
-
-        return self.get_observation(), rew, done, info
+        return self.get_observation(), rew, done, {'states_info': self.app_controller.get_states_info()}
 
     def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -162,6 +148,9 @@ class GUIApp(IGUIEnvironment):
         self.click_position_x = 0
         self.click_position_y = 0
 
+        self.action = None
+        self.clicked = False
+
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -170,24 +159,17 @@ class GUIApp(IGUIEnvironment):
     def get_observation(self):
         return self.get_state()
 
-    def get_observation_dict(self) -> dict:
-        raise NotImplementedError()
-
-    def get_window_name(self) -> str:
-        return self.window_name
-
-    def get_screen_size(self) -> int:
-        assert self.screen_width == self.screen_height
-        return self.screen_width
-    
     def get_screen_height(self) -> int:
         return self.screen_height
-    
+
     def get_screen_width(self) -> int:
         return self.screen_width
 
-    def get_clickable_elements(self) -> Optional[List[Clickable]]:
-        if self.config.return_clickable_elements:
-            return self.app_controller.get_clickable_elements()
-        else:
-            return None
+    def get_screen_size(self) -> int:
+        pass
+
+    def get_observation_dict(self) -> dict:
+        return super().get_observation_dict()
+
+    def get_window_name(self) -> str:
+        return self.window_name

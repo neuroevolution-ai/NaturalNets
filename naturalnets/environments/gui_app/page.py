@@ -56,6 +56,14 @@ class Page(StateElement, Clickable, HasPopups):
             str: the path to the pages' image file.
         """
         return self._img_path
+    
+    def set_image_path(self, img_path: str) -> None:
+        """Sets the path to this pages image file.
+
+        Args:
+            img_path (str): the path to the pages' image file.
+        """
+        self._img_path = img_path
 
     def get_bb(self) -> BoundingBox:
         return self._bounding_box
@@ -103,3 +111,8 @@ class Page(StateElement, Clickable, HasPopups):
 
     def is_dropdown_open(self) -> int:
         return 0
+    
+    def reset(self):
+        pass
+    
+    

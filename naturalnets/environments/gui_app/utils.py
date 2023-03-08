@@ -21,11 +21,19 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     Returns:
         np.ndarray: the img containing to_render
     """
+    
     x = bounding_box.x
     y = bounding_box.y
     width = bounding_box.width
     height = bounding_box.height
+
+    #If the image is the same size as the bounding box and the image does not have square dimensions, we can just replace the image with to_render
+    #This sets the shape of the image to the shape of to_render
+    if(width == img.shape[0] and height == img.shape[1]):
+        img.shape = (height, width, 3)
+
     img[y:y + height, x:x + width] = to_render
+    
     return img
 
 
