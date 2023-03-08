@@ -5,18 +5,16 @@ from naturalnets.environments.passlock_app.passlock_app import PasslockApp
 
 class TestPasslockApp:
 
-    passlock_app = None
+    passlock_app = PasslockApp({
+        "type": "PasslockApp",
+        "number_time_steps": 100,
+        "include_fake_bug": False
+    })
 
     def test_passlock_object_creation(self):
         """
         Test if the PasslockApp is created correctly
         """
-        self.passlock_app = PasslockApp({
-            "type": "PasslockApp",
-            "number_time_steps": 100,
-            "include_fake_bug": False
-        })
-
         assert self.passlock_app is not None
 
     def test_passlock_reset(self):
@@ -36,6 +34,12 @@ class TestAnkiApp():
         "type": "AnkiApp",
         "number_time_steps": 100,
     })
+
+    def test_anki_object_creation(self):
+        """
+        Test if the AnkiApp is created correctly
+        """
+        assert self.anki_app is not None
 
     def test_anki_reset(self):
         """
@@ -61,6 +65,12 @@ class TestDummyApp():
         "button_height": 30,
         "fixed_env_seed": True
     })
+
+    def test_dummy_object_creation(self):
+        """
+        Test if the DummyApp is created correctly
+        """
+        assert self.dummy_app is not None
 
     def test_dummy_reset(self):
         """
