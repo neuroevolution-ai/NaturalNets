@@ -6,11 +6,11 @@ from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.pages.profile_page_popups.five_profiles_popup import FiveProfilesPopup
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AddProfilePopup(Page, RewardElement):
@@ -44,12 +44,14 @@ class AddProfilePopup(Page, RewardElement):
 
         self.current_field_string = None
 
-        self.text_button: Button = Button(self.TEXT_BB, self.set_current_field_string)
+        self.text_button: Button = Button(
+            self.TEXT_BB, self.set_current_field_string)
         self.ok_button: Button = Button(self.OK_BB, self.add_profile)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         self.add_children([self.name_exists_popup, self.five_profiles_popup])
-        self.set_reward_children([self.name_exists_popup, self.five_profiles_popup])
+        self.set_reward_children(
+            [self.name_exists_popup, self.five_profiles_popup])
 
     """
         Provide reward for opening/closing this popup, setting a profile name and adding profile
@@ -65,6 +67,7 @@ class AddProfilePopup(Page, RewardElement):
     """
         Delegate click to the popup if one is open else handle click with the buttons.
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.name_exists_popup.is_open():
             self.name_exists_popup.handle_click(click_position)
@@ -82,6 +85,7 @@ class AddProfilePopup(Page, RewardElement):
     """
     Close this popup
     """
+
     def close(self):
         self.get_state()[0:6] = 0
         self.register_selected_reward(["window", "close"])
@@ -92,6 +96,7 @@ class AddProfilePopup(Page, RewardElement):
     """
     Open this popup
     """
+
     def open(self):
         self.get_state()[0] = 1
         self.get_state()[1:6] = 0
@@ -100,18 +105,21 @@ class AddProfilePopup(Page, RewardElement):
     """
     Set the current string by selecting a name from the predefined set of names
     """
+
     def set_current_field_string(self):
         self.register_selected_reward(["profile_name_clipboard"])
-        self.current_field_string = self.profile_database.get_profile_names()[self.profile_iterate_index]
+        self.current_field_string = self.profile_database.get_profile_names()[
+            self.profile_iterate_index]
         self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 0
         self.profile_iterate_index += 1
         self.profile_iterate_index %= 5
         self.get_state()[1 + (self.profile_iterate_index - 1) % 5] = 1
-        
+
     """
     Adds the profile if the current_field_string is set and the max number of decks is not exceeded
     and the name of the profile is not present
     """
+
     def add_profile(self):
         if self.current_field_string is None:
             return
@@ -124,10 +132,11 @@ class AddProfilePopup(Page, RewardElement):
             self.current_field_string = None
             self.register_selected_reward(["add_profile"])
             self.close()
-    
+
     """
     Renders the image of this popup
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
@@ -141,6 +150,7 @@ class AddProfilePopup(Page, RewardElement):
     """
     Returns true if the popup is open
     """
+
     def is_open(self) -> int:
         return self.get_state()[0]
 

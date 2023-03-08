@@ -5,9 +5,9 @@ from typing import List, Tuple, Dict
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.gui_app.interfaces import HasBoundingBox
+from naturalnets.environments.app_components.interfaces import HasBoundingBox
 
 
 def get_image_path(module: str, file_name: str):
@@ -21,19 +21,19 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     Returns:
         np.ndarray: the img containing to_render
     """
-    
+
     x = bounding_box.x
     y = bounding_box.y
     width = bounding_box.width
     height = bounding_box.height
 
-    #If the image is the same size as the bounding box and the image does not have square dimensions, we can just replace the image with to_render
-    #This sets the shape of the image to the shape of to_render
-    if(width == img.shape[0] and height == img.shape[1]):
+    # If the image is the same size as the bounding box and the image does not have square dimensions, we can just replace the image with to_render
+    # This sets the shape of the image to the shape of to_render
+    if (width == img.shape[0] and height == img.shape[1]):
         img.shape = (height, width, 3)
 
     img[y:y + height, x:x + width] = to_render
-    
+
     return img
 
 
@@ -73,7 +73,8 @@ def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], fo
     font_color = Color.BLACK.value
     thickness = 1
     line_type = cv2.LINE_AA
-    cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)
+    cv2.putText(img, text, bottom_left_corner, font,
+                font_scale, font_color, thickness, line_type)
 
 
 def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0):
@@ -93,7 +94,8 @@ def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping:
     for k, v in reward_template.items():
         if isinstance(v, dict):
             reward_mapping[k] = {}
-            _, running_index = generate_reward_mapping_from_template(v, reward_mapping[k], running_index)
+            _, running_index = generate_reward_mapping_from_template(
+                v, reward_mapping[k], running_index)
         elif isinstance(v, list):
             reward_mapping[k] = {}
             for list_entry in v:

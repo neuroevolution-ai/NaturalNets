@@ -3,15 +3,15 @@ from typing import List
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Color, Figure
-from naturalnets.environments.gui_app.interfaces import Clickable
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb, get_image_path
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb, get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class FigurePrinter(Page, RewardElement):
@@ -32,11 +32,14 @@ class FigurePrinter(Page, RewardElement):
         RewardElement.__init__(self)
 
         self._figure_color_from_settings: Color = Color.BLACK
-        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
-        self.space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
+        self.christmas_tree_ddi = DropdownItem(
+            Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
+        self.space_ship_ddi = DropdownItem(
+            Figure.SPACE_SHIP, display_name="Space Ship")
         self.guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
         self.house_ddi = DropdownItem(Figure.HOUSE, display_name="House")
-        ddis = [self.christmas_tree_ddi, self.space_ship_ddi, self.guitar_ddi, self.house_ddi]
+        ddis = [self.christmas_tree_ddi, self.space_ship_ddi,
+                self.guitar_ddi, self.house_ddi]
         self.dropdown = Dropdown(self.DROPDOWN_BB, ddis)
 
         self.dropdown_items_to_str = {
@@ -48,7 +51,8 @@ class FigurePrinter(Page, RewardElement):
 
         self.add_widget(self.dropdown)
 
-        self._draw_figure_button = Button(self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
+        self._draw_figure_button = Button(
+            self.DRAW_FIGURE_BUTTON_BB, self._draw_figure)
         self._rendered_figure_color: Color = None  # color rendered onto the image
 
         # Set initial state
@@ -99,8 +103,10 @@ class FigurePrinter(Page, RewardElement):
         self.current_figure = figure
         self._rendered_figure_color = self._figure_color_from_settings
 
-        self.register_selected_reward(["figure_dropdown", "used_in_display", self.current_figure])
-        self.register_selected_reward(["figure_color", "used_in_display", self._rendered_figure_color])
+        self.register_selected_reward(
+            ["figure_dropdown", "used_in_display", self.current_figure])
+        self.register_selected_reward(
+            ["figure_color", "used_in_display", self._rendered_figure_color])
 
         self._show_figure(1)
 
@@ -109,11 +115,13 @@ class FigurePrinter(Page, RewardElement):
         text-printer settings."""
         item.set_visible(visible)
 
-        self.register_selected_reward([self.dropdown_items_to_str[item], bool(visible)])
+        self.register_selected_reward(
+            [self.dropdown_items_to_str[item], bool(visible)])
 
         # Update the item that is shown on the closed dropdown, if the dropdown previously did not have any entries
         if len(self.dropdown.get_visible_items()) != 0:
-            self.dropdown.set_selected_item(self.dropdown.get_visible_items()[0])
+            self.dropdown.set_selected_item(
+                self.dropdown.get_visible_items()[0])
 
     def _show_figure(self, show: int):
         self.get_state()[0] = show
@@ -140,7 +148,8 @@ class FigurePrinter(Page, RewardElement):
 
             if dropdown_value_clicked:
                 selected_item = self.dropdown.get_current_value()
-                self.register_selected_reward(["figure_dropdown", "selected", selected_item])
+                self.register_selected_reward(
+                    ["figure_dropdown", "selected", selected_item])
 
             self.dropdown_opened = False
             return
@@ -169,12 +178,15 @@ class FigurePrinter(Page, RewardElement):
     def render(self, img: np.ndarray):
         super().render(img)
         if self.is_figure_shown() and self.current_figure is not None:
-            figure_img_path = get_image_path(IMAGES_PATH, self.current_figure.value)
-            img = render_onto_bb(img, self.FIGURE_CANVAS_BB, cv2.imread(figure_img_path))
+            figure_img_path = get_image_path(
+                IMAGES_PATH, self.current_figure.value)
+            img = render_onto_bb(img, self.FIGURE_CANVAS_BB,
+                                 cv2.imread(figure_img_path))
 
             # Indicate the selected color of the figure with a text string
             x, y, _, height = self.FIGURE_CANVAS_BB.get_as_tuple()
             padding = 10
             bottom_left_corner = (x + padding, y + height - padding)
-            put_text(img, f"{self._rendered_figure_color}", bottom_left_corner, font_scale=0.4)
+            put_text(img, f"{self._rendered_figure_color}",
+                     bottom_left_corner, font_scale=0.4)
         return img

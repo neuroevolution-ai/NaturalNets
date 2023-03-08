@@ -1,9 +1,9 @@
 '''This module contains the PopUp class.'''
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
 
 
 class PopUp(Page, RewardElement):

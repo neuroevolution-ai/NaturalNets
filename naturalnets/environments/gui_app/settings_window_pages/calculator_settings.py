@@ -2,17 +2,17 @@ from typing import List, Optional
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Base
-from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import get_image_path
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class CalculatorSettings(Page, RewardElement):
@@ -194,8 +194,10 @@ class CalculatorSettingsPopup(Page, RewardElement):
         self.calculator_settings = calculator_settings
 
         self.addition_ddi = DropdownItem(Operator.ADDITION, "Addition")
-        self.subtraction_ddi = DropdownItem(Operator.SUBTRACTION, "Subtraction")
-        self.multiplication_ddi = DropdownItem(Operator.MULTIPLICATION, "Multiplication")
+        self.subtraction_ddi = DropdownItem(
+            Operator.SUBTRACTION, "Subtraction")
+        self.multiplication_ddi = DropdownItem(
+            Operator.MULTIPLICATION, "Multiplication")
         self.division_ddi = DropdownItem(Operator.DIVISION, "Division")
         self.dropdown = Dropdown(self.DROPDOWN_BB, [self.addition_ddi,
                                                     self.subtraction_ddi,
@@ -229,7 +231,8 @@ class CalculatorSettingsPopup(Page, RewardElement):
         if self.dropdown_opened:
             self.dropdown.handle_click(click_position)
 
-            self.register_selected_reward(["operator_selection", self.dropdown.get_current_value()])
+            self.register_selected_reward(
+                ["operator_selection", self.dropdown.get_current_value()])
 
             self.dropdown_opened = False
             return
@@ -246,8 +249,10 @@ class CalculatorSettingsPopup(Page, RewardElement):
             curr_dropdown_value: Operator = self.dropdown.get_current_value()
             assert curr_dropdown_value is not None
             self.apply_button.handle_click(click_position)
-            self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
-            self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
+            self.calculator_settings.select_operator_checkbox(
+                curr_dropdown_value)
+            self.calculator_settings.calculator.set_operator_value(
+                curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""

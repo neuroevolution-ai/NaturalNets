@@ -17,13 +17,13 @@ from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_webs
     LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.pages.main_page_popups.no_card_popup import NoCardPopup
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.anki import ChooseDeckStudyPage
 from naturalnets.environments.anki import CheckMediaPage
 from naturalnets.environments.anki import PreferencesPage
@@ -92,12 +92,12 @@ class MainPage(Page, RewardElement):
     CURRENT_ACCOUNT_Y = 162
     DECKS_X = 126
     DECKS_Y = 271
-    
+
     """
     Singleton design pattern to ensure that at most one
     MainPage is present
     """
-    
+
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(MainPage, cls).__new__(cls)
@@ -122,7 +122,8 @@ class MainPage(Page, RewardElement):
         # Profile database to access the currently active profile
         self.profile_database = ProfileDatabase()
         # Deck database to fetch the decks of a profile
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
 
         # Popups that can be opened from the main page
         self.leads_to_external_website_popup_page = LeadsToExternalWebsitePopup()
@@ -151,7 +152,8 @@ class MainPage(Page, RewardElement):
                            self.at_least_one_card_popup_page, self.choose_deck_study_page, self.preferences_page])
 
         # Set the dd items with their actions
-        self.switch_profile_ddi = DropdownItem("Switch Profile", "Switch Profile")
+        self.switch_profile_ddi = DropdownItem(
+            "Switch Profile", "Switch Profile")
         self.switch_profile_ddi.set_click_action(self.open_switch_profile)
         self.import_ddi = DropdownItem("Import", "Import")
         self.import_ddi.set_click_action(self.open_import_deck_page)
@@ -171,19 +173,23 @@ class MainPage(Page, RewardElement):
         self.show_book_logo_ddi.set_click_action(self.set_logo_shown)
 
         self.guide_ddi = DropdownItem("Guide", "Guide")
-        self.guide_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.guide_ddi.set_click_action(
+            self.leads_to_external_website_popup_page.open)
         self.support_ddi = DropdownItem("Support", "Support")
-        self.support_ddi.set_click_action(self.leads_to_external_website_popup_page.open)
+        self.support_ddi.set_click_action(
+            self.leads_to_external_website_popup_page.open)
         self.about_ddi = DropdownItem("About Page", "About Page")
         self.about_ddi.set_click_action(self.about_page.open)
 
         # Create the dropdowns and add them to a list of dropdowns
         self.file_dropdown = Dropdown(self.FILE_DROPDOWN_BB_OFFSET,
                                       [self.switch_profile_ddi, self.import_ddi, self.export_ddi, self.exit_ddi])
-        self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB_OFFSET, [self.show_book_logo_ddi])
+        self.edit_dropdown = Dropdown(self.EDIT_DROPDOWN_BB_OFFSET, [
+                                      self.show_book_logo_ddi])
         self.tools_dropdown = Dropdown(self.TOOLS_DROPDOWN_BB_OFFSET,
                                        [self.study_deck_ddi, self.check_media_ddi, self.preferences_ddi])
-        self.help_dropdown = Dropdown(self.HELP_DROPDOWN_BB_OFFSET, [self.guide_ddi, self.support_ddi, self.about_ddi])
+        self.help_dropdown = Dropdown(self.HELP_DROPDOWN_BB_OFFSET, [
+                                      self.guide_ddi, self.support_ddi, self.about_ddi])
         self.dropdowns: List[Dropdown] = [self.file_dropdown, self.edit_dropdown, self.tools_dropdown,
                                           self.help_dropdown]
         # The currently opened dropdown
@@ -198,16 +204,22 @@ class MainPage(Page, RewardElement):
         self.study_button: Button = Button(self.STUDY_BB, self.study)
         self.add_card_button: Button = Button(self.ADD_CARD_BB, self.add_card)
         self.sync_button: Button = Button(self.ANKI_LOGIN_BB, self.login)
-        self.get_shared_button: Button = Button(self.GET_SHARED_BB, self.leads_to_external_website_popup_page.open)
-        self.create_deck_button: Button = Button(self.CREATE_DECK_BB, self.create_deck)
-        self.import_file_button: Button = Button(self.IMPORT_FILE_BB, self.import_file)
-        self.show_answer_button = Button(self.SHOW_ANSWER_NEXT_BB, self.show_answer)
+        self.get_shared_button: Button = Button(
+            self.GET_SHARED_BB, self.leads_to_external_website_popup_page.open)
+        self.create_deck_button: Button = Button(
+            self.CREATE_DECK_BB, self.create_deck)
+        self.import_file_button: Button = Button(
+            self.IMPORT_FILE_BB, self.import_file)
+        self.show_answer_button = Button(
+            self.SHOW_ANSWER_NEXT_BB, self.show_answer)
         self.remove_button = Button(self.REMOVE_BB, self.remove_card)
         self.next_button = Button(self.SHOW_ANSWER_NEXT_BB, self.next_card)
         self.delete_button = Button(self.DELETE_DECK_BB, self.remove_deck)
         # This button is actually part of the choose deck study page but the button and the click action is handled here
-        self.study_button_study_deck: Button = Button(self.choose_deck_study_page.STUDY_BB, self.study_deck)
-        self.reset_button: Button = Button(self.profile_page.reset_collection_popup_page.YES_BUTTON_BB, self.reset_all)
+        self.study_button_study_deck: Button = Button(
+            self.choose_deck_study_page.STUDY_BB, self.study_deck)
+        self.reset_button: Button = Button(
+            self.profile_page.reset_collection_popup_page.YES_BUTTON_BB, self.reset_all)
 
         self.main_page_widgets = [self.add_card_button, self.sync_button, self.study_button, self.get_shared_button,
                                   self.create_deck_button, self.import_file_button, self.delete_button]
@@ -278,6 +290,7 @@ class MainPage(Page, RewardElement):
     """
     Return the index of a dropdown
     """
+
     def get_dropdown_index(self):
         for i, dropdown in enumerate(self.dropdowns):
             if dropdown.get_current_value() == self.opened_dd:
@@ -286,12 +299,14 @@ class MainPage(Page, RewardElement):
     Delegate the click to a page if one is open else check if a dropdown is open and then delegate click to it
     else check if the state of get_state()[11] == 0 indicating learning is not active and table for decks is clicked
     then handle the click of changing the active deck. Else if the click lies within the bounding box of a dropdown
-    then the dropdown is going to be opened. Else the click actions of widgets are handled 
+    then the dropdown is going to be opened. Else the click actions of widgets are handled
     according to the states get_state()[i] i = {11, 12}.
     """
+
     def handle_click(self, click_position: np.ndarray):
         # Update the current deck database
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.get_state()[1:self.deck_database.decks_length()+1] = 1
         self.get_state()[self.deck_database.decks_length()+1:6] = 0
         self.get_state()[6:11] = 0
@@ -303,18 +318,19 @@ class MainPage(Page, RewardElement):
         if self.study_button_study_deck.is_clicked_by(click_position) and self.choose_deck_study_page.is_open():
             self.study_button_study_deck.handle_click(click_position)
             return
-        
+
         for page in self.pages:
             if page.is_open():
                 page.handle_click(click_position)
                 return
-        
+
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             current_value = self.opened_dd.get_current_value()
             self.opened_dd.close()
             if current_value is not None:
-                self.register_selected_reward([self.dropdowns_to_str[self.opened_dd], "selected", current_value])
+                self.register_selected_reward(
+                    [self.dropdowns_to_str[self.opened_dd], "selected", current_value])
             self.opened_dd = None
             return
 
@@ -324,7 +340,8 @@ class MainPage(Page, RewardElement):
 
         for bounding_box in self.dropdown_bbs:
             if bounding_box.is_point_inside(click_position):
-                self.bounding_boxes_to_dropdowns[bounding_box].handle_click(click_position)
+                self.bounding_boxes_to_dropdowns[bounding_box].handle_click(
+                    click_position)
                 if self.bounding_boxes_to_dropdowns[bounding_box].is_open():
                     self.opened_dd = self.bounding_boxes_to_dropdowns[bounding_box]
                     self.register_selected_reward(
@@ -352,28 +369,32 @@ class MainPage(Page, RewardElement):
                     widget.handle_click(click_position)
                     return
     """
-    Opens the add card page 
+    Opens the add card page
     """
+
     def add_card(self):
         self.get_state()[11] = 0
         self.add_card_page.open()
 
     """
-    Opens the anki login page 
+    Opens the anki login page
     """
+
     def login(self):
         self.get_state()[11] = 0
         self.anki_login.open()
 
     """
-    Opens the add deck popup page 
+    Opens the add deck popup page
     """
+
     def create_deck(self):
         self.add_deck_popup_page.open()
 
     """
     Opens the import deck page
     """
+
     def import_file(self):
         self.get_state()[11] = 0
         self.import_deck_page.open()
@@ -386,11 +407,15 @@ class MainPage(Page, RewardElement):
     upper_left_point = (110, 243) is the upper left hand corner
     coordinate of the table.
     """
+
     def change_current_deck_index(self, click_point: np.ndarray):
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
-        current_bounding_box = calculate_current_bounding_box(self.UPPER_X, self.UPPER_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.deck_database.decks_length())
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
+        current_bounding_box = calculate_current_bounding_box(
+            self.UPPER_X, self.UPPER_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.deck_database.decks_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.UPPER_Y) / self.ITEM_HEIGHT)
+            click_index: int = floor(
+                (click_point[1] - self.UPPER_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[self.deck_database.get_current_index() + 6] = 0
@@ -401,18 +426,21 @@ class MainPage(Page, RewardElement):
     """
     Opens the main page
     """
+
     def open(self):
         self.get_state()[0] = 1
 
     """
     Closes the main page
     """
+
     def close(self):
         self.get_state()[0] = 0
 
     """
     Returns true if this page is open
     """
+
     def is_open(self):
         return self.get_state()[0]
 
@@ -420,6 +448,7 @@ class MainPage(Page, RewardElement):
     Switches to the learning session if at least one card of the current card is present.
     Else no card popup is going to be opened
     """
+
     def study(self):
         if len(self.deck_database.get_decks()[self.deck_database.get_current_index()].get_cards()) == 0:
             self.no_card_popup_page.open()
@@ -431,6 +460,7 @@ class MainPage(Page, RewardElement):
     """
     Switches back to the main page
     """
+
     def stop_study(self):
         self.register_selected_reward(["stop_study"])
         self.get_state()[11] = 0
@@ -438,24 +468,31 @@ class MainPage(Page, RewardElement):
     """
     Iterates to the next card of the current deck
     """
+
     def next_card(self):
         self.get_state()[12] = 0
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = False
+        self.deck_database.get_decks(
+        )[self.deck_database.get_current_index()].is_answer_shown = False
         self.register_selected_reward(["next_card"])
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].increment_study_index()
+        self.deck_database.get_decks(
+        )[self.deck_database.get_current_index()].increment_study_index()
     """
     Specifies if the active deck shows the answer
     """
+
     def show_answer(self):
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].is_answer_shown = True
+        self.deck_database.get_decks(
+        )[self.deck_database.get_current_index()].is_answer_shown = True
         self.get_state()[12] = 1
         self.register_selected_reward(["show_answer"])
     """
     Render the main page according to whether learning session is active or not
     """
+
     def render(self, img: np.ndarray):
         # Updates the deck database
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         if self.get_state()[11] == 1:
             img = self.render_study_page(img)
         elif self.get_state()[11] == 0:
@@ -465,6 +502,7 @@ class MainPage(Page, RewardElement):
     """
     Renders an open page,dropdown or popup on to the current page
     """
+
     def render_onto_current(self, img: np.ndarray):
         for page in self.pages:
             if page.is_open():
@@ -475,12 +513,13 @@ class MainPage(Page, RewardElement):
     """
     Renders the image of the page that holds the table for present decks
     """
+
     def render_deck_page(self, img: np.ndarray):
         frame = cv2.imread(self.IMG_PATH)
         render_onto_bb(img, self.WINDOW_BB, frame)
-        
+
         book_logo = cv2.imread(os.path.join(IMAGES_PATH, "book_logo.png"))
-            
+
         if self.is_logo_enabled:
             render_onto_bb(img, self.BOOK_LOGO, book_logo)
         if self.profile_database.get_profiles()[self.profile_database.get_current_index()] is not None:
@@ -488,19 +527,22 @@ class MainPage(Page, RewardElement):
                      f"Current profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                      (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.5)
 
-        put_text(img, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        put_text(img, f"Current deck: {self.deck_database.get_decks()[self.deck_database.get_current_index()].get_name()}", (
+            self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
 
         if self.anki_login.get_current_account() is not None:
             put_text(img, f"Current account: {self.anki_login.get_current_account().get_account_name()}", (self.CURRENT_ACCOUNT_X, self.CURRENT_ACCOUNT_Y),
                      font_scale=0.5)
 
         for i, deck in enumerate(self.deck_database.get_decks()):
-            put_text(img, deck.name, (self.DECKS_X, self.DECKS_Y + i * self.ITEM_HEIGHT), font_scale=0.5)
+            put_text(img, deck.name, (self.DECKS_X, self.DECKS_Y +
+                     i * self.ITEM_HEIGHT), font_scale=0.5)
         return img
 
     """
     Renders the image of the page for learning
     """
+
     def render_study_page(self, image: np.ndarray):
         frame = cv2.imread(self.IMG_PATH_STUDY)
         render_onto_bb(image, self.WINDOW_BB, frame)
@@ -536,6 +578,7 @@ class MainPage(Page, RewardElement):
     """
     If the number of decks is 1 then at least one deck popup is shown else the deck is deleted
     """
+
     def remove_deck(self):
         if self.deck_database.decks_length() == 1:
             self.at_least_one_deck_popup_page.open()
@@ -546,15 +589,18 @@ class MainPage(Page, RewardElement):
     """
     If the number of decks is 1 then at least one card popup is shown else the deck is deleted
     """
+
     def remove_card(self):
         if self.deck_database.get_decks()[self.deck_database.get_current_index()].deck_length() == 1:
             self.at_least_one_card_popup_page.open()
             return
         self.register_selected_reward(["remove_card"])
-        self.deck_database.get_decks()[self.deck_database.get_current_index()].remove_card()
+        self.deck_database.get_decks(
+        )[self.deck_database.get_current_index()].remove_card()
     """
     Negate the boolean if the book logo is shown
     """
+
     def set_logo_shown(self):
         self.register_selected_reward(["logo_shown", not self.is_logo_enabled])
         self.is_logo_enabled = not self.is_logo_enabled
@@ -562,6 +608,7 @@ class MainPage(Page, RewardElement):
     """
     Opens choose deck study page
     """
+
     def open_choose_deck_study_page(self):
         self.get_state()[11] = 0
         self.choose_deck_study_page.open()
@@ -569,6 +616,7 @@ class MainPage(Page, RewardElement):
     """
     Opens preferences page
     """
+
     def open_preferences_page(self):
         self.get_state()[11] = 0
         self.preferences_page.open()
@@ -576,6 +624,7 @@ class MainPage(Page, RewardElement):
     """
     Check if the condition for starting a study is satisfied and if so switch to a study session
     """
+
     def study_deck(self):
         if (self.choose_deck_study_page.get_current_index() is not None and not (
             self.choose_deck_study_page.add_deck_popup.is_open())
@@ -590,6 +639,7 @@ class MainPage(Page, RewardElement):
     """
     Opens profile page
     """
+
     def open_switch_profile(self):
         self.get_state()[11] = 0
         self.profile_page.open()
@@ -597,6 +647,7 @@ class MainPage(Page, RewardElement):
     """
     Opens import deck page
     """
+
     def open_import_deck_page(self):
         self.get_state()[11] = 0
         self.import_deck_page.open()
@@ -604,6 +655,7 @@ class MainPage(Page, RewardElement):
     """
     Opens export deck page
     """
+
     def open_export_deck_page(self):
         self.get_state()[11] = 0
         self.export_deck_page.open()
@@ -611,6 +663,7 @@ class MainPage(Page, RewardElement):
     """
     Opens reset collection popup
     """
+
     def open_reset_collection_popup(self):
         self.get_state()[11] = 0
         self.reset_collection_popup_page.open()

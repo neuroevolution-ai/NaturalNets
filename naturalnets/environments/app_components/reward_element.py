@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.utils import generate_reward_mapping_from_template
+from naturalnets.environments.app_components.utils import generate_reward_mapping_from_template
 
 
 class RewardElement(abc.ABC):
@@ -37,7 +37,8 @@ class RewardElement(abc.ABC):
         pass
 
     def create_reward_mapping(self):
-        self.reward_mapping, self.reward_count = generate_reward_mapping_from_template(self.reward_template, {}, 0)
+        self.reward_mapping, self.reward_count = generate_reward_mapping_from_template(
+            self.reward_template, {}, 0)
 
     def get_reward_count(self):
         return self.reward_count

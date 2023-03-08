@@ -8,12 +8,12 @@ from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_webs
     import LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.anki.utils import calculate_current_bounding_box
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
 
 
 class ImportDeckPage(Page, RewardElement):
@@ -33,7 +33,7 @@ class ImportDeckPage(Page, RewardElement):
     HELP_BB = BoundingBox(625, 595, 98, 25)
     CURRENT_DECK_NAME_X = 95
     CURRENT_DECK_NAME_Y = 120
-    
+
     def __init__(self):
 
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
@@ -48,16 +48,18 @@ class ImportDeckPage(Page, RewardElement):
                            self.five_decks_popup, self.leads_to_external_website_popup])
         # Profile database to fetch the currently active profile
         self.profile_database = ProfileDatabase()
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
 
-        self.select_deck_button = Button(self.SELECT_DECK_BB, self.select_deck_popup)
+        self.select_deck_button = Button(
+            self.SELECT_DECK_BB, self.select_deck_popup)
         self.import_button = Button(self.IMPORT_BB, self.import_deck)
         self.close_button = Button(self.CLOSE_BB, self.close)
         self.help_button = Button(self.HELP_BB, self.help)
 
         self.set_reward_children([self.leads_to_external_website_popup, self.import_deck_popup,
                                   self.five_decks_popup, self.name_exists_popup])
-        
+
         self.import_names_to_index = {
             "Dutch_numbers_0-100": 1,
             "German_numbers_0-100": 2,
@@ -65,7 +67,7 @@ class ImportDeckPage(Page, RewardElement):
         }
 
     """
-    Provide reward for opening/closing this page, clicking help button and importing a deck 
+    Provide reward for opening/closing this page, clicking help button and importing a deck
     """
 
     @property
@@ -82,10 +84,12 @@ class ImportDeckPage(Page, RewardElement):
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Update the current deck database
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         # Reset the indices of selected deck with 0 and set the entry for the respective deck with 1
         self.get_state()[1:4] = 0
-        index = self.import_names_to_index[self.import_deck_popup.get_current_import_name()]
+        index = self.import_names_to_index[self.import_deck_popup.get_current_import_name(
+        )]
         self.get_state()[index] = 1
         if self.leads_to_external_website_popup.is_open():
             self.leads_to_external_website_popup.handle_click(click_position)
@@ -152,7 +156,7 @@ class ImportDeckPage(Page, RewardElement):
         self.register_selected_reward(["help"])
 
     """
-    Imports deck if the number of decks does not exceed 5 and the name of the deck does not exist 
+    Imports deck if the number of decks does not exceed 5 and the name of the deck does not exist
     and the deck to import is set.
     """
 
@@ -164,7 +168,8 @@ class ImportDeckPage(Page, RewardElement):
             self.name_exists_popup.open()
             return
         else:
-            self.deck_database.import_deck(self.import_deck_popup.get_current_import_name())
+            self.deck_database.import_deck(
+                self.import_deck_popup.get_current_import_name())
             self.register_selected_reward(["import"])
             self.close()
 
@@ -173,7 +178,8 @@ class ImportDeckPage(Page, RewardElement):
     """
 
     def render(self, img: np.ndarray):
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, f"Current import deck: {self.import_deck_popup.get_current_import_name()}", (self.CURRENT_DECK_NAME_X, self.CURRENT_DECK_NAME_Y),
@@ -215,7 +221,7 @@ class ImportDeckSelectPage(Page, RewardElement):
     CURRENT_DECK_Y = 192
     FIRST_DECK_X = 191
     FIRST_DECK_Y = 225
-    
+
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
@@ -225,12 +231,15 @@ class ImportDeckSelectPage(Page, RewardElement):
         # Profile database to fetch current profile
         self.profile_database = ProfileDatabase()
         # Deck database to fetch the decks of the current profile
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
 
-        self.choose_button: Button = Button(self.CHOOSE_BB, self.set_import_name)
+        self.choose_button: Button = Button(
+            self.CHOOSE_BB, self.set_import_name)
         self.help_button: Button = Button(self.HELP_BB, self.help)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
-        self.current_import_name = self.deck_database.get_deck_import_names()[self.current_index]
+        self.current_import_name = self.deck_database.get_deck_import_names()[
+            self.current_index]
         self.set_reward_children([self.leads_to_external_website_popup])
 
     """
@@ -303,42 +312,51 @@ class ImportDeckSelectPage(Page, RewardElement):
     Checks if the click_point lies within the current_bounding_box if yes current_index
     is changed
     """
+
     def change_current_deck_index(self, click_point: np.ndarray):
-        current_bounding_box = calculate_current_bounding_box(self.SELECT_DECK_X, self.SELECT_DECK_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, 3)
+        current_bounding_box = calculate_current_bounding_box(
+            self.SELECT_DECK_X, self.SELECT_DECK_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, 3)
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.SELECT_DECK_Y) / self.ITEM_HEIGHT)
+            click_index: int = floor(
+                (click_point[1] - self.SELECT_DECK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.ITEM_HEIGHT:
                 return
             self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
             self.get_state()[self.current_index + 1] = 1
             self.register_selected_reward(["index", click_index])
-    
+
     """
     Changes the name of the deck to import according to current_index
     """
+
     def set_import_name(self):
         self.register_selected_reward(["import_name"])
-        self.current_import_name = self.deck_database.get_deck_import_names()[self.current_index]
+        self.current_import_name = self.deck_database.get_deck_import_names()[
+            self.current_index]
         self.close()
-    
+
     """
     Sets the current_index to 0
     """
+
     def reset_current_index(self):
         self.current_index = 0
-    
+
     """
     Renders the image of this popup
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.leads_to_external_website_popup.is_open():
             img = self.leads_to_external_website_popup.render(img)
-        put_text(img, f"{self.deck_database.get_deck_import_names()[self.current_index]}", (self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
+        put_text(img, f"{self.deck_database.get_deck_import_names()[self.current_index]}", (
+            self.CURRENT_DECK_X, self.CURRENT_DECK_Y), font_scale=0.5)
         for i, deck_name in enumerate(self.deck_database.get_deck_import_names()):
-            put_text(img, f"{deck_name}", (self.FIRST_DECK_X, self.FIRST_DECK_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
+            put_text(img, f"{deck_name}", (self.FIRST_DECK_X,
+                     self.FIRST_DECK_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
         return img
 
     def get_current_import_name(self):

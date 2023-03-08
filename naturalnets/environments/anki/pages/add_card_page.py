@@ -4,12 +4,12 @@ import numpy as np
 from naturalnets.environments.anki import ChooseDeckPage
 from naturalnets.environments.anki.pages.main_page_popups.front_and_backside_popup import FrontAndBacksidePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 from naturalnets.environments.anki import Card
 
 
@@ -57,12 +57,13 @@ class AddCardPage(Page, RewardElement):
         # Profile database to fetch the current profile
         self.profile_database = ProfileDatabase()
         # Deck database of the current profile to add card to the current deck
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         # Choose deck page enables changing the current deck as well as adding a new deck
         self.choose_deck = ChooseDeckPage()
         # Warning popup that front- and backside strings must be present at the same time to be able to add a new card.
         self.front_and_backside_popup = FrontAndBacksidePopup()
-        
+
         self.front_side_counter = 0
         self.back_side_counter = 0
         self.tag_counter = 0
@@ -71,14 +72,18 @@ class AddCardPage(Page, RewardElement):
         self.add_child(self.front_and_backside_popup)
 
         self.select_button: Button = Button(self.SELECT_BB, self.select_deck)
-        self.front_text_button: Button = Button(self.FRONT_TEXT_BB, self.set_front_side_clipboard)
-        self.back_text_button: Button = Button(self.BACK_TEXT_BB, self.set_back_side_clipboard)
-        self.tags_text_button: Button = Button(self.TAGS_TEXT_BB, self.set_tag_clipboard)
+        self.front_text_button: Button = Button(
+            self.FRONT_TEXT_BB, self.set_front_side_clipboard)
+        self.back_text_button: Button = Button(
+            self.BACK_TEXT_BB, self.set_back_side_clipboard)
+        self.tags_text_button: Button = Button(
+            self.TAGS_TEXT_BB, self.set_tag_clipboard)
         self.close_button: Button = Button(self.CLOSE_BB, self.close)
         self.add_button: Button = Button(self.ADD_BB, self.add_card)
 
         # Set the rewards of the popups
-        self.set_reward_children([self.choose_deck, self.front_and_backside_popup])
+        self.set_reward_children(
+            [self.choose_deck, self.front_and_backside_popup])
 
     """
     Provide reward for opening and closing the page, Setting each text field and adding a card
@@ -97,9 +102,11 @@ class AddCardPage(Page, RewardElement):
     First check if a popup is open. If yes delegate the click to the popup.
     Else check if a button is clicked and if yes handle it's click
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         if self.choose_deck.is_open():
             self.choose_deck.handle_click(click_position)
             return
@@ -138,6 +145,7 @@ class AddCardPage(Page, RewardElement):
     """
     Assign a random string to the front side field
     """
+
     def set_front_side_clipboard(self):
         self.register_selected_reward(["front_side_clipboard"])
         self.front_side_clipboard_temporary_string = f"Some front side text {self.front_side_counter}"
@@ -147,6 +155,7 @@ class AddCardPage(Page, RewardElement):
     """
         Assign a random string to the back side field
     """
+
     def set_back_side_clipboard(self):
         self.register_selected_reward(["back_side_clipboard"])
         self.back_side_clipboard_temporary_string = f"Some back side text {self.back_side_counter}"
@@ -156,15 +165,17 @@ class AddCardPage(Page, RewardElement):
     """
         Assign a random string to the tag field
     """
+
     def set_tag_clipboard(self):
         self.register_selected_reward(["tag_clipboard"])
         self.tag_clipboard_temporary_string = f"Some tag text {self.tag_counter}"
-        self.tag_counter += 1 
+        self.tag_counter += 1
         self.get_state()[3] = 1
 
     """
     Check if the front- and the back side of the card is set
     """
+
     def is_card_creatable(self):
         return self.back_side_clipboard_temporary_string is not None and self.front_side_clipboard_temporary_string \
             is not None
@@ -172,6 +183,7 @@ class AddCardPage(Page, RewardElement):
     """
     Reset the current string configuration
     """
+
     def reset_temporary_strings(self):
         self.back_side_clipboard_temporary_string = None
         self.front_side_clipboard_temporary_string = None
@@ -185,16 +197,18 @@ class AddCardPage(Page, RewardElement):
     the popup warning that both the front- and back side of the card must be
     present is shown.
     """
+
     def add_card(self):
         if self.is_card_creatable():
             card = Card(self.front_side_clipboard_temporary_string, self.back_side_clipboard_temporary_string,
                         self.tag_clipboard_temporary_string)
-            self.deck_database.get_decks()[self.deck_database.get_current_index()].add_card(card)
+            self.deck_database.get_decks(
+            )[self.deck_database.get_current_index()].add_card(card)
             self.register_selected_reward(["add_card"])
             self.reset_temporary_strings()
         else:
             self.front_and_backside_popup.open()
-    
+
     """
     Opens up the popup for selecting a deck. Reason for resetting the index of
     the popup to 0 is to prevent index out of range. Suppose the current profile has
@@ -203,16 +217,19 @@ class AddCardPage(Page, RewardElement):
     again then the index would be out of bound if it wouldn't be set to 0 since it was > 0
     and there is only one deck present of the current profile.
     """
+
     def select_deck(self):
         self.choose_deck.reset_index()
         self.choose_deck.open()
-    
+
     """
-    Renders the add card page with popup or 
+    Renders the add card page with popup or
     choose deck page if open and current strings if set.
     """
+
     def render(self, img: np.ndarray):
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         # Render choose deck page if open

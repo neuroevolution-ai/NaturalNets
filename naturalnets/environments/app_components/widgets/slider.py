@@ -3,8 +3,8 @@ from typing import Callable
 import cv2
 
 import numpy as np
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Widget
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Widget
 
 
 class Slider(Widget):

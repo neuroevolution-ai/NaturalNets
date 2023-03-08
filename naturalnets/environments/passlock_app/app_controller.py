@@ -1,8 +1,8 @@
 """The controller for the Passlock App."""
 from copy import copy
 import numpy as np
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.state_element import StateElement
 from naturalnets.environments.passlock_app.auth_window import AuthenticationWindow
 from naturalnets.environments.passlock_app.home_window import HomeWindow
 

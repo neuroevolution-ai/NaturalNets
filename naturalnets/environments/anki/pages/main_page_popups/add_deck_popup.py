@@ -5,11 +5,11 @@ from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup impor
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AddDeckPopup(Page, RewardElement):
@@ -46,7 +46,8 @@ class AddDeckPopup(Page, RewardElement):
         # database containing current profiles
         self.profile_database = ProfileDatabase()
         # database containing current decks
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
 
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
@@ -56,11 +57,13 @@ class AddDeckPopup(Page, RewardElement):
         self.current_field_string = None
 
         self.ok_button: Button = Button(self.OK_BB, self.add_deck)
-        self.text_button: Button = Button(self.TEXT_BB, self.set_deck_name_clipboard)
+        self.text_button: Button = Button(
+            self.TEXT_BB, self.set_deck_name_clipboard)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
 
         # set rewards of the popups
-        self.set_reward_children([self.name_exists_popup, self.five_decks_popup])
+        self.set_reward_children(
+            [self.name_exists_popup, self.five_decks_popup])
 
     """
     Provide reward for opening/closing this popup, clicking the text button and adding a new deck successfully
@@ -88,9 +91,11 @@ class AddDeckPopup(Page, RewardElement):
     """
     Set a deck name
     """
+
     def set_deck_name_clipboard(self):
         self.register_selected_reward(["set_clipboard"])
-        self.current_field_string = self.deck_database.get_deck_names()[self.deck_iterate_index]
+        self.current_field_string = self.deck_database.get_deck_names()[
+            self.deck_iterate_index]
         self.get_state()[1 + (self.deck_iterate_index - 1) % 5] = 0
         self.deck_iterate_index += 1
         self.deck_iterate_index %= 5
@@ -104,6 +109,7 @@ class AddDeckPopup(Page, RewardElement):
     then create the deck
     else show the respective popup
     """
+
     def add_deck(self):
         if self.current_field_string is None:
             return
@@ -119,13 +125,16 @@ class AddDeckPopup(Page, RewardElement):
     """
     Render the popup and if one of the warning popups are open render it too
     """
+
     def render(self, img: np.ndarray):
         # First line synchronizes the self.deck_database attribute with the current database.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.current_field_string is not None:
-            put_text(img, f"{self.current_field_string}", (self.TEXT_POSITION_X, self.TEXT_POSITION_Y), font_scale=0.4)
+            put_text(img, f"{self.current_field_string}",
+                     (self.TEXT_POSITION_X, self.TEXT_POSITION_Y), font_scale=0.4)
         if self.five_decks_popup.is_open():
             img = self.five_decks_popup.render(img)
         elif self.name_exists_popup.is_open():
@@ -134,9 +143,11 @@ class AddDeckPopup(Page, RewardElement):
     """
     Execute the click action according to the respective button or popup
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         # First line synchronizes the self.deck_database attribute with the current database.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         if self.five_decks_popup.is_open():
             self.five_decks_popup.handle_click(click_position)
             return
@@ -152,4 +163,3 @@ class AddDeckPopup(Page, RewardElement):
 
     def reset_iterate_index(self):
         self.deck_iterate_index = 0
-        

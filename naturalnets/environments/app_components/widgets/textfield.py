@@ -3,8 +3,8 @@ from typing import Callable
 import cv2
 
 import numpy as np
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Widget
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Widget
 
 
 class Textfield(Widget):
@@ -16,10 +16,10 @@ class Textfield(Widget):
     State Description:
         0: Whether or not the textfield is selected
     '''
-    #Constants
+    # Constants
     STATE_LEN = 1
 
-    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color:tuple = (0,0,0)):
+    def __init__(self, bounding_box: BoundingBox, click_action: Callable = None, color: tuple = (0, 0, 0)):
         super().__init__(self.STATE_LEN, bounding_box)
         self._bounding_box = bounding_box
         self._click_action = click_action
@@ -92,9 +92,11 @@ class Textfield(Widget):
             # change alignment of text
             x = x + 25
             y = y + 10
-            #the rectangle is drawn to make the text more visible. It draws a rectangle behind the text in white
-            cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width, y+text_height-10), color=(255,255,255), thickness=-1)
-            cv2.putText(img, text, (x, int(y+height/2)), font, 1, color=color, thickness=thickness)
+            # the rectangle is drawn to make the text more visible. It draws a rectangle behind the text in white
+            cv2.rectangle(img, (x, int(y+height/2)+10), (x + text_width,
+                          y+text_height-10), color=(255, 255, 255), thickness=-1)
+            cv2.putText(img, text, (x, int(y+height/2)), font,
+                        1, color=color, thickness=thickness)
 
         return img
 

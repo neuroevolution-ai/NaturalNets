@@ -7,12 +7,12 @@ from naturalnets.environments.anki.pages.main_page_popups.leads_to_external_webs
     LeadsToExternalWebsitePopup
 from naturalnets.environments.anki.profile import ProfileDatabase
 from naturalnets.environments.anki.utils import calculate_current_bounding_box
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class ChooseDeckStudyPage(Page, RewardElement):
@@ -37,7 +37,7 @@ class ChooseDeckStudyPage(Page, RewardElement):
     CANCEL_BB = BoundingBox(405, 483, 107, 27)
     HELP_BB = BoundingBox(519, 483, 107, 27)
     DECK_BB = BoundingBox(194, 210, 410, 150)
-    
+
     CLICK_X = 194
     CLICK_Y = 210
     CURRENT_DECK_X = 210
@@ -63,7 +63,8 @@ class ChooseDeckStudyPage(Page, RewardElement):
         self.current_index: int = 0
 
         self.profile_database = ProfileDatabase()
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
 
         """
         Study button is implemented in the main page because implementing study function causes circular import
@@ -73,11 +74,12 @@ class ChooseDeckStudyPage(Page, RewardElement):
         self.add_button: Button = Button(self.ADD_BB, self.add_deck_popup.open)
         self.cancel_button: Button = Button(self.CANCEL_BB, self.close)
         self.help_button: Button = Button(self.HELP_BB, self.help)
-        self.set_reward_children([self.add_deck_popup, self.leads_to_external_website_popup])
+        self.set_reward_children(
+            [self.add_deck_popup, self.leads_to_external_website_popup])
 
     """
-    Provide reward for opening/closing a window, changing the index of the selected deck, 
-    clicking help button and switching to study session 
+    Provide reward for opening/closing a window, changing the index of the selected deck,
+    clicking help button and switching to study session
     """
     @property
     def reward_template(self):
@@ -93,7 +95,8 @@ class ChooseDeckStudyPage(Page, RewardElement):
 
     def open(self):
         self.reset_index()
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.get_state()[0] = 1
         self.get_state()[1:1+self.deck_database.decks_length()] = 1
         self.get_state()[1+self.deck_database.decks_length():6] = 0
@@ -113,6 +116,7 @@ class ChooseDeckStudyPage(Page, RewardElement):
     """
     Executed when the help button is clicked.
     """
+
     def help(self):
         self.leads_to_external_website_popup.open()
         self.register_selected_reward(["help"])
@@ -128,12 +132,14 @@ class ChooseDeckStudyPage(Page, RewardElement):
     upper_left_point = (194, 210) is the upper left hand corner
     coordinate of the table.
     """
+
     def change_current_deck_index(self, click_point: np.ndarray):
         current_bounding_box = calculate_current_bounding_box(self.CLICK_X, self.CLICK_Y,
                                                               self.ITEM_HEIGHT, self.ITEM_WIDTH,
                                                               self.deck_database.decks_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
+            click_index: int = floor(
+                (click_point[1] - self.CLICK_Y) / self.ITEM_HEIGHT)
             if click_index >= self.deck_database.decks_length():
                 return
             self.get_state()[self.current_index + 6] = 0
@@ -144,15 +150,18 @@ class ChooseDeckStudyPage(Page, RewardElement):
     """
     Set the current index to 0 to prevent index out of bound
     """
+
     def reset_index(self):
         self.current_index: int = 0
 
     """
     Renders the choose deck study page with it's popups if one of them is open
     """
+
     def render(self, img: np.ndarray):
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, f"{self.deck_database.get_decks()[self.current_index].get_name()}",
@@ -166,16 +175,19 @@ class ChooseDeckStudyPage(Page, RewardElement):
             if ((self.add_deck_popup.is_open() and i >= 1) or (
                     self.leads_to_external_website_popup.is_open() and i >= 3)):
                 continue
-            put_text(img, f" {deck.name}", (self.TEXT_X, self.TEXT_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
+            put_text(img, f" {deck.name}", (self.TEXT_X,
+                     self.TEXT_Y + self.ITEM_HEIGHT * i), font_scale=0.5)
         return img
 
     """
     Delegate the click to the add deck popup or leads to external website popup
     if open else check if a button is clicked. If yes handle it's click.
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database of the current profile.
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.get_state()[1:1+self.deck_database.decks_length()] = 1
         self.get_state()[1+self.deck_database.decks_length():6] = 0
         if self.leads_to_external_website_popup.is_open():

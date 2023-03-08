@@ -9,11 +9,11 @@ from naturalnets.environments.anki.pages.profile_page_popups.downgrade_popup imp
 from naturalnets.environments.anki.pages.profile_page_popups.at_least_one_profile_popup import AtLeastOneProfilePopup
 from naturalnets.environments.anki.pages.reset_collection_popup import ResetCollectionPopup
 from naturalnets.environments.anki.utils import calculate_current_bounding_box
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
 from naturalnets.environments.anki.constants import IMAGES_PATH
 from naturalnets.environments.anki.profile import ProfileDatabase
 
@@ -49,7 +49,7 @@ class ProfilePage(Page, RewardElement):
     CURRENT_PROFILE_Y = 376
     PROFILE_TEXT_X = 152
     PROFILE_TEXT_Y = 189
-    
+
     """
        Singleton design pattern to ensure that at most one
        ProfilePage is present
@@ -64,7 +64,8 @@ class ProfilePage(Page, RewardElement):
         Page.__init__(self, self.STATE_LEN, self.WINDOW_BB, self.IMG_PATH)
         RewardElement.__init__(self)
         self.profile_database = ProfileDatabase()
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.current_index = 0
         # Popups of this page
         self.add_profile_popup_page = AddProfilePopup()
@@ -79,18 +80,23 @@ class ProfilePage(Page, RewardElement):
                            self.reset_collection_popup_page, self.downgrade_popup_page,
                            self.at_least_one_profile_popup])
         # Buttons of the profile page
-        self.downgrade_and_quit_popup = Button(self.DOWNGRADE_QUIT_BB, self.downgrade_popup_page.open)
-        self.open_backup_button = Button(self.OPEN_BACKUP_BB, self.reset_collection_popup_page.open)
+        self.downgrade_and_quit_popup = Button(
+            self.DOWNGRADE_QUIT_BB, self.downgrade_popup_page.open)
+        self.open_backup_button = Button(
+            self.OPEN_BACKUP_BB, self.reset_collection_popup_page.open)
         self.delete_button = Button(self.DELETE_BB, self.handle_delete)
-        self.rename_button = Button(self.RENAME_BB, self.rename_profile_page.open)
+        self.rename_button = Button(
+            self.RENAME_BB, self.rename_profile_page.open)
         self.add_button = Button(self.ADD_BB, self.add_profile_popup_page.open)
         self.open_button = Button(self.OPEN_BB, self.close)
 
         # Index of the currently selected profile
         self.profile_database.set_current_index(0)
-        self.pages = [self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page, self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup]
+        self.pages = [self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
+                      self.reset_collection_popup_page, self.downgrade_popup_page, self.at_least_one_profile_popup]
 
-        self.button = [self.downgrade_and_quit_popup, self.open_backup_button, self.delete_button, self.rename_button, self.add_button, self.open_button]
+        self.button = [self.downgrade_and_quit_popup, self.open_backup_button,
+                       self.delete_button, self.rename_button, self.add_button, self.open_button]
         self.set_reward_children([self.add_profile_popup_page, self.rename_profile_page, self.delete_profile_popup_page,
                                   self.reset_collection_popup_page, self.downgrade_popup_page,
                                   self.at_least_one_profile_popup])
@@ -105,13 +111,16 @@ class ProfilePage(Page, RewardElement):
         }
 
     """
-    Changes the current index regarding the selected profile if the click_point lies within 
+    Changes the current index regarding the selected profile if the click_point lies within
     current_bounding_box.
     """
+
     def change_current_profile_index(self, click_point: np.ndarray):
-        current_bounding_box = calculate_current_bounding_box(click_point[0], click_point[1], self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length())
+        current_bounding_box = calculate_current_bounding_box(
+            click_point[0], click_point[1], self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length())
         if current_bounding_box.is_point_inside(click_point):
-            click_index: int = floor((click_point[1] - self.TABLE_Y) / self.ITEM_HEIGHT)
+            click_index: int = floor(
+                (click_point[1] - self.TABLE_Y) / self.ITEM_HEIGHT)
             if click_index >= self.profile_database.profiles_length():
                 return
             self.current_index = click_index
@@ -120,6 +129,7 @@ class ProfilePage(Page, RewardElement):
     """
     Opens this page
     """
+
     def open(self):
         self.get_state()[0] = 1
         self.reset_index()
@@ -128,6 +138,7 @@ class ProfilePage(Page, RewardElement):
     """
     Closes this page
     """
+
     def close(self):
         self.get_state()[0] = 0
         self.reset_index()
@@ -138,6 +149,7 @@ class ProfilePage(Page, RewardElement):
     """
     Returns true if the profile page is open
     """
+
     def is_open(self):
         return self.get_state()[0]
 
@@ -145,6 +157,7 @@ class ProfilePage(Page, RewardElement):
     If there are more than one profiles present delete profile popup
     is going to be opened else at least one profile popup
     """
+
     def handle_delete(self):
         if not (self.profile_database.is_removing_allowed()):
             self.at_least_one_profile_popup.open()
@@ -154,15 +167,18 @@ class ProfilePage(Page, RewardElement):
     """
     Renders the profile page with it's popups if one is open
     """
+
     def render(self, img: np.ndarray):
         # Updates the deck database
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)
         put_text(img, f"Selected profile: {self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_name()}",
                  (self.CURRENT_PROFILE_X, self.CURRENT_PROFILE_Y), font_scale=0.4)
         for i, profile in enumerate(self.profile_database.get_profiles()):
-            put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X, self.PROFILE_TEXT_Y + i * self.ITEM_HEIGHT), font_scale=0.5)
+            put_text(img, f"{profile.get_name()}", (self.PROFILE_TEXT_X,
+                     self.PROFILE_TEXT_Y + i * self.ITEM_HEIGHT), font_scale=0.5)
         for page in self.pages:
             if page.is_open():
                 img = page.render(img)
@@ -171,9 +187,11 @@ class ProfilePage(Page, RewardElement):
     """
     Delegate the click to a popup if open else handle click by buttons
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         # Updates the deck database
-        self.deck_database = self.profile_database.get_profiles()[self.profile_database.get_current_index()].get_deck_database()
+        self.deck_database = self.profile_database.get_profiles(
+        )[self.profile_database.get_current_index()].get_deck_database()
         self.get_state()[1:self.profile_database.profiles_length()+1] = 1
         self.get_state()[self.profile_database.profiles_length()+1:6] = 0
         for page in self.pages:
@@ -187,17 +205,17 @@ class ProfilePage(Page, RewardElement):
         if calculate_current_bounding_box(self.TABLE_X, self.TABLE_Y, self.ITEM_HEIGHT, self.ITEM_WIDTH, self.profile_database.profiles_length()).is_point_inside(click_position):
             self.change_current_profile_index(click_position)
             return
-    
+
     def open_profile(self):
         self.profile_database.set_current_index(self.current_index)
         self.get_state()[6:11] = 0
         self.get_state()[self.current_index + 6] = 1
-        self.register_selected_reward(["selected_profile_index", self.current_index])
-    
+        self.register_selected_reward(
+            ["selected_profile_index", self.current_index])
+
     def reset_index(self):
         self.current_index = 0
         self.get_state()[1:4] = 1
         self.get_state()[4:6] = 0
         self.get_state()[6] = 1
         self.get_state()[7:11] = 0
-        

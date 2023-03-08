@@ -6,12 +6,12 @@ from naturalnets.environments.anki.deck import DeckDatabase
 from naturalnets.environments.anki.pages.main_page_popups.five_decks_popup import FiveDecksPopup
 from naturalnets.environments.anki.pages.name_exists_popup import NameExistsPopup
 from naturalnets.environments.anki.profile import ProfileDatabase
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text, render_onto_bb
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, render_onto_bb
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class ExportDeckPage(Page, RewardElement):
@@ -47,7 +47,7 @@ class ExportDeckPage(Page, RewardElement):
         # Decks of the current profile
         self.deck_database = self.profile_database.get_profiles()[
             self.profile_database.get_current_index()].get_deck_database()
-        
+
         self.exported_decks_array = []
         self.current_deck = None
         # Appears when the export path already has 5 decks
@@ -59,15 +59,18 @@ class ExportDeckPage(Page, RewardElement):
         # Fills the dropdown with the decks of the profile
         self.initialise_dropdown()
 
-        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
+        self.include_dropdown = Dropdown(
+            self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
         self.export_button = Button(self.EXPORT_BB, self.export_deck)
         self.cancel_button = Button(self.CANCEL_BB, self.close)
-        self.reset_exported_decks_button = Button(self.RESET_BB, self.reset_exported_decks_array)
+        self.reset_exported_decks_button = Button(
+            self.RESET_BB, self.reset_exported_decks_array)
 
         self.add_child(self.five_decks_popup)
         self.add_child(self.name_exists_popup)
         self.add_widget(self.include_dropdown)
-        self.set_reward_children([self.five_decks_popup, self.name_exists_popup])
+        self.set_reward_children(
+            [self.five_decks_popup, self.name_exists_popup])
 
     """
     Provide reward for opening/closing the page, selecting dropdown items, exporting a deck and resetting the decks
@@ -86,7 +89,7 @@ class ExportDeckPage(Page, RewardElement):
         }
 
     """
-    If dropdown or popup is open delegate the click to it. 
+    If dropdown or popup is open delegate the click to it.
     If the area of dropdown is clicked then open the dropdown.
     Else handle the click with buttons.
     """
@@ -200,7 +203,8 @@ class ExportDeckPage(Page, RewardElement):
         self.dropdown_items = []
         for deck in self.deck_database.get_decks():
             self.dropdown_items.append(DropdownItem(deck, deck.name))
-        self.include_dropdown = Dropdown(self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
+        self.include_dropdown = Dropdown(
+            self.INCLUDE_DD_BB_OFFSET, self.dropdown_items)
 
     """
     Delete all exported decks
@@ -215,6 +219,6 @@ class ExportDeckPage(Page, RewardElement):
             if element == self.current_deck:
                 return True
         return False
-    
+
     def reset_exported_decks_array(self):
         self.exported_decks_array = []

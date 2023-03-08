@@ -4,10 +4,10 @@ from typing import Any, List, Optional, Callable
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.enums import Color
-from naturalnets.environments.gui_app.page import Widget
-from naturalnets.environments.gui_app.utils import get_group_bounding_box, put_text
+from naturalnets.environments.app_components.page import Widget
+from naturalnets.environments.app_components.utils import get_group_bounding_box, put_text
 
 
 class DropdownItem(Widget):
@@ -58,7 +58,7 @@ class DropdownItem(Widget):
 
     def set_click_action(self, click_action: Callable):
         self.click_action = click_action
-    
+
     def is_selected(self) -> int:
         return self.get_state()[0]
 
@@ -68,15 +68,17 @@ class DropdownItem(Widget):
         end_point = (x + width, y + height)
         color = Color.BLACK.value
         thickness = 2
-        
+
         cv2.rectangle(img, start_point, end_point, color, thickness)
-        points= [[x, y],[x, y + height],[x + width, y + height],[x + width, y]]
-        cv2.fillPoly(img, np.int32([points]), color = (240, 240, 240))
-        
+        points = [[x, y], [x, y + height],
+                  [x + width, y + height], [x + width, y]]
+        cv2.fillPoly(img, np.int32([points]), color=(240, 240, 240))
+
         text_padding = 3 * thickness
         bottom_left_corner = (x + text_padding, y + height - text_padding)
         if self.display_name is not None:
-            put_text(img, self.display_name, bottom_left_corner, font_scale=0.4)
+            put_text(img, self.display_name,
+                     bottom_left_corner, font_scale=0.4)
         else:
             put_text(img, self.get_value(), bottom_left_corner, font_scale=0.4)
 
@@ -129,7 +131,7 @@ class Dropdown(Widget):
             for item in self._update_item_bounding_boxes():
                 if item.is_clicked_by(click_position):
                     self.set_selected_item(item)
-                    if(item.click_action is not None):
+                    if (item.click_action is not None):
                         item.click_action()
             # any click action closes dropdown if it was open
             self.close()
@@ -159,7 +161,7 @@ class Dropdown(Widget):
                 # a different project, an automatic check should be implemented or all dropdowns
                 # checked manually.
                 next_bb = BoundingBox(first_bb.x, first_bb.y + first_bb.height * i,
-                                    first_bb.width, first_bb.height)
+                                      first_bb.width, first_bb.height)
                 item.set_bb(next_bb)
                 visible_items.append(item)
                 i += 1

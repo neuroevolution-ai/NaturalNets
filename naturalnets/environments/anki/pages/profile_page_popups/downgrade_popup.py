@@ -3,11 +3,11 @@ import cv2
 
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class DowngradePopup(Page, RewardElement):
@@ -39,12 +39,14 @@ class DowngradePopup(Page, RewardElement):
     """
     Execute click action if a button is clicked"
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
     """
     Open this popup
     """
+
     def open(self):
         self.get_state()[0] = 1
         self.register_selected_reward(["window", "open"])
@@ -52,6 +54,7 @@ class DowngradePopup(Page, RewardElement):
     """
     Close this popup
     """
+
     def close(self):
         self.get_state()[0] = 0
         self.register_selected_reward(["window", "close"])
@@ -59,12 +62,14 @@ class DowngradePopup(Page, RewardElement):
     """
     Return true if this popup is open
     """
+
     def is_open(self) -> int:
         return self.get_state()[0]
 
     """
     Render the image of this popup
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

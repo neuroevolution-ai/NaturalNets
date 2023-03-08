@@ -2,11 +2,11 @@ import os
 import cv2
 import numpy as np
 from naturalnets.environments.anki.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class FiveDecksPopup(Page, RewardElement):
@@ -15,7 +15,7 @@ class FiveDecksPopup(Page, RewardElement):
     there are already 5 decks present warning the user it is not
     allowed to create more than 5 decks
     State description:
-        state[0]: if this window is open  
+        state[0]: if this window is open
     """
 
     STATE_LEN = 1
@@ -42,6 +42,7 @@ class FiveDecksPopup(Page, RewardElement):
     Checks if the ok button is clicked and if so the popup is
     going to be closed
     """
+
     def handle_click(self, click_position: np.ndarray) -> None:
         if self.ok_button.is_clicked_by(click_position):
             self.ok_button.handle_click(click_position)
@@ -60,6 +61,7 @@ class FiveDecksPopup(Page, RewardElement):
     """
     Renders the image of the popup
     """
+
     def render(self, img: np.ndarray):
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

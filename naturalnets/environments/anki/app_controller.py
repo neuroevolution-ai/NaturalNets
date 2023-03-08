@@ -1,10 +1,10 @@
 from copy import copy
 
 import numpy as np
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.state_element import StateElement
 from naturalnets.environments.anki.pages.main_page import MainPage
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AppController:
@@ -42,7 +42,8 @@ class AppController:
 
     def assign_reward(self, current_index, reward_element: RewardElement):
         reward_count = reward_element.get_reward_count()
-        reward_element.assign_reward_slice(self.reward_array[current_index:current_index + reward_count])
+        reward_element.assign_reward_slice(
+            self.reward_array[current_index:current_index + reward_count])
         current_index += reward_count
 
         for reward_child in reward_element.get_reward_children():
@@ -65,7 +66,6 @@ class AppController:
         return accumulated_len
 
     def assign_state(self, state_element: StateElement, recursion_depth: int, states_info: list) -> None:
-
         """Assigns (part of) the app state-vector to the given StateElement and all of its children.
 
         Args:
