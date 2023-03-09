@@ -134,11 +134,10 @@ class AddAccount(Page, RewardElement):
             account_url = self.dropdown_url.get_current_value()
             account_notes = self.dropdown_notes.get_current_value()
 
-            AccountManager.addAccount(Account(account_name, account_user_id, account_password, 
+            AccountManager.add_account(Account(account_name, account_user_id, account_password, 
                                             account_url, account_notes))
-
+            
         self.reset()
-        self.return_to_main_window()
 
     def cancel(self):
         self.reset()

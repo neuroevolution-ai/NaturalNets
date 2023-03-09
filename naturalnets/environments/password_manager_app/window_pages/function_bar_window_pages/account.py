@@ -50,7 +50,7 @@ class Account(Page, RewardElement):
     def delete_account(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
-        AppController.main_window.delete_account()
+        AppController.main_window.function_delete_account()
 
     def edit_account(self):
         from naturalnets.environments.password_manager_app.app_controller import AppController

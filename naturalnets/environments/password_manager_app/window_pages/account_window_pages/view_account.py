@@ -137,12 +137,12 @@ class ViewAccount(Page, RewardElement):
         self.load_account()
     
     def load_account(self):
-        self.dropdown_account.set_selected_value(self.account_to_edit.getAccountName())
-        self.dropdown_user_id.set_selected_value(self.account_to_edit.getUserId())
-        self.dropdown_url.set_selected_value(self.account_to_edit.getUrl())
-        self.dropdown_notes.set_selected_value(self.account_to_edit.getNotes())
+        self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
+        self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
+        self.dropdown_url.set_selected_value(self.account_to_edit.get_url())
+        self.dropdown_notes.set_selected_value(self.account_to_edit.get_notes())
 
-        new_password = self.account_to_edit.getPassword()
+        new_password = self.account_to_edit.get_password()
 
         for password in self.passwords:
             if new_password == password.get_value():

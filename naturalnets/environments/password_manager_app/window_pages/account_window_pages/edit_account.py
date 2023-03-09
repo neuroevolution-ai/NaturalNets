@@ -132,7 +132,6 @@ class EditAccount(Page, RewardElement):
             self.dropdown_password.set_selected_item(self.current_password)
     
     def ok(self):
-        
         account_name = self.dropdown_account.get_current_value()
         if account_name is not None:
             account_user_id = self.dropdown_user_id.get_current_value()  
@@ -140,10 +139,10 @@ class EditAccount(Page, RewardElement):
             account_url = self.dropdown_url.get_current_value()
             account_notes = self.dropdown_notes.get_current_value()
 
-            AccountManager.editAccount(Account(account_name, account_user_id, account_password, 
+            AccountManager.edit_account(Account(account_name, account_user_id, account_password, 
                                             account_url, account_notes), self.account_to_edit)
+            
         self.reset()
-        self.return_to_main_window()
 
     def cancel(self):
         self.reset()
@@ -171,12 +170,12 @@ class EditAccount(Page, RewardElement):
         self.load_account()
     
     def load_account(self):
-        self.dropdown_account.set_selected_value(self.account_to_edit.getAccountName())
-        self.dropdown_user_id.set_selected_value(self.account_to_edit.getUserId())
-        self.dropdown_url.set_selected_value(self.account_to_edit.getUrl())
-        self.dropdown_notes.set_selected_value(self.account_to_edit.getNotes())
+        self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
+        self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
+        self.dropdown_url.set_selected_value(self.account_to_edit.get_url())
+        self.dropdown_notes.set_selected_value(self.account_to_edit.get_notes())
 
-        new_password = self.account_to_edit.getPassword()
+        new_password = self.account_to_edit.get_password()
 
         for password in self.passwords:
             if new_password == password.get_value():

@@ -23,33 +23,33 @@ class Account:
         else:
             return False
 
-    def getAccountName(self) -> str:
+    def get_account_name(self) -> str:
         return self.account_name
     
-    def getUserId(self) -> str:
+    def get_user_id(self) -> str:
         return self.user_id
     
-    def getPassword(self) -> str:
+    def get_password(self) -> str:
         return self.password
     
-    def getUrl(self) -> str:
+    def get_url(self) -> str:
         return self.url
     
-    def getNotes(self) -> str:
+    def get_notes(self) -> str:
         return self.notes
     
 
-    def setAccountName(self, account_name: str) -> None:
+    def set_account_name(self, account_name: str) -> None:
         self.account_name = account_name
     
-    def setUserId(self, user_id: str) -> None:
+    def set_user_id(self, user_id: str) -> None:
         self.user_id = user_id
     
-    def setPassword(self, password: str) -> None:
+    def set_password(self, password: str) -> None:
         self.password = password
     
-    def setUrl(self, url: str) -> None:
+    def set_url(self, url: str) -> None:
         self.url = url
     
-    def setNotes(self, notes: str) -> None:
+    def set_notes(self, notes: str) -> None:
         self.notes = notes
