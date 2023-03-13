@@ -3,6 +3,7 @@ from typing import Optional
 
 
 class Account:
+    """ Representation of an account. New implementation of __eq__ for a better comparison of accounts.  """
 
     account_name: str
     user_id: str

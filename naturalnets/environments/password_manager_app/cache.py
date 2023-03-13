@@ -1,8 +1,8 @@
 class Cache:
     cache: str = ''
 
-    def getCache():
+    def get_cache() -> str:
         return Cache.cache
     
-    def setCache(newCache: str):
+    def set_cache(newCache: str) -> None:
         Cache.cache = newCache

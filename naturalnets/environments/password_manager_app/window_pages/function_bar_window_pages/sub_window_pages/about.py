@@ -39,7 +39,7 @@ class About(Page, RewardElement):
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
+        """ Renders this page onto the given image.
         """
         return super().render(img)
 

@@ -12,6 +12,8 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
 class AccountError(Page, RewardElement):
+    """ An error page that gets opened when an account is added or edited so that the 
+     username is the same as an already existing one.  """
 
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "")
@@ -32,26 +34,26 @@ class AccountError(Page, RewardElement):
             Button(self.X_BUTTON_BB, lambda: self.no()),
         ]
 
-    def yes(self):
+    def yes(self) -> None:
         self.return_to_main_window()
 
-    def no(self):
+    def no(self) -> None:
         self.return_to_main_window()
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 # check if figure printer button is visible
                 button.handle_click(click_position)
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders the main window and all its children onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
         return img
 
-    def set_name(self, account_name: str):
+    def set_name(self, account_name: str) -> None:
         self.NAME_ACOOUNT = account_name
 
         if self.NAME_ACOOUNT == NAME_ONE:
@@ -61,7 +63,7 @@ class AccountError(Page, RewardElement):
         elif self.NAME_ACOOUNT == NAME_THREE:
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "account_window/error_Mariam.png")
 
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)

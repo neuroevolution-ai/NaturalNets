@@ -33,6 +33,7 @@ class AppCfg:
 
 @register_environment_class
 class PasswordManager(IGUIEnvironment):
+    """ Starting point of the password manager app. """
 
     screen_width: int = 448
     screen_height: int = 448
@@ -64,10 +65,10 @@ class PasswordManager(IGUIEnvironment):
         logging.debug(f"App initialized in {t1 - t0}s.")
         logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
-    def get_state(self):
+    def get_state(self) -> np.ndarray:
         return self.app_controller.get_total_state()
 
-    def step(self, action: np.ndarray):
+    def step(self, action: np.ndarray) -> tuple[np.ndarray, int, bool, dict[str, list]]:
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
@@ -101,7 +102,7 @@ class PasswordManager(IGUIEnvironment):
 
         return image
 
-    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None):
+    def render(self, enhancer_info: Optional[Dict[str, np.ndarray]] = None) -> None:
         image = self.render_image()
 
         # Draw the click position
@@ -147,7 +148,7 @@ class PasswordManager(IGUIEnvironment):
 
         return self.get_state()
 
-    def get_observation(self):
+    def get_observation(self) -> np.ndarray:
         return self.get_state()
     
     def get_observation_dict(self) -> dict:

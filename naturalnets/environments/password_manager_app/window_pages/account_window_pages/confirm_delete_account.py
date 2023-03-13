@@ -44,11 +44,10 @@ class ConfirmDeleteAccount(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray = None):
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
+        """ Renders this page onto the given image.
         """
 
         to_render = cv2.imread(self.IMG_PATH)

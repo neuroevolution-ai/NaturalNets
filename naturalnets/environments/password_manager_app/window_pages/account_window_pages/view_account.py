@@ -124,10 +124,10 @@ class ViewAccount(Page, RewardElement):
         self.return_to_main_window()
 
     def copy(self, dropdownToCopy: Dropdown):
-        Cache.setCache(dropdownToCopy.get_current_value())
+        Cache.set_cache(dropdownToCopy.get_current_value())
 
     def past(self, dropdownToPast: Dropdown):
-        dropdownToPast.set_selected_value(Cache.getCache())
+        dropdownToPast.set_selected_value(Cache.get_cache())
 
     def launch_url(self):
         pass
@@ -151,7 +151,6 @@ class ViewAccount(Page, RewardElement):
     def handle_click(self, click_position: np.ndarray = None):
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
         if self.checkbox.is_clicked_by(click_position):
@@ -171,7 +170,7 @@ class ViewAccount(Page, RewardElement):
         AppController.main_window.set_current_page(None)
 
     def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
+        """ Renders this page onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)

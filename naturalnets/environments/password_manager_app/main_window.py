@@ -19,26 +19,28 @@ from naturalnets.environments.password_manager_app.window_pages.account_window_p
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.edit_account import EditAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.view_account import ViewAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.confirm_delete_account import ConfirmDeleteAccount
-from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.account import Account
+from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.account_bar import AccountBar
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.database import Database
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.help import Help
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.about import About
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.file_system import FileSystem
-from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.invalid_url import InvalidURL
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import MasterPassword
 from naturalnets.environments.password_manager_app.window_pages.options import Options
 from naturalnets.environments.password_manager_app.cache import Cache
 
 class MainWindow(StateElement, Clickable, RewardElement):
-    """The main window of the app, containing the menu as well as the respective pages
-    (text printer, calculator, car configurator and figure printer).
+    """The main page of the app, containing the main overview as well as all other pages.
 
        State description:
-            state[i]: represents the selected/shown status of page i, i in {0,..,3}.
+            _state[i]: represents the selected/shown status of page i, i in {0,..,11}.
+
+            state_img[i][j]: represents the status of the main page. The combination of i in {0,..,7}
+            and j in {0,..,3} represents the currently visible accounts as well as the currently selected
+            account. 
     """
 
     # Each state represents a page
-    STATE_LEN = 13
+    STATE_LEN = 12
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
     # 1. Each state represents which specific accounts exists with a max. of 8 different states 
@@ -79,19 +81,17 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.confirm_delete_account = ConfirmDeleteAccount()
         self.options = Options()
         self.database = Database()
-        self.account = Account()
+        self.account_bar = AccountBar()
         self.help = Help()
         self.about = About()
-        self.invalid_url = InvalidURL()
         self.master_password = MasterPassword()
         self.file_system = FileSystem()
         self.account_error = AccountError()
 
         self.pages: List[Page] = [self.add_account, self.edit_account,
                                   self.options, self.database,
-                                  self.account, self.help,
-                                  self.view_account, self.about,
-                                  self.invalid_url, self.master_password,
+                                  self.account_bar, self.help,
+                                  self.view_account, self.about, self.master_password,
                                   self.confirm_delete_account,
                                   self.file_system, self.account_error]
         # assert len(self.pages) == self.get_state_len()
@@ -105,7 +105,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
             Button(self.OPTIONS_BUTTON_BB, lambda: self.set_current_page(self.options)),
             Button(self.DATABASE_BB, lambda: self.set_current_page(self.database)),
-            Button(self.ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.account)),
+            Button(self.ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.account_bar)),
             Button(self.HELP_BUTTON_BB, lambda: self.set_current_page(self.help)),
             Button(self.RESET_SEARCH_BUTTON_BB, lambda: self.reset_search()),
             Button(self.ACCOUNT_ONE_BB, lambda: self.handel_selection(1)),
@@ -115,16 +115,14 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
         self.add_children([self.add_account, self.edit_account,
                                 self.options, self.database,
-                                self.account, self.help,
-                                self.view_account, self.about,
-                                self.invalid_url, self.master_password, 
+                                self.account_bar, self.help,
+                                self.view_account, self.about, self.master_password, 
                                 self.confirm_delete_account, self.file_system,
                                 self.account_error])
         self.set_reward_children([self.add_account, self.edit_account,
                                 self.options, self.database,
-                                self.account, self.help,
-                                self.view_account, self.about,
-                                self.invalid_url, self.master_password,
+                                self.account_bar, self.help,
+                                self.view_account, self.about, self.master_password,
                                 self.confirm_delete_account, self.file_system,
                                 self.account_error])
 
@@ -134,11 +132,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
             self.edit_account: "edit_account",
             self.options: "options",
             self.database: "database",
-            self.account: "account",
+            self.account_bar: "account",
             self.help: "help",
             self.view_account: "view_account",
             self.about: "about",
-            self.invalid_url: "invalid_url",
             self.master_password: "master_password",
             self.confirm_delete_account: "confirm_delete_account",
             self.file_system: "file_system",
@@ -162,23 +159,18 @@ class MainWindow(StateElement, Clickable, RewardElement):
     @property
     def reward_template(self):
         return {
-            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "invalid_url", "master_password", "confirm_delete_account", "database", "None", "file_system", "account_error"]
+            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "master_password", "confirm_delete_account", "database", "None", "file_system", "account_error"]
         }
 
     def reset(self):
-        # self.add_account.reset()
-        # self.edit_account.reset()
-        # self.options.reset()
-        # self.database.reset()
-        # self.account.reset()
-        # self.help.reset()
-        # self.view_account.reset()
-        # self.about.reset()
-        # self.invalid_url.reset()
-        # self.master_password.reset()
-        # self.confirm_delete_account.reset()
+        self.add_account.reset()
+        self.edit_account.reset()
+        self.view_account.reset()
+        AccountManager.reset()
 
         self.set_current_page(None)
+        self.refresh_state()
+        self.refresh_image()
 
     def function_add_account(self) -> None:
         self.add_account.generate()
@@ -209,19 +201,19 @@ class MainWindow(StateElement, Clickable, RewardElement):
         if selected_account_name is not None:
             selected_account = AccountManager.get_account_by_name(selected_account_name)
             if selected_account is not None:
-                Cache.setCache(selected_account.get_user_id())
+                Cache.set_cache(selected_account.get_user_id())
 
     def copy_password(self) -> None:
         selected_account_name = self.get_selected_account()
         if selected_account_name is not None:
             selected_account = AccountManager.get_account_by_name(selected_account_name)
             if selected_account is not None:
-                Cache.setCache(selected_account.get_password())
+                Cache.set_cache(selected_account.get_password())
 
     def launch_url(self) -> None:
         print('launch_url')
 
-    def get_current_page(self):
+    def get_current_page(self) -> Page | None:
         return self.current_page
 
     def set_current_page(self, page: Page) -> None:
@@ -335,10 +327,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
-    def refresh_state(self):
+    def refresh_state(self) -> None:
         self.STATE_IMG = AccountManager.current_state()
 
-    def refresh_image(self):
+    def refresh_image(self) -> None:
         self.new_path = ''
 
         if self.STATE_IMG[0] == 0:
@@ -383,7 +375,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
         print('PAth set to:' + self.new_path)
         self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
 
-    def get_selected_account(self):
+    def get_selected_account(self) -> str | None:
         if self.search_active:
             if self.dropdown.get_current_value() == NAME_ONE:
                 return NAME_ONE
@@ -432,7 +424,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
             elif self.STATE_IMG[1] == 3:
                 return NAME_THREE
             
-    def search(self, account_name):
+    def search(self, account_name) -> None:
         if account_name is None:
             self.refresh_image()
             self.search_active = False
@@ -453,12 +445,12 @@ class MainWindow(StateElement, Clickable, RewardElement):
             self.IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
             self.search_active = True
 
-    def reset_search(self):
+    def reset_search(self) -> None:
         self.dropdown.set_selected_item(self.empty)
         self.search_active = False
         self.refresh_image()
 
-    def account_exists(self, account_name):
+    def account_exists(self, account_name) -> bool:
         if account_name == NAME_ONE:
             if self.STATE_IMG[0] == 1 or self.STATE_IMG[0] == 4 or self.STATE_IMG[0] == 5 or self.STATE_IMG[0] == 7:
                 return True
@@ -479,7 +471,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
             
         return False
 
-    def add_widget(self, widget: Widget):
+    def add_widget(self, widget: Widget) -> None:
         """Adds the given widget to this Page. This will also add the widget to the
         pages' StateElement-children."""
         self.widgets.append(widget)
