@@ -17,7 +17,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 
 
 class EditAccount(Page, RewardElement):
-    """todo"""
+    """  """
 
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_password_hide.png")
@@ -122,7 +122,8 @@ class EditAccount(Page, RewardElement):
             Button(self.PAST_NOTES_BUTTON_BB, lambda: self.past(self.dropdown_notes)),
         ]
 
-    def set_hide_password(self, is_checked: bool):
+    def set_hide_password(self, is_checked: bool) -> None:
+        " Hides or shows the password. "
         self.is_checked = is_checked
         if is_checked:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_password_hide.png")
@@ -131,7 +132,8 @@ class EditAccount(Page, RewardElement):
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_empty_password_hide.png")
             self.dropdown_password.set_selected_item(self.current_password)
     
-    def ok(self):
+    def ok(self) -> None:
+        " If an username is given, then the account will be added. "
         account_name = self.dropdown_account.get_current_value()
         if account_name is not None:
             account_user_id = self.dropdown_user_id.get_current_value()  
@@ -144,32 +146,33 @@ class EditAccount(Page, RewardElement):
             
         self.reset()
 
-    def cancel(self):
+    def cancel(self) -> None:
         self.reset()
         self.return_to_main_window()
 
-    def copy(self, dropdownToCopy: Dropdown):
-        Cache.setCache(dropdownToCopy.get_current_value())
+    def copy(self, dropdownToCopy: Dropdown) -> None:
+        Cache.set_cache(dropdownToCopy.get_current_value())
 
-    def past(self, dropdownToPast: Dropdown):
-        dropdownToPast.set_selected_value(Cache.getCache())
+    def past(self, dropdownToPast: Dropdown) -> None:
+        dropdownToPast.set_selected_value(Cache.get_cache())
 
-    def generate(self):
+    def generate(self) -> None:
+        " Generates a random password (of all the three existing ones). "
         self.current_password = self.random_password()
         if not self.is_checked:
             self.dropdown_password.set_selected_item(self.current_password)
 
-    def random_password(self):
+    def random_password(self) -> DropdownItem:
         return random.choice(self.dropdown_password.get_all_items())
 
-    def launch_url(self):
+    def launch_url(self) -> None:
         pass
 
-    def set_account(self, account: Account):
+    def set_account(self, account: Account) -> None:
         self.account_to_edit = account
         self.load_account()
     
-    def load_account(self):
+    def load_account(self) -> None:
         self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
         self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
         self.dropdown_url.set_selected_value(self.account_to_edit.get_url())
@@ -181,7 +184,7 @@ class EditAccount(Page, RewardElement):
             if new_password == password.get_value():
                 self.current_password = password
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         # Handle the case of an opened dropdown first
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
@@ -194,7 +197,6 @@ class EditAccount(Page, RewardElement):
 
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
         for dropdown in self.dropdowns:
@@ -208,7 +210,7 @@ class EditAccount(Page, RewardElement):
         if self.checkbox.is_clicked_by(click_position):
             self.checkbox.handle_click(click_position)
     
-    def reset(self):
+    def reset(self) -> None:
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
             dropdown.close()
@@ -217,13 +219,13 @@ class EditAccount(Page, RewardElement):
         self.checkbox.set_selected(1)
         self.set_hide_password(True)
 
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None: 
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
 
-    def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
+    def render(self, img: np.ndarray) -> np.ndarray:
+        """ Renders this page onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
