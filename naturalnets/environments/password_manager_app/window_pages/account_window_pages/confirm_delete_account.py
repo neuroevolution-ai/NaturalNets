@@ -12,6 +12,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
 class ConfirmDeleteAccount(Page, RewardElement):
+    """ Confirmation page that pops up when deleting an account. """
 
     STATE_LEN = 3
     IMG_PATH = os.path.join(IMAGES_PATH, "")
@@ -34,19 +35,19 @@ class ConfirmDeleteAccount(Page, RewardElement):
             Button(self.X_BUTTON_BB, lambda: self.no()),
         ]
 
-    def yes(self):
+    def yes(self) -> None:
         AccountManager.delete_account(self.NAME_ACOOUNT_TO_DELETE)
         self.return_to_main_window()
 
-    def no(self):
+    def no(self) -> None:
         self.return_to_main_window()
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.
         """
 
@@ -54,7 +55,7 @@ class ConfirmDeleteAccount(Page, RewardElement):
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
         return img
 
-    def set_name(self, account_name: str):
+    def set_name(self, account_name: str) -> None:
         self.NAME_ACOOUNT_TO_DELETE = account_name
 
         if self.NAME_ACOOUNT_TO_DELETE == NAME_ONE:
@@ -64,7 +65,7 @@ class ConfirmDeleteAccount(Page, RewardElement):
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_THREE:
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Mariam.png")
 
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)

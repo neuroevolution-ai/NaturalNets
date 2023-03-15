@@ -10,6 +10,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 
 
 class Options(Page, RewardElement):
+    """ An option page that has no influance on the application. """
 
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/options.png")
@@ -40,7 +41,7 @@ class Options(Page, RewardElement):
         self.add_widget(self.dropdown)
         self.opened_dd = None
     
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
@@ -49,7 +50,7 @@ class Options(Page, RewardElement):
         self.dropdown.close()
         self.opened_dd = None
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             self.opened_dd = None
@@ -66,7 +67,7 @@ class Options(Page, RewardElement):
                 self.opened_dd = self.dropdown
             return
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.
         """
         return super().render(img)

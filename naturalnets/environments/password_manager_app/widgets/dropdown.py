@@ -37,7 +37,7 @@ class DropdownItem(Widget):
         self.get_state()[0] = 0  # is-selected state
         self.display_name = display_name
 
-    def get_value(self):
+    def get_value(self) -> Any:
         return self._value
 
     def is_visible(self) -> int:
@@ -53,7 +53,7 @@ class DropdownItem(Widget):
         """Currently unused method. May be used to perform on-click actions.
         """
 
-    def set_selected(self, selected: int):
+    def set_selected(self, selected: int) -> None:
         self.get_state()[0] = selected
 
     def is_selected(self) -> int:
@@ -102,13 +102,13 @@ class Dropdown(Widget):
     def is_open(self) -> int:
         return self.get_state()[0]
 
-    def open(self):
+    def open(self) -> None:
         """Opens the dropdown, if it contains at least one item.
         """
         if len(self.get_visible_items()) > 0:
             self.get_state()[0] = 1
 
-    def close(self):
+    def close(self) -> None:
         self.get_state()[0] = 0
 
     def handle_click(self, click_position: np.ndarray) -> None:
@@ -130,10 +130,10 @@ class Dropdown(Widget):
         else:
             self.open()
 
-    def set_clickable(self, clickable: bool):
+    def set_clickable(self, clickable: bool) -> None:
         self.clickable = clickable
 
-    def get_bb(self):
+    def get_bb(self) -> BoundingBox:
         if not self.is_open():
             return self._dropdown_button_bb
 
@@ -169,10 +169,10 @@ class Dropdown(Widget):
                 visible_items.append(item)
         return visible_items
 
-    def get_all_items(self):
+    def get_all_items(self) -> List[DropdownItem]:
         return self._all_items
 
-    def set_selected_item(self, ddi: Optional[DropdownItem]):
+    def set_selected_item(self, ddi: Optional[DropdownItem]) -> None:
         if self._selected_item is not None:
             self._selected_item.set_selected(0)
 

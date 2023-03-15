@@ -14,7 +14,7 @@ class Button(Clickable):
         self._bounding_box = bounding_box
         self._click_action = click_action
 
-    def get_bb(self):
+    def get_bb(self) -> BoundingBox:
         return self._bounding_box
 
     def set_bb(self, bounding_box: BoundingBox) -> None:

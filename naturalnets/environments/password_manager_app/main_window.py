@@ -372,7 +372,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
             elif self.STATE_IMG[1] == 3:
                 self.new_path = "main_window/main_window_3_accounts_M_selected.png"
             
-        print('PAth set to:' + self.new_path)
         self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
 
     def get_selected_account(self) -> str | None:

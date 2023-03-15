@@ -17,7 +17,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 
 
 class ViewAccount(Page, RewardElement):
-    """todo"""
+    """ This page gives a representation of an existing account. """
 
     STATE_LEN = 7
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
@@ -110,7 +110,7 @@ class ViewAccount(Page, RewardElement):
             Button(self.COPY_NOTES_BUTTON_BB, lambda: self.copy(self.dropdown_notes)),
         ]
 
-    def set_hide_password(self, is_checked: bool):
+    def set_hide_password(self, is_checked: bool) -> None:
         self.is_checked = is_checked
         if is_checked:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
@@ -119,24 +119,24 @@ class ViewAccount(Page, RewardElement):
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_not_hide.png")
             self.dropdown_password.set_selected_item(self.current_password)
     
-    def ok(self):
+    def ok(self) -> None:
         self.reset()
         self.return_to_main_window()
 
-    def copy(self, dropdownToCopy: Dropdown):
+    def copy(self, dropdownToCopy: Dropdown) -> None:
         Cache.set_cache(dropdownToCopy.get_current_value())
 
-    def past(self, dropdownToPast: Dropdown):
+    def past(self, dropdownToPast: Dropdown) -> None:
         dropdownToPast.set_selected_value(Cache.get_cache())
 
-    def launch_url(self):
+    def launch_url(self) -> None:
         pass
 
-    def set_account(self, account: Account):
+    def set_account(self, account: Account) -> None:
         self.account_to_edit = account
         self.load_account()
     
-    def load_account(self):
+    def load_account(self) -> None:
         self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
         self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
         self.dropdown_url.set_selected_value(self.account_to_edit.get_url())
@@ -148,7 +148,7 @@ class ViewAccount(Page, RewardElement):
             if new_password == password.get_value():
                 self.current_password = password
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
@@ -156,7 +156,7 @@ class ViewAccount(Page, RewardElement):
         if self.checkbox.is_clicked_by(click_position):
             self.checkbox.handle_click(click_position)
     
-    def reset(self):
+    def reset(self) -> None:
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
             dropdown.close()
@@ -164,12 +164,12 @@ class ViewAccount(Page, RewardElement):
         self.checkbox.set_selected(1)
         self.set_hide_password(True)
 
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.
         """
         to_render = cv2.imread(self.IMG_PATH)

@@ -42,16 +42,16 @@ class RadioButton(Widget):
         if self.has_click_action():
             self._action()
 
-    def set_selected(self, selected: int):
+    def set_selected(self, selected: int) -> None:
         self.get_state()[0] = selected
 
     def is_selected(self) -> int:
         return self.get_state()[0]
 
-    def has_click_action(self):
+    def has_click_action(self) -> bool:
         return self._action is not None
 
-    def get_value(self):
+    def get_value(self) -> Any:
         return self._value
 
     def render(self, img: np.ndarray) -> np.ndarray:
@@ -99,12 +99,12 @@ class RadioButtonGroup(Widget):
         self._selected_radio_button = None
         self.set_selected_button(radio_buttons[0])
 
-    def add_radio_button(self, radio_button: RadioButton):
+    def add_radio_button(self, radio_button: RadioButton) -> None:
         self.add_child(radio_button)
         self.radio_buttons.append(radio_button)
         self.set_bb(get_group_bounding_box(self.radio_buttons))
 
-    def add_radio_buttons(self, radio_buttons: List[RadioButton]):
+    def add_radio_buttons(self, radio_buttons: List[RadioButton]) -> None:
         for radio_button in radio_buttons:
             self.add_radio_button(radio_button)
 
@@ -126,7 +126,7 @@ class RadioButtonGroup(Widget):
 
                 return
 
-    def set_selected_button(self, selected_button: RadioButton):
+    def set_selected_button(self, selected_button: RadioButton) -> None:
         """Selects the given RadioButton and deselects all others.
 
         Args:
@@ -141,7 +141,7 @@ class RadioButtonGroup(Widget):
     def get_selected_radio_button(self) -> RadioButton:
         return self._selected_radio_button
 
-    def get_value(self):
+    def get_value(self) -> Any:
         """Returns the value of the currently selected RadioButton.
         """
         return self._selected_radio_button.get_value()

@@ -9,6 +9,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
 class About(Page, RewardElement):
+    """ A page with information about the application. """
 
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/about.PNG")
@@ -27,18 +28,18 @@ class About(Page, RewardElement):
             Button(self.CLOSE_BUTTON_BB, lambda: self.return_to_main_window()),
         ]
     
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 # check if figure printer button is visible
                 button.handle_click(click_position)
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.
         """
         return super().render(img)

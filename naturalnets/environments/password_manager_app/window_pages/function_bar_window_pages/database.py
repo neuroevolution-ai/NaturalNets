@@ -9,6 +9,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
 class Database(Page, RewardElement):
+    """ The menu for database on the function bar. """
 
     STATE_LEN = 5
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/database.PNG")
@@ -34,34 +35,34 @@ class Database(Page, RewardElement):
             Button(self.IMPORT_BUTTON_BB, lambda: self.open_file_system()),
         ]
 
-    def return_to_main_window(self):
+    def return_to_main_window(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
 
-    def open_file_system(self):
+    def open_file_system(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(AppController.main_window.file_system)
 
-    def open_master_password(self):
+    def open_master_password(self) -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(AppController.main_window.master_password)
 
-    def handle_click(self, click_position: np.ndarray = None):
+    def handle_click(self, click_position: np.ndarray = None) -> None:
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
         else:
             self.return_to_main_window()
         
-    def handle_menu_click(self, click_position: np.ndarray = None):
+    def handle_menu_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.
         """
         return super().render(img)
