@@ -68,3 +68,5 @@ spreadsheets/
 
 # Weights and Biases Temporary Files
 wandb/
+#Anki exported decks
+naturalnets/environments/anki/decks/exported_decks

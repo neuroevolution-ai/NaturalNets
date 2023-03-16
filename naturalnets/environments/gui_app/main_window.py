@@ -1,21 +1,20 @@
-import os
-from typing import List
+from typing import List, Optional
 
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH
-from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator
 from naturalnets.environments.gui_app.main_window_pages.car_configurator import CarConfigurator
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import FigurePrinter
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.utils import render_onto_bb, get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class MainWindow(StateElement, Clickable, RewardElement):
@@ -29,8 +28,9 @@ class MainWindow(StateElement, Clickable, RewardElement):
     STATE_LEN = 4
     MAX_CLICKABLE_ELEMENTS = 4
 
-    IMG_PATH = os.path.join(IMAGES_PATH, "main_window_base.png")
-    FIGURE_PRINTER_BUTTON_IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_button.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "main_window_base.png")
+    FIGURE_PRINTER_BUTTON_IMG_PATH = get_image_path(
+        IMAGES_PATH, "figure_printer_button.png")
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
     MENU_AREA_BB = BoundingBox(4, 25, 110, 118)
     PAGES_AREA_BB = BoundingBox(117, 22, 326, 420)
@@ -55,14 +55,17 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                   self.car_configurator, self.figure_printer]
         assert len(self.pages) == self.get_state_len()
 
-        self.current_page = None
+        self.current_page: Optional[Page] = None
 
         self.is_figure_printer_button_visible = 0
 
-        self.text_printer_btn = Button(self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer))
-        self.calculator_btn = Button(self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator))
+        self.text_printer_btn = Button(
+            self.TEXT_PRINTER_BUTTON_BB, lambda: self.set_current_page(self.text_printer))
+        self.calculator_btn = Button(
+            self.CALCULATOR_BUTTON_BB, lambda: self.set_current_page(self.calculator))
         self.car_configurator_btn = Button(
-            self.CAR_CONFIGURATOR_BUTTON_BB, lambda: self.set_current_page(self.car_configurator)
+            self.CAR_CONFIGURATOR_BUTTON_BB, lambda: self.set_current_page(
+                self.car_configurator)
         )
         self.figure_printer_btn = Button(
             self.FIGURE_PRINTER_BUTTON_BB,
@@ -76,8 +79,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
             self.figure_printer_btn
         ]
 
-        self.add_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
-        self.set_reward_children([self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
+        self.add_children([self.text_printer, self.calculator,
+                          self.car_configurator, self.figure_printer])
+        self.set_reward_children(
+            [self.text_printer, self.calculator, self.car_configurator, self.figure_printer])
 
         self.pages_to_str = {
             self.text_printer: "text_printer",
@@ -121,7 +126,8 @@ class MainWindow(StateElement, Clickable, RewardElement):
             self.current_page = page
 
             # noinspection PyTypeChecker
-            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
+            self.register_selected_reward(
+                ["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
@@ -168,8 +174,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
         img = self.current_page.render(img)
 
         if self.is_figure_printer_button_visible:
-            figure_printer_img = cv2.imread(self.FIGURE_PRINTER_BUTTON_IMG_PATH)
-            img = render_onto_bb(img, self.FIGURE_PRINTER_BUTTON_BB, figure_printer_img)
+            figure_printer_img = cv2.imread(
+                self.FIGURE_PRINTER_BUTTON_IMG_PATH)
+            img = render_onto_bb(
+                img, self.FIGURE_PRINTER_BUTTON_BB, figure_printer_img)
 
         return img
 

@@ -33,11 +33,9 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
         """Sets action when cv2 mouse-callback is detected, i.e. user has clicked."""
         if event == cv2.EVENT_LBUTTONDOWN:
             current_action = np.array([x, y])
-            ob, rew, _, info = app.step(rescale_values(current_action,
-                                                       previous_low=0,
-                                                       previous_high=app.get_screen_size(),
-                                                       new_low=-1,
-                                                       new_high=1))
+
+            ob, rew, _, info = app.step([rescale_values(current_action[0], previous_low=0, previous_high=app.get_screen_width(), new_high=1, new_low=-1),
+                                         rescale_values(current_action[1], previous_low=0, previous_high=app.get_screen_height(), new_high=1, new_low=-1)])
 
             if print_reward:
                 print(f"Reward: {rew}")
@@ -45,7 +43,8 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
             if save_state_vector:
                 states = []
                 for state_info, state in zip(info["states_info"], ob):
-                    states.append("({recursion_depth}) {class_name}: ".format(**state_info) + str(state))
+                    states.append("({recursion_depth}) {class_name}: ".format(
+                        **state_info) + str(state))
 
                 with jsonlines.open(os.path.join(OUT_DIRECTORY, "state_vector.jsonl"), "w") as writer:
                     writer.write_all(states)
@@ -85,22 +84,38 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
 
 @click.command()
-@click.option("-c", "--config", "config_id", default=2, type=int, help="Config number (1: GUIApp, 2: PasswordManager, else: DummyApp)")
+@click.option("-c", "--config", "config_id", default=0, type=int, help="Config number (1: GUIApp, 2:PasslockApp else: DummyApp)")
 @click.option("-p/-no-p", "--screenshot/--no-screenshot", "save_screenshots",
               default=True, type=bool, help="Save screenshots?")
 @click.option("-s/-no-s", "--state/--no-state", "save_state_vector", default=True, type=bool, help="Save state vector?")
 @click.option("-r/-no-r", "--reward/--no-reward", "print_reward", default=True, type=bool, help="Print reward?")
 def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_reward: bool):
-    if config_id == 1:
+    if config_id == 0:
+        config = {
+            "environment": {
+                "type": "AnkiApp",
+                "number_time_steps": 100,
+            }
+        }
+    elif config_id == 1:
         config = {
             "environment": {
                 "type": "GUIApp",
                 "number_time_steps": 200,
                 "include_fake_bug": False,
-                "return_clickable_elements": False
+                "nearest_widget_click": False,
+                "return_clickable_elements": True
             }
         }
     elif config_id == 2:
+        config = {
+            "environment": {
+                "type": "PasslockApp",
+                "number_time_steps": 100,
+                "include_fake_bug": False
+            }
+        }
+    elif config_id == 3:
         config = {
             "environment": {
                 "type": "PasswordManager",
@@ -122,6 +137,8 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
                 "fixed_env_seed": True
             }
         }
+
+        save_state_vector = False
 
     run_interactive(config, save_screenshots, save_state_vector, print_reward)
 
