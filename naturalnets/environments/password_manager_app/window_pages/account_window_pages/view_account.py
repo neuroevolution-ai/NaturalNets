@@ -19,7 +19,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class ViewAccount(Page, RewardElement):
     """ This page gives a representation of an existing account. """
 
-    STATE_LEN = 7
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)

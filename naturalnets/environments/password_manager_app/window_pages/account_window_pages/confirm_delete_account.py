@@ -14,7 +14,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 class ConfirmDeleteAccount(Page, RewardElement):
     """ Confirmation page that pops up when deleting an account. """
 
-    STATE_LEN = 3
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
     NAME_ACOOUNT_TO_DELETE = ''

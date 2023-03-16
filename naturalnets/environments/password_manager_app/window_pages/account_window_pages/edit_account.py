@@ -19,7 +19,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class EditAccount(Page, RewardElement):
     """ A page that allows to edit already existing accounts. """
 
-    STATE_LEN = 2
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/add_account_password_hide.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)

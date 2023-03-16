@@ -12,7 +12,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class Options(Page, RewardElement):
     """ An option page that has no influance on the application. """
 
-    STATE_LEN = 2
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/options.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 324)

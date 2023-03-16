@@ -11,7 +11,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 class Database(Page, RewardElement):
     """ The menu for database on the function bar. """
 
-    STATE_LEN = 5
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/database.PNG")
 
     BOUNDING_BOX = BoundingBox(1, 3, 237, 254)

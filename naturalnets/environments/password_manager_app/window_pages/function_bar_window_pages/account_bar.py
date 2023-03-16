@@ -11,7 +11,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 class AccountBar(Page, RewardElement):
     """ The menu for accounts on the function bar. """
 
-    STATE_LEN = 2
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/account.PNG")
 
     BOUNDING_BOX = BoundingBox(58, 4, 175, 179)

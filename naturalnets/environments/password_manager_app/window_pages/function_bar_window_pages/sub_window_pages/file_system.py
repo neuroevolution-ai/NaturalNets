@@ -12,7 +12,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class FileSystem(Page, RewardElement):
     """ Simulates a file system. """
 
-    STATE_LEN = 2
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.PNG")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)

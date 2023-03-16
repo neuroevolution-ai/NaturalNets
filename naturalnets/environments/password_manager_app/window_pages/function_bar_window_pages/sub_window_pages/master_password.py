@@ -12,7 +12,7 @@ from naturalnets.environments.password_manager_app.widgets.dropdown import Dropd
 class MasterPassword(Page, RewardElement):
     """ A page to set the master password of the database. """
 
-    STATE_LEN = 2
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/master_password.PNG")
 
     BOUNDING_BOX = BoundingBox(57, 147, 334, 127)

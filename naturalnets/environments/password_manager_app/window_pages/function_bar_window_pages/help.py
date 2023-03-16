@@ -11,7 +11,7 @@ from naturalnets.environments.password_manager_app.widgets.button import Button
 class Help(Page, RewardElement):
     """ The menu for help on the function bar. """
 
-    STATE_LEN = 1
+    STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/help.PNG")
 
     BOUNDING_BOX = BoundingBox(110, 4, 84, 47)
