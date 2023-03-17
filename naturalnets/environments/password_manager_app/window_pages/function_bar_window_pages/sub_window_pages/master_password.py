@@ -5,12 +5,11 @@ from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
 from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.widgets.button import Button
 from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class MasterPassword(Page, RewardElement):
+class MasterPassword(Page):
     """ A page to set the master password of the database. """
 
     STATE_LEN = 0
@@ -25,7 +24,6 @@ class MasterPassword(Page, RewardElement):
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
 
         self.buttons = [
             Button(self.OK_BUTTON_BB, lambda: self.return_to_main_window()),
@@ -71,10 +69,3 @@ class MasterPassword(Page, RewardElement):
         """ Renders this page onto the given image.
         """
         return super().render(img)
-    
-    @property
-    def reward_template(self):
-        return {
-            "tire_20_setting": [False, True],
-            "tire_22_setting": [False, True]
-        }

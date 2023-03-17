@@ -1,4 +1,5 @@
 import enum
+import importlib
 import logging
 import time
 from typing import Optional, Dict, List, Tuple
@@ -11,6 +12,7 @@ from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.password_manager_app.app_controller import AppController
 from naturalnets.environments.password_manager_app.enums import Color
 from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
+from coverage import Coverage 
 
 
 class FakeBugOptions(enum.Enum):
@@ -46,7 +48,10 @@ class PasswordManagerApp(IGUIEnvironment):
 
         self.config = AppCfg(**configuration)
 
-        self.app_controller = AppController()
+        # data_suffix appends process id to the database file which is needed when this environment is run in parallel
+        coverage_measurer = Coverage(data_file=None, config_file=True)
+
+        self.app_controller = AppController(coverage_measurer)
 
         self.t = 0
 
@@ -56,7 +61,7 @@ class PasswordManagerApp(IGUIEnvironment):
 
         # Used for the interactive mode, in which the user can click through an OpenCV rendered
         # version of the app
-        self.window_name = "App"
+        self.window_name = "UPM"
         self.running_reward = 0
         self.max_reward = self.app_controller.get_total_reward_len()
 
@@ -74,10 +79,16 @@ class PasswordManagerApp(IGUIEnvironment):
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
 
         click_coordinates = np.array([self.click_position_x, self.click_position_y])
-        rew = self.app_controller.handle_click(click_coordinates)
 
-        # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
-        self.running_reward += rew
+        # For the running_reward only count the actual reward from the Password Manager App, and ignore the time step calculations
+        old_running_reward =  self.running_reward
+        self.running_reward = self.app_controller.handle_click(click_coordinates)
+
+        # Reward achieved in this step
+        rew = self.running_reward - old_running_reward
+
+        if rew < 0:
+            print('Error: negativ reward')
 
         # Give a reward equal to the number of time steps at the beginning to avoid negative rewards
         if self.t == 0:
@@ -90,8 +101,8 @@ class PasswordManagerApp(IGUIEnvironment):
 
         self.t += 1
 
-        if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
-            done = True
+        # if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
+        #     done = True
 
         return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
 

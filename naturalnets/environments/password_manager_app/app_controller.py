@@ -6,6 +6,7 @@ from naturalnets.environments.password_manager_app.main_window import MainWindow
 from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.state_element import StateElement
+from coverage import Coverage
 
 
 class AppController:
@@ -15,7 +16,7 @@ class AppController:
 
     main_window = MainWindow()
 
-    def __init__(self):
+    def __init__(self, coverage_measurer: Coverage):
 
         self._total_state_len = 0
         self._total_state_len += self.get_element_state_len(AppController.main_window)
@@ -27,39 +28,10 @@ class AppController:
         self.assign_state(AppController.main_window, 0, states_info)
         self._states_info = states_info
 
-        self.reward_array = None
-        self.reset_reward_array()
-
-    def calculate_reward_count(self, reward_count, reward_element: RewardElement):
-        reward_count += reward_element.get_reward_count()
-
-        for child in reward_element.get_reward_children():
-            reward_count = self.calculate_reward_count(reward_count, child)
-
-        return reward_count
-
-    def reset_reward_array(self):
-        reward_count = self.calculate_reward_count(0, AppController.main_window)
-
-        self.reward_array = np.zeros(reward_count, dtype=np.uint8)
-
-        last_reward_index = self.assign_reward(0, AppController.main_window)
-        assert last_reward_index == reward_count
-
-    def assign_reward(self, current_index, reward_element: RewardElement):
-        reward_count = reward_element.get_reward_count()
-        reward_element.assign_reward_slice(self.reward_array[current_index:current_index + reward_count])
-        current_index += reward_count
-
-        for reward_child in reward_element.get_reward_children():
-            current_index = self.assign_reward(current_index, reward_child)
-
-        return current_index
+        self.coverage_measurer = coverage_measurer
 
     def reset(self):
         AppController.main_window.reset()
-
-        self.reset_reward_array()
 
         self._state = np.zeros(self._total_state_len, dtype=np.int8)
         self._last_allocated_state_index = 0
@@ -130,16 +102,23 @@ class AppController:
 
     def get_total_reward_len(self) -> int:
         """Returns the amount of reward, that is achievable."""
-        return len(self.reward_array)
+        return 0
 
     def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component.
         """
-        previous_reward_array = copy(self.reward_array)
 
+        self.coverage_measurer.start()
         AppController.main_window.handle_click(click_position)
+        self.coverage_measurer.stop()
 
-        reward = np.count_nonzero(previous_reward_array != self.reward_array)
+        coverage_data = self.coverage_measurer.get_data()
+        measured_files = coverage_data.measured_files()
+
+        reward = 0
+
+        for measured_file in measured_files:
+            reward += len(coverage_data.lines(measured_file))
 
         return reward
 

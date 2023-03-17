@@ -10,14 +10,13 @@ from naturalnets.environments.password_manager_app.constants import IMAGES_PATH,
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
 from naturalnets.environments.password_manager_app.widgets.check_box import CheckBox
 from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
 
 
-class ViewAccount(Page, RewardElement):
+class ViewAccount(Page):
     """ This page gives a representation of an existing account. """
 
     STATE_LEN = 0
@@ -45,7 +44,6 @@ class ViewAccount(Page, RewardElement):
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
 
         self.account_to_edit = None
 
@@ -175,9 +173,3 @@ class ViewAccount(Page, RewardElement):
             img = widget.render(img)
         return img
     
-    @property
-    def reward_template(self):
-        return {
-            "tire_20_setting": [False, True],
-            "tire_22_setting": [False, True]
-        }

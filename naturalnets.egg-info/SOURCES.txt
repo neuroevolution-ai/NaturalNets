@@ -79,5 +79,6 @@ naturalnets/environments/gui_app/img/text_printer.png
 naturalnets/environments/gui_app/img/text_printer_settings.png
 naturalnets/environments/gui_app/img/text_printer_settings_popup.png
 naturalnets/environments/gui_app/img/__pycache__/__init__.cpython-310.pyc
+naturalnets/environments/gui_app/img/__pycache__/__init__.cpython-38.pyc
 tests/test_brains.py
 tests/test_episode_runner.py

@@ -10,7 +10,6 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
 from naturalnets.environments.password_manager_app.interfaces import Clickable
 from naturalnets.environments.password_manager_app.page import Page, Widget
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.state_element import StateElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
@@ -28,7 +27,7 @@ from naturalnets.environments.password_manager_app.window_pages.function_bar_win
 from naturalnets.environments.password_manager_app.window_pages.options import Options
 from naturalnets.environments.password_manager_app.cache import Cache
 
-class MainWindow(StateElement, Clickable, RewardElement):
+class MainWindow(StateElement, Clickable):
     """The main page of the app, containing the main overview as well as all other pages.
 
        State description:
@@ -70,7 +69,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
-        RewardElement.__init__(self)
 
         self._bounding_box = self.BOUNDING_BOX
         self.current_page = None
@@ -119,28 +117,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
                                 self.view_account, self.about, self.master_password, 
                                 self.confirm_delete_account, self.file_system,
                                 self.account_error])
-        self.set_reward_children([self.add_account, self.edit_account,
-                                self.options, self.database,
-                                self.account_bar, self.help,
-                                self.view_account, self.about, self.master_password,
-                                self.confirm_delete_account, self.file_system,
-                                self.account_error])
-
-        self.pages_to_str = {
-            None: "None",
-            self.add_account: "add_account",
-            self.edit_account: "edit_account",
-            self.options: "options",
-            self.database: "database",
-            self.account_bar: "account",
-            self.help: "help",
-            self.view_account: "view_account",
-            self.about: "about",
-            self.master_password: "master_password",
-            self.confirm_delete_account: "confirm_delete_account",
-            self.file_system: "file_system",
-            self.account_error: "account_error"
-        }
 
         self.widgets: List[Widget] = []
 
@@ -155,12 +131,6 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.add_widget(self.dropdown)
         self.opened_dd = None
         self.search_active = False
-
-    @property
-    def reward_template(self):
-        return {
-            "page_selected": ["add_account", "edit_account", "options", "account", "help", "view_account", "about", "master_password", "confirm_delete_account", "database", "None", "file_system", "account_error"]
-        }
 
     def reset(self):
         self.add_account.reset()
@@ -231,16 +201,12 @@ class MainWindow(StateElement, Clickable, RewardElement):
             if not self.search_active:
                 self.refresh_image()
 
-            # noinspection PyTypeChecker
-            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
 
         elif self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page)] = 1
             self.current_page = page
 
-            # noinspection PyTypeChecker
-            self.register_selected_reward(["page_selected", self.pages_to_str[self.current_page]])
 
     def current_page_blocks_click(self) -> bool:
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.

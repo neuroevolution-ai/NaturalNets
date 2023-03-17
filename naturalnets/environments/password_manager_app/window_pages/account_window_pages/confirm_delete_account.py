@@ -7,7 +7,6 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
 from naturalnets.environments.password_manager_app.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
 
@@ -28,7 +27,6 @@ class ConfirmDeleteAccount(Page, RewardElement):
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
 
         self.buttons = [
             Button(self.YES_BUTTON_BB, lambda: self.yes()),
@@ -65,10 +63,3 @@ class ConfirmDeleteAccount(Page, RewardElement):
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Klaus.png")
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_THREE:
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Mariam.png")
-
-    @property
-    def reward_template(self):
-        return {
-            "tire_20_setting": [False, True],
-            "tire_22_setting": [False, True]
-        }
