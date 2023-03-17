@@ -11,7 +11,7 @@ from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
 
 
-class ConfirmDeleteAccount(Page, RewardElement):
+class ConfirmDeleteAccount(Page):
     """ Confirmation page that pops up when deleting an account. """
 
     STATE_LEN = 0

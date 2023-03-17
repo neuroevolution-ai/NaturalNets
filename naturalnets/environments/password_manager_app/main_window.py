@@ -3,7 +3,7 @@ from typing import List, Union
 
 import cv2
 import numpy as np
-from naturalnets.environments.password_manager_app.account_manager.account_error import AccountError
+from naturalnets.environments.password_manager_app.window_pages.account_window_pages.account_error import AccountError
 from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
 
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox

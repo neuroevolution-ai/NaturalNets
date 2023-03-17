@@ -3,8 +3,6 @@ from copy import copy
 import numpy as np
 
 from naturalnets.environments.password_manager_app.main_window import MainWindow
-from naturalnets.environments.password_manager_app.page import Page
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.state_element import StateElement
 from coverage import Coverage
 
