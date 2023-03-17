@@ -8,4 +8,4 @@ from naturalnets.environments.dummy_app.dummy_app import DummyApp
 from naturalnets.environments.gui_app.gui_app import GUIApp
 from naturalnets.environments.passlock_app.passlock_app import PasslockApp
 from naturalnets.environments.anki.anki_app import AnkiApp
-from naturalnets.environments.password_manager_app.password_manager_app import PasswordManager
+from naturalnets.environments.password_manager_app.password_manager_app import PasswordManagerApp

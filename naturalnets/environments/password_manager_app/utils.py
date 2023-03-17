@@ -62,7 +62,7 @@ def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], fo
     cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)
 
 
-def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0) -> tuple[dict, int]:
+def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0) -> Tuple[dict, int]:
     """
     Creates a mapping from strings, indicating a specific reward, to an index that can be used to index a NumPy array.
 

@@ -84,7 +84,7 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
 
 @click.command()
-@click.option("-c", "--config", "config_id", default=0, type=int, help="Config number (1: GUIApp, 2:PasslockApp else: DummyApp)")
+@click.option("-c", "--config", "config_id", default=3, type=int, help="Config number (1: GUIApp, 2:PasslockApp, 3: PasswordManagerApp else: DummyApp)")
 @click.option("-p/-no-p", "--screenshot/--no-screenshot", "save_screenshots",
               default=True, type=bool, help="Save screenshots?")
 @click.option("-s/-no-s", "--state/--no-state", "save_state_vector", default=True, type=bool, help="Save state vector?")
@@ -118,7 +118,7 @@ def main(config_id: int, save_screenshots: bool, save_state_vector: bool, print_
     elif config_id == 3:
         config = {
             "environment": {
-                "type": "PasswordManager",
+                "type": "PasswordManagerApp",
                 "number_time_steps": 200,
                 "include_fake_bug": False
             }

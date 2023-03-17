@@ -1,7 +1,7 @@
 import enum
 import logging
 import time
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -32,7 +32,7 @@ class AppCfg:
                                                                             "bugs'.")
 
 @register_environment_class
-class PasswordManager(IGUIEnvironment):
+class PasswordManagerApp(IGUIEnvironment):
     """ Starting point of the password manager app. """
 
     screen_width: int = 448
@@ -68,7 +68,7 @@ class PasswordManager(IGUIEnvironment):
     def get_state(self) -> np.ndarray:
         return self.app_controller.get_total_state()
 
-    def step(self, action: np.ndarray) -> tuple[np.ndarray, int, bool, dict[str, list]]:
+    def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, Dict[str, list]]:
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
         self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
         self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)

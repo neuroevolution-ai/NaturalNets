@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Union
 
 import cv2
 import numpy as np
@@ -40,7 +40,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     """
 
     # Each state represents a page
-    STATE_LEN = 12
+    STATE_LEN = 15
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
     # 1. Each state represents which specific accounts exists with a max. of 8 different states 
@@ -91,10 +91,10 @@ class MainWindow(StateElement, Clickable, RewardElement):
         self.pages: List[Page] = [self.add_account, self.edit_account,
                                   self.options, self.database,
                                   self.account_bar, self.help,
-                                  self.view_account, self.about, self.master_password,
-                                  self.confirm_delete_account,
+                                  self.view_account, self.about, 
+                                  self.master_password, self.confirm_delete_account,
                                   self.file_system, self.account_error]
-        # assert len(self.pages) == self.get_state_len()
+        assert len(self.pages) == self.get_state_len() - 3
 
         self.buttons = [
             Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.function_add_account()),
@@ -213,7 +213,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def launch_url(self) -> None:
         print('launch_url')
 
-    def get_current_page(self) -> Page | None:
+    def get_current_page(self) -> Union[Page, None]:
         return self.current_page
 
     def set_current_page(self, page: Page) -> None:
@@ -330,6 +330,39 @@ class MainWindow(StateElement, Clickable, RewardElement):
     def refresh_state(self) -> None:
         self.STATE_IMG = AccountManager.current_state()
 
+        if self.STATE_IMG[0] == 0:
+            self.get_state()[12] = 0
+            self.get_state()[13] = 0
+            self.get_state()[14] = 0
+        elif self.STATE_IMG[0] == 1:
+            self.get_state()[12] = 1
+            self.get_state()[13] = 0
+            self.get_state()[14] = 0
+        elif self.STATE_IMG[0] == 2:
+            self.get_state()[12] = 0
+            self.get_state()[13] = 1
+            self.get_state()[14] = 0
+        elif self.STATE_IMG[0] == 3:
+            self.get_state()[12] = 0
+            self.get_state()[13] = 0
+            self.get_state()[14] = 1
+        elif self.STATE_IMG[0] == 4:
+                self.get_state()[12] = 1
+                self.get_state()[13] = 1
+                self.get_state()[14] = 0
+        elif self.STATE_IMG[0] == 5:
+                self.get_state()[12] = 1
+                self.get_state()[13] = 0
+                self.get_state()[14] = 1
+        elif self.STATE_IMG[0] == 6:
+                self.get_state()[12] = 0
+                self.get_state()[13] = 1
+                self.get_state()[14] = 1
+        elif self.STATE_IMG[0] == 7:
+                self.get_state()[12] = 1
+                self.get_state()[13] = 1
+                self.get_state()[14] = 1
+
     def refresh_image(self) -> None:
         self.new_path = ''
 
@@ -374,7 +407,7 @@ class MainWindow(StateElement, Clickable, RewardElement):
             
         self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
 
-    def get_selected_account(self) -> str | None:
+    def get_selected_account(self) -> Union[str, None]:
         if self.search_active:
             if self.dropdown.get_current_value() == NAME_ONE:
                 return NAME_ONE

@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 
 
@@ -25,7 +26,7 @@ class BoundingBox:
 
         return self.x1 <= x <= self.x2 and self.y1 <= y <= self.y2
 
-    def get_as_tuple(self) -> tuple[int, int, int, int]:
+    def get_as_tuple(self) -> Tuple[int, int, int, int]:
         """Returns the BoundingBox values as a Tuple (x, y, width, height)."""
         return self.x, self.y, self.width, self.height
 

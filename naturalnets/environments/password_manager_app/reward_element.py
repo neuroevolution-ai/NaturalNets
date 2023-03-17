@@ -39,7 +39,7 @@ class RewardElement(abc.ABC):
     def create_reward_mapping(self) -> None:
         self.reward_mapping, self.reward_count = generate_reward_mapping_from_template(self.reward_template, {}, 0)
 
-    def get_reward_count(self) -> Union(int, None):
+    def get_reward_count(self) -> Union[int, None]:
         return self.reward_count
 
     def assign_reward_slice(self, reward_slice: np.ndarray) -> None:

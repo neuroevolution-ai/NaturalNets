@@ -31,7 +31,7 @@ class AccountManager:
                 AccountManager.currentAccounts.remove(current_account)
 
     @staticmethod
-    def get_account_by_name(account_name: str) -> Union(Account, None):
+    def get_account_by_name(account_name: str) -> Union[Account, None]:
         for current_account in AccountManager.currentAccounts:
             if current_account.get_account_name() == account_name:
                 return current_account
@@ -47,7 +47,7 @@ class AccountManager:
         return False
     
     @staticmethod
-    def current_state() -> list[int] | None:
+    def current_state() -> Union[List[int], None]:
         " The state of all existing accounts. Is the same as state_img in the main window. "
         if (AccountManager.currentAccounts is None):
             return [0, 0]
