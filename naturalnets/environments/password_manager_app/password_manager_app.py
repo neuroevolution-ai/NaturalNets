@@ -160,3 +160,9 @@ class PasswordManagerApp(IGUIEnvironment):
     def get_screen_size(self) -> int:
         assert self.screen_width == self.screen_height
         return self.screen_width
+    
+    def get_screen_height(self) -> int:
+        return self.screen_height
+
+    def get_screen_width(self) -> int:
+        return self.screen_width

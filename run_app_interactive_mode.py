@@ -84,7 +84,7 @@ def run_interactive(config: dict, save_screenshots: bool, save_state_vector: boo
 
 
 @click.command()
-@click.option("-c", "--config", "config_id", default=3, type=int, help="Config number (1: GUIApp, 2:PasslockApp, 3: PasswordManagerApp else: DummyApp)")
+@click.option("-c", "--config", "config_id", default=0, type=int, help="Config number (1: GUIApp, 2:PasslockApp, 3: PasswordManagerApp else: DummyApp)")
 @click.option("-p/-no-p", "--screenshot/--no-screenshot", "save_screenshots",
               default=True, type=bool, help="Save screenshots?")
 @click.option("-s/-no-s", "--state/--no-state", "save_state_vector", default=True, type=bool, help="Save state vector?")
