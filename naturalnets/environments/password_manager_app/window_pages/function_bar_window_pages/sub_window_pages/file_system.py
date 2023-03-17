@@ -4,6 +4,7 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
 from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.widgets.button import Button
 from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
@@ -42,9 +43,7 @@ class FileSystem(Page, RewardElement):
         self.opened_dd = None
     
     def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
+        PageManager.return_to_main_page
 
         self.dropdown.set_selected_item(None)
         self.dropdown.close()

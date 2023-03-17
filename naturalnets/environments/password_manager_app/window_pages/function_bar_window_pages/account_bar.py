@@ -4,6 +4,7 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
 from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.widgets.button import Button
 
@@ -30,57 +31,20 @@ class AccountBar(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.add_account()),
-            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.edit_account()),
-            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.delete_account()),
-            Button(self.VIEW_ACCOUNT_BUTTON_BB, lambda: self.view_account()),
-            Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.copy_username()),
-            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy_password()),
+            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: PageManager.add_account()),
+            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: PageManager.edit_account()),
+            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: PageManager.delete_account()),
+            Button(self.VIEW_ACCOUNT_BUTTON_BB, lambda: PageManager.view_account()),
+            Button(self.COPY_USERNAME_BUTTON_BB, lambda: PageManager.copy_username()),
+            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: PageManager.copy_password()),
         ]
-
-    def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
-
-    def add_account(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_add_account()
-
-    def delete_account(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_delete_account()
-
-    def edit_account(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_edit_account()
-
-    def view_account(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_view_account()
-
-    def copy_username(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.copy_username()
-        AppController.main_window.set_current_page(None)
-
-    def copy_password(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.copy_password()
-        AppController.main_window.set_current_page(None)
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
         else:
-            self.return_to_main_window()
+            PageManager.return_to_main_page()
         
     def handle_menu_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:

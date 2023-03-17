@@ -9,6 +9,7 @@ from naturalnets.environments.password_manager_app.cache import Cache
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
@@ -142,7 +143,6 @@ class AddAccount(Page, RewardElement):
 
     def cancel(self) -> None:
         self.reset()
-        self.return_to_main_window()
 
     def copy(self, dropdownToCopy: Dropdown) -> None:
         Cache.set_cache(dropdownToCopy.get_current_value())
@@ -197,11 +197,7 @@ class AddAccount(Page, RewardElement):
         self.opened_dd = None
         self.checkbox.set_selected(1)
         self.set_hide_password(True)
-
-    def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
+        PageManager.return_to_main_page()
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """ Renders this page onto the given image.

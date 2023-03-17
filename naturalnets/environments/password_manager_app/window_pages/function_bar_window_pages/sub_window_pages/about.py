@@ -4,6 +4,7 @@ from naturalnets.environments.password_manager_app.bounding_box import BoundingB
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
 from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.widgets.button import Button
 
@@ -24,14 +25,9 @@ class About(Page, RewardElement):
         RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.CLOSE_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.OK_BUTTON_BB, lambda: PageManager.return_to_main_page()),
+            Button(self.CLOSE_BUTTON_BB, lambda: PageManager.return_to_main_page()),
         ]
-    
-    def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:

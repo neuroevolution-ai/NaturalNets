@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Union
 from naturalnets.environments.password_manager_app.account_manager.account import Account
 from naturalnets.environments.password_manager_app.constants import NAME_ONE, NAME_THREE, NAME_TWO
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 
 
 class AccountManager:
@@ -13,9 +14,9 @@ class AccountManager:
         if len(AccountManager.currentAccounts) < 3:
             if not AccountManager.is_in_current_accounts(account.get_account_name()):
                 AccountManager.currentAccounts.append(account)
-                AccountManager.return_to_main_page()
+                PageManager.return_to_main_page()
             else:
-                AccountManager.error(account.get_account_name())
+                PageManager.error(account.get_account_name())
 
 
     @staticmethod
@@ -30,7 +31,7 @@ class AccountManager:
                 AccountManager.currentAccounts.remove(current_account)
 
     @staticmethod
-    def get_account_by_name(account_name: str) -> Account | None:
+    def get_account_by_name(account_name: str) -> Union(Account, None):
         for current_account in AccountManager.currentAccounts:
             if current_account.get_account_name() == account_name:
                 return current_account
@@ -85,15 +86,4 @@ class AccountManager:
     def reset()  -> None:
         AccountManager.currentAccounts = []
                 
-    def error(account_name: str)  -> None:
-        " This opens the error page. Gets thrown when the username already exists. "
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_account_error(account_name)
-
-    def return_to_main_page()  -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
-    
 

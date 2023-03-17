@@ -6,6 +6,7 @@ from naturalnets.environments.password_manager_app.account_manager.account_manag
 from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
 from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 from naturalnets.environments.password_manager_app.reward_element import RewardElement
 from naturalnets.environments.password_manager_app.utils import render_onto_bb
 from naturalnets.environments.password_manager_app.widgets.button import Button
@@ -35,10 +36,10 @@ class AccountError(Page, RewardElement):
         ]
 
     def yes(self) -> None:
-        self.return_to_main_window()
+        PageManager.return_to_main_page()
 
     def no(self) -> None:
-        self.return_to_main_window()
+        PageManager.return_to_main_page()
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
@@ -62,11 +63,6 @@ class AccountError(Page, RewardElement):
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "account_window/error_Klaus.png")
         elif self.NAME_ACOOUNT == NAME_THREE:
             self.IMG_PATH  = os.path.join(IMAGES_PATH, "account_window/error_Mariam.png")
-
-    def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
 
     @property
     def reward_template(self):

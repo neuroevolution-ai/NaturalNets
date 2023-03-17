@@ -4,10 +4,10 @@ from typing import List
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable, HasPopups
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.utils import render_onto_bb
+from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.password_manager_app.interfaces import Clickable, HasPopups
+from naturalnets.environments.password_manager_app.state_element import StateElement
+from naturalnets.environments.password_manager_app.utils import render_onto_bb
 
 
 class Widget(StateElement, Clickable):
@@ -63,24 +63,24 @@ class Page(StateElement, Clickable, HasPopups):
     def set_bb(self, bounding_box: BoundingBox) -> None:
         self._bounding_box = bounding_box
 
-    def remove_widget(self, widget: Widget):
+    def remove_widget(self, widget: Widget) -> None:
         try:
             self.widgets.remove(widget)
         except ValueError:
             # Will be triggered if widget was not part of the widgets list
             pass
 
-    def remove_widgets(self, widgets: List[Widget]):
+    def remove_widgets(self, widgets: List[Widget]) -> None:
         for widget in widgets:
             self.remove_widget(widget)
 
-    def add_widget(self, widget: Widget):
+    def add_widget(self, widget: Widget) -> None:
         """Adds the given widget to this Page. This will also add the widget to the
         pages' StateElement-children."""
         self.widgets.append(widget)
         self.add_child(widget)
 
-    def add_widgets(self, widgets: List[Widget]):
+    def add_widgets(self, widgets: List[Widget]) -> None:
         """Adds the given widget-list to this Page. This will also add the widgets to the
         pages' StateElement-children."""
         for widget in widgets:
@@ -90,7 +90,7 @@ class Page(StateElement, Clickable, HasPopups):
         """Returns all widgets of this page. Might differ from the pages' state-element children!"""
         return self.widgets
 
-    def render(self, img: np.ndarray):
+    def render(self, img: np.ndarray) -> np.ndarray:
         """Renders this page as well as all of its widgets to the given image."""
         to_render = cv2.imread(self._img_path)
         img = render_onto_bb(img, self.get_bb(), to_render)

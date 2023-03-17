@@ -11,7 +11,7 @@ class Account:
     url: str
     notes: str
 
-    def __init__(self, account_name: str, user_id: Optional[str], password: Optional[str], url: Optional[str], notes: Optional[str]) -> None:
+    def __init__(self, account_name: str, user_id: Optional[str], password: Optional[str], url: Optional[str], notes: Optional[str]):
         self.account_name = account_name
         self.user_id = user_id
         self.password = password

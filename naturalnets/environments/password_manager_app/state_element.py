@@ -28,7 +28,7 @@ class StateElement(Renderable):
         """Returns the state length of this state-element."""
         return self._state_len
 
-    def assign_state_sector(self, state_sector: np.ndarray):
+    def assign_state_sector(self, state_sector: np.ndarray) -> None:
         """Will assign the given state-sector to this state-element. This means
         the given state-sector will be mutated according to this state-elements current
         state and future state changes!
@@ -58,7 +58,7 @@ class StateElement(Renderable):
         """Returns all children of this StateElement."""
         return self._children
 
-    def add_child(self, child: 'StateElement'):
+    def add_child(self, child: 'StateElement') -> None:
         """Adds a child to this StateElement."""
         self.get_children().append(child)
 

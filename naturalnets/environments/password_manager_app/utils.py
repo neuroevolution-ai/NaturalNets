@@ -23,7 +23,7 @@ def render_onto_bb(img: np.ndarray, bounding_box: BoundingBox, to_render: np.nda
     return img
 
 
-def get_group_bounding_box(group: List[HasBoundingBox]):
+def get_group_bounding_box(group: List[HasBoundingBox]) -> BoundingBox:
     """Returns the bounding box containing all elements in the given list."""
     min_x = inf
     min_y = inf
@@ -46,7 +46,7 @@ def get_group_bounding_box(group: List[HasBoundingBox]):
     return BoundingBox(min_x, min_y, width, height)
 
 
-def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], font_scale: float):
+def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], font_scale: float) -> None:
     """ Renders the given text onto the given image.
 
     Args:
@@ -62,7 +62,7 @@ def put_text(img: np.ndarray, text: str, bottom_left_corner: Tuple[int, int], fo
     cv2.putText(img, text, bottom_left_corner, font, font_scale, font_color, thickness, line_type)
 
 
-def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0):
+def generate_reward_mapping_from_template(reward_template: Dict, reward_mapping: Dict, running_index: int = 0) -> tuple[dict, int]:
     """
     Creates a mapping from strings, indicating a specific reward, to an index that can be used to index a NumPy array.
 

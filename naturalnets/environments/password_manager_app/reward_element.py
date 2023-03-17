@@ -1,5 +1,5 @@
 import abc
-from typing import List
+from typing import List, Union
 
 import numpy as np
 
@@ -33,26 +33,26 @@ class RewardElement(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def reward_template(self):
+    def reward_template(self) -> None:
         pass
 
-    def create_reward_mapping(self):
+    def create_reward_mapping(self) -> None:
         self.reward_mapping, self.reward_count = generate_reward_mapping_from_template(self.reward_template, {}, 0)
 
-    def get_reward_count(self):
+    def get_reward_count(self) -> Union(int, None):
         return self.reward_count
 
-    def assign_reward_slice(self, reward_slice: np.ndarray):
+    def assign_reward_slice(self, reward_slice: np.ndarray) -> None:
         self.reward_array = reward_slice
 
-    def register_selected_reward(self, reward_keys: List[str]):
+    def register_selected_reward(self, reward_keys: List[str]) -> None:
         index = self.reward_mapping
         for key in reward_keys:
             index = index[key]
         self.reward_array[index] = 1
 
-    def set_reward_children(self, children: List["RewardElement"]):
+    def set_reward_children(self, children: List["RewardElement"]) -> None:
         self._reward_children = children
 
-    def get_reward_children(self):
+    def get_reward_children(self) -> List["RewardElement"]:
         return self._reward_children
