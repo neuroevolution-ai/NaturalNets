@@ -213,6 +213,7 @@ class ImportDeckSelectPage(Page, RewardElement):
     CLOSE_BB = BoundingBox(432, 488, 96, 24)
     HELP_BB = BoundingBox(543, 488, 98, 24)
     DECK_BB = BoundingBox(182, 202, 420, 150)
+    MAX_IMPORT_DECKS = 3
     SELECT_DECK_X = 183
     SELECT_DECK_Y = 205
     ITEM_HEIGHT = 30
@@ -319,7 +320,7 @@ class ImportDeckSelectPage(Page, RewardElement):
         if current_bounding_box.is_point_inside(click_point):
             click_index: int = floor(
                 (click_point[1] - self.SELECT_DECK_Y) / self.ITEM_HEIGHT)
-            if click_index >= self.ITEM_HEIGHT:
+            if click_index >= self.MAX_IMPORT_DECKS:
                 return
             self.get_state()[self.current_index + 1] = 0
             self.current_index: int = click_index
