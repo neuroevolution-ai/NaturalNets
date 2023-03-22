@@ -2,23 +2,30 @@ import os
 import cv2
 import numpy as np
 
-from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
-from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
-from naturalnets.environments.password_manager_app.page import Page
-from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.utils import render_onto_bb
-from naturalnets.environments.password_manager_app.widgets.button import Button
+
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.password_manager_app.constants import (
+    IMAGES_PATH,
+    NAME_ONE,
+    NAME_THREE,
+    NAME_TWO,
+)
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.password_manager_app.page_manager import (
+    PageManager,
+)
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class AccountError(Page):
-    """ An error page that gets opened when an account is added or edited so that the 
-     username is the same as an already existing one.  """
+    """An error page that gets opened when an account is added or edited
+    so that the username is the same as an already existing one."""
 
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
-    NAME_ACOOUNT = ''
+    NAME_ACOOUNT = ""
 
     BOUNDING_BOX = BoundingBox(58, 148, 328, 122)
 
@@ -46,8 +53,8 @@ class AccountError(Page):
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders the main window and all its children onto the given image.
-        """
+        """Renders the main window and all its children onto the given
+        image."""
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
         return img
@@ -56,8 +63,14 @@ class AccountError(Page):
         self.NAME_ACOOUNT = account_name
 
         if self.NAME_ACOOUNT == NAME_ONE:
-            self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/error_Hanna.PNG")
+            self.IMG_PATH = os.path.join(
+                IMAGES_PATH, "account_window/error_Hanna.PNG"
+            )
         elif self.NAME_ACOOUNT == NAME_TWO:
-            self.IMG_PATH  = os.path.join(IMAGES_PATH, "account_window/error_Klaus.png")
+            self.IMG_PATH = os.path.join(
+                IMAGES_PATH, "account_window/error_Klaus.png"
+            )
         elif self.NAME_ACOOUNT == NAME_THREE:
-            self.IMG_PATH  = os.path.join(IMAGES_PATH, "account_window/error_Mariam.png")
+            self.IMG_PATH = os.path.join(
+                IMAGES_PATH, "account_window/error_Mariam.png"
+            )

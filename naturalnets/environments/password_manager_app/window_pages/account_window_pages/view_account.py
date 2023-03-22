@@ -1,23 +1,22 @@
 import os
 import cv2
 import numpy as np
-import random
 from naturalnets.environments.password_manager_app.account_manager.account import Account
 from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
 from naturalnets.environments.password_manager_app.cache import Cache
 
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
-from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.utils import render_onto_bb
-from naturalnets.environments.password_manager_app.widgets.button import Button
-from naturalnets.environments.password_manager_app.widgets.check_box import CheckBox
-from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class ViewAccount(Page):
-    """ This page gives a representation of an existing account. """
+    """This page gives a representation of an existing account."""
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_hide.png")
@@ -50,52 +49,47 @@ class ViewAccount(Page):
         self.name_one = DropdownItem(NAME_ONE, NAME_ONE)
         self.name_two = DropdownItem(NAME_TWO, NAME_TWO)
         self.name_three = DropdownItem(NAME_THREE, NAME_THREE)
-        self.empty = DropdownItem(None, '')
+        self.empty = DropdownItem(None, "")
         self.names = [self.empty, self.name_one, self.name_two, self.name_three]
 
-        self.dropdown_account = Dropdown(self.ACCOUNT_DD_BB, [self.empty, self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
+        self.dropdown_account = Dropdown(
+            self.ACCOUNT_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three]
+        )
 
-        self.dropdown_user_id = Dropdown(self.USER_ID_DD_BB, [self.empty, self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
-        
+        self.dropdown_user_id = Dropdown(
+            self.USER_ID_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three]
+        )
+
         self.password_one = DropdownItem("1234", "1234")
         self.password_two = DropdownItem("qwer", "qwer")
         self.password_three = DropdownItem("asdf", "asdf")
         self.passwords = [self.password_one, self.password_two, self.password_three]
 
-        self.dropdown_password = Dropdown(self.PASSWORD_DD_BB, [self.password_one,
-                                                   self.password_two,
-                                                   self.password_three])
-        
+        self.dropdown_password = Dropdown(
+            self.PASSWORD_DD_BB, [self.password_one, self.password_two, self.password_three]
+        )
+
         self.current_password = self.empty
         self.is_checked = True
 
-        self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
+        self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three])
 
-        self.dropdown_notes = Dropdown(self.NOTES_DD_BB, [self.empty, self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
-    
-        self.dropdowns = [self.dropdown_account,
-                          self.dropdown_user_id,
-                          self.dropdown_password,
-                          self.dropdown_url,
-                          self.dropdown_notes]
-        
+        self.dropdown_notes = Dropdown(self.NOTES_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three])
+
+        self.dropdowns = [
+            self.dropdown_account,
+            self.dropdown_user_id,
+            self.dropdown_password,
+            self.dropdown_url,
+            self.dropdown_notes,
+        ]
+
         self.add_widgets(self.dropdowns)
 
         for dropdown in self.dropdowns:
             dropdown.set_clickable(False)
-        
-        self.checkbox = CheckBox(
-            self.HIDE_PASSWORD_BB,
-            lambda is_checked: self.set_hide_password(is_checked)
-        )
+
+        self.checkbox = CheckBox(self.HIDE_PASSWORD_BB, lambda is_checked: self.set_hide_password(is_checked))
         self.checkbox.set_selected(1)
         self.add_widget(self.checkbox)
 
@@ -117,7 +111,7 @@ class ViewAccount(Page):
         else:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "account_window/view_account_not_hide.png")
             self.dropdown_password.set_selected_item(self.current_password)
-    
+
     def ok(self) -> None:
         self.reset()
         PageManager.return_to_main_page()
@@ -134,7 +128,7 @@ class ViewAccount(Page):
     def set_account(self, account: Account) -> None:
         self.account_to_edit = account
         self.load_account()
-    
+
     def load_account(self) -> None:
         self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
         self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
@@ -154,7 +148,7 @@ class ViewAccount(Page):
 
         if self.checkbox.is_clicked_by(click_position):
             self.checkbox.handle_click(click_position)
-    
+
     def reset(self) -> None:
         for dropdown in self.dropdowns:
             dropdown.set_selected_item(None)
@@ -163,13 +157,10 @@ class ViewAccount(Page):
         self.checkbox.set_selected(1)
         self.set_hide_password(True)
 
-
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders this page onto the given image.
-        """
+        """Renders this page onto the given image."""
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
         for widget in self.get_widgets():
             img = widget.render(img)
         return img
-    

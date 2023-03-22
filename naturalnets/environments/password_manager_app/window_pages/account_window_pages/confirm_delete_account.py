@@ -2,22 +2,31 @@ import os
 import cv2
 import numpy as np
 
-from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
-from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
-from naturalnets.environments.password_manager_app.page import Page
-from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.utils import render_onto_bb
-from naturalnets.environments.password_manager_app.widgets.button import Button
+from naturalnets.environments.password_manager_app.account_manager.account_manager import (
+    AccountManager,
+)
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.password_manager_app.constants import (
+    IMAGES_PATH,
+    NAME_ONE,
+    NAME_THREE,
+    NAME_TWO,
+)
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.password_manager_app.page_manager import (
+    PageManager,
+)
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class ConfirmDeleteAccount(Page):
-    """ Confirmation page that pops up when deleting an account. """
+    """Confirmation page that pops up when deleting an account."""
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
-    NAME_ACOOUNT_TO_DELETE = ''
+    NAME_ACOOUNT_TO_DELETE = ""
 
     BOUNDING_BOX = BoundingBox(53, 142, 348, 122)
 
@@ -47,8 +56,7 @@ class ConfirmDeleteAccount(Page):
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders this page onto the given image.
-        """
+        """Renders this page onto the given image."""
 
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.BOUNDING_BOX, to_render)
@@ -60,6 +68,6 @@ class ConfirmDeleteAccount(Page):
         if self.NAME_ACOOUNT_TO_DELETE == NAME_ONE:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Hanna.PNG")
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_TWO:
-            self.IMG_PATH  = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Klaus.png")
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Klaus.png")
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_THREE:
-            self.IMG_PATH  = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Mariam.png")
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Mariam.png")

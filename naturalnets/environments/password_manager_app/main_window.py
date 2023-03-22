@@ -6,48 +6,57 @@ import numpy as np
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.account_error import AccountError
 from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
 
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH, NAME_ONE, NAME_THREE, NAME_TWO
-from naturalnets.environments.password_manager_app.interfaces import Clickable
-from naturalnets.environments.password_manager_app.page import Page, Widget
-from naturalnets.environments.password_manager_app.state_element import StateElement
-from naturalnets.environments.password_manager_app.utils import render_onto_bb
-from naturalnets.environments.password_manager_app.widgets.button import Button
-from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Page, Widget
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.utils import render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.add_account import AddAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.edit_account import EditAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.view_account import ViewAccount
-from naturalnets.environments.password_manager_app.window_pages.account_window_pages.confirm_delete_account import ConfirmDeleteAccount
+from naturalnets.environments.password_manager_app.window_pages.account_window_pages.confirm_delete_account import (
+    ConfirmDeleteAccount,
+)
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.account_bar import AccountBar
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.database import Database
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.help import Help
-from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.about import About
-from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.file_system import FileSystem
-from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import MasterPassword
+from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.about import (
+    About,
+)
+from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.file_system import (
+    FileSystem,
+)
+from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import (
+    MasterPassword,
+)
 from naturalnets.environments.password_manager_app.window_pages.options import Options
 from naturalnets.environments.password_manager_app.cache import Cache
+
 
 class MainWindow(StateElement, Clickable):
     """The main page of the app, containing the main overview as well as all other pages.
 
-       State description:
-            _state[i]: represents the selected/shown status of page i, i in {0,..,11}.
+    State description:
+         _state[i]: represents the selected/shown status of page i, i in {0,..,11}.
 
-            state_img[i][j]: represents the status of the main page. The combination of i in {0,..,7}
-            and j in {0,..,3} represents the currently visible accounts as well as the currently selected
-            account. 
+         state_img[i][j]: represents the status of the main page. The combination of i in {0,..,7}
+         and j in {0,..,3} represents the currently visible accounts as well as the currently selected
+         account.
     """
 
     # Each state represents a page
     STATE_LEN = 15
     IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_0_accounts.png")
 
-    # 1. Each state represents which specific accounts exists with a max. of 8 different states 
+    # 1. Each state represents which specific accounts exists with a max. of 8 different states
     # 2. Represents which Account is selected
     STATE_IMG = [0, 0]
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
-    MENU_AREA_BB = BoundingBox(0, 3, 448, 133) #TODO
+    MENU_AREA_BB = BoundingBox(0, 3, 448, 133)
 
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(2, 25, 30, 30)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(33, 25, 30, 30)
@@ -65,7 +74,7 @@ class MainWindow(StateElement, Clickable):
     ACCOUNT_TWO_BB = BoundingBox(1, 105, 447, 15)
     ACCOUNT_THREE_BB = BoundingBox(1, 121, 447, 14)
 
-    SEARCH_DD_BB = BoundingBox(20,65,126,20)
+    SEARCH_DD_BB = BoundingBox(20, 65, 126, 20)
 
     def __init__(self):
         StateElement.__init__(self, self.STATE_LEN)
@@ -86,12 +95,20 @@ class MainWindow(StateElement, Clickable):
         self.file_system = FileSystem()
         self.account_error = AccountError()
 
-        self.pages: List[Page] = [self.add_account, self.edit_account,
-                                  self.options, self.database,
-                                  self.account_bar, self.help,
-                                  self.view_account, self.about, 
-                                  self.master_password, self.confirm_delete_account,
-                                  self.file_system, self.account_error]
+        self.pages: List[Page] = [
+            self.add_account,
+            self.edit_account,
+            self.options,
+            self.database,
+            self.account_bar,
+            self.help,
+            self.view_account,
+            self.about,
+            self.master_password,
+            self.confirm_delete_account,
+            self.file_system,
+            self.account_error,
+        ]
         assert len(self.pages) == self.get_state_len() - 3
 
         self.buttons = [
@@ -111,23 +128,31 @@ class MainWindow(StateElement, Clickable):
             Button(self.ACCOUNT_THREE_BB, lambda: self.handel_selection(3)),
         ]
 
-        self.add_children([self.add_account, self.edit_account,
-                                self.options, self.database,
-                                self.account_bar, self.help,
-                                self.view_account, self.about, self.master_password, 
-                                self.confirm_delete_account, self.file_system,
-                                self.account_error])
+        self.add_children(
+            [
+                self.add_account,
+                self.edit_account,
+                self.options,
+                self.database,
+                self.account_bar,
+                self.help,
+                self.view_account,
+                self.about,
+                self.master_password,
+                self.confirm_delete_account,
+                self.file_system,
+                self.account_error,
+            ]
+        )
 
         self.widgets: List[Widget] = []
 
         self.name_one = DropdownItem(NAME_ONE, NAME_ONE)
         self.name_two = DropdownItem(NAME_TWO, NAME_TWO)
         self.name_three = DropdownItem(NAME_THREE, NAME_THREE)
-        self.empty = DropdownItem(None, '')
-        self.dropdown = Dropdown(self.SEARCH_DD_BB, [self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
-        
+        self.empty = DropdownItem(None, "")
+        self.dropdown = Dropdown(self.SEARCH_DD_BB, [self.name_one, self.name_two, self.name_three])
+
         self.add_widget(self.dropdown)
         self.opened_dd = None
         self.search_active = False
@@ -147,15 +172,17 @@ class MainWindow(StateElement, Clickable):
         self.set_current_page(self.add_account)
 
     def function_delete_account(self) -> None:
-        self.confirm_delete_account.set_name(self.get_selected_account())
-        self.set_current_page(self.confirm_delete_account)
-    
+        account_to_delete = AccountManager.get_account_by_name(self.get_selected_account())
+        if account_to_delete is not None:
+            self.confirm_delete_account.set_name(self.get_selected_account())
+            self.set_current_page(self.confirm_delete_account)
+
     def function_edit_account(self) -> None:
         account_to_edit = AccountManager.get_account_by_name(self.get_selected_account())
         if account_to_edit is not None:
             self.edit_account.set_account(account_to_edit)
             self.set_current_page(self.edit_account)
-        
+
     def function_view_account(self) -> None:
         account_to_view = AccountManager.get_account_by_name(self.get_selected_account())
         if account_to_view is not None:
@@ -181,7 +208,7 @@ class MainWindow(StateElement, Clickable):
                 Cache.set_cache(selected_account.get_password())
 
     def launch_url(self) -> None:
-        print('launch_url')
+        print("launch_url")
 
     def get_current_page(self) -> Union[Page, None]:
         return self.current_page
@@ -194,35 +221,32 @@ class MainWindow(StateElement, Clickable):
         Args:
             page (Page): the page to be selected.
         """
-        if page == None:
+        if page is None:
             self.get_state()[:] = 0
             self.current_page = None
             self.refresh_state()
             if not self.search_active:
                 self.refresh_image()
 
-
         elif self.current_page != page:
             self.get_state()[:] = 0
             self.get_state()[self.pages.index(page)] = 1
             self.current_page = page
 
-
     def current_page_blocks_click(self) -> bool:
-        """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open.
-        """
+        """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open."""
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
-    
+
     def handel_selection(self, selected: int) -> None:
         if self.STATE_IMG[0] < 4:
             return
         elif 3 < self.STATE_IMG[0] < 7:
             if selected < 3:
                 self.STATE_IMG[1] = selected
-                self.refresh_image() 
+                self.refresh_image()
         elif self.STATE_IMG[0] == 7:
             self.STATE_IMG[1] = selected
-            self.refresh_image() 
+            self.refresh_image()
 
     def handle_click(self, click_position: np.ndarray) -> None:
         # Let the current page process the click, if the current page blocks clicks
@@ -238,12 +262,11 @@ class MainWindow(StateElement, Clickable):
                 self.search(self.dropdown.get_current_value())
                 self.opened_dd = None
                 return
-            
+
             # Check if menu is clicked
             if self.MENU_AREA_BB.is_point_inside(click_position):
                 self.handle_menu_click(click_position)
                 return
-            
 
     def handle_menu_click(self, click_position: np.ndarray) -> None:
         """Handles a click inside the menu bounding-box (performing the hit menu-button's action,
@@ -254,7 +277,11 @@ class MainWindow(StateElement, Clickable):
         """
         for button in self.buttons:
             if self.search_active:
-                if button.get_bb() == self.ACCOUNT_ONE_BB or button.get_bb() == self.ACCOUNT_TWO_BB or button.get_bb() == self.ACCOUNT_THREE_BB:
+                if (
+                    button.get_bb() == self.ACCOUNT_ONE_BB
+                    or button.get_bb() == self.ACCOUNT_TWO_BB
+                    or button.get_bb() == self.ACCOUNT_THREE_BB
+                ):
                     break
                 else:
                     if button.is_clicked_by(click_position):
@@ -274,17 +301,16 @@ class MainWindow(StateElement, Clickable):
             return
 
     def render(self, img: np.ndarray):
-        """ Renders the main window and all its children onto the given image.
-        """
-        
+        """Renders the main window and all its children onto the given image."""
+
         self
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
-        if (self.current_page is not None):
+        if self.current_page is not None:
             img = self.current_page.render(img)
         else:
             for widget in self.get_widgets():
-             img = widget.render(img)
+                img = widget.render(img)
         return img
 
     def get_bb(self) -> BoundingBox:
@@ -313,33 +339,33 @@ class MainWindow(StateElement, Clickable):
             self.get_state()[13] = 0
             self.get_state()[14] = 1
         elif self.STATE_IMG[0] == 4:
-                self.get_state()[12] = 1
-                self.get_state()[13] = 1
-                self.get_state()[14] = 0
+            self.get_state()[12] = 1
+            self.get_state()[13] = 1
+            self.get_state()[14] = 0
         elif self.STATE_IMG[0] == 5:
-                self.get_state()[12] = 1
-                self.get_state()[13] = 0
-                self.get_state()[14] = 1
+            self.get_state()[12] = 1
+            self.get_state()[13] = 0
+            self.get_state()[14] = 1
         elif self.STATE_IMG[0] == 6:
-                self.get_state()[12] = 0
-                self.get_state()[13] = 1
-                self.get_state()[14] = 1
+            self.get_state()[12] = 0
+            self.get_state()[13] = 1
+            self.get_state()[14] = 1
         elif self.STATE_IMG[0] == 7:
-                self.get_state()[12] = 1
-                self.get_state()[13] = 1
-                self.get_state()[14] = 1
+            self.get_state()[12] = 1
+            self.get_state()[13] = 1
+            self.get_state()[14] = 1
 
     def refresh_image(self) -> None:
-        self.new_path = ''
+        self.new_path = ""
 
         if self.STATE_IMG[0] == 0:
             self.new_path = "main_window/main_window_0_accounts.png"
         elif self.STATE_IMG[0] == 1:
-                self.new_path = "main_window/main_window_Hanna_account.png"
+            self.new_path = "main_window/main_window_Hanna_account.png"
         elif self.STATE_IMG[0] == 2:
-                self.new_path = "main_window/main_window_Klaus_account.png"
+            self.new_path = "main_window/main_window_Klaus_account.png"
         elif self.STATE_IMG[0] == 3:
-                self.new_path = "main_window/main_window_Mariam_account.png"
+            self.new_path = "main_window/main_window_Mariam_account.png"
         elif self.STATE_IMG[0] == 4:
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_2_accounts_H_K.png"
@@ -370,7 +396,7 @@ class MainWindow(StateElement, Clickable):
                 self.new_path = "main_window/main_window_3_accounts_K_selected.png"
             elif self.STATE_IMG[1] == 3:
                 self.new_path = "main_window/main_window_3_accounts_M_selected.png"
-            
+
         self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
 
     def get_selected_account(self) -> Union[str, None]:
@@ -386,11 +412,11 @@ class MainWindow(StateElement, Clickable):
         if self.STATE_IMG[0] == 0:
             return None
         elif self.STATE_IMG[0] == 1:
-                return NAME_ONE
+            return NAME_ONE
         elif self.STATE_IMG[0] == 2:
-                return NAME_TWO
+            return NAME_TWO
         elif self.STATE_IMG[0] == 3:
-                return NAME_THREE
+            return NAME_THREE
         elif self.STATE_IMG[0] == 4:
             if self.STATE_IMG[1] == 0:
                 return None
@@ -421,17 +447,17 @@ class MainWindow(StateElement, Clickable):
                 return NAME_TWO
             elif self.STATE_IMG[1] == 3:
                 return NAME_THREE
-            
+
     def search(self, account_name) -> None:
         if account_name is None:
             self.refresh_image()
             self.search_active = False
-            return 
+            return
         elif self.account_exists(account_name):
             if account_name == NAME_ONE:
                 self.IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_Hanna_account.png")
                 self.search_active = True
-   
+
             elif account_name == NAME_TWO:
                 self.IMG_PATH = os.path.join(IMAGES_PATH, "main_window/main_window_Klaus_account.png")
                 self.search_active = True
@@ -466,7 +492,7 @@ class MainWindow(StateElement, Clickable):
                 return True
             else:
                 return False
-            
+
         return False
 
     def add_widget(self, widget: Widget) -> None:
@@ -474,7 +500,7 @@ class MainWindow(StateElement, Clickable):
         pages' StateElement-children."""
         self.widgets.append(widget)
         self.add_child(widget)
-    
+
     def get_widgets(self) -> List[Widget]:
         """Returns all widgets of this page. Might differ from the pages' state-element children!"""
         return self.widgets

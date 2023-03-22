@@ -9,6 +9,7 @@ __pycache__/
 venv/
 .venv/
 .ipynb_checkpoints/
+.pylintrc
 
 configurations/default.json
 configurations/temp.json
@@ -16,6 +17,7 @@ configurations/Configuration.json
 configurations/local_*
 
 naturalnets/configurations/temp-config.json
+*.egg-info
 
 checkpoints
 videos
@@ -57,7 +59,7 @@ spreadsheets/
 ## VS Code part starts here
 
 .vscode/*
-!.vscode/settings.json
+.vscode/settings.json
 !.vscode/tasks.json
 #!.vscode/launch.json
 !.vscode/extensions.json

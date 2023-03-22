@@ -1,16 +1,16 @@
 import os
 import numpy as np
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
-from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.app_components.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.widgets.button import Button
-from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class MasterPassword(Page):
-    """ A page to set the master password of the database. """
+    """A page to set the master password of the database."""
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/master_password.PNG")
@@ -33,10 +33,8 @@ class MasterPassword(Page):
         self.password_one = DropdownItem("1234", "1234")
         self.password_two = DropdownItem("qwer", "qwer")
         self.password_three = DropdownItem("asdf", "asdf")
-        self.dropdown = Dropdown(self.PASSWORD_DD_BB, [self.password_one,
-                                                   self.password_two,
-                                                   self.password_three])
-        
+        self.dropdown = Dropdown(self.PASSWORD_DD_BB, [self.password_one, self.password_two, self.password_three])
+
         self.add_widget(self.dropdown)
         self.opened_dd = None
 
@@ -66,6 +64,5 @@ class MasterPassword(Page):
             return
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders this page onto the given image.
-        """
+        """Renders this page onto the given image."""
         return super().render(img)

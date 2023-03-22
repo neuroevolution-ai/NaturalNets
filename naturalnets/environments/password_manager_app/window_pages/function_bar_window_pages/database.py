@@ -1,15 +1,15 @@
 import os
 import numpy as np
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
-from naturalnets.environments.password_manager_app.page import Page
+from naturalnets.environments.app_components.page import Page
 from naturalnets.environments.password_manager_app.page_manager import PageManager
-from naturalnets.environments.password_manager_app.widgets.button import Button
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class Database(Page):
-    """ The menu for database on the function bar. """
+    """The menu for database on the function bar."""
 
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/database.PNG")
@@ -39,14 +39,13 @@ class Database(Page):
             self.handle_menu_click(click_position)
             return
         else:
-            PageManager.return_to_main_window()
-        
+            PageManager.return_to_main_page()
+
     def handle_menu_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders this page onto the given image.
-        """
+        """Renders this page onto the given image."""
         return super().render(img)

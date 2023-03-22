@@ -1,12 +1,19 @@
 from typing import List, Union
-from naturalnets.environments.password_manager_app.account_manager.account import Account
-from naturalnets.environments.password_manager_app.constants import NAME_ONE, NAME_THREE, NAME_TWO
-from naturalnets.environments.password_manager_app.page_manager import PageManager
+from naturalnets.environments.password_manager_app.account_manager.account import (
+    Account,
+)
+from naturalnets.environments.password_manager_app.constants import (
+    NAME_ONE,
+    NAME_TWO,
+)
+from naturalnets.environments.password_manager_app.page_manager import (
+    PageManager,
+)
 
 
 class AccountManager:
-    """ The account manager manages all existing accounts. """
-    
+    """The account manager manages all existing accounts."""
+
     currentAccounts: List[Account] = []
 
     @staticmethod
@@ -17,7 +24,6 @@ class AccountManager:
                 PageManager.return_to_main_page()
             else:
                 PageManager.error(account.get_account_name())
-
 
     @staticmethod
     def edit_account(account: Account, old_account: Account) -> None:
@@ -45,19 +51,19 @@ class AccountManager:
             if account_name == currentAccount.get_account_name():
                 return True
         return False
-    
+
     @staticmethod
     def current_state() -> Union[List[int], None]:
-        " The state of all existing accounts. Is the same as state_img in the main window. "
-        if (AccountManager.currentAccounts is None):
+        "The state of all existing accounts. Is the same as state_img in the main window."
+        if AccountManager.currentAccounts is None:
             return [0, 0]
         len_current_accounts = len(AccountManager.currentAccounts)
 
-        if (len_current_accounts == 0):
+        if len_current_accounts == 0:
             return [0, 0]
-        elif (len_current_accounts == 3):
+        elif len_current_accounts == 3:
             return [7, 0]
-        elif (len_current_accounts == 1):
+        elif len_current_accounts == 1:
             name = AccountManager.currentAccounts[0].get_account_name()
             if name == NAME_ONE:
                 return [1, 1]
@@ -65,7 +71,7 @@ class AccountManager:
                 return [2, 1]
             else:
                 return [3, 1]
-        elif (len_current_accounts == 2):
+        elif len_current_accounts == 2:
             name = AccountManager.currentAccounts[0].get_account_name()
             if name == NAME_ONE:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_TWO:
@@ -82,8 +88,6 @@ class AccountManager:
                     return [5, 0]
                 else:
                     return [6, 0]
-                
-    def reset()  -> None:
-        AccountManager.currentAccounts = []
-                
 
+    def reset() -> None:
+        AccountManager.currentAccounts = []

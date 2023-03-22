@@ -1,14 +1,13 @@
 class PageManager:
-
     @staticmethod
-    def return_to_main_page()  -> None:
+    def return_to_main_page() -> None:
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.set_current_page(None)
 
     @staticmethod
-    def error(account_name: str)  -> None:
-        " This opens the error page. Gets thrown when the username already exists. "
+    def error(account_name: str) -> None:
+        "This opens the error page. Gets thrown when the username already exists."
         from naturalnets.environments.password_manager_app.app_controller import AppController
 
         AppController.main_window.function_account_error(account_name)
