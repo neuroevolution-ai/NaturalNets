@@ -44,7 +44,7 @@ class ViewAccount(Page):
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
-        self.account_to_edit = None
+        self.account_to_view = None
 
         self.name_one = DropdownItem(NAME_ONE, NAME_ONE)
         self.name_two = DropdownItem(NAME_TWO, NAME_TWO)
@@ -126,20 +126,19 @@ class ViewAccount(Page):
         pass
 
     def set_account(self, account: Account) -> None:
-        self.account_to_edit = account
+        self.account_to_view = account
         self.load_account()
 
     def load_account(self) -> None:
-        self.dropdown_account.set_selected_value(self.account_to_edit.get_account_name())
-        self.dropdown_user_id.set_selected_value(self.account_to_edit.get_user_id())
-        self.dropdown_url.set_selected_value(self.account_to_edit.get_url())
-        self.dropdown_notes.set_selected_value(self.account_to_edit.get_notes())
+        self.dropdown_account.set_selected_value(self.account_to_view.get_account_name())
+        self.dropdown_user_id.set_selected_value(self.account_to_view.get_user_id())
+        self.dropdown_url.set_selected_value(self.account_to_view.get_url())
+        self.dropdown_notes.set_selected_value(self.account_to_view.get_notes())
+        self.dropdown_password.set_selected_value(self.account_to_view.get_password())
 
-        new_password = self.account_to_edit.get_password()
-
-        for password in self.passwords:
-            if new_password == password.get_value():
-                self.current_password = password
+        self.current_password = self.dropdown_password.get_selected_item()
+        if self.is_checked:
+            self.dropdown_password.set_selected_item(None)
 
     def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:

@@ -39,7 +39,7 @@ class FileSystem(Page):
         self.opened_dd = None
 
     def return_to_main_window(self) -> None:
-        PageManager.return_to_main_page
+        PageManager.return_to_main_page()
 
         self.dropdown.set_selected_item(None)
         self.dropdown.close()

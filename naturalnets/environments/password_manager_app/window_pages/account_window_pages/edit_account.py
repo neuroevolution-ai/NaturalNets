@@ -92,12 +92,12 @@ class EditAccount(Page):
             self.dropdown_notes,
         ]
 
-        self.add_widgets(self.dropdowns)
-        self.opened_dd = None
-
         self.checkbox = CheckBox(self.HIDE_PASSWORD_BB, lambda is_checked: self.set_hide_password(is_checked))
         self.checkbox.set_selected(1)
         self.add_widget(self.checkbox)
+
+        self.add_widgets(self.dropdowns)
+        self.opened_dd = None
 
         self.buttons = [
             Button(self.OK_BUTTON_BB, lambda: self.ok()),
@@ -131,7 +131,7 @@ class EditAccount(Page):
         account_name = self.dropdown_account.get_current_value()
         if account_name is not None:
             account_user_id = self.dropdown_user_id.get_current_value()
-            account_password = self.current_password
+            account_password = self.current_password.get_value()
             account_url = self.dropdown_url.get_current_value()
             account_notes = self.dropdown_notes.get_current_value()
 
@@ -185,7 +185,8 @@ class EditAccount(Page):
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             if self.opened_dd == self.dropdown_password:
-                self.current_password = self.dropdown_password.get_selected_item()
+                if self.dropdown_password.get_selected_item() is not None:
+                    self.current_password = self.dropdown_password.get_selected_item()
                 if self.is_checked:
                     self.dropdown_password.set_selected_item(None)
             self.opened_dd = None

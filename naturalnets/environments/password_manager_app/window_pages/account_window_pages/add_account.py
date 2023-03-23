@@ -71,7 +71,7 @@ class AddAccount(Page):
             self.PASSWORD_DD_BB, [self.password_one, self.password_two, self.password_three]
         )
 
-        self.current_password = self.random_password()
+        self.current_password = self.password_one
         self.is_checked = True
 
         self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three])
@@ -86,12 +86,12 @@ class AddAccount(Page):
             self.dropdown_notes,
         ]
 
-        self.add_widgets(self.dropdowns)
-        self.opened_dd = None
-
         self.checkbox = CheckBox(self.HIDE_PASSWORD_BB, lambda is_checked: self.set_hide_password(is_checked))
         self.checkbox.set_selected(1)
         self.add_widget(self.checkbox)
+
+        self.add_widgets(self.dropdowns)
+        self.opened_dd = None
 
         self.buttons = [
             Button(self.OK_BUTTON_BB, lambda: self.ok()),
@@ -152,7 +152,13 @@ class AddAccount(Page):
             self.dropdown_password.set_selected_item(self.current_password)
 
     def random_password(self) -> DropdownItem:
-        return random.choice(self.dropdown_password.get_all_items())
+        # return random.choice(self.dropdown_password.get_all_items())
+        if self.current_password.get_value() == self.password_one.get_value():
+            return self.password_two
+        elif self.current_password.get_value() == self.password_two.get_value():
+            return self.password_three
+        else:
+            return self.password_one
 
     def launch_url(self) -> None:
         pass
@@ -162,7 +168,8 @@ class AddAccount(Page):
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             if self.opened_dd == self.dropdown_password:
-                self.current_password = self.dropdown_password.get_selected_item()
+                if self.dropdown_password.get_selected_item() is not None:
+                    self.current_password = self.dropdown_password.get_selected_item()
                 if self.is_checked:
                     self.dropdown_password.set_selected_item(None)
             self.opened_dd = None
