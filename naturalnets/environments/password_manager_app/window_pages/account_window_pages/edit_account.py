@@ -1,7 +1,6 @@
 import os
 import cv2
 import numpy as np
-import random
 from naturalnets.environments.password_manager_app.account_manager.account import Account
 from naturalnets.environments.password_manager_app.account_manager.account_manager import AccountManager
 from naturalnets.environments.password_manager_app.cache import Cache
@@ -159,7 +158,12 @@ class EditAccount(Page):
             self.dropdown_password.set_selected_item(self.current_password)
 
     def random_password(self) -> DropdownItem:
-        return random.choice(self.dropdown_password.get_all_items())
+        if self.current_password.get_value() == self.password_one.get_value():
+            return self.password_two
+        elif self.current_password.get_value() == self.password_two.get_value():
+            return self.password_three
+        else:
+            return self.password_one
 
     def launch_url(self) -> None:
         pass
