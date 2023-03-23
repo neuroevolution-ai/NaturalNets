@@ -76,7 +76,7 @@ class EditAccount(Page):
             self.PASSWORD_DD_BB, [self.password_one, self.password_two, self.password_three]
         )
 
-        self.current_password = self.random_password()
+        self.current_password = self.password_one
         self.is_checked = True
 
         self.dropdown_url = Dropdown(self.URL_DD_BB, [self.empty, self.name_one, self.name_two, self.name_three])
