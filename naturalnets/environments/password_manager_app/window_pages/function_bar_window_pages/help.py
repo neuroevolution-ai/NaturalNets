@@ -12,7 +12,7 @@ class Help(Page):
     """The menu for help on the function bar."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/help.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/help.png")
 
     BOUNDING_BOX = BoundingBox(110, 4, 84, 47)
     MENU_AREA_BB = BoundingBox(110, 23, 84, 28)

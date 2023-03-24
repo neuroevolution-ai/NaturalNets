@@ -66,7 +66,7 @@ class ConfirmDeleteAccount(Page):
         self.NAME_ACOOUNT_TO_DELETE = account_name
 
         if self.NAME_ACOOUNT_TO_DELETE == NAME_ONE:
-            self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Hanna.PNG")
+            self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Hanna.png")
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_TWO:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Klaus.png")
         elif self.NAME_ACOOUNT_TO_DELETE == NAME_THREE:

@@ -13,7 +13,7 @@ class FileSystem(Page):
     """Simulates a file system."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 

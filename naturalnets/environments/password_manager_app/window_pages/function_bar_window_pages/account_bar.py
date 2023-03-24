@@ -12,7 +12,7 @@ class AccountBar(Page):
     """The menu for accounts on the function bar."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/account.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/account.png")
 
     BOUNDING_BOX = BoundingBox(58, 4, 175, 179)
     MENU_AREA_BB = BoundingBox(58, 23, 175, 115)

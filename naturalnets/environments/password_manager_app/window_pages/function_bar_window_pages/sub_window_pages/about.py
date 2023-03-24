@@ -12,7 +12,7 @@ class About(Page):
     """A page with information about the application."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/about.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/about.png")
 
     BOUNDING_BOX = BoundingBox(71, 111, 305, 198)
 

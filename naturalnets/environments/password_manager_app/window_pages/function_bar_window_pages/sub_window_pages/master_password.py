@@ -13,7 +13,7 @@ class MasterPassword(Page):
     """A page to set the master password of the database."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/master_password.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/master_password.png")
 
     BOUNDING_BOX = BoundingBox(57, 147, 334, 127)
 
