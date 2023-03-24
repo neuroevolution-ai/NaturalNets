@@ -27,6 +27,7 @@ benchmarks/
 # Ignore the results folder
 results/
 results_monkey/
+ai-machine-results/
 
 temp*.json
 temp*.py
