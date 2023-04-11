@@ -3,18 +3,18 @@ from typing import Dict, List
 import cv2
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
-from naturalnets.environments.gui_app.interfaces import Clickable
+from naturalnets.environments.app_components.bounding_box import BoundingBox
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
 from naturalnets.environments.gui_app.settings_window_pages.calculator_settings import CalculatorSettings
 from naturalnets.environments.gui_app.settings_window_pages.car_configurator_settings import CarConfiguratorSettings
 from naturalnets.environments.gui_app.settings_window_pages.figure_printer_settings import FigurePrinterSettings
 from naturalnets.environments.gui_app.settings_window_pages.text_printer_settings import TextPrinterSettings
-from naturalnets.environments.gui_app.state_element import StateElement
-from naturalnets.environments.gui_app.utils import get_group_bounding_box, render_onto_bb
-from naturalnets.environments.gui_app.widgets.button import Button
+from naturalnets.environments.app_components.state_element import StateElement
+from naturalnets.environments.app_components.utils import get_group_bounding_box, render_onto_bb
+from naturalnets.environments.app_components.widgets.button import Button
 
 
 class SettingsWindow(StateElement, Clickable, RewardElement):
@@ -26,6 +26,7 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
             state[i]: represents the selected/shown status of page i, i in {1,..,4}.
     """
     STATE_LEN: int = 5
+    CLICKABLE_ELEMENTS: int = 5
     BOUNDING_BOX = BoundingBox(3, 1, 422, 367)
 
     PAGE_BB = BoundingBox(25, 48, 378, 262)
@@ -42,9 +43,11 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
 
         self._bounding_box = self.BOUNDING_BOX
 
-        self.text_printer_settings = TextPrinterSettings(main_window.text_printer)
+        self.text_printer_settings = TextPrinterSettings(
+            main_window.text_printer)
         self.calculator_settings = CalculatorSettings(main_window.calculator)
-        self.car_config_settings = CarConfiguratorSettings(main_window.car_configurator)
+        self.car_config_settings = CarConfiguratorSettings(
+            main_window.car_configurator)
         self.figure_printer_settings = FigurePrinterSettings(main_window)
 
         self.close_button = Button(self.CLOSE_BUTTON_BB, self.close)
@@ -175,7 +178,8 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
                 # If current_tab is None then this function is called on __init__ and we do not want
                 # to give reward for this (i.e. change the reward dict)
                 if self.current_tab is not None:
-                    self.register_selected_reward(["settings_tab_opened", self.tabs_to_str[current_tab]])
+                    self.register_selected_reward(
+                        ["settings_tab_opened", self.tabs_to_str[current_tab]])
 
                 self.get_state()[index] = 1
                 self.current_tab = current_tab
@@ -193,3 +197,9 @@ class SettingsWindow(StateElement, Clickable, RewardElement):
     def get_tabs_bb(self, tab_buttons: List[Button]) -> BoundingBox:
         """Returns the bounding-box of the tabs-menu (bounding-box of all buttons)."""
         return get_group_bounding_box(tab_buttons)
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        clickable_elements = [self.close_button]
+        clickable_elements.extend(self.tab_buttons)
+
+        return self.current_tab.get_clickable_elements(clickable_elements)

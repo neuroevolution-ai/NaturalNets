@@ -175,12 +175,12 @@ class DummyApp(IGUIEnvironment):
 
     def get_observation_dict(self) -> dict:
         observation_dict = {
-            "pressed buttons": []
+            "pressed_buttons": []
         }
 
         for i in range(len(self.button_states)):
             if self.button_states[i] == 1:
-                observation_dict["pressed buttons"].append(i)
+                observation_dict["pressed_buttons"].append(i)
 
         return observation_dict
 
@@ -260,6 +260,12 @@ class DummyApp(IGUIEnvironment):
 
     def get_screen_size(self) -> int:
         assert self.config.screen_width == self.config.screen_height
+        return self.config.screen_width
+    
+    def get_screen_height(self) -> int:
+        return self.config.screen_height
+    
+    def get_screen_width(self) -> int:
         return self.config.screen_width
 
     @staticmethod

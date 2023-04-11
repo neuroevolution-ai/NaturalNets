@@ -1,16 +1,16 @@
-import os
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, MAIN_PAGE_AREA_BB
 from naturalnets.environments.gui_app.enums import Base, Operator
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.utils import put_text
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.interfaces import Clickable
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import put_text, get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class Calculator(Page, RewardElement):
@@ -18,7 +18,9 @@ class Calculator(Page, RewardElement):
     """
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator.png")
+    MAX_CLICKABLE_ELEMENTS = 4
+
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator.png")
 
     OPERAND_1_BB = BoundingBox(125, 316, 97, 22)
     OPERATOR_BB = BoundingBox(228, 316, 97, 22)
@@ -60,7 +62,8 @@ class Calculator(Page, RewardElement):
         self.operand_1_dd = self.create_operand_dd(self.OPERAND_1_BB)
         self.operand_2_dd = self.create_operand_dd(self.OPERAND_2_BB)
 
-        self.dropdowns: List[Dropdown] = [self.operator_dd, self.operand_1_dd, self.operand_2_dd]
+        self.dropdowns: List[Dropdown] = [
+            self.operator_dd, self.operand_1_dd, self.operand_2_dd]
 
         self.add_widgets(self.dropdowns)
 
@@ -73,7 +76,7 @@ class Calculator(Page, RewardElement):
         # Does not need to be added as child, because buttons do not have a state
         self.button = Button(self.BUTTON_BB, self.calculate)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
         self.base = None
         self.current_result = None
 
@@ -132,11 +135,13 @@ class Calculator(Page, RewardElement):
         calculator-settings."""
         item.set_visible(visible)
 
-        self.register_selected_reward([self.operator_ddis_to_str[item] + "_setting", bool(visible)])
+        self.register_selected_reward(
+            [self.operator_ddis_to_str[item] + "_setting", bool(visible)])
 
         if visible:
             # Update selected item when a new item becomes visible (always first item in dd list)
-            self.operator_dd.set_selected_item(self.operator_dd.get_visible_items()[0])
+            self.operator_dd.set_selected_item(
+                self.operator_dd.get_visible_items()[0])
 
     def create_operand_dd(self, bounding_box: BoundingBox) -> Dropdown:
         """Creates the operand dropdown."""
@@ -169,7 +174,8 @@ class Calculator(Page, RewardElement):
             self.opened_dd.handle_click(click_position)
 
             current_value = self.opened_dd.get_current_value()
-            self.register_selected_reward([self.dropdowns_to_str[self.opened_dd], "selected", current_value])
+            self.register_selected_reward(
+                [self.dropdowns_to_str[self.opened_dd], "selected", current_value])
 
             self.opened_dd = None
             return
@@ -180,7 +186,8 @@ class Calculator(Page, RewardElement):
 
                 if dropdown.is_open():
                     self.opened_dd = dropdown
-                    self.register_selected_reward([self.dropdowns_to_str[dropdown], "opened"])
+                    self.register_selected_reward(
+                        [self.dropdowns_to_str[dropdown], "opened"])
                 return
 
         # Needs to be called _after_ the dropdowns, in case an opened dropdown occludes the button
@@ -201,9 +208,12 @@ class Calculator(Page, RewardElement):
         b: int = self.operand_2_dd.get_current_value()
 
         self.register_selected_reward(["numeral_system", self.base])
-        self.register_selected_reward([self.dropdowns_to_str[self.operator_dd], "used_in_calculate", operator])
-        self.register_selected_reward([self.dropdowns_to_str[self.operand_1_dd], "used_in_calculate", a])
-        self.register_selected_reward([self.dropdowns_to_str[self.operand_2_dd], "used_in_calculate", b])
+        self.register_selected_reward(
+            [self.dropdowns_to_str[self.operator_dd], "used_in_calculate", operator])
+        self.register_selected_reward(
+            [self.dropdowns_to_str[self.operand_1_dd], "used_in_calculate", a])
+        self.register_selected_reward(
+            [self.dropdowns_to_str[self.operand_2_dd], "used_in_calculate", b])
 
         output = None
         if operator_str == "+":
@@ -230,9 +240,22 @@ class Calculator(Page, RewardElement):
         bottom_left_corner = (x, y + height)
         put_text(img, f"{self.base}", bottom_left_corner, font_scale=0.4)
         bottom_left_corner = (x, y + height - vertical_space)
-        put_text(img, f"Last result: {self.current_result}", bottom_left_corner, font_scale=0.4)
+        put_text(img, f"Last result: {self.current_result}",
+                 bottom_left_corner, font_scale=0.4)
 
         return img
+
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
+
+        clickable_elements.extend(self.dropdowns)
+        clickable_elements.append(self.button)
+
+        return clickable_elements
 
 
 class CalculatorPopup(Page, RewardElement):
@@ -242,8 +265,10 @@ class CalculatorPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 1
+
     BOUNDING_BOX = BoundingBox(87, 101, 234, 86)
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator_popup.png")
 
     BUTTON_BB = BoundingBox(147, 143, 114, 22)
 
@@ -276,3 +301,6 @@ class CalculatorPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.button]

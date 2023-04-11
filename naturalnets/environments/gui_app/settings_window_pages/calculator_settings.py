@@ -1,22 +1,26 @@
-import os
+from typing import List, Optional
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Base
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.calculator import Calculator, Operator
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
 class CalculatorSettings(Page, RewardElement):
     """The calculator settings page, manipulates the calculator page."""
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings.png")
+    MAX_CLICKABLE_ELEMENTS = 5
+
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator_settings.png")
 
     ADDITION_BB = BoundingBox(38, 117, 66, 14)
     MULTIPLICATION_BB = BoundingBox(38, 143, 91, 14)
@@ -79,7 +83,7 @@ class CalculatorSettings(Page, RewardElement):
                                                    self.base_16_ddi])
         self.add_widget(self.dropdown)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
 
         self.popup = CalculatorSettingsPopup(self)
         self.add_child(self.popup)
@@ -154,6 +158,18 @@ class CalculatorSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
+
+        clickable_elements.extend(self.operator_checkboxes)
+        clickable_elements.append(self.dropdown)
+
+        return clickable_elements
+
 
 class CalculatorSettingsPopup(Page, RewardElement):
     """Popup for the calculator settings (pops up when no operator-checkbox is selected).
@@ -162,8 +178,10 @@ class CalculatorSettingsPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(47, 87, 315, 114)
-    IMG_PATH = os.path.join(IMAGES_PATH, "calculator_settings_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "calculator_settings_popup.png")
 
     DROPDOWN_BB = BoundingBox(69, 129, 271, 22)
     APPLY_BUTTON_BB = BoundingBox(123, 157, 163, 22)
@@ -176,8 +194,10 @@ class CalculatorSettingsPopup(Page, RewardElement):
         self.calculator_settings = calculator_settings
 
         self.addition_ddi = DropdownItem(Operator.ADDITION, "Addition")
-        self.subtraction_ddi = DropdownItem(Operator.SUBTRACTION, "Subtraction")
-        self.multiplication_ddi = DropdownItem(Operator.MULTIPLICATION, "Multiplication")
+        self.subtraction_ddi = DropdownItem(
+            Operator.SUBTRACTION, "Subtraction")
+        self.multiplication_ddi = DropdownItem(
+            Operator.MULTIPLICATION, "Multiplication")
         self.division_ddi = DropdownItem(Operator.DIVISION, "Division")
         self.dropdown = Dropdown(self.DROPDOWN_BB, [self.addition_ddi,
                                                     self.subtraction_ddi,
@@ -211,7 +231,8 @@ class CalculatorSettingsPopup(Page, RewardElement):
         if self.dropdown_opened:
             self.dropdown.handle_click(click_position)
 
-            self.register_selected_reward(["operator_selection", self.dropdown.get_current_value()])
+            self.register_selected_reward(
+                ["operator_selection", self.dropdown.get_current_value()])
 
             self.dropdown_opened = False
             return
@@ -228,8 +249,10 @@ class CalculatorSettingsPopup(Page, RewardElement):
             curr_dropdown_value: Operator = self.dropdown.get_current_value()
             assert curr_dropdown_value is not None
             self.apply_button.handle_click(click_position)
-            self.calculator_settings.select_operator_checkbox(curr_dropdown_value)
-            self.calculator_settings.calculator.set_operator_value(curr_dropdown_value)
+            self.calculator_settings.select_operator_checkbox(
+                curr_dropdown_value)
+            self.calculator_settings.calculator.set_operator_value(
+                curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""
@@ -247,3 +270,9 @@ class CalculatorSettingsPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        if self.dropdown_opened:
+            return self.dropdown.get_visible_items()
+
+        return [self.dropdown, self.apply_button]

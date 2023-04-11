@@ -1,25 +1,28 @@
-import os
-from typing import List, Optional
+from typing import List
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
 from naturalnets.environments.gui_app.enums import Font, FontStyle
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window_pages.text_printer import TextPrinter
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
 class TextPrinterSettings(Page, RewardElement):
     """The text-printer settings page, manipulates the text-printer page."""
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings.png")
+    CLICKABLE_ELEMENTS = 10
+
+    IMG_PATH = get_image_path(IMAGES_PATH, "text_printer_settings.png")
 
     N_WORDS_BB = BoundingBox(217, 71, 173, 22)
     FONT_SIZE_BB = BoundingBox(38, 110, 87, 22)
@@ -47,15 +50,18 @@ class TextPrinterSettings(Page, RewardElement):
         # init font-style checkboxes
         self.bold = CheckBox(
             self.BOLD_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.BOLD, is_checked)
+            lambda is_checked: self.text_printer.set_font_style(
+                FontStyle.BOLD, is_checked)
         )
         self.italic = CheckBox(
             self.ITALIC_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.ITALIC, is_checked)
+            lambda is_checked: self.text_printer.set_font_style(
+                FontStyle.ITALIC, is_checked)
         )
         self.underline = CheckBox(
             self.UNDERLINE_BB,
-            lambda is_checked: self.text_printer.set_font_style(FontStyle.UNDERLINE, is_checked)
+            lambda is_checked: self.text_printer.set_font_style(
+                FontStyle.UNDERLINE, is_checked)
         )
         self.font_style_checkboxes = [self.bold, self.italic, self.underline]
         self.add_widgets(self.font_style_checkboxes)
@@ -92,21 +98,27 @@ class TextPrinterSettings(Page, RewardElement):
         self.font_size_dd.set_selected_item(self.font_size_12)
 
         # Font dropdown: DejaVu Sans, Liberation Mono, Nimbus Roman, Ubuntu
-        self.font_ds_ddi = DropdownItem(Font.DEJAVU_SANS, Font.DEJAVU_SANS.value)
-        self.font_lm_ddi = DropdownItem(Font.LIBERATION_MONO, Font.LIBERATION_MONO.value)
-        self.font_nr_ddi = DropdownItem(Font.NIMBUS_ROMAN, Font.NIMBUS_ROMAN.value)
+        self.font_ds_ddi = DropdownItem(
+            Font.DEJAVU_SANS, Font.DEJAVU_SANS.value)
+        self.font_lm_ddi = DropdownItem(
+            Font.LIBERATION_MONO, Font.LIBERATION_MONO.value)
+        self.font_nr_ddi = DropdownItem(
+            Font.NIMBUS_ROMAN, Font.NIMBUS_ROMAN.value)
         self.font_u_ddi = DropdownItem(Font.UBUNTU, Font.UBUNTU.value)
-        self.font_ddis = [self.font_ds_ddi, self.font_lm_ddi, self.font_nr_ddi, self.font_u_ddi]
+        self.font_ddis = [self.font_ds_ddi, self.font_lm_ddi,
+                          self.font_nr_ddi, self.font_u_ddi]
         self.fonts_dd = Dropdown(self.FONT_BB, self.font_ddis)
         self.fonts_dd.set_selected_item(self.font_ds_ddi)
 
         # n-words dropdown needs to be first since it may occlude the
         # others when opened (important for iteration in handle_click)
-        self.dropdowns: List[Dropdown] = [self.n_words_dd, self.font_size_dd, self.fonts_dd]
+        self.dropdowns: List[Dropdown] = [
+            self.n_words_dd, self.font_size_dd, self.fonts_dd]
         self.dropdown_to_func = {
             self.n_words_dd: lambda: self.text_printer.set_n_words(self.n_words_dd.get_current_value()),
             self.font_size_dd: lambda: self.text_printer.set_font_size(self.font_size_dd.get_current_value()),
-            self.fonts_dd: lambda: self.text_printer.set_font(self.fonts_dd.get_current_value())
+            self.fonts_dd: lambda: self.text_printer.set_font(
+                self.fonts_dd.get_current_value())
         }
 
         self.dropdowns_to_str = {
@@ -117,14 +129,16 @@ class TextPrinterSettings(Page, RewardElement):
 
         self.add_widgets(self.dropdowns)
 
-        self.opened_dd = None
+        self.opened_dd: Optional[Dropdown] = None
 
         # Init radio button group
         self.red_rb = RadioButton(self.RED_RB_BB, value=Color.RED)
-        self.green_rb = RadioButton(self.GREEN_RB_BB, value=Color.GREEN, action=self.open_popup)
+        self.green_rb = RadioButton(
+            self.GREEN_RB_BB, value=Color.GREEN, action=self.open_popup)
         self.blue_rb = RadioButton(self.BLUE_RB_BB, value=Color.BLUE)
         self.black_rb = RadioButton(self.BLACK_RB_BB, value=Color.BLACK)
-        self.rbg = RadioButtonGroup([self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
+        self.rbg = RadioButtonGroup(
+            [self.black_rb, self.red_rb, self.green_rb, self.blue_rb])
         self.add_widget(self.rbg)
 
         self.set_reward_children([self.popup])
@@ -193,7 +207,8 @@ class TextPrinterSettings(Page, RewardElement):
 
                 if dropdown.is_open():
                     self.opened_dd = dropdown
-                    self.register_selected_reward(["dropdown_opened", self.dropdowns_to_str[dropdown]])
+                    self.register_selected_reward(
+                        ["dropdown_opened", self.dropdowns_to_str[dropdown]])
                 return
 
         for checkbox in self.font_style_checkboxes:
@@ -224,6 +239,19 @@ class TextPrinterSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        if self.opened_dd is not None:
+            return self.opened_dd.get_visible_items()
+
+        clickable_elements.extend(self.dropdowns)
+        clickable_elements.extend(self.rbg.get_radio_buttons())
+        clickable_elements.extend(self.font_style_checkboxes)
+
+        return clickable_elements
+
 
 class TextPrinterSettingsPopup(Page, RewardElement):
     """Popup for the text-printer settings (pops up when the green radio-button is selected).
@@ -232,8 +260,10 @@ class TextPrinterSettingsPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(99, 94, 210, 100)
-    IMG_PATH = os.path.join(IMAGES_PATH, "text_printer_settings_popup.png")
+    IMG_PATH = get_image_path(IMAGES_PATH, "text_printer_settings_popup.png")
 
     YES_BUTTON_BB = BoundingBox(121, 150, 80, 22)
     NO_BUTTON_BB = BoundingBox(207, 150, 80, 22)
@@ -244,8 +274,10 @@ class TextPrinterSettingsPopup(Page, RewardElement):
 
         self.settings = text_printer_settings
 
-        self.yes_button: Button = Button(self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
-        self.no_button: Button = Button(self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
+        self.yes_button: Button = Button(
+            self.YES_BUTTON_BB, lambda: self.set_rb_and_close(True))
+        self.no_button: Button = Button(
+            self.NO_BUTTON_BB, lambda: self.set_rb_and_close(False))
 
     @property
     def reward_template(self):
@@ -284,3 +316,6 @@ class TextPrinterSettingsPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        return [self.yes_button, self.no_button]

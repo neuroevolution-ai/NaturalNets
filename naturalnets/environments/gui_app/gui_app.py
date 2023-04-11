@@ -10,6 +10,7 @@ from attrs import define, field, validators
 from naturalnets.enhancers import RandomEnhancer
 from naturalnets.environments.gui_app.app_controller import AppController
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.i_environment import register_environment_class, IGUIEnvironment
 
 
@@ -20,10 +21,27 @@ class FakeBugOptions(enum.Enum):
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
 class AppCfg:
     type: str = field(validator=validators.instance_of(str))
-    number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
+    number_time_steps: int = field(
+        validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = field(validator=validators.instance_of(bool))
     fake_bugs: List[str] = field(default=None,
                                  validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))])
+
+    # If true, calculates the currently clickable elements of the GUIApp, which can then be retrieved via a method
+    return_clickable_elements: bool = field(
+        default=False, validator=validators.instance_of(bool))
+
+    # If true, for each click the nearest clickable element will be calculated and this one will be clicked.
+    # Thus, each click will be on a clickable element
+    nearest_widget_click: bool = field(
+        default=False, validator=validators.instance_of(bool))
+
+    @nearest_widget_click.validator
+    def validate_nearest_widget_click(self, attribute, value):
+        if value and not self.return_clickable_elements:
+            raise ValueError("GUIApp: 'nearest_widget_click' is set to True, but 'return_clickable_elements' "
+                             "is set to False.\nHowever, 'return_clickable_elements' is required for "
+                             "'nearest_widget_click' to work, thus try setting it to True.")
 
     def __attrs_post_init__(self):
         if self.include_fake_bug:
@@ -45,7 +63,7 @@ class GUIApp(IGUIEnvironment):
 
         self.config = AppCfg(**configuration)
 
-        self.app_controller = AppController()
+        self.app_controller = AppController(self.config.nearest_widget_click)
 
         self.t = 0
 
@@ -62,17 +80,21 @@ class GUIApp(IGUIEnvironment):
         t1 = time.time()
 
         logging.debug(f"App initialized in {t1 - t0}s.")
-        logging.debug(f"Total app state length is {self.app_controller.get_total_state_len()}.")
+        logging.debug(
+            f"Total app state length is {self.app_controller.get_total_state_len()}.")
 
     def get_state(self):
         return self.app_controller.get_total_state()
 
     def step(self, action: np.ndarray):
         # Convert from [-1, 1] continuous values to pixel coordinates in [0, screen_width/screen_height]
-        self.click_position_x = int(0.5 * (action[0] + 1.0) * self.screen_width)
-        self.click_position_y = int(0.5 * (action[1] + 1.0) * self.screen_height)
+        self.click_position_x = int(
+            0.5 * (action[0] + 1.0) * self.screen_width)
+        self.click_position_y = int(
+            0.5 * (action[1] + 1.0) * self.screen_height)
 
-        click_coordinates = np.array([self.click_position_x, self.click_position_y])
+        click_coordinates = np.array(
+            [self.click_position_x, self.click_position_y])
         rew = self.app_controller.handle_click(click_coordinates)
 
         # For the running_reward only count the actual reward from the GUIApp, and ignore the time step calculations
@@ -92,7 +114,12 @@ class GUIApp(IGUIEnvironment):
         if self.t >= self.config.number_time_steps or self.running_reward >= self.max_reward:
             done = True
 
-        return self.get_observation(), rew, done, {"states_info": self.app_controller.get_states_info()}
+        info = {"states_info": self.app_controller.get_states_info()}
+
+        if self.config.return_clickable_elements:
+            info["clickable_elements"] = self.get_clickable_elements()
+
+        return self.get_observation(), rew, done, info
 
     def render_image(self) -> np.ndarray:
         img_shape = (self.screen_width, self.screen_height, 3)
@@ -159,3 +186,15 @@ class GUIApp(IGUIEnvironment):
     def get_screen_size(self) -> int:
         assert self.screen_width == self.screen_height
         return self.screen_width
+
+    def get_screen_height(self) -> int:
+        return self.screen_height
+
+    def get_screen_width(self) -> int:
+        return self.screen_width
+
+    def get_clickable_elements(self) -> Optional[List[Clickable]]:
+        if self.config.return_clickable_elements:
+            return self.app_controller.get_clickable_elements()
+        else:
+            return None

@@ -7,6 +7,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 venv/
+.venv/
 .ipynb_checkpoints/
 
 configurations/default.json
@@ -24,6 +25,7 @@ benchmarks/
 # Ignore the results folder
 results/
 results_monkey/
+ai-machine-results/
 
 temp*.json
 temp*.py
@@ -67,3 +69,5 @@ spreadsheets/
 
 # Weights and Biases Temporary Files
 wandb/
+#Anki exported decks
+naturalnets/environments/anki/decks/exported_decks

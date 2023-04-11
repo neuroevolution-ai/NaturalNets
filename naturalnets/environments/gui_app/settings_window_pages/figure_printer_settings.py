@@ -1,25 +1,28 @@
-import os
 from typing import Dict, List, Tuple
 
 import numpy as np
 
-from naturalnets.environments.gui_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.gui_app.constants import IMAGES_PATH, SETTINGS_AREA_BB
 from naturalnets.environments.gui_app.enums import Color
+from naturalnets.environments.app_components.interfaces import Clickable
 from naturalnets.environments.gui_app.main_window import MainWindow
 from naturalnets.environments.gui_app.main_window_pages.figure_printer import Figure
-from naturalnets.environments.gui_app.page import Page
-from naturalnets.environments.gui_app.reward_element import RewardElement
-from naturalnets.environments.gui_app.widgets.button import Button
-from naturalnets.environments.gui_app.widgets.check_box import CheckBox
-from naturalnets.environments.gui_app.widgets.dropdown import Dropdown, DropdownItem
-from naturalnets.environments.gui_app.widgets.radio_button_group import RadioButton, RadioButtonGroup
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.app_components.reward_element import RewardElement
+from naturalnets.environments.app_components.utils import get_image_path
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.check_box import CheckBox
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.widgets.radio_button_group import RadioButton, RadioButtonGroup
 
 
 class FigurePrinterSettings(Page, RewardElement):
     """The figure-printer settings page, manipulates the figure-printer page."""
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "figure_printer_settings.png")
+    MAX_CLICKABLE_ELEMENTS = 9
+
+    IMG_PATH = get_image_path(IMAGES_PATH, "figure_printer_settings.png")
 
     SHOW_FIG_PRINTER_BB = BoundingBox(38, 91, 141, 14)
 
@@ -164,16 +167,18 @@ class FigurePrinterSettings(Page, RewardElement):
 
         if self._show_fig_printer_checkbox.is_clicked_by(click_position):
             self._show_fig_printer_checkbox.handle_click(click_position)
-            figure_printer_activated = self._show_fig_printer_checkbox.is_selected()
+            figure_printer_activated = self.is_figure_printer_activated()
             self.main_window.enable_figure_printer(figure_printer_activated)
 
-            self.register_selected_reward(["activate_figure_printer", bool(figure_printer_activated)])
+            self.register_selected_reward(
+                ["activate_figure_printer", bool(figure_printer_activated)])
 
             # Change current main window page if it was the figure printer and the figure printer
             # has been deactivated
             if (self.main_window.get_current_page() == self.main_window.figure_printer
                     and not self._show_fig_printer_checkbox.is_selected()):
-                self.main_window.set_current_page(self.main_window.text_printer)
+                self.main_window.set_current_page(
+                    self.main_window.text_printer)
             return
 
         # other widgets only available when figure printer is activated
@@ -204,6 +209,22 @@ class FigurePrinterSettings(Page, RewardElement):
             img = self.popup.render(img)
         return img
 
+    def get_clickable_elements(self, clickable_elements: List[Clickable]) -> List[Clickable]:
+        if self.popup.is_open():
+            return self.popup.get_clickable_elements()
+
+        clickable_elements.append(self._show_fig_printer_checkbox)
+
+        # If the "Activate FigurePrinter" checkbox is not activated, it is the only clickable
+        # widget, thus return
+        if not self.is_figure_printer_activated():
+            return clickable_elements
+
+        clickable_elements.extend(self.figure_checkboxes)
+        clickable_elements.extend(self._color_rbg.get_radio_buttons())
+
+        return clickable_elements
+
 
 class FigureCheckboxesPopup(Page, RewardElement):
     """Popup for the figure-printer settings (pops up when no figure-checkbox is selected).
@@ -212,8 +233,11 @@ class FigureCheckboxesPopup(Page, RewardElement):
             state[0]: the opened-state of this popup.
     """
     STATE_LEN = 1
+    MAX_CLICKABLE_ELEMENTS = 2
+
     BOUNDING_BOX = BoundingBox(14, 87, 381, 114)
-    IMG_PATH = os.path.join(IMAGES_PATH, "figure_settings_checkboxes_popup.png")
+    IMG_PATH = get_image_path(
+        IMAGES_PATH, "figure_settings_checkboxes_popup.png")
 
     APPLY_BUTTON_BB = BoundingBox(103, 157, 203, 22)
     DROPDOWN_BB = BoundingBox(36, 129, 337, 22)
@@ -225,8 +249,10 @@ class FigureCheckboxesPopup(Page, RewardElement):
         self.apply_button = Button(self.APPLY_BUTTON_BB, self.close)
         self.figure_printer_settings = figure_printer_settings
 
-        self.christmas_tree_ddi = DropdownItem(Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
-        space_ship_ddi = DropdownItem(Figure.SPACE_SHIP, display_name="Space Ship")
+        self.christmas_tree_ddi = DropdownItem(
+            Figure.CHRISTMAS_TREE, display_name="Christmas Tree")
+        space_ship_ddi = DropdownItem(
+            Figure.SPACE_SHIP, display_name="Space Ship")
         guitar_ddi = DropdownItem(Figure.GUITAR, display_name="Guitar")
         house_ddi = DropdownItem(Figure.HOUSE, display_name="House")
         ddis = [self.christmas_tree_ddi, space_ship_ddi, guitar_ddi, house_ddi]
@@ -266,7 +292,8 @@ class FigureCheckboxesPopup(Page, RewardElement):
 
             if dropdown_value_clicked:
                 selected_item = self.dropdown.get_current_value()
-                self.register_selected_reward(["dropdown", "selected", selected_item])
+                self.register_selected_reward(
+                    ["dropdown", "selected", selected_item])
 
             self.dropdown_opened = False
             return
@@ -284,10 +311,13 @@ class FigureCheckboxesPopup(Page, RewardElement):
             self.apply_button.handle_click(click_position)
             curr_dropdown_value: Figure = self.dropdown.get_current_value()
 
-            assert curr_dropdown_value is not None  # Popup dropdown value should never be None
+            # Popup dropdown value should never be None
+            assert curr_dropdown_value is not None
 
-            self.figure_printer_settings.select_figure_checkbox(curr_dropdown_value)
-            self.figure_printer_settings.set_figure_printer_dd_value(curr_dropdown_value)
+            self.figure_printer_settings.select_figure_checkbox(
+                curr_dropdown_value)
+            self.figure_printer_settings.set_figure_printer_dd_value(
+                curr_dropdown_value)
 
     def open(self):
         """Opens this popup."""
@@ -305,3 +335,9 @@ class FigureCheckboxesPopup(Page, RewardElement):
     def is_open(self) -> int:
         """Returns the opened-state of this popup."""
         return self.get_state()[0]
+
+    def get_clickable_elements(self) -> List[Clickable]:
+        if self.dropdown_opened:
+            return self.dropdown.get_visible_items()
+
+        return [self.dropdown, self.apply_button]
