@@ -23,11 +23,12 @@ class OptimizerCmaEsEvoTorchCfg(IOptimizerCfg):
     sigma: Union[int, float] = field(validator=[validators.instance_of((int, float))])
 
     # Defines the upper and lower bound for the first population
-    initial_bounds: Tuple[int] = field(default=(-1, 1), converter=tuple)
+    initial_bounds: Tuple[int, int] = field(default=(-2, 2), converter=tuple)
 
-    # See the parameter description in the __init__() function here:
+    # See the parameter descriptions in the __init__() function here:
     # https://docs.evotorch.ai/v0.4.0/reference/evotorch/#evotorch.algorithms.cmaes.CMAES
     limit_C_decomposition: bool = field(default=False, validator=validators.instance_of(bool))
+    active: bool = field(default=True, validator=validators.instance_of(bool))
 
     # Can be "cpu" or "gpu"
     device: str = field(default="cpu", converter=convert_device,
@@ -36,7 +37,7 @@ class OptimizerCmaEsEvoTorchCfg(IOptimizerCfg):
     @population_size.validator
     def validate_limit_c_decomposition(self, attribute, value):
         if self.limit_C_decomposition and value < 75:
-            warnings.warn(f"'limit_C_decomposition' is True and the 'population_size' is lower than 75, this may cause "
+            warnings.warn("'limit_C_decomposition' is True and the 'population_size' is lower than 75, this may cause "
                           "a division by zero! Try increasing the 'population_size'.")
 
     @initial_bounds.validator
@@ -60,10 +61,10 @@ class OptimizerCmaEsEvoTorchCfg(IOptimizerCfg):
 
             try:
                 torch.cuda.get_device_name(value)
-            except AssertionError:
-                raise ValueError(f"PyTorch cannot detect a GPU on this machine. The CUDA "
+            except AssertionError as err:
+                raise ValueError("PyTorch cannot detect a GPU on this machine. The CUDA "
                                  f"device count is: {torch.cuda.device_count()}. Try fixing PyTorch + CUDA or use the "
-                                 "CPU by setting 'device' to 'cpu'.")
+                                 "CPU by setting 'device' to 'cpu'.") from err
 
 
 @register_optimizer_class
@@ -78,19 +79,24 @@ class CmaEsEvoTorch(IOptimizer):
                           initial_bounds=config.initial_bounds, device=config.device)
 
         try:
-            self.cma_es = CMAES(problem, stdev_init=config.sigma, popsize=config.population_size,
-                                limit_C_decomposition=config.limit_C_decomposition)
-        except ValueError:
+            self.cma_es = CMAES(
+                problem,
+                stdev_init=config.sigma,
+                popsize=config.population_size,
+                center_init=[0.0] * self.individual_size,
+                active=config.active,
+                limit_C_decomposition=config.limit_C_decomposition)
+        except ValueError as err:
             raise ValueError("The creation of CMA-ES failed, probably due to a division by zero. If that is the "
                              "case, try increasing the 'population_size' and/or 'sigma', or disable "
-                             "'limit_C_decomposition'.")
+                             "'limit_C_decomposition'.") from err
 
-        self.population = None
+        self.population: List[np.ndarray] = []
 
         self.i = 0
-        self.rewards = None
+        self.rewards: List[float] = []
 
-    def assign_reward_to_evotorch(self, _) -> torch.Tensor:
+    def assign_reward_to_evotorch(self, _) -> float:
         """
         Normally this function would evaluate a genome given by EvoTorch by calculating its reward. However we have
         another pipeline, so we abuse this function to simply return the reward that we calculated before.
