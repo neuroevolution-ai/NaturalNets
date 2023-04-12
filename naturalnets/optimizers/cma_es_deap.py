@@ -42,7 +42,7 @@ class CmaEsDeap(IOptimizer):
 
         self.population = None
 
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         # Generate a new population
         self.population = self.toolbox.generate()
         genomes = []

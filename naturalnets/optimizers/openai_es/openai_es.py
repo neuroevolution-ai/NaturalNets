@@ -123,7 +123,7 @@ class OpenAIEs(IOptimizer):
             self.learning_rate = self.learning_rate - self.learning_rate * 0.25
             print("Decreased learning rate - Difference: {}".format(difference))
 
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         individuals = []
 
         number_of_individuals = self.population_size

@@ -27,7 +27,7 @@ class CanonicalEs(IOptimizer):
         self.w = self.get_reward_weights(self.config.parent_population_size)
         self.genomes = []
 
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         self.genomes = []
         for _ in range(self.config.offspring_population_size):
             genome = self.policy + self.config.mutation_step_size * np.random.randn(self.individual_size).astype(np.float32)

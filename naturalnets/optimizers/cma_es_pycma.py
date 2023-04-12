@@ -29,7 +29,7 @@ class CmaEsPyCma(IOptimizer):
 
         self.solutions = None
 
-    def ask(self):
+    def ask(self) -> List[np.ndarray]:
         self.solutions = self.es.ask()
         return self.solutions
 
