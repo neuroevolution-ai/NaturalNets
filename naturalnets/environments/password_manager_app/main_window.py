@@ -81,6 +81,7 @@ class MainWindow(StateElement, Clickable):
 
         self._bounding_box = self.BOUNDING_BOX
         self.current_page = None
+        self.new_path = ""
 
         self.add_account = AddAccount()
         self.edit_account = EditAccount()
@@ -222,14 +223,14 @@ class MainWindow(StateElement, Clickable):
             page (Page): the page to be selected.
         """
         if page is None:
-            self.get_state()[:] = 0
+            self.get_state()[0:12] = 0
             self.current_page = None
             self.refresh_state()
             if not self.search_active:
                 self.refresh_image()
 
         elif self.current_page != page:
-            self.get_state()[:] = 0
+            self.get_state()[0:12] = 0
             self.get_state()[self.pages.index(page)] = 1
             self.current_page = page
 
@@ -303,7 +304,6 @@ class MainWindow(StateElement, Clickable):
     def render(self, img: np.ndarray):
         """Renders the main window and all its children onto the given image."""
 
-        self
         to_render = cv2.imread(self.IMG_PATH)
         img = render_onto_bb(img, self.get_bb(), to_render)
         if self.current_page is not None:

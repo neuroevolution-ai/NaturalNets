@@ -64,7 +64,7 @@ class AccountError(Page):
 
         if self.NAME_ACOOUNT == NAME_ONE:
             self.IMG_PATH = os.path.join(
-                IMAGES_PATH, "account_window/error_Hanna.PNG"
+                IMAGES_PATH, "account_window/error_Hanna.png"
             )
         elif self.NAME_ACOOUNT == NAME_TWO:
             self.IMG_PATH = os.path.join(

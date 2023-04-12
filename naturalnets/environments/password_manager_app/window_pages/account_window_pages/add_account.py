@@ -196,7 +196,6 @@ class AddAccount(Page):
         self.opened_dd = None
         self.checkbox.set_selected(1)
         self.set_hide_password(True)
-        PageManager.return_to_main_page()
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """Renders this page onto the given image."""

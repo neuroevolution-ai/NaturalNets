@@ -108,10 +108,6 @@ class AppController:
         """Returns the app's total state length."""
         return self._total_state_len
 
-    def get_total_reward_len(self) -> int:
-        """Returns the amount of reward, that is achievable."""
-        return 0
-
     def handle_click(self, click_position: np.ndarray):
         """Delegates click-handling to the clicked component."""
 
@@ -122,12 +118,12 @@ class AppController:
         coverage_data = self.coverage_measurer.get_data()
         measured_files = coverage_data.measured_files()
 
-        reward = 0
+        measured_lines = 0
 
         for measured_file in measured_files:
-            reward += len(coverage_data.lines(measured_file))
+            measured_lines += len(coverage_data.lines(measured_file))
 
-        return reward
+        return measured_lines
 
     def render(self, img: np.ndarray) -> np.ndarray:
         """Calls the main window rendering method.

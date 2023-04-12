@@ -12,7 +12,7 @@ from naturalnets.environments.password_manager_app.app_controller import AppCont
 from naturalnets.environments.password_manager_app.enums import Color
 from naturalnets.environments.i_environment import (
     register_environment_class,
-    IGUIEnvironment,
+    IGUIEnvironment
 )
 from coverage import Coverage
 
@@ -22,20 +22,13 @@ class FakeBugOptions(enum.Enum):
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
-class AppCfg:
+class PasswordManagerAppCfg:
     type: str = field(validator=validators.instance_of(str))
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
-    include_fake_bug: bool = field(validator=validators.instance_of(bool))
-    fake_bugs: List[str] = field(
-        default=None,
-        validator=[validators.optional(validators.in_([opt.value for opt in FakeBugOptions]))],
-    )
-
+    include_fake_bug: bool = False
+    fake_bugs: List[str] = []
     def __attrs_post_init__(self):
-        if self.include_fake_bug:
-            assert self.fake_bugs is not None and len(self.fake_bugs) > 0, (
-                "'include_fake_bug' is set to True, please " "provide a list of fake bugs using 'fake_" "bugs'."
-            )
+        pass
 
 
 @register_environment_class
@@ -50,10 +43,10 @@ class PasswordManagerApp(IGUIEnvironment):
             logging.warning("'env_seed' is not used in the GUIApp environment")
         t0 = time.time()
 
-        self.config = AppCfg(**configuration)
+        self.config = PasswordManagerAppCfg(**configuration)
 
-        # data_suffix appends process id to the database file which is
-        # needed when this environment is run in parallel
+        # Creates the measurment tool from coverage.py for the 
+        # code coverage that is for the reward
         coverage_measurer = Coverage(data_file=None, config_file=True)
 
         self.app_controller = AppController(coverage_measurer)
@@ -68,7 +61,6 @@ class PasswordManagerApp(IGUIEnvironment):
         # an OpenCV rendered version of the app
         self.window_name = "UPM"
         self.running_reward = 0
-        self.max_reward = self.app_controller.get_total_reward_len()
 
         t1 = time.time()
 
@@ -95,7 +87,7 @@ class PasswordManagerApp(IGUIEnvironment):
         rew = self.running_reward - old_running_reward
 
         if rew < 0:
-            print("Error: negativ reward")
+            raise RuntimeError("Negative reward in PasswordManagerApp")
 
         # Give a reward equal to the number of time steps at the
         # beginning to avoid negative rewards
@@ -109,9 +101,8 @@ class PasswordManagerApp(IGUIEnvironment):
 
         self.t += 1
 
-        # if self.t >= self.config.number_time_steps or
-        # self.running_reward >= self.max_reward:
-        #     done = True
+        if self.t >= self.config.number_time_steps:
+                done = True
 
         return (
             self.get_observation(),
@@ -174,7 +165,6 @@ class PasswordManagerApp(IGUIEnvironment):
         self.click_position_y = 0
 
         self.running_reward = 0
-        self.max_reward = self.app_controller.get_total_reward_len()
 
         return self.get_state()
 
