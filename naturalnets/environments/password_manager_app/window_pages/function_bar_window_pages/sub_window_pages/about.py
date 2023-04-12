@@ -23,14 +23,13 @@ class About(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: PageManager.return_to_main_page()),
-            Button(self.CLOSE_BUTTON_BB, lambda: PageManager.return_to_main_page()),
+            Button(self.OK_BUTTON_BB, PageManager.return_to_main_page),
+            Button(self.CLOSE_BUTTON_BB, PageManager.return_to_main_page),
         ]
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray) -> np.ndarray:

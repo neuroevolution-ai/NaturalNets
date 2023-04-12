@@ -1,13 +1,13 @@
 from typing import List, Union
 from naturalnets.environments.password_manager_app.account_manager.account import (
-    Account,
+    Account
 )
 from naturalnets.environments.password_manager_app.constants import (
     NAME_ONE,
-    NAME_TWO,
+    NAME_TWO
 )
 from naturalnets.environments.password_manager_app.page_manager import (
-    PageManager,
+    PageManager
 )
 
 
@@ -59,35 +59,51 @@ class AccountManager:
             return [0, 0]
         len_current_accounts = len(AccountManager.currentAccounts)
 
+        # No account exists
         if len_current_accounts == 0:
             return [0, 0]
-        elif len_current_accounts == 3:
-            return [7, 0]
+        # Only one account exists
         elif len_current_accounts == 1:
             name = AccountManager.currentAccounts[0].get_account_name()
+            # Only Hanna exists
             if name == NAME_ONE:
                 return [1, 1]
+            # Only Klaus exists
             elif name == NAME_TWO:
                 return [2, 1]
+            # Only Mariam exists
             else:
                 return [3, 1]
+        # Only two account exist
         elif len_current_accounts == 2:
             name = AccountManager.currentAccounts[0].get_account_name()
             if name == NAME_ONE:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_TWO:
+                    # Only Hanna and Klaus exist
                     return [4, 0]
                 else:
+                    # Only Hanna and Mariam exist
                     return [5, 0]
             elif name == NAME_TWO:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_ONE:
+                    # Only Hanna and Klaus exist
                     return [4, 0]
                 else:
+                    # Only Klaus and Mariam exist
                     return [6, 0]
             else:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_ONE:
+                    # Only Hanna and Mariam exist
                     return [5, 0]
                 else:
+                    # Only Klaus and Mariam exist
                     return [6, 0]
+        # All three account exist
+        elif len_current_accounts == 3:
+            return [7, 0]
+        else:
+            raise RuntimeError("Account structure should not exist.")
 
+    @staticmethod
     def reset() -> None:
         AccountManager.currentAccounts = []

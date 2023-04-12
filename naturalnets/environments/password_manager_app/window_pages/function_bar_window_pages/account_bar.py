@@ -1,3 +1,4 @@
+import logging
 import os
 import numpy as np
 from naturalnets.environments.app_components.bounding_box import BoundingBox
@@ -15,7 +16,7 @@ class AccountBar(Page):
     IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/account.png")
 
     BOUNDING_BOX = BoundingBox(58, 4, 175, 179)
-    MENU_AREA_BB = BoundingBox(58, 23, 175, 115)
+    MENU_AREA_BB = BoundingBox(58, 23, 175, 157)
 
     ADD_ACCOUNT_BUTTON_BB = BoundingBox(60, 25, 170, 22)
     EDIT_ACCOUNT_BUTTON_BB = BoundingBox(60, 48, 170, 22)
@@ -23,27 +24,33 @@ class AccountBar(Page):
     VIEW_ACCOUNT_BUTTON_BB = BoundingBox(60, 94, 170, 22)
     COPY_USERNAME_BUTTON_BB = BoundingBox(60, 117, 170, 20)
     COPY_PASSWORD_BUTTON_BB = BoundingBox(60, 138, 170, 21)
+    LAUNCH_URL_BUTTON_BB = BoundingBox(60, 160, 170, 20)
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: PageManager.add_account()),
-            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: PageManager.edit_account()),
-            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: PageManager.delete_account()),
-            Button(self.VIEW_ACCOUNT_BUTTON_BB, lambda: PageManager.view_account()),
-            Button(self.COPY_USERNAME_BUTTON_BB, lambda: PageManager.copy_username()),
-            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: PageManager.copy_password()),
+            Button(self.ADD_ACCOUNT_BUTTON_BB, PageManager.add_account),
+            Button(self.EDIT_ACCOUNT_BUTTON_BB, PageManager.edit_account),
+            Button(self.DELETE_ACCOUNT_BUTTON_BB, PageManager.delete_account),
+            Button(self.VIEW_ACCOUNT_BUTTON_BB, PageManager.view_account),
+            Button(self.COPY_USERNAME_BUTTON_BB, PageManager.copy_username),
+            Button(self.COPY_PASSWORD_BUTTON_BB, PageManager.copy_password),
+            Button(self.LAUNCH_URL_BUTTON_BB, self.launch_url),
         ]
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def launch_url(self) -> None:
+        logging.debug("launch_url")
+        PageManager.return_to_main_page()
+
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
         else:
             PageManager.return_to_main_page()
 
-    def handle_menu_click(self, click_position: np.ndarray = None) -> None:
+    def handle_menu_click(self, click_position: np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)

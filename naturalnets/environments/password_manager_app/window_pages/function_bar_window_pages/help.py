@@ -23,17 +23,17 @@ class Help(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.ABOUT_BUTTON_BB, lambda: PageManager.open_about()),
+            Button(self.ABOUT_BUTTON_BB, PageManager.open_about),
         ]
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.MENU_AREA_BB.is_point_inside(click_position):
             self.handle_menu_click(click_position)
             return
         else:
             PageManager.return_to_main_page()
 
-    def handle_menu_click(self, click_position: np.ndarray = None) -> None:
+    def handle_menu_click(self, click_position: np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)

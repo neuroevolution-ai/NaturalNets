@@ -26,13 +26,13 @@ class FileSystem(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.SAVE_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.ABORT_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.SAVE_BUTTON_BB, self.return_to_main_window),
+            Button(self.ABORT_BUTTON_BB, self.return_to_main_window),
         ]
 
-        self.name_one = DropdownItem("test", "test")
-        self.name_two = DropdownItem("qwer", "qwer")
-        self.name_three = DropdownItem("asdf", "asdf")
+        self.name_one = DropdownItem("Test1", "Test1")
+        self.name_two = DropdownItem("Test3", "Test2")
+        self.name_three = DropdownItem("Test3", "Test3")
         self.dropdown = Dropdown(self.NAME_DD_BB, [self.name_one, self.name_two, self.name_three])
 
         self.add_widget(self.dropdown)
@@ -45,7 +45,7 @@ class FileSystem(Page):
         self.dropdown.close()
         self.opened_dd = None
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             self.opened_dd = None

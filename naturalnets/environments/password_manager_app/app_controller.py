@@ -1,10 +1,10 @@
 import numpy as np
 
 from naturalnets.environments.password_manager_app.main_window import (
-    MainWindow,
+    MainWindow
 )
 from naturalnets.environments.app_components.state_element import (
-    StateElement,
+    StateElement
 )
 from coverage import Coverage
 

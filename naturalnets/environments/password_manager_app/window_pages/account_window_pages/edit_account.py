@@ -1,3 +1,4 @@
+import logging
 import os
 import cv2
 import numpy as np
@@ -99,9 +100,9 @@ class EditAccount(Page):
         self.opened_dd = None
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.ok()),
-            Button(self.CLOSE_BUTTON_BB, lambda: self.cancel()),
-            Button(self.GENERATE_BUTTON_BB, lambda: self.generate()),
+            Button(self.OK_BUTTON_BB, self.ok),
+            Button(self.CLOSE_BUTTON_BB, self.cancel),
+            Button(self.GENERATE_BUTTON_BB, self.generate),
             Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy(self.dropdown_account)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy(self.dropdown_password)),
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
@@ -166,7 +167,7 @@ class EditAccount(Page):
             return self.password_one
 
     def launch_url(self) -> None:
-        pass
+        logging.debug("launch_url")
 
     def set_account(self, account: Account) -> None:
         self.account_to_edit = account
@@ -184,7 +185,7 @@ class EditAccount(Page):
             if new_password == password.get_value():
                 self.current_password = password
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         # Handle the case of an opened dropdown first
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)

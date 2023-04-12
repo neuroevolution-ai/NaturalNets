@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List, Union
 
@@ -40,7 +41,7 @@ class MainWindow(StateElement, Clickable):
     """The main page of the app, containing the main overview as well as all other pages.
 
     State description:
-         _state[i]: represents the selected/shown status of page i, i in {0,..,11}.
+         _state[i]: represents the selected/shown status of page i, i in {0,..,14}.
 
          state_img[i][j]: represents the status of the main page. The combination of i in {0,..,7}
          and j in {0,..,3} represents the currently visible accounts as well as the currently selected
@@ -113,38 +114,23 @@ class MainWindow(StateElement, Clickable):
         assert len(self.pages) == self.get_state_len() - 3
 
         self.buttons = [
-            Button(self.ADD_ACCOUNT_BUTTON_BB, lambda: self.function_add_account()),
-            Button(self.EDIT_ACCOUNT_BUTTON_BB, lambda: self.function_edit_account()),
-            Button(self.DELETE_ACCOUNT_BUTTON_BB, lambda: self.function_delete_account()),
-            Button(self.COPY_USERNAME_BUTTON_BB, lambda: self.copy_username()),
-            Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy_password()),
-            Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
+            Button(self.ADD_ACCOUNT_BUTTON_BB, self.function_add_account),
+            Button(self.EDIT_ACCOUNT_BUTTON_BB, self.function_edit_account),
+            Button(self.DELETE_ACCOUNT_BUTTON_BB, self.function_delete_account),
+            Button(self.COPY_USERNAME_BUTTON_BB, self.copy_username),
+            Button(self.COPY_PASSWORD_BUTTON_BB, self.copy_password),
+            Button(self.LAUNCH_URL_BUTTON_BB, self.launch_url),
             Button(self.OPTIONS_BUTTON_BB, lambda: self.set_current_page(self.options)),
             Button(self.DATABASE_BB, lambda: self.set_current_page(self.database)),
             Button(self.ACCOUNT_BUTTON_BB, lambda: self.set_current_page(self.account_bar)),
             Button(self.HELP_BUTTON_BB, lambda: self.set_current_page(self.help)),
-            Button(self.RESET_SEARCH_BUTTON_BB, lambda: self.reset_search()),
-            Button(self.ACCOUNT_ONE_BB, lambda: self.handel_selection(1)),
-            Button(self.ACCOUNT_TWO_BB, lambda: self.handel_selection(2)),
-            Button(self.ACCOUNT_THREE_BB, lambda: self.handel_selection(3)),
+            Button(self.RESET_SEARCH_BUTTON_BB, self.reset_search),
+            Button(self.ACCOUNT_ONE_BB, lambda: self.handle_selection(1)),
+            Button(self.ACCOUNT_TWO_BB, lambda: self.handle_selection(2)),
+            Button(self.ACCOUNT_THREE_BB, lambda: self.handle_selection(3)),
         ]
 
-        self.add_children(
-            [
-                self.add_account,
-                self.edit_account,
-                self.options,
-                self.database,
-                self.account_bar,
-                self.help,
-                self.view_account,
-                self.about,
-                self.master_password,
-                self.confirm_delete_account,
-                self.file_system,
-                self.account_error,
-            ]
-        )
+        self.add_children(self.pages)
 
         self.widgets: List[Widget] = []
 
@@ -169,23 +155,24 @@ class MainWindow(StateElement, Clickable):
         self.refresh_image()
 
     def function_add_account(self) -> None:
+        # Generates a new random password when trying to add a new account
         self.add_account.generate()
         self.set_current_page(self.add_account)
 
     def function_delete_account(self) -> None:
-        account_to_delete = AccountManager.get_account_by_name(self.get_selected_account())
+        account_to_delete = AccountManager.get_account_by_name(self.get_selected_account_name())
         if account_to_delete is not None:
-            self.confirm_delete_account.set_name(self.get_selected_account())
+            self.confirm_delete_account.set_name(self.get_selected_account_name())
             self.set_current_page(self.confirm_delete_account)
 
     def function_edit_account(self) -> None:
-        account_to_edit = AccountManager.get_account_by_name(self.get_selected_account())
+        account_to_edit = AccountManager.get_account_by_name(self.get_selected_account_name())
         if account_to_edit is not None:
             self.edit_account.set_account(account_to_edit)
             self.set_current_page(self.edit_account)
 
     def function_view_account(self) -> None:
-        account_to_view = AccountManager.get_account_by_name(self.get_selected_account())
+        account_to_view = AccountManager.get_account_by_name(self.get_selected_account_name())
         if account_to_view is not None:
             self.view_account.set_account(account_to_view)
             self.set_current_page(self.view_account)
@@ -195,21 +182,21 @@ class MainWindow(StateElement, Clickable):
         self.set_current_page(self.account_error)
 
     def copy_username(self) -> None:
-        selected_account_name = self.get_selected_account()
+        selected_account_name = self.get_selected_account_name()
         if selected_account_name is not None:
             selected_account = AccountManager.get_account_by_name(selected_account_name)
             if selected_account is not None:
                 Cache.set_cache(selected_account.get_user_id())
 
     def copy_password(self) -> None:
-        selected_account_name = self.get_selected_account()
+        selected_account_name = self.get_selected_account_name()
         if selected_account_name is not None:
             selected_account = AccountManager.get_account_by_name(selected_account_name)
             if selected_account is not None:
                 Cache.set_cache(selected_account.get_password())
 
     def launch_url(self) -> None:
-        print("launch_url")
+        logging.debug("launch_url")
 
     def get_current_page(self) -> Union[Page, None]:
         return self.current_page
@@ -226,8 +213,7 @@ class MainWindow(StateElement, Clickable):
             self.get_state()[0:12] = 0
             self.current_page = None
             self.refresh_state()
-            if not self.search_active:
-                self.refresh_image()
+            self.reset_search()
 
         elif self.current_page != page:
             self.get_state()[0:12] = 0
@@ -238,21 +224,26 @@ class MainWindow(StateElement, Clickable):
         """Returns true if the current page blocks clicks, i.e. has a dropdown/popup open."""
         return self.current_page.is_dropdown_open() or self.current_page.is_popup_open()
 
-    def handel_selection(self, selected: int) -> None:
+    def handle_selection(self, selected: int) -> None:
+        # If only one account exists its always selected
         if self.STATE_IMG[0] < 4:
             return
+        # Handle selection for two existing accounts
         elif 3 < self.STATE_IMG[0] < 7:
             if selected < 3:
                 self.STATE_IMG[1] = selected
                 self.refresh_image()
+        # Handles selection if all accounts (3) exists
         elif self.STATE_IMG[0] == 7:
             self.STATE_IMG[1] = selected
             self.refresh_image()
+        else:
+            raise RuntimeError("The state of the image should not exist.")
 
     def handle_click(self, click_position: np.ndarray) -> None:
-        # Let the current page process the click, if the current page blocks clicks
-        # to the main page (e.g. due to open dropdowns) or the click
-        # is inside the bounding box of the current page.
+        # If a current page exists, the current page processes the click.
+        # Else the main_window processes the click.
+        # If a Dropdown is opend the click gets handled by the Dropdown.
         if self.current_page is not None:
             self.current_page.handle_click(click_position)
             return
@@ -354,52 +345,78 @@ class MainWindow(StateElement, Clickable):
             self.get_state()[12] = 1
             self.get_state()[13] = 1
             self.get_state()[14] = 1
+        else:
+            raise RuntimeError("The state of the image should not exist.")
 
     def refresh_image(self) -> None:
         self.new_path = ""
 
+        # No account exists
         if self.STATE_IMG[0] == 0:
             self.new_path = "main_window/main_window_0_accounts.png"
+        # Only Hanna exists
         elif self.STATE_IMG[0] == 1:
             self.new_path = "main_window/main_window_Hanna_account.png"
+        # Only Klaus exists
         elif self.STATE_IMG[0] == 2:
             self.new_path = "main_window/main_window_Klaus_account.png"
+        # Only Mariam exists
         elif self.STATE_IMG[0] == 3:
             self.new_path = "main_window/main_window_Mariam_account.png"
+        # Only Hanna and Klaus exist
         elif self.STATE_IMG[0] == 4:
+            # Only Hanna and Klaus exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_2_accounts_H_K.png"
+            # Only Hanna and Klaus exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 self.new_path = "main_window/main_window_2_accounts_H_selected_K.png"
+            # Only Hanna and Klaus exist, Klaus is selected
             elif self.STATE_IMG[1] == 2:
                 self.new_path = "main_window/main_window_2_accounts_H_K_selected.png"
+        # Only Hanna and Mariam exist
         elif self.STATE_IMG[0] == 5:
+            # Only Hanna and Mariam exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_2_accounts_H_M.png"
+            # Only Hanna and Mariam exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 self.new_path = "main_window/main_window_2_accounts_H_selected_M.png"
+            # Only Hanna and Mariam exist, Mariam is selected
             elif self.STATE_IMG[1] == 2:
                 self.new_path = "main_window/main_window_2_accounts_H_M_selected.png"
+        # Only Klaus and Mariam exist
         elif self.STATE_IMG[0] == 6:
+            # Only Klaus and Mariam exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_2_accounts_K_M.png"
+            # Only Klaus and Mariam exist, Klaus is selected
             elif self.STATE_IMG[1] == 1:
                 self.new_path = "main_window/main_window_2_accounts_K_selected_M.png"
+            # Only Klaus and Mariam exist, Mariam is selected
             elif self.STATE_IMG[1] == 2:
                 self.new_path = "main_window/main_window_2_accounts_K_M_selected.png"
+        # All three account exists
         elif self.STATE_IMG[0] == 7:
+            # All three account exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 self.new_path = "main_window/main_window_3_accounts.png"
+            # All three account exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 self.new_path = "main_window/main_window_3_accounts_H_selected.png"
+            # All three account exist, Klaus is selected
             elif self.STATE_IMG[1] == 2:
                 self.new_path = "main_window/main_window_3_accounts_K_selected.png"
+            # All three account exist, Mariam is selected
             elif self.STATE_IMG[1] == 3:
                 self.new_path = "main_window/main_window_3_accounts_M_selected.png"
+        else:
+            raise RuntimeError("The state of accounts should not exist.")
 
         self.IMG_PATH = os.path.join(IMAGES_PATH, self.new_path)
 
-    def get_selected_account(self) -> Union[str, None]:
+    def get_selected_account_name(self) -> Union[str, None]:
+        # If the search is active, the selection is handled separately
         if self.search_active:
             if self.dropdown.get_current_value() == NAME_ONE:
                 return NAME_ONE
@@ -409,44 +426,67 @@ class MainWindow(StateElement, Clickable):
                 return NAME_THREE
             return None
 
+        # No account exists, so no account is selected
         if self.STATE_IMG[0] == 0:
             return None
+        # Only Hanna exists and is selected
         elif self.STATE_IMG[0] == 1:
             return NAME_ONE
+        # Only Klaus exists and is selected
         elif self.STATE_IMG[0] == 2:
             return NAME_TWO
+        # Only Mariam exists and is selected
         elif self.STATE_IMG[0] == 3:
             return NAME_THREE
+        # Only Hanna and Klaus exist
         elif self.STATE_IMG[0] == 4:
+            # Only Hanna and Klaus exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 return None
+            # Only Hanna and Klaus exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 return NAME_ONE
+            # Only Hanna and Klaus exist, Klaus is selected
             elif self.STATE_IMG[1] == 2:
                 return NAME_TWO
+        # Only Hanna and Mariam exist
         elif self.STATE_IMG[0] == 5:
+            # Only Hanna and Mariam exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 return None
+            # Only Hanna and Mariam exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 return NAME_ONE
+            # Only Hanna and Mariam exist, Mariam is selected
             elif self.STATE_IMG[1] == 2:
                 return NAME_THREE
+        # Only Klaus and Mariam exist
         elif self.STATE_IMG[0] == 6:
+            # Only Klaus and Mariam exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 return None
+            # Only Klaus and Mariam exist, Klaus is selected
             elif self.STATE_IMG[1] == 1:
                 return NAME_TWO
+            # Only Klaus and Mariam exist, Mariam is selected
             elif self.STATE_IMG[1] == 2:
                 return NAME_THREE
+        # All three account exists
         elif self.STATE_IMG[0] == 7:
+            # All three account exist, nobody is selected
             if self.STATE_IMG[1] == 0:
                 return None
+            # All three account exist, Hanna is selected
             elif self.STATE_IMG[1] == 1:
                 return NAME_ONE
+            # All three account exist, Klaus is selected
             elif self.STATE_IMG[1] == 2:
                 return NAME_TWO
+            # All three account exist, Mariam is selected
             elif self.STATE_IMG[1] == 3:
                 return NAME_THREE
+        else:
+            raise RuntimeError("The state of image should not exist.")
 
     def search(self, account_name) -> None:
         if account_name is None:
@@ -475,19 +515,25 @@ class MainWindow(StateElement, Clickable):
         self.refresh_image()
 
     def account_exists(self, account_name) -> bool:
+        # Does Hanna exist
         if account_name == NAME_ONE:
+            # Hanna exists
             if self.STATE_IMG[0] == 1 or self.STATE_IMG[0] == 4 or self.STATE_IMG[0] == 5 or self.STATE_IMG[0] == 7:
                 return True
             else:
                 return False
 
+        # Does Klaus exist
         elif account_name == NAME_TWO:
+            # Klaus exists
             if self.STATE_IMG[0] == 2 or self.STATE_IMG[0] == 4 or self.STATE_IMG[0] == 6 or self.STATE_IMG[0] == 7:
                 return True
             else:
                 return False
 
+        # Does Mariam exist
         elif account_name == NAME_THREE:
+            # Mariam exists
             if self.STATE_IMG[0] == 3 or self.STATE_IMG[0] == 5 or self.STATE_IMG[0] == 6 or self.STATE_IMG[0] == 7:
                 return True
             else:

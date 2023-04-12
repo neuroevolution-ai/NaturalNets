@@ -5,10 +5,10 @@ class Account:
     """Representation of an account. New implementation of __eq__ for a better comparison of accounts."""
 
     account_name: str
-    user_id: str
-    password: str
-    url: str
-    notes: str
+    user_id: Optional[str]
+    password: Optional[str]
+    url: Optional[str]
+    notes: Optional[str]
 
     def __init__(
         self,
@@ -25,8 +25,8 @@ class Account:
         self.notes = notes
 
     def __eq__(self, __o: object) -> bool:
-        if type(__o) is Account:
-            True if __o.account_name == self.account_name else False
+        if isinstance(__o, Account):
+            return __o.account_name == self.account_name
         else:
             return False
 

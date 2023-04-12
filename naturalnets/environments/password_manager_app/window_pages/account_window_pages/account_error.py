@@ -8,11 +8,11 @@ from naturalnets.environments.password_manager_app.constants import (
     IMAGES_PATH,
     NAME_ONE,
     NAME_THREE,
-    NAME_TWO,
+    NAME_TWO
 )
 from naturalnets.environments.app_components.page import Page
 from naturalnets.environments.password_manager_app.page_manager import (
-    PageManager,
+    PageManager
 )
 from naturalnets.environments.app_components.utils import render_onto_bb
 from naturalnets.environments.app_components.widgets.button import Button
@@ -25,7 +25,7 @@ class AccountError(Page):
     STATE_LEN = 2
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
-    NAME_ACOOUNT = ""
+    NAME_ACCOUNT = ""
 
     BOUNDING_BOX = BoundingBox(58, 148, 328, 122)
 
@@ -36,8 +36,8 @@ class AccountError(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.yes()),
-            Button(self.X_BUTTON_BB, lambda: self.no()),
+            Button(self.OK_BUTTON_BB, self.yes),
+            Button(self.X_BUTTON_BB, self.no),
         ]
 
     def yes(self) -> None:
@@ -49,7 +49,6 @@ class AccountError(Page):
     def handle_click(self, click_position: np.ndarray = None) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
     def render(self, img: np.ndarray) -> np.ndarray:
@@ -60,17 +59,17 @@ class AccountError(Page):
         return img
 
     def set_name(self, account_name: str) -> None:
-        self.NAME_ACOOUNT = account_name
+        self.NAME_ACCOUNT = account_name
 
-        if self.NAME_ACOOUNT == NAME_ONE:
+        if self.NAME_ACCOUNT == NAME_ONE:
             self.IMG_PATH = os.path.join(
                 IMAGES_PATH, "account_window/error_Hanna.png"
             )
-        elif self.NAME_ACOOUNT == NAME_TWO:
+        elif self.NAME_ACCOUNT == NAME_TWO:
             self.IMG_PATH = os.path.join(
                 IMAGES_PATH, "account_window/error_Klaus.png"
             )
-        elif self.NAME_ACOOUNT == NAME_THREE:
+        elif self.NAME_ACCOUNT == NAME_THREE:
             self.IMG_PATH = os.path.join(
                 IMAGES_PATH, "account_window/error_Mariam.png"
             )

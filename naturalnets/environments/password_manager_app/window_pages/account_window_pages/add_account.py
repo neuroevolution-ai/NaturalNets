@@ -1,3 +1,4 @@
+import logging
 import os
 import cv2
 import numpy as np
@@ -93,22 +94,23 @@ class AddAccount(Page):
         self.opened_dd = None
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.ok()),
-            Button(self.CLOSE_BUTTON_BB, lambda: self.cancel()),
-            Button(self.GENERATE_BUTTON_BB, lambda: self.generate()),
+            Button(self.OK_BUTTON_BB, self.ok),
+            Button(self.CLOSE_BUTTON_BB, self.cancel),
+            Button(self.GENERATE_BUTTON_BB, self.generate),
             Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy(self.dropdown_account)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy(self.dropdown_password)),
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
             Button(self.COPY_USER_ID_BUTTON_BB, lambda: self.copy(self.dropdown_user_id)),
             Button(self.COPY_URL_BUTTON_BB, lambda: self.copy(self.dropdown_url)),
             Button(self.COPY_NOTES_BUTTON_BB, lambda: self.copy(self.dropdown_notes)),
-            Button(self.PAST_ACCOUNT_BUTTON_BB, lambda: self.past(self.dropdown_account)),
-            Button(self.PAST_USER_ID_BUTTON_BB, lambda: self.past(self.dropdown_user_id)),
-            Button(self.PAST_PASSWORD_BUTTON_BB, lambda: self.past(self.dropdown_password)),
-            Button(self.PAST_URL_BUTTON_BB, lambda: self.past(self.dropdown_url)),
-            Button(self.PAST_NOTES_BUTTON_BB, lambda: self.past(self.dropdown_notes)),
+            Button(self.PAST_ACCOUNT_BUTTON_BB, lambda: self.paste(self.dropdown_account)),
+            Button(self.PAST_USER_ID_BUTTON_BB, lambda: self.paste(self.dropdown_user_id)),
+            Button(self.PAST_PASSWORD_BUTTON_BB, lambda: self.paste(self.dropdown_password)),
+            Button(self.PAST_URL_BUTTON_BB, lambda: self.paste(self.dropdown_url)),
+            Button(self.PAST_NOTES_BUTTON_BB, lambda: self.paste(self.dropdown_notes)),
         ]
 
+    # The password is set to None so its not visible any more
     def set_hide_password(self, is_checked: bool) -> None:
         "Hides or shows the password."
         self.is_checked = is_checked
@@ -136,13 +138,14 @@ class AddAccount(Page):
 
     def cancel(self) -> None:
         self.reset()
+        PageManager.return_to_main_page()
 
     def copy(self, dropdownToCopy: Dropdown) -> None:
         Cache.set_cache(dropdownToCopy.get_current_value())
 
-    def past(self, dropdownToPast: Dropdown) -> None:
+    def paste(self, dropdownToPaste: Dropdown) -> None:
         if Cache.get_cache() is not None:
-            dropdownToPast.set_selected_value(Cache.get_cache())
+            dropdownToPaste.set_selected_value(Cache.get_cache())
 
     def generate(self) -> None:
         "Generates a random password (of all the three existing ones)."
@@ -159,9 +162,9 @@ class AddAccount(Page):
             return self.password_one
 
     def launch_url(self) -> None:
-        pass
+        logging.debug("launch_url")
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         # Handle the case of an opened dropdown first
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)

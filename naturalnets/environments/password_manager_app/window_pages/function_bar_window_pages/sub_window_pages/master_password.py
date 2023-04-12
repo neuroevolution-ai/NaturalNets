@@ -26,8 +26,8 @@ class MasterPassword(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.ABORT_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.OK_BUTTON_BB, self.return_to_main_window),
+            Button(self.ABORT_BUTTON_BB, self.return_to_main_window),
         ]
 
         self.password_one = DropdownItem("1234", "1234")
@@ -45,7 +45,7 @@ class MasterPassword(Page):
         self.dropdown.close()
         self.opened_dd = None
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             self.opened_dd = None
@@ -53,7 +53,6 @@ class MasterPassword(Page):
 
         for button in self.buttons:
             if button.is_clicked_by(click_position):
-                # check if figure printer button is visible
                 button.handle_click(click_position)
 
         if self.dropdown.is_clicked_by(click_position):

@@ -1,3 +1,4 @@
+import logging
 import os
 import cv2
 import numpy as np
@@ -94,7 +95,7 @@ class ViewAccount(Page):
         self.add_widget(self.checkbox)
 
         self.buttons = [
-            Button(self.OK_BUTTON_BB, lambda: self.ok()),
+            Button(self.OK_BUTTON_BB, self.ok),
             Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy(self.dropdown_account)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy(self.dropdown_password)),
             Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
@@ -123,7 +124,7 @@ class ViewAccount(Page):
         dropdownToPast.set_selected_value(Cache.get_cache())
 
     def launch_url(self) -> None:
-        pass
+        logging.debug("launch_url")
 
     def set_account(self, account: Account) -> None:
         self.account_to_view = account
@@ -140,7 +141,7 @@ class ViewAccount(Page):
         if self.is_checked:
             self.dropdown_password.set_selected_item(None)
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)

@@ -3,18 +3,18 @@ import cv2
 import numpy as np
 
 from naturalnets.environments.password_manager_app.account_manager.account_manager import (
-    AccountManager,
+    AccountManager
 )
 from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import (
     IMAGES_PATH,
     NAME_ONE,
     NAME_THREE,
-    NAME_TWO,
+    NAME_TWO
 )
 from naturalnets.environments.app_components.page import Page
 from naturalnets.environments.password_manager_app.page_manager import (
-    PageManager,
+    PageManager
 )
 from naturalnets.environments.app_components.utils import render_onto_bb
 from naturalnets.environments.app_components.widgets.button import Button
@@ -38,9 +38,9 @@ class ConfirmDeleteAccount(Page):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
 
         self.buttons = [
-            Button(self.YES_BUTTON_BB, lambda: self.yes()),
-            Button(self.NO_BUTTON_BB, lambda: self.no()),
-            Button(self.X_BUTTON_BB, lambda: self.no()),
+            Button(self.YES_BUTTON_BB, self.yes),
+            Button(self.NO_BUTTON_BB, self.no),
+            Button(self.X_BUTTON_BB, self.no),
         ]
 
     def yes(self) -> None:
@@ -50,7 +50,7 @@ class ConfirmDeleteAccount(Page):
     def no(self) -> None:
         PageManager.return_to_main_page()
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         for button in self.buttons:
             if button.is_clicked_by(click_position):
                 button.handle_click(click_position)
