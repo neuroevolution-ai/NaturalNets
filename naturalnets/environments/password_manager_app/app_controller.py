@@ -1,12 +1,8 @@
+from coverage import Coverage
 import numpy as np
 
-from naturalnets.environments.password_manager_app.main_window import (
-    MainWindow
-)
-from naturalnets.environments.app_components.state_element import (
-    StateElement
-)
-from coverage import Coverage
+from naturalnets.environments.password_manager_app.main_window import MainWindow
+from naturalnets.environments.app_components.state_element import StateElement
 
 
 class AppController:

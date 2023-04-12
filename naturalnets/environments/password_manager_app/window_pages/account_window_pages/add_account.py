@@ -99,7 +99,7 @@ class AddAccount(Page):
             Button(self.GENERATE_BUTTON_BB, self.generate),
             Button(self.COPY_ACCOUNT_BUTTON_BB, lambda: self.copy(self.dropdown_account)),
             Button(self.COPY_PASSWORD_BUTTON_BB, lambda: self.copy(self.dropdown_password)),
-            Button(self.LAUNCH_URL_BUTTON_BB, lambda: self.launch_url()),
+            Button(self.LAUNCH_URL_BUTTON_BB, self.launch_url),
             Button(self.COPY_USER_ID_BUTTON_BB, lambda: self.copy(self.dropdown_user_id)),
             Button(self.COPY_URL_BUTTON_BB, lambda: self.copy(self.dropdown_url)),
             Button(self.COPY_NOTES_BUTTON_BB, lambda: self.copy(self.dropdown_notes)),

@@ -1,8 +1,8 @@
-import enum
 import logging
 import time
 from typing import Optional, Dict, List, Tuple
 
+from coverage import Coverage
 import cv2
 import numpy as np
 from attrs import define, field, validators
@@ -14,11 +14,6 @@ from naturalnets.environments.i_environment import (
     register_environment_class,
     IGUIEnvironment
 )
-from coverage import Coverage
-
-
-class FakeBugOptions(enum.Enum):
-    pass
 
 
 @define(slots=True, auto_attribs=True, frozen=True, kw_only=True)
@@ -27,8 +22,6 @@ class PasswordManagerAppCfg:
     number_time_steps: int = field(validator=[validators.instance_of(int), validators.gt(0)])
     include_fake_bug: bool = False
     fake_bugs: List[str] = []
-    def __attrs_post_init__(self):
-        pass
 
 
 @register_environment_class
@@ -45,7 +38,7 @@ class PasswordManagerApp(IGUIEnvironment):
 
         self.config = PasswordManagerAppCfg(**configuration)
 
-        # Creates the measurment tool from coverage.py for the 
+        # Creates the measurment tool from coverage.py for the
         # code coverage that is for the reward
         coverage_measurer = Coverage(data_file=None, config_file=True)
 
@@ -102,13 +95,13 @@ class PasswordManagerApp(IGUIEnvironment):
         self.t += 1
 
         if self.t >= self.config.number_time_steps:
-                done = True
+            done = True
 
         return (
             self.get_observation(),
             rew,
             done,
-            {"states_info": self.app_controller.get_states_info()},
+            {"states_info": self.app_controller.get_states_info()}
         )
 
     def render_image(self) -> np.ndarray:

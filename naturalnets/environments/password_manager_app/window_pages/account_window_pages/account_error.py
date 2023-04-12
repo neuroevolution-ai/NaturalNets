@@ -37,7 +37,7 @@ class AccountError(Page):
 
         self.buttons = [
             Button(self.OK_BUTTON_BB, self.yes),
-            Button(self.X_BUTTON_BB, self.no),
+            Button(self.X_BUTTON_BB, self.no)
         ]
 
     def yes(self) -> None:

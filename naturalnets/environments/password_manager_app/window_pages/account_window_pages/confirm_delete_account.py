@@ -26,7 +26,7 @@ class ConfirmDeleteAccount(Page):
     STATE_LEN = 0
     IMG_PATH = os.path.join(IMAGES_PATH, "")
 
-    NAME_ACOOUNT_TO_DELETE = ""
+    NAME_ACCOUNT_TO_DELETE = ""
 
     BOUNDING_BOX = BoundingBox(53, 142, 348, 122)
 
@@ -44,7 +44,7 @@ class ConfirmDeleteAccount(Page):
         ]
 
     def yes(self) -> None:
-        AccountManager.delete_account(self.NAME_ACOOUNT_TO_DELETE)
+        AccountManager.delete_account(self.NAME_ACCOUNT_TO_DELETE)
         PageManager.return_to_main_page()
 
     def no(self) -> None:
@@ -63,11 +63,11 @@ class ConfirmDeleteAccount(Page):
         return img
 
     def set_name(self, account_name: str) -> None:
-        self.NAME_ACOOUNT_TO_DELETE = account_name
+        self.NAME_ACCOUNT_TO_DELETE = account_name
 
-        if self.NAME_ACOOUNT_TO_DELETE == NAME_ONE:
+        if self.NAME_ACCOUNT_TO_DELETE == NAME_ONE:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Hanna.png")
-        elif self.NAME_ACOOUNT_TO_DELETE == NAME_TWO:
+        elif self.NAME_ACCOUNT_TO_DELETE == NAME_TWO:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Klaus.png")
-        elif self.NAME_ACOOUNT_TO_DELETE == NAME_THREE:
+        elif self.NAME_ACCOUNT_TO_DELETE == NAME_THREE:
             self.IMG_PATH = os.path.join(IMAGES_PATH, "confirm_delete_account/delete_account_Mariam.png")
