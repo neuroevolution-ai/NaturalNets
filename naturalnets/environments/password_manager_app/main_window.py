@@ -18,19 +18,19 @@ from naturalnets.environments.password_manager_app.window_pages.account_window_p
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.edit_account import EditAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.view_account import ViewAccount
 from naturalnets.environments.password_manager_app.window_pages.account_window_pages.confirm_delete_account import (
-    ConfirmDeleteAccount,
+    ConfirmDeleteAccount
 )
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.account_bar import AccountBar
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.database import Database
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.help import Help
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.about import (
-    About,
+    About
 )
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.file_system import (
-    FileSystem,
+    FileSystem
 )
 from naturalnets.environments.password_manager_app.window_pages.function_bar_window_pages.sub_window_pages.master_password import (
-    MasterPassword,
+    MasterPassword
 )
 from naturalnets.environments.password_manager_app.window_pages.options import Options
 from naturalnets.environments.password_manager_app.cache import Cache
