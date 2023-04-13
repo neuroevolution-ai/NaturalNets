@@ -31,7 +31,7 @@ class FileSystem(Page):
         ]
 
         self.name_one = DropdownItem("Test1", "Test1")
-        self.name_two = DropdownItem("Test3", "Test2")
+        self.name_two = DropdownItem("Test2", "Test2")
         self.name_three = DropdownItem("Test3", "Test3")
         self.dropdown = Dropdown(self.NAME_DD_BB, [self.name_one, self.name_two, self.name_three])
 

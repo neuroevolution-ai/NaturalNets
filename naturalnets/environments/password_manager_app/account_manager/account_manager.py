@@ -11,8 +11,15 @@ from naturalnets.environments.password_manager_app.page_manager import (
 )
 
 
-class AccountManager:
+class AccountManager(object):
     """The account manager manages all existing accounts."""
+    instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AccountManager, cls).__new__(cls)
+            # Put any initialization here.
+        return cls._instance
 
     currentAccounts: List[Account] = []
 
