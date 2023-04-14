@@ -1,0 +1,10 @@
+[run]
+# Do not measure python code that was installed with the python interpreter
+
+source =
+    naturalnets.environments.password_manager_app
+
+omit =
+    */naturalnets/environments/password_manager_app/img
+    */naturalnets/environments/password_manager_app/.coveragerc
+    */naturalnets/environments/password_manager_app/reward_element.py

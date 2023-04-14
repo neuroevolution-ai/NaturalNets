@@ -1,19 +1,19 @@
 import os
 import numpy as np
-from naturalnets.environments.password_manager_app.bounding_box import BoundingBox
+from naturalnets.environments.app_components.bounding_box import BoundingBox
 from naturalnets.environments.password_manager_app.constants import IMAGES_PATH
 
-from naturalnets.environments.password_manager_app.page import Page
-from naturalnets.environments.password_manager_app.reward_element import RewardElement
-from naturalnets.environments.password_manager_app.widgets.button import Button
-from naturalnets.environments.password_manager_app.widgets.dropdown import Dropdown, DropdownItem
+from naturalnets.environments.app_components.page import Page
+from naturalnets.environments.password_manager_app.page_manager import PageManager
+from naturalnets.environments.app_components.widgets.button import Button
+from naturalnets.environments.app_components.widgets.dropdown import Dropdown, DropdownItem
 
 
-class FileSystem(Page, RewardElement):
-    """ Simulates a file system. """
+class FileSystem(Page):
+    """Simulates a file system."""
 
     STATE_LEN = 0
-    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.PNG")
+    IMG_PATH = os.path.join(IMAGES_PATH, "function_bar/file_system.png")
 
     BOUNDING_BOX = BoundingBox(0, 0, 448, 448)
 
@@ -24,33 +24,28 @@ class FileSystem(Page, RewardElement):
 
     def __init__(self):
         Page.__init__(self, self.STATE_LEN, self.BOUNDING_BOX, self.IMG_PATH)
-        RewardElement.__init__(self)
 
         self.buttons = [
-            Button(self.SAVE_BUTTON_BB, lambda: self.return_to_main_window()),
-            Button(self.ABORT_BUTTON_BB, lambda: self.return_to_main_window()),
+            Button(self.SAVE_BUTTON_BB, self.return_to_main_window),
+            Button(self.ABORT_BUTTON_BB, self.return_to_main_window),
         ]
 
-        self.name_one = DropdownItem("test", "test")
-        self.name_two = DropdownItem("qwer", "qwer")
-        self.name_three = DropdownItem("asdf", "asdf")
-        self.dropdown = Dropdown(self.NAME_DD_BB, [self.name_one,
-                                                   self.name_two,
-                                                   self.name_three])
-        
+        self.name_one = DropdownItem("Test1", "Test1")
+        self.name_two = DropdownItem("Test2", "Test2")
+        self.name_three = DropdownItem("Test3", "Test3")
+        self.dropdown = Dropdown(self.NAME_DD_BB, [self.name_one, self.name_two, self.name_three])
+
         self.add_widget(self.dropdown)
         self.opened_dd = None
-    
-    def return_to_main_window(self) -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
 
-        AppController.main_window.set_current_page(None)
+    def return_to_main_window(self) -> None:
+        PageManager.return_to_main_page()
 
         self.dropdown.set_selected_item(None)
         self.dropdown.close()
         self.opened_dd = None
 
-    def handle_click(self, click_position: np.ndarray = None) -> None:
+    def handle_click(self, click_position: np.ndarray) -> None:
         if self.opened_dd is not None:
             self.opened_dd.handle_click(click_position)
             self.opened_dd = None
@@ -68,13 +63,5 @@ class FileSystem(Page, RewardElement):
             return
 
     def render(self, img: np.ndarray) -> np.ndarray:
-        """ Renders this page onto the given image.
-        """
+        """Renders this page onto the given image."""
         return super().render(img)
-
-    @property
-    def reward_template(self):
-        return {
-            "tire_20_setting": [False, True],
-            "tire_22_setting": [False, True]
-        }

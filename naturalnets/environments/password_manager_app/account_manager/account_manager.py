@@ -1,11 +1,19 @@
-from typing import List
+from typing import List, Union
 from naturalnets.environments.password_manager_app.account_manager.account import Account
-from naturalnets.environments.password_manager_app.constants import NAME_ONE, NAME_THREE, NAME_TWO
+from naturalnets.environments.password_manager_app.constants import NAME_ONE, NAME_TWO
+from naturalnets.environments.password_manager_app.page_manager import PageManager
 
 
 class AccountManager:
-    """ The account manager manages all existing accounts. """
-    
+    """The account manager manages all existing accounts."""
+    instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AccountManager, cls).__new__(cls)
+
+        return cls._instance
+
     currentAccounts: List[Account] = []
 
     @staticmethod
@@ -13,10 +21,9 @@ class AccountManager:
         if len(AccountManager.currentAccounts) < 3:
             if not AccountManager.is_in_current_accounts(account.get_account_name()):
                 AccountManager.currentAccounts.append(account)
-                AccountManager.return_to_main_page()
+                PageManager.return_to_main_page()
             else:
-                AccountManager.error(account.get_account_name())
-
+                PageManager.error(account.get_account_name())
 
     @staticmethod
     def edit_account(account: Account, old_account: Account) -> None:
@@ -30,7 +37,7 @@ class AccountManager:
                 AccountManager.currentAccounts.remove(current_account)
 
     @staticmethod
-    def get_account_by_name(account_name: str) -> Account | None:
+    def get_account_by_name(account_name: str) -> Union[Account, None]:
         for current_account in AccountManager.currentAccounts:
             if current_account.get_account_name() == account_name:
                 return current_account
@@ -44,56 +51,59 @@ class AccountManager:
             if account_name == currentAccount.get_account_name():
                 return True
         return False
-    
+
     @staticmethod
-    def current_state() -> list[int] | None:
-        " The state of all existing accounts. Is the same as state_img in the main window. "
-        if (AccountManager.currentAccounts is None):
+    def current_state() -> Union[List[int], None]:
+        "The state of all existing accounts. Is the same as state_img in the main window."
+        if AccountManager.currentAccounts is None:
             return [0, 0]
         len_current_accounts = len(AccountManager.currentAccounts)
 
-        if (len_current_accounts == 0):
+        # No account exists
+        if len_current_accounts == 0:
             return [0, 0]
-        elif (len_current_accounts == 3):
-            return [7, 0]
-        elif (len_current_accounts == 1):
+        # Only one account exists
+        elif len_current_accounts == 1:
             name = AccountManager.currentAccounts[0].get_account_name()
+            # Only Hanna exists
             if name == NAME_ONE:
                 return [1, 1]
+            # Only Klaus exists
             elif name == NAME_TWO:
                 return [2, 1]
+            # Only Mariam exists
             else:
                 return [3, 1]
-        elif (len_current_accounts == 2):
+        # Only two account exist
+        elif len_current_accounts == 2:
             name = AccountManager.currentAccounts[0].get_account_name()
             if name == NAME_ONE:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_TWO:
+                    # Only Hanna and Klaus exist
                     return [4, 0]
                 else:
+                    # Only Hanna and Mariam exist
                     return [5, 0]
             elif name == NAME_TWO:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_ONE:
+                    # Only Hanna and Klaus exist
                     return [4, 0]
                 else:
+                    # Only Klaus and Mariam exist
                     return [6, 0]
             else:
                 if AccountManager.currentAccounts[1].get_account_name() == NAME_ONE:
+                    # Only Hanna and Mariam exist
                     return [5, 0]
                 else:
+                    # Only Klaus and Mariam exist
                     return [6, 0]
-                
-    def reset()  -> None:
+        # All three account exist
+        elif len_current_accounts == 3:
+            return [7, 0]
+        else:
+            raise RuntimeError("Account structure should not exist.")
+
+    @staticmethod
+    def reset() -> None:
         AccountManager.currentAccounts = []
-                
-    def error(account_name: str)  -> None:
-        " This opens the error page. Gets thrown when the username already exists. "
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.function_account_error(account_name)
-
-    def return_to_main_page()  -> None:
-        from naturalnets.environments.password_manager_app.app_controller import AppController
-
-        AppController.main_window.set_current_page(None)
-    
-
