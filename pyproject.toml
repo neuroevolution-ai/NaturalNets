@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "naturalnets"
-description = "NaturalNets implmented in Python"
-version="0.2.0"
+description = "NaturalNets implemented in Python"
+version = "0.2.0"
 readme = "README.md"
 requires-python = ">= 3.8"
 authors = [
